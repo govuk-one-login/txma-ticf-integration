@@ -7,9 +7,5 @@
   ],
   "env": {
     "node": true
-  },
-  "rules": {
-    "prettier/prettier": "error"
-  },
-  "plugins": ["prettier"]
+  }
 }

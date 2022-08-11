@@ -3,7 +3,7 @@
   "packageManager": "yarn@3.2.2",
   "private": true,
   "scripts": {
-    "lint": "eslint . --fix",
+    "lint": "prettier . --write ; eslint . --fix",
     "postinstall": "husky install",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\""
   },
@@ -13,7 +13,6 @@
     "@typescript-eslint/parser": "^5.33.0",
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
