@@ -1,5 +1,12 @@
 {
   "name": "di-txma-ticf-integration",
+  "description": "System to automate the retrieval of audit data via Zendesk integration",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alphagov/di-txma-ticf-integration"
+  },
+  "author": "GDS",
+  "license": "MIT",
   "packageManager": "yarn@3.2.2",
   "private": true,
   "scripts": {
