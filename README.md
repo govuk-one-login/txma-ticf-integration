@@ -25,6 +25,25 @@ Zero installs works because the dependencies are committed via the `.yarn` folde
 
 In order to ensure that dependencies cannot be altered by anything other than Yarn itself, we run `yarn install --check-cache` in the pipeline. This avoids the possibility of malicous users altering any dependency code.
 
+## Code standards
+
+This repository is set up to use [Prettier](https://prettier.io/) for formatting, and [ESLint](https://eslint.org/) to look for problems in any Typescript and Javascript code.
+
+Prettier is an opinionated formatting tool for multiple languages/file formats. Exceptions can be added to the `.prettierrc.json` file.
+
+ESLint is configured to use just its recommended rules via the `.eslintrc.json` file. These can be viewed at:
+
+- [Javscript](https://eslint.org/docs/latest/rules/)
+- [Typescript](https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/src/configs/eslint-recommended.ts)
+
+Additionally, its code formatting rules are disabled as these are handled by Prettier.
+
+To run the linting:
+
+```
+yarn lint
+```
+
 ## Licence
 
 [MIT License](LICENCE)
