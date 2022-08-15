@@ -8,7 +8,6 @@ interface IAwsResource {
 }
 
 interface ISamFunction extends IAwsResource {
-  Type: string
   Properties: {
     Handler: string
   }
