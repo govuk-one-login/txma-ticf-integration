@@ -25,17 +25,13 @@ const lambdas = awsResources.filter(
   (resource) => resource.Type === 'AWS::Serverless::Function'
 ) as ILambdaFunction[]
 
-const entries = lambdas
-  .map((lambda) => ({
-    filename: lambda.Properties.Handler.split('.')[0]
-  }))
-  .reduce(
-    (lambdas, lambda) =>
-      Object.assign(lambdas, {
-        [lambda.filename]: `./${handlerPath}/${lambda.filename}.ts`
-      }),
-    {}
-  )
+const entries = lambdas.reduce((previousValue, currentValue) => {
+  const filename = currentValue.Properties.Handler.split('.')[0]
+  const filepath = `./${handlerPath}/${filename}.ts`
+
+  previousValue[filename] = filepath
+  return previousValue
+}, {} as { [key: string]: string })
 
 const config: Configuration = {
   entry: entries,
