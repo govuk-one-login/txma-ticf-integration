@@ -15,7 +15,3 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: helloWorld.handler
-  Api:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: Test
