@@ -5,4 +5,5 @@
 .prettierignore
 .pnp.*
 .yarn
+dist/
 yarn.lock
