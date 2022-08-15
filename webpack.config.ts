@@ -7,7 +7,7 @@ interface IAwsResource {
   Type: string
 }
 
-interface ISamFunction extends IAwsResource {
+interface ILambdaFunction extends IAwsResource {
   Properties: {
     Handler: string
   }
@@ -21,18 +21,18 @@ const { Resources } = yamlParse(
 
 const awsResources = Object.values(Resources) as IAwsResource[]
 
-const functions = awsResources.filter(
+const lambdas = awsResources.filter(
   (resource) => resource.Type === 'AWS::Serverless::Function'
-) as ISamFunction[]
+) as ILambdaFunction[]
 
-const entries = functions
-  .map((value) => ({
-    filename: value.Properties.Handler.split('.')[0]
+const entries = lambdas
+  .map((lambda) => ({
+    filename: lambda.Properties.Handler.split('.')[0]
   }))
   .reduce(
-    (resources, resource) =>
-      Object.assign(resources, {
-        [resource.filename]: `./${handlerPath}/${resource.filename}.ts`
+    (lambdas, lambda) =>
+      Object.assign(lambdas, {
+        [lambda.filename]: `./${handlerPath}/${lambda.filename}.ts`
       }),
     {}
   )
