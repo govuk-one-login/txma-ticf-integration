@@ -920,6 +920,7 @@ __metadata:
     typescript: ^4.7.4
     webpack: ^5.74.0
     webpack-cli: ^4.10.0
+    yaml-cfn: ^0.3.1
   languageName: unknown
   linkType: soft
 
@@ -1590,7 +1591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^4.1.0":
+"js-yaml@npm:^4.0.0, js-yaml@npm:^4.1.0":
   version: 4.1.0
   resolution: "js-yaml@npm:4.1.0"
   dependencies:
@@ -2788,6 +2789,17 @@ __metadata:
   version: 4.0.0
   resolution: "yallist@npm:4.0.0"
   checksum: 343617202af32df2a15a3be36a5a8c0c8545208f3d3dfbc6bb7c3e3b7e8c6f8e7485432e4f3b88da3031a6e20afa7c711eded32ddfb122896ac5d914e75848d5
+  languageName: node
+  linkType: hard
+
+"yaml-cfn@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "yaml-cfn@npm:0.3.1"
+  dependencies:
+    js-yaml: ^4.0.0
+  bin:
+    yaml-cfn: cli.js
+  checksum: 348152162bb8e77225f25bafd0a7199a9628c5fb985fc032f7218b14dea896b55dc6d60ca05ae500f1c46fb62a5436df3f45ce2e383dcf5eb7621e3efc200a7c
   languageName: node
   linkType: hard
 

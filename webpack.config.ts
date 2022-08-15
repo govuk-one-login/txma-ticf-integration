@@ -1,10 +1,42 @@
-import path from 'path'
+import { readFileSync } from 'fs'
+import { join, resolve } from 'path'
 import { Configuration } from 'webpack'
+import { yamlParse } from 'yaml-cfn'
 
-//TODO: We could parse the template file and find these entry points. This would save writing them in 2 places.
-const entries = {
-  helloWorld: './src/handlers/hello-world.ts'
+interface IAwsResource {
+  Type: string
 }
+
+interface ISamFunction extends IAwsResource {
+  Type: string
+  Properties: {
+    Handler: string
+  }
+}
+
+const handlerPath = 'src/handlers'
+
+const { Resources } = yamlParse(
+  readFileSync(join(__dirname, 'template.yaml'), 'utf-8')
+)
+
+const awsResources = Object.values(Resources) as IAwsResource[]
+
+const functions = awsResources.filter(
+  (resource) => resource.Type === 'AWS::Serverless::Function'
+) as ISamFunction[]
+
+const entries = functions
+  .map((value) => ({
+    filename: value.Properties.Handler.split('.')[0]
+  }))
+  .reduce(
+    (resources, resource) =>
+      Object.assign(resources, {
+        [resource.filename]: `./${handlerPath}/${resource.filename}.ts`
+      }),
+    {}
+  )
 
 const config: Configuration = {
   entry: entries,
@@ -19,7 +51,7 @@ const config: Configuration = {
     library: {
       type: 'commonjs2'
     },
-    path: path.resolve(__dirname, './dist')
+    path: resolve(__dirname, './dist')
   },
   resolve: {
     extensions: ['.js', '.ts']
