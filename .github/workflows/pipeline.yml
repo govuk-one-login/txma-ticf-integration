@@ -7,7 +7,9 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: Install dependencies
+      - name: Install Yarn v3
+        run: corepack enable
+      - name: Check Yarn cache
         run: yarn install --immutable --immutable-cache --check-cache
       - name: Run linting
         run: yarn lint
