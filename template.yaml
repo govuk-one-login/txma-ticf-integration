@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  A SAM template to provision infrastructure required for integrating the TxMA service with Zendesk in order to automate Athena queries
+Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    CodeUri: dist/
+    Environment:
+      Variables:
+        NODE_OPTIONS: --enable-source-maps
+    Runtime: nodejs16.x
+
+Resources:
+  HelloWorld:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: helloWorld.handler
