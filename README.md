@@ -9,13 +9,19 @@ Threat Intelligence and Counter Fraud (TICF) analysts will be able to request au
 To run this project you will need the following:
 
 - [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) - Used to build and deploy the application
-- [Node.js](https://nodejs.org/en/) - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
+- [Node.js](https://nodejs.org/en/) v16.10+ - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
 - [Docker](https://docs.docker.com/get-docker/) - Required to run SAM locally
 - [Yarn](https://yarnpkg.com/getting-started/install) - The package manager for the project
 
 ## Getting started
 
-The project is using [Yarn Zero Installs](https://yarnpkg.com/features/zero-installs). So as long as Yarn itself is installed, everything should be ready to go out of the box. The only thing that needs to be enabled is the Husky hooks.
+The project is using [Yarn Zero Installs](https://yarnpkg.com/features/zero-installs). So as long as Yarn itself is installed, everything should be ready to go out of the box. As long as you are running Node v16.10+, the easiest way to install Yarn is to enable corepack.
+
+```
+corepack enable
+```
+
+Then the only other thing that needs to be enabled is the Husky hooks.
 
 ```
 yarn husky install
