@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs'
-import { join, resolve } from 'path'
+import { join } from 'path'
 import { Configuration } from 'webpack'
 import { yamlParse } from 'yaml-cfn'
 
@@ -46,7 +46,7 @@ const config: Configuration = {
     library: {
       type: 'commonjs2'
     },
-    path: resolve(__dirname, './dist')
+    path: join(__dirname, './dist')
   },
   resolve: {
     extensions: ['.js', '.ts']
