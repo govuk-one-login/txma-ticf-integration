@@ -5,5 +5,6 @@
 .prettierignore
 .pnp.*
 .yarn
+coverage/
 dist/
 yarn.lock
