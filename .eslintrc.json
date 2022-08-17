@@ -6,6 +6,8 @@
     "prettier"
   ],
   "env": {
+    "jest/globals": true,
     "node": true
-  }
+  },
+  "plugins": ["jest"]
 }
