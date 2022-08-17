@@ -1,6 +1,9 @@
 # Build
 dist/
 
+# Jest
+coverage
+
 # Miscellaneous
 .DS_Store
 
