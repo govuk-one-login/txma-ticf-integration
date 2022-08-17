@@ -2,13 +2,13 @@
 dist/
 
 # Jest
-coverage
+coverage/
 
 # Miscellaneous
 .DS_Store
 
 # NPM
-node_modules
+node_modules/
 
 # Yarn
 .yarn/*
