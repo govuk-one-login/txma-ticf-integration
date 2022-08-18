@@ -14,7 +14,10 @@ MFA_CODE=$1
 ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account')
 MFA_DEVICE_ARN=arn:aws:iam::${ACCOUNT_ID}:mfa/$GDS_EMAIL_ADDRESS
 MFA_CREDENTIALS=$(aws sts get-session-token --serial-number $MFA_DEVICE_ARN --token-code $1)
-ASSUMED_ROLE=$(AWS_ACCESS_KEY_ID=$(echo $MFA_CREDENTIALS | jq -r '.Credentials.AccessKeyId') AWS_SECRET_ACCESS_KEY=$(echo $MFA_CREDENTIALS | jq -r '.Credentials.SecretAccessKey') AWS_SESSION_TOKEN=$(echo $MFA_CREDENTIALS | jq -r '.Credentials.SessionToken') aws sts assume-role --role-arn $ROLE_ARN --role-session-name session)
+ASSUMED_ROLE=$(AWS_ACCESS_KEY_ID=$(echo $MFA_CREDENTIALS | jq -r '.Credentials.AccessKeyId') \
+  AWS_SECRET_ACCESS_KEY=$(echo $MFA_CREDENTIALS | jq -r '.Credentials.SecretAccessKey') \
+  AWS_SESSION_TOKEN=$(echo $MFA_CREDENTIALS | jq -r '.Credentials.SessionToken') \
+  aws sts assume-role --role-arn $ROLE_ARN --role-session-name session)
 
 export AWS_ACCESS_KEY_ID=$(echo $ASSUMED_ROLE | jq -r '.Credentials.AccessKeyId')
 export AWS_SECRET_ACCESS_KEY=$(echo $ASSUMED_ROLE | jq -r '.Credentials.SecretAccessKey')
