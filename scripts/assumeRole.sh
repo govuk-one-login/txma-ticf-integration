@@ -3,8 +3,8 @@
 # To run this script requires you to have the following environment variables set:
 # GDS_EMAIL_ADDRESS - the email address of the account for the 'gds-users' AWS account
 # ROLE_ARN - the ARN of the role you want to assume in the relevant AWS account
-: "${GDS_EMAIL_ADDRESS:?GDS_EMAIL_ADDRESS not set or empty}"
-: "${ROLE_ARN:?ROLE_ARN not set or empty}"
+: "${GDS_EMAIL_ADDRESS:?Not set or empty}"
+: "${ROLE_ARN:?Not set or empty}"
 
 # Pass in the MFA code as the first argument when running the script
 # e.g.
