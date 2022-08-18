@@ -1,3 +1,4 @@
+*.sh
 .editorconfig
 .eslintignore
 .gitignore
