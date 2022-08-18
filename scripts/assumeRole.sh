@@ -11,7 +11,12 @@
 # source ./scripts/assumeRole.sh 123456
 MFA_CODE=$1
 
-# Script assumes you are authenticated with the 'gds-users' AWS account via the AWS CLI
+# Script assumes you are authenticated with the 'gds-users' AWS account via the AWS credentials file
+# The required environment variables are unset by this script and replaced with the credentials for the Assumed role
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_SESSION_TOKEN
+
 ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account') || { return 1 }
 MFA_DEVICE_ARN=arn:aws:iam::${ACCOUNT_ID}:mfa/$GDS_EMAIL_ADDRESS
 MFA_CREDENTIALS=$(aws sts get-session-token --serial-number $MFA_DEVICE_ARN --token-code $1) || { return 1 }
