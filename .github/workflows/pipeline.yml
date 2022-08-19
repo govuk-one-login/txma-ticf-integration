@@ -8,6 +8,9 @@ on:
 jobs:
   run_tests_and_validation:
     name: Run tests and validation
+    permissions:
+      id-token: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
