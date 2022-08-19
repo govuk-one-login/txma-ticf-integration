@@ -1,9 +1,8 @@
 name: Pre-merge Build and Test
 
 on:
-  [push]
-  # pull_request:
-  #   branches: [ main ]
+  pull_request:
+    branches: [main]
 
 jobs:
   run_tests_and_validation:
