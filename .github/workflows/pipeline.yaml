@@ -62,17 +62,17 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: sam-build
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.8'
-      - name: Setup SAM CLI
-        uses: aws-actions/setup-sam@v2
-      - name: Assume AWS role
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-region: eu-west-2
-          role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
+      # - name: Setup Python
+      #   uses: actions/setup-python@v3
+      #   with:
+      #     python-version: '3.8'
+      # - name: Setup SAM CLI
+      #   uses: aws-actions/setup-sam@v2
+      # - name: Assume AWS role
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-region: eu-west-2
+      #     role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
       - run: ls -a
       # - name: Deploy SAM app
       #   uses: alphagov/di-devplatform-upload-action@v2
