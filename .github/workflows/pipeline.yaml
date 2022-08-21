@@ -26,8 +26,8 @@ jobs:
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.GH_ACTIONS_VALIDATE_ROLE_ARN }}
           aws-region: eu-west-2
+          role-to-assume: ${{ secrets.GH_ACTIONS_VALIDATE_ROLE_ARN }}
       - name: Install Yarn v3
         run: corepack enable
       - name: Check Yarn cache
@@ -71,6 +71,7 @@ jobs:
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1
         with:
+          aws-region: eu-west-2
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
       # - name: Deploy SAM app
       #   uses: alphagov/di-devplatform-upload-action@v2
