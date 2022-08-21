@@ -52,7 +52,7 @@ jobs:
             template.yaml
   deploy:
     name: Deploy
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build_test_and_validate]
     runs-on: ubuntu-latest
     permissions:
@@ -72,9 +72,9 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
-      - name: Deploy SAM app
-        uses: alphagov/di-devplatform-upload-action@v2
-        with:
-          artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
-          signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
-          working-directory: '.'
+      # - name: Deploy SAM app
+      #   uses: alphagov/di-devplatform-upload-action@v2
+      #   with:
+      #     artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
+      #     signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
+      #     working-directory: '.'
