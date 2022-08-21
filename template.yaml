@@ -2,12 +2,30 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   A SAM template to provision infrastructure required for integrating the TxMA service with Zendesk in order to automate Athena queries
 Transform: AWS::Serverless-2016-10-31
+Parameters:
+  CodeSigningConfigArn:
+    Description: The ARN of the Code Signing Config to use, provided by the deployment pipeline
+    Type: String
+    Default: none
+  PermissionsBoundary:
+    Description: The ARN of the permissions boundary to apply to any role created by the template
+    Type: String
+    Default: none
+
+Conditions:
+  UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
+
 Globals:
   Function:
+    CodeSigningConfigArn:
+      !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
     CodeUri: dist/
     Environment:
       Variables:
         NODE_OPTIONS: --enable-source-maps
+    PermissionsBoundary:
+      !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     Runtime: nodejs16.x
 
 Resources:

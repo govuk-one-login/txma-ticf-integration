@@ -44,6 +44,12 @@ jobs:
       - name: Validate SAM template
         if: always()
         run: sam validate --config-env build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sam-build
+          path: |
+            dist/
+            template.yaml
   deploy:
     name: Deploy
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -53,8 +59,9 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: sam-build
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
@@ -65,9 +72,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
-      - name: Build Lambda functions
-        if: always()
-        run: yarn build
       - name: Deploy SAM app
         uses: alphagov/di-devplatform-upload-action@v2
         with:
