@@ -52,7 +52,7 @@ jobs:
             template.yaml
   deploy:
     name: Deploy
-    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build_test_and_validate]
     runs-on: ubuntu-latest
     permissions:
@@ -62,21 +62,20 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: sam-build
-      # - name: Setup Python
-      #   uses: actions/setup-python@v3
-      #   with:
-      #     python-version: '3.8'
-      # - name: Setup SAM CLI
-      #   uses: aws-actions/setup-sam@v2
-      # - name: Assume AWS role
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-region: eu-west-2
-      #     role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
-      - run: ls -a
-      # - name: Deploy SAM app
-      #   uses: alphagov/di-devplatform-upload-action@v2
-      #   with:
-      #     artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
-      #     signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
-      #     working-directory: '.'
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+      - name: Assume AWS role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
+      - name: Deploy SAM app
+        uses: alphagov/di-devplatform-upload-action@v2
+        with:
+          artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
+          signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
+          working-directory: '.'
