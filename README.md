@@ -9,9 +9,14 @@ Threat Intelligence and Counter Fraud (TICF) analysts will be able to request au
 To run this project you will need the following:
 
 - [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) - Used to build and deploy the application
-- [Node.js](https://nodejs.org/en/) v16.10+ - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
+- [Node.js](https://nodejs.org/en/) version 16 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
 - [Docker](https://docs.docker.com/get-docker/) - Required to run SAM locally
-- [Yarn](https://yarnpkg.com/getting-started/install) - The package manager for the project
+- [Yarn](https://yarnpkg.com/getting-started/install) version 3 - The package manager for the project
+
+### Important
+
+- **Node version 16** is required since the runtimes for Lambda functions are fixed.
+- Remove any old versions of Yarn that you may have installed globally if installing via `corepack enable`, or else the global version will override the version coming from Node.
 
 ## Getting started
 
