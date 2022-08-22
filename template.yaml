@@ -28,7 +28,13 @@ Globals:
     Runtime: nodejs16.x
 
 Resources:
-  HelloWorld:
+  ValidateZendeskRequestFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: helloWorld.handler
+      Handler: validateZendeskRequest.handler
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /zendesk-webhook
+            Method: POST

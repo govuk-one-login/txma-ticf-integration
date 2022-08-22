@@ -36,6 +36,12 @@ Zero installs works because the dependencies are committed via the `.yarn` folde
 
 In order to ensure that dependencies cannot be altered by anything other than Yarn itself, we run `yarn install --check-cache` in the pipeline. This avoids the possibility of malicous users altering any dependency code.
 
+## Running Zendesk webhook locally
+
+1. `yarn build` - This will make a build of the code which the SAM template refers to
+2. `sam local start-api 2>&1 | tr "\r" "\n"` - This will start the api, formatting the log output so we can read multi-line logs (without this we don't see anything beyond the first line)
+3. `curl -X post http://localhost:3000/zendesk-webhook` - This will confirm the request hitting the endpoint
+
 ## Code standards
 
 This repository is set up to use [Prettier](https://prettier.io/) for formatting, and [ESLint](https://eslint.org/) to look for problems in any Typescript and Javascript code.
