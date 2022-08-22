@@ -9,4 +9,5 @@
 .yarn
 coverage/
 dist/
+template.yaml
 yarn.lock
