@@ -28,10 +28,41 @@ Globals:
     Runtime: nodejs16.x
 
 Resources:
+  LogsKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+            Action:
+              - "kms:*"
+            Resource:
+              - "*"
+          - Effect: "Allow"
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - "kms:Encrypt*"
+              - "kms:Decrypt*"
+              - "kms:ReEncrypt*"
+              - "kms:GenerateDataKey*"
+              - "kms:Describe*"
+            Resource:
+              - "*"
+            Condition:
+              ArnLike:
+                "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+
   ValidateWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: ValidateWebhookAccessLogs
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      RetentionInDays: 7
   
   ValidateWebhookApi:
     #checkov:skip=<check_id>:CKV_AWS_120:We explicitly don't want caching because we want the lambda to fire off every time a Zendesk ticket is approved
