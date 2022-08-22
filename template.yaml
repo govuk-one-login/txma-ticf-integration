@@ -30,7 +30,8 @@ Globals:
 Resources:
   ValidateWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
-    LogGroupName: ValidateWebhookAccessLogs
+    Properties:
+      LogGroupName: ValidateWebhookAccessLogs
   
   ValidateWebhookApi:
     #checkov:skip=<check_id>:CKV_AWS_120:We explicitly don't want caching because we want the lambda to fire off every time a Zendesk ticket is approved
