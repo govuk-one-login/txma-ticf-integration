@@ -28,10 +28,10 @@ Globals:
     Runtime: nodejs16.x
 
 Resources:
-  ZendeskWebhook:
+  ValidateZendeskRequestFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: zendeskWebhook.handler
+      Handler: validateZendeskRequest.handler
       Events:
         Api:
           Type: Api

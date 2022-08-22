@@ -1,4 +1,4 @@
-import { handler } from './zendeskWebhook'
+import { handler } from './validateZendeskRequest'
 import { defaultApiRequest } from '../testUtils/events/defaultApiRequest'
 test('returns 200 response', async () => {
   const expectedResult = {
