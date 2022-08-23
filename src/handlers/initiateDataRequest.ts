@@ -19,7 +19,7 @@ export const handler = async (
       })
     }
   }
-  initiateS3DataCheck(validatedZendeskRequest.dataRequestParams)
+  await initiateS3DataCheck(validatedZendeskRequest.dataRequestParams)
   return {
     statusCode: 200,
     body: JSON.stringify({
