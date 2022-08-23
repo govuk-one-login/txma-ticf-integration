@@ -44,6 +44,13 @@ jobs:
       - name: Validate SAM template
         if: always()
         run: sam validate --config-env build
+      - name: Run checkov on SAM template
+        if: always()
+        uses: bridgecrewio/checkov-action@master
+        with:
+          file: template.yaml
+          quiet: true
+          framework: cloudformation
       - uses: actions/upload-artifact@v3
         with:
           name: sam-build
