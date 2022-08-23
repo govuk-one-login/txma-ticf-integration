@@ -11,7 +11,7 @@ export const handler = async (
   // first step
   if (!validatedZendeskRequest.isValid) {
     // inform Zendesk
-    updateZendeskTicket(event.body, 'invalid params')
+    await updateZendeskTicket(event.body, 'invalid params')
     return {
       statusCode: 400,
       body: JSON.stringify({

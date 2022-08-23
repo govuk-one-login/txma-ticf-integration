@@ -1,4 +1,4 @@
-export const updateZendeskTicket = (
+export const updateZendeskTicket = async (
   requestBody: string | null,
   message: string
 ) => {
