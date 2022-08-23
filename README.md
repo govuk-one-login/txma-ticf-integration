@@ -12,6 +12,7 @@ To run this project you will need the following:
 - [Node.js](https://nodejs.org/en/) version 16 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
 - [Docker](https://docs.docker.com/get-docker/) - Required to run SAM locally
 - [Yarn](https://yarnpkg.com/getting-started/install) version 3 - The package manager for the project
+- [Checkov](https://www.checkov.io/) - Scans cloud infrastructure configurations to find misconfigurations before they're deployed. Added as a Husky pre-commit hook.
 
 ### Important
 
