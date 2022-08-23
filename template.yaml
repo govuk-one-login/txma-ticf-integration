@@ -75,6 +75,8 @@ Resources:
       TracingEnabled: true
       
   ValidateZendeskRequestFunction:
+    #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
+    #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       Handler: validateZendeskRequest.handler
@@ -85,3 +87,4 @@ Resources:
             Path: /zendesk-webhook
             Method: POST
             RestApiId: !Ref ValidateWebhookApi
+      ReservedConcurrentExecutions: -1
