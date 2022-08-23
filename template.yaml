@@ -87,4 +87,4 @@ Resources:
             Path: /zendesk-webhook
             Method: POST
             RestApiId: !Ref ValidateWebhookApi
-      ReservedConcurrentExecutions: 0
+      ReservedConcurrentExecutions: 10
