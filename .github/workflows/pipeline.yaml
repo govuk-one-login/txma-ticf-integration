@@ -44,7 +44,15 @@ jobs:
       - name: Validate SAM template
         if: always()
         run: sam validate --config-env build
-      - uses: actions/upload-artifact@v3
+      - name: Run checkov on SAM template
+        if: always()
+        uses: bridgecrewio/checkov-action@master
+        with:
+          file: template.yaml
+          quiet: true
+          framework: cloudformation
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
         with:
           name: sam-build
           path: |
@@ -59,7 +67,8 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
         with:
           name: sam-build
       - name: Setup Python
