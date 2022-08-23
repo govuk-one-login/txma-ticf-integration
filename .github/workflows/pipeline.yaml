@@ -51,7 +51,8 @@ jobs:
           file: template.yaml
           quiet: true
           framework: cloudformation
-      - uses: actions/upload-artifact@v3
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
         with:
           name: sam-build
           path: |
@@ -66,7 +67,8 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
         with:
           name: sam-build
       - name: Setup Python
