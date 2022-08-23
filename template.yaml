@@ -57,14 +57,14 @@ Resources:
               ArnLike:
                 "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
 
-  ValidateWebhookAccessLogGroup:
+  InitiateDataRequestWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: ValidateWebhookAccessLogs
       KmsKeyId: !GetAtt LogsKmsKey.Arn
       RetentionInDays: 7
   
-  ValidateWebhookApi:
+  InitiateDataRequestWebhookApi:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we want the lambda to fire off every time a Zendesk ticket is approved
     Type: AWS::Serverless::Api
     Properties:
@@ -74,17 +74,17 @@ Resources:
       StageName: default
       TracingEnabled: true
       
-  ValidateZendeskRequestFunction:
+  InitiateDataRequestFunction:
     #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
-      Handler: validateZendeskRequest.handler
+      Handler: initiateDataRequest.handler
       Events:
         Api:
           Type: Api
           Properties:
             Path: /zendesk-webhook
             Method: POST
-            RestApiId: !Ref ValidateWebhookApi
+            RestApiId: !Ref InitiateDataRequestWebhookApi
       ReservedConcurrentExecutions: 10
