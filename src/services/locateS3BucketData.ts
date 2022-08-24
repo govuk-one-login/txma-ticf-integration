@@ -5,8 +5,10 @@ export const locateS3BucketData = async (
   dataRequestParams: DataRequestParams
 ): Promise<S3BucketDataLocationResult> => {
   console.log('Looking for S3 data using params', dataRequestParams)
+  // TODO: fill in logic to search S3 bucket for data
   return Promise.resolve({
     standardTierLocations: [],
-    glacierTierLocations: []
+    glacierTierLocations: [],
+    dataAvailable: false
   })
 }

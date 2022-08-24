@@ -5,6 +5,7 @@ import { initiateDataTransfer } from '../services/initiateDataTransfer'
 import { updateZendeskTicket } from '../services/updateZendeskTicket'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
 import { DataRequestParams } from '../types/dataRequestParams'
+import { testDataRequest } from '../testUtils/testDataRequest'
 const mockInitiateDataTransfer = initiateDataTransfer as jest.Mock<
   Promise<boolean>
 >
@@ -25,8 +26,6 @@ jest.mock('../services/updateZendeskTicket', () => ({
   updateZendeskTicket: jest.fn()
 }))
 
-const mockDataRequestParams = { zendeskTicketId: '' }
-
 describe('initate data request handler', () => {
   const givenRequestValidationResult = (
     isValid: boolean,
@@ -41,7 +40,7 @@ describe('initate data request handler', () => {
   }
 
   const givenValidRequest = () => {
-    givenRequestValidationResult(true, mockDataRequestParams)
+    givenRequestValidationResult(true, testDataRequest)
   }
 
   const givenDataResult = (isDataAvailable: boolean) => {
@@ -77,7 +76,7 @@ describe('initate data request handler', () => {
     })
 
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
-    expect(initiateDataTransfer).toHaveBeenCalledWith(mockDataRequestParams)
+    expect(initiateDataTransfer).toHaveBeenCalledWith(testDataRequest)
   })
 
   it('returns 400 response when request is invalid', async () => {
