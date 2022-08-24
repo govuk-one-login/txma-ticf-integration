@@ -8,6 +8,15 @@ Parameters:
     Description: The ARN of the Code Signing Config to use, provided by the deployment pipeline
     Type: String
     Default: none
+  Environment:
+    Description: "The environment type"
+    Type: "String"
+    AllowedValues:
+      - "dev"
+      - "build"
+      - "staging"
+      - "integration"
+      - "production"
   PermissionsBoundary:
     Description: The ARN of the permissions boundary to apply to any role created by the template
     Type: String
@@ -60,8 +69,8 @@ Resources:
   InitiateDataRequestWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: ValidateWebhookAccessLogs
       KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: /aws/apigateway/initiate-data-request-webhook-api-access-logs
       RetentionInDays: 7
   
   InitiateDataRequestWebhookApi:
@@ -69,8 +78,9 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       AccessLogSetting:
-        DestinationArn: !GetAtt ValidateWebhookAccessLogGroup.Arn
+        DestinationArn: !GetAtt InitiateDataRequestWebhookAccessLogGroup.Arn
         Format: $context.requestId
+      Name: initiate-data-request-webhook-api
       StageName: default
       TracingEnabled: true
       
