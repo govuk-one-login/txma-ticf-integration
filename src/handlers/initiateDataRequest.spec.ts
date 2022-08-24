@@ -6,8 +6,9 @@ import { updateZendeskTicket } from '../services/updateZendeskTicket'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
 import { DataRequestParams } from '../types/dataRequestParams'
 import { testDataRequest } from '../testUtils/testDataRequest'
+import { InitiateDataTransferResult } from '../types/initiateDataTransferResult'
 const mockInitiateDataTransfer = initiateDataTransfer as jest.Mock<
-  Promise<boolean>
+  Promise<InitiateDataTransferResult>
 >
 const mockValidateZendeskRequest =
   validateZendeskRequest as jest.Mock<ValidatedDataRequestParamsResult>
@@ -43,9 +44,9 @@ describe('initate data request handler', () => {
     givenRequestValidationResult(true, testDataRequest)
   }
 
-  const givenDataResult = (isDataAvailable: boolean) => {
+  const givenDataResult = (success: boolean, errorMessage?: string) => {
     mockInitiateDataTransfer.mockImplementation(() =>
-      Promise.resolve(isDataAvailable)
+      Promise.resolve({ success, errorMessage: errorMessage })
     )
   }
 
@@ -53,8 +54,8 @@ describe('initate data request handler', () => {
     givenDataResult(true)
   }
 
-  const givenNoDataAvailable = () => {
-    givenDataResult(false)
+  const givenNoDataAvailable = (errorMessage: string) => {
+    givenDataResult(false, errorMessage)
   }
 
   const requestBody = 'myBody'
@@ -96,12 +97,13 @@ describe('initate data request handler', () => {
   })
 
   it('returns 400 response when no data available', async () => {
+    const noDataAvailableErrorMessage = 'my no data available message'
     givenValidRequest()
-    givenNoDataAvailable()
+    givenNoDataAvailable(noDataAvailableErrorMessage)
     expect(await callHandlerWithBody()).toEqual({
       statusCode: 400,
       body: JSON.stringify({
-        message: 'no data found'
+        message: noDataAvailableErrorMessage
       })
     })
   })

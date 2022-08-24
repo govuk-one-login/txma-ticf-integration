@@ -13,15 +13,15 @@ export const handler = async (
   if (!validatedZendeskRequest.isValid) {
     return handleInvalidRequest(event.body, validatedZendeskRequest)
   }
-  const dataTransferSuccessfullyInitiated = await initiateDataTransfer(
+  const dataTransferInitiateResult = await initiateDataTransfer(
     validatedZendeskRequest.dataRequestParams as DataRequestParams
   )
   return {
-    statusCode: dataTransferSuccessfullyInitiated ? 200 : 400,
+    statusCode: dataTransferInitiateResult.success ? 200 : 400,
     body: JSON.stringify({
-      message: dataTransferSuccessfullyInitiated
+      message: dataTransferInitiateResult.success
         ? 'data transfer initiated'
-        : 'no data found'
+        : dataTransferInitiateResult.errorMessage
     })
   }
 }
