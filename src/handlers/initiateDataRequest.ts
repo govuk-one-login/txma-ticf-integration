@@ -10,7 +10,6 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
   const validatedZendeskRequest = validateZendeskRequest(event.body)
-  // first step
   if (!validatedZendeskRequest.isValid) {
     return handleInvalidRequest(event.body, validatedZendeskRequest)
   }
