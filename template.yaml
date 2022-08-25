@@ -69,7 +69,7 @@ Resources:
   SecretsKmsKeyAlias:
     Type: 'AWS::KMS::Alias'
     Properties:
-      AliasName: ticf-integration/secretskey
+      AliasName: alias/secretskey
       TargetKeyId: !Ref SecretsKmsKey
       
   LogsKmsKey:
