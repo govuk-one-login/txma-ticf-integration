@@ -9,14 +9,14 @@ Parameters:
     Type: String
     Default: none
   Environment:
-    Description: "The environment type"
-    Type: "String"
+    Description: The environment type
+    Type: String
     AllowedValues:
-      - "dev"
-      - "build"
-      - "staging"
-      - "integration"
-      - "production"
+      - dev
+      - build
+      - staging
+      - integration
+      - production
   PermissionsBoundary:
     Description: The ARN of the permissions boundary to apply to any role created by the template
     Type: String
@@ -37,70 +37,108 @@ Globals:
     Runtime: nodejs16.x
 
 Resources:
-  SecretsKmsKey:
+  LambdaKmsKey:
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
       KeyPolicy:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Principal:
-              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
-              - "kms:*"
+              - kms:*
             Resource:
-              - "*"
-          - Effect: "Allow"
+              - '*'
+          - Effect: Allow
             Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+              Service: lambda.amazonaws.com
             Action:
-              - "kms:Encrypt*"
-              - "kms:Decrypt*"
-              - "kms:ReEncrypt*"
-              - "kms:GenerateDataKey*"
-              - "kms:Describe*"
-            Resource:
-              - "*"
-            Condition:
-              ArnLike:
-                "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+              - kms:Decrypt
+            Resource: '*'
 
-  SecretsKmsKeyAlias:
-    Type: 'AWS::KMS::Alias'
+  LambdaKmsKeyAlias:
+    Type: AWS::KMS::Alias
     Properties:
-      AliasName: alias/secretskey
-      TargetKeyId: !Ref SecretsKmsKey
-      
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/lambda-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/lambda-kms-key
+      TargetKeyId: !Ref LambdaKmsKey
+
   LogsKmsKey:
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
       KeyPolicy:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Principal:
-              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
-              - "kms:*"
+              - kms:*
             Resource:
-              - "*"
-          - Effect: "Allow"
+              - '*'
+          - Effect: Allow
             Principal:
-              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+              Service: !Sub logs.${AWS::Region}.amazonaws.com
             Action:
-              - "kms:Encrypt*"
-              - "kms:Decrypt*"
-              - "kms:ReEncrypt*"
-              - "kms:GenerateDataKey*"
-              - "kms:Describe*"
+              - kms:Decrypt*
+              - kms:Describe*
+              - kms:Encrypt*
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
             Resource:
-              - "*"
+              - '*'
             Condition:
               ArnLike:
-                "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                kms:EncryptionContext:aws:logs:arn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*
+  
+  LogsKmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/logs-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/logs-kms-key
+      TargetKeyId: !Ref LogsKmsKey
 
+  SecretsKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:CreateGrant
+              - kms:Decrypt
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Condition:
+              StringEquals:
+                kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
+                kms:CallerAccount: !Sub ${AWS::AccountId}
+            Resource:
+              - '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:Describe*
+              - kms:Get*
+              - kms:List*
+              - kms:RevokeGrant
+            Resource:
+              - '*'
+
+  SecretsKmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
+      TargetKeyId: !Ref SecretsKmsKey
+
+  # Data Retrieval
   InitiateDataRequestWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -125,6 +163,11 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: initiateDataRequest.handler
+      Environment:
+        Variables:
+          #TODO: Update with parameterised bucket name when merging with TxMA 1
+          AUDIT_BUCKET_NAME: audit-sandbox-message-batch
+          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
       Events:
         Api:
           Type: Api
@@ -132,4 +175,96 @@ Resources:
             Path: /zendesk-webhook
             Method: POST
             RestApiId: !Ref InitiateDataRequestWebhookApi
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       ReservedConcurrentExecutions: 10
+  
+  # Data Analysis
+  AnalysisBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${AWS::StackName}-sandbox-analysis-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-bucket
+      LifecycleConfiguration:
+        Rules:
+          - Id: AnalysisCleanupRule
+            Status: Enabled
+            ExpirationInDays: 30
+      LoggingConfiguration:
+        DestinationBucketName: !Sub audit/${AWS::StackName}-sandbox-analysis-bucket #TODO: Update to !Sub audit/${AWS::StackName}-${Environment}-analysis-bucket
+        LogFilePrefix: String
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  AnalysisLogsBucket:
+    #checkov:skip=CKV_AWS_18:This is the logs bucket
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-sandbox-analysis-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-logs
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  # AuditAnalysisDatabase:
+  #   Type: AWS::Glue::Database
+  #   Properties:
+  #     CatalogId: !Ref AWS::AccountId
+  #     DatabaseInput:
+  #       Description: "TxMA - Event Message Analysis Database"
+  #       Name: "txma-analysis"
+
+  # AuditAnalysisTable:
+  #   Type: AWS::Glue::Table
+  #   Properties:
+  #     CatalogId: !Ref AWS::AccountId
+  #     DatabaseName: !Ref AuditAnalysisDatabase
+  #     TableInput:
+  #       Description: "Table contains event message data to be analysed"
+  #       Name: !Sub "txma-audit-${Environment}-analysis-batch"
+  #       Parameters: 
+  #         # "has_encrypted_data": false
+  #         projection.enabled: true
+  #         projection.datetime.type: date
+  #         projection.datetime.range: '2022/01/01/00,NOW'
+  #         projection.datetime.format: 'yyyy/MM/dd/HH'
+  #         projection.datetime.interval: 1
+  #         projection.datetime.interval.unit: HOURS
+  #         # storage.location.template: 's3://[]/firehouse/${datetime}'
+  #       PartitionKeys:
+  #         - {Name: "datetime", Type: string}
+  #       StorageDescriptor:
+  #         Columns:
+  #           - {Name: "event_id", Type: string}
+  #           - {Name: "client_id", Type: string}
+  #           - {Name: "timestamp", Type: bigint}
+  #           - {Name: "timestamp_formatted", Type: string}
+  #           - {Name: "event_name", Type: string}
+  #           - {Name: "component_id", Type: string}
+  #           - {Name: "user", Type: string}
+  #           - {Name: "platform", Type: string}
+  #           - {Name: "restricted", Type: string}
+  #           - {Name: "extensions", Type: string}
+  #         Compressed: true
+  #         InputFormat: "org.apache.hadoop.mapred.TextInputFormat"
+  #         # Location: "s3://[]/firehose/"
+  #         OutputFormat: "org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat"
+  #         SerdeInfo:
+  #           Parameters: {"ignore.malformed.json": true,"serialiazation.format": 1,"field.delim":""}
+  #           SerializationLibrary: "org.openx.data.jsonserde.JsonSerDe"
+  #         StoredAsSubDirectories: false
+  #       TableType: EXTERNAL_TABLE
