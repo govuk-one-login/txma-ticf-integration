@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch: {}
 
+env:
+  DEV_ARTIFACT_BUCKET: ${{ secrets.DEV_ARTIFACT_BUCKET }}
+  REGION: eu-west-2
+
 jobs:
   build_test_and_validate:
     name: Run tests and validation
@@ -26,7 +30,7 @@ jobs:
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: eu-west-2
+          aws-region: ${{ env.REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_VALIDATE_ROLE_ARN }}
       - name: Install Yarn v3
         run: corepack enable
@@ -58,8 +62,66 @@ jobs:
           path: |
             dist/
             template.yaml
-  deploy:
-    name: Deploy
+
+  deploy_feature:
+    name: Deploy feature branch
+    if: startsWith(github.ref, 'refs/heads/feature')
+    needs: [build_test_and_validate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: sam-build
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+      - name: Assume the dev account deployment role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
+      - name: Deploy to feature stack in the testing account
+        env:
+          FEATURE_BRANCH_NAME: ${{ github.event.ref }}
+        run: |
+          sam deploy \
+            --stack-name dev-ticf-int-$(echo ${FEATURE_BRANCH_NAME##*/} | tr -cd '[a-zA-Z0-9-]') \
+            --capabilities CAPABILITY_IAM \
+            --region ${REGION} \
+            --no-fail-on-empty-changeset \
+            --s3-bucket ${DEV_ARTIFACT_BUCKET}
+
+  delete_feature:
+    if: startsWith(github.event.ref, 'feature') && github.event_name == 'delete'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+      - name: Assume the dev account deployment role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
+      - name: Delete feature branch stack
+        env:
+          FEATURE_BRANCH_NAME: ${{ github.event.ref }}
+        run: |
+          sam delete \
+            --stack-name dev-ticf-int-$(echo ${FEATURE_BRANCH_NAME##*/} | tr -cd '[a-zA-Z0-9-]') \
+            --region ${REGION} \
+            --no-prompts
+
+  package_artifacts:
+    name: Package artifacts for deployment
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build_test_and_validate]
     runs-on: ubuntu-latest
@@ -80,9 +142,9 @@ jobs:
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: eu-west-2
+          aws-region: ${{ env.REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
-      - name: Deploy SAM app
+      - name: Package SAM app
         uses: alphagov/di-devplatform-upload-action@v2
         with:
           artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
