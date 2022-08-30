@@ -1,7 +1,7 @@
 import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
 import { locateS3BucketData } from './locateS3BucketData'
 import { initiateDataTransfer } from './initiateDataTransfer'
-import { testDataRequest } from '../testUtils/testDataRequest'
+import { testDataRequest } from '../utils/tests/testDataRequest'
 
 jest.mock('./locateS3BucketData', () => ({
   locateS3BucketData: jest.fn()
