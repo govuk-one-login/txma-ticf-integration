@@ -9,6 +9,7 @@ const mocklistS3Objects = listS3Objects as jest.Mock<Promise<string[]>>
 describe('object prefixes', () => {
   test('dates on same day', () => {
     const expectedResult = [
+      '2022/08/20/23',
       '2022/08/21/00',
       '2022/08/21/01',
       '2022/08/21/02',
@@ -32,7 +33,8 @@ describe('object prefixes', () => {
       '2022/08/21/20',
       '2022/08/21/21',
       '2022/08/21/22',
-      '2022/08/21/23'
+      '2022/08/21/23',
+      '2022/08/22/00'
     ]
 
     const result = getObjectPrefixes('2022/08/21', '2022/08/21')
@@ -41,6 +43,7 @@ describe('object prefixes', () => {
 
   test('dates on different days', async () => {
     const expectedResult = [
+      '2022/08/20/23',
       '2022/08/21/00',
       '2022/08/21/01',
       '2022/08/21/02',
@@ -88,7 +91,8 @@ describe('object prefixes', () => {
       '2022/08/22/20',
       '2022/08/22/21',
       '2022/08/22/22',
-      '2022/08/22/23'
+      '2022/08/22/23',
+      '2022/08/23/00'
     ]
 
     const result = getObjectPrefixes('2022/08/21', '2022/08/22')
@@ -97,6 +101,7 @@ describe('object prefixes', () => {
 
   test('daylight savings', async () => {
     const expectedResult = [
+      '2022/11/20/23',
       '2022/11/21/00',
       '2022/11/21/01',
       '2022/11/21/02',
@@ -120,7 +125,8 @@ describe('object prefixes', () => {
       '2022/11/21/20',
       '2022/11/21/21',
       '2022/11/21/22',
-      '2022/11/21/23'
+      '2022/11/21/23',
+      '2022/11/22/00'
     ]
 
     const result = getObjectPrefixes('2022/11/21', '2022/11/21')

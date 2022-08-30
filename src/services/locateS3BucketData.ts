@@ -35,18 +35,16 @@ export const getObjectPrefixes = (
   const dateFromParts = dateFrom.split('/')
   const dateToParts = dateTo.split('/')
 
-  // Start date includes the last hour from the previous day
   const start = Date.UTC(
     parseInt(dateFromParts[0]),
     parseInt(dateFromParts[1]) - 1,
-    parseInt(dateFromParts[2]) - 1,
-    23
+    parseInt(dateFromParts[2])
   )
-  // End date includes the first hour of the next day
   const end = Date.UTC(
     parseInt(dateToParts[0]),
     parseInt(dateToParts[1]) - 1,
-    parseInt(dateToParts[2]) + 1
+    parseInt(dateToParts[2]),
+    23
   )
 
   if (isNaN(start) || isNaN(end)) throw Error('Invalid dates received')
@@ -55,10 +53,16 @@ export const getObjectPrefixes = (
   const currentDate = new Date(start)
   const dates = []
 
+  // Include the last hour of the previous day
+  currentDate.setUTCHours(currentDate.getUTCHours() - 1)
+
   while (currentDate <= new Date(end)) {
     dates.push(new Date(currentDate))
     currentDate.setUTCHours(currentDate.getUTCHours() + 1)
   }
+
+  // Include the first hour of the next day
+  dates.push(new Date(currentDate))
 
   const objects = dates.map((date) => {
     const year = date.getUTCFullYear()
