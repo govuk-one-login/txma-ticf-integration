@@ -9,7 +9,7 @@ export const locateS3BucketData = async (
 ): Promise<S3BucketDataLocationResult> => {
   console.log('Looking for S3 data using params', dataRequestParams)
 
-  const objectPrefixes = getObjectPrefixes(
+  const objectPrefixes = generateObjectPrefixes(
     dataRequestParams.dateFrom,
     dataRequestParams.dateTo
   )
@@ -29,7 +29,7 @@ export const locateS3BucketData = async (
   })
 }
 
-export const getObjectPrefixes = (
+export const generateObjectPrefixes = (
   dateFrom: string,
   dateTo: string
 ): string[] => {
@@ -41,6 +41,37 @@ export const getObjectPrefixes = (
   const timeRange = generateTimeRange(startDate, endDate)
 
   return timeRangeToObjectPrefixes(timeRange)
+}
+
+export const getObjectsToCopy = async (
+  prefixes: string[],
+  auditBucketName: string,
+  analysisBucketName: string
+): Promise<string[]> => {
+  const requestedAuditBucketObjects = await Promise.all(
+    prefixes.map(
+      async (prefix) =>
+        await listS3Objects({ Bucket: auditBucketName, Prefix: prefix })
+    )
+  ).then((objects: string[][]) => objects.flat())
+
+  const existingAnalysisBucketObjects = await Promise.all(
+    prefixes.map(
+      async (prefix) =>
+        await listS3Objects({ Bucket: analysisBucketName, Prefix: prefix })
+    )
+  ).then((objects: string[][]) => objects.flat())
+
+  console.log(
+    'Objects present in analysis bucket:',
+    existingAnalysisBucketObjects
+  )
+
+  const objectsToCopy = requestedAuditBucketObjects.filter(
+    (object) => !existingAnalysisBucketObjects.includes(object)
+  )
+
+  return objectsToCopy
 }
 
 const generateTimeRange = (epochStartDate: number, epochEndDate: number) => {
@@ -74,35 +105,4 @@ const timeRangeToObjectPrefixes = (timeRange: Date[]) => {
 
     return `firehose/${year}/${month}/${day}/${hours}`
   })
-}
-
-export const getObjectsToCopy = async (
-  prefixes: string[],
-  auditBucketName: string,
-  analysisBucketName: string
-): Promise<string[]> => {
-  const requestedAuditBucketObjects = await Promise.all(
-    prefixes.map(
-      async (prefix) =>
-        await listS3Objects({ Bucket: auditBucketName, Prefix: prefix })
-    )
-  ).then((objects: string[][]) => objects.flat())
-
-  const existingAnalysisBucketObjects = await Promise.all(
-    prefixes.map(
-      async (prefix) =>
-        await listS3Objects({ Bucket: analysisBucketName, Prefix: prefix })
-    )
-  ).then((objects: string[][]) => objects.flat())
-
-  console.log(
-    'Objects present in analysis bucket:',
-    existingAnalysisBucketObjects
-  )
-
-  const objectsToCopy = requestedAuditBucketObjects.filter(
-    (object) => !existingAnalysisBucketObjects.includes(object)
-  )
-
-  return objectsToCopy
 }

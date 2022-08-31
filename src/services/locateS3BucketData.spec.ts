@@ -1,4 +1,4 @@
-import { getObjectPrefixes, getObjectsToCopy } from './locateS3BucketData'
+import { generateObjectPrefixes, getObjectsToCopy } from './locateS3BucketData'
 import { listS3Objects } from './listS3Objects'
 
 jest.mock('./listS3Objects', () => ({
@@ -37,7 +37,7 @@ describe('object prefixes', () => {
       'firehose/2022/08/22/00'
     ]
 
-    const result = getObjectPrefixes('2022/08/21', '2022/08/21')
+    const result = generateObjectPrefixes('2022/08/21', '2022/08/21')
     expect(result).toEqual(expectedResult)
   })
 
@@ -95,7 +95,7 @@ describe('object prefixes', () => {
       'firehose/2022/08/23/00'
     ]
 
-    const result = getObjectPrefixes('2022/08/21', '2022/08/22')
+    const result = generateObjectPrefixes('2022/08/21', '2022/08/22')
     expect(result).toEqual(expectedResult)
   })
 
@@ -129,19 +129,19 @@ describe('object prefixes', () => {
       'firehose/2022/11/22/00'
     ]
 
-    const result = getObjectPrefixes('2022/11/21', '2022/11/21')
+    const result = generateObjectPrefixes('2022/11/21', '2022/11/21')
     expect(result).toEqual(expectedResult)
   })
 
   test('invalid date string', () => {
     expect(() => {
-      getObjectPrefixes('invalid', 'invalid')
+      generateObjectPrefixes('invalid', 'invalid')
     }).toThrow('String not valid date')
   })
 
   test('end date before start date', () => {
     expect(() => {
-      getObjectPrefixes('2022/11/21', '2022/11/20')
+      generateObjectPrefixes('2022/11/21', '2022/11/20')
     }).toThrow('End date before start date')
   })
 })
@@ -204,5 +204,16 @@ describe('check objects in analysis bucket', () => {
       'analysisBucket'
     )
     expect(result).toEqual(['example-object-2', 'example-object-3'])
+  })
+
+  test('no data in either bucket', async () => {
+    mocklistS3Objects.mockResolvedValue([])
+
+    const result = await getObjectsToCopy(
+      ['prefixes'],
+      'auditBucket',
+      'analysisBucket'
+    )
+    expect(result).toEqual([])
   })
 })
