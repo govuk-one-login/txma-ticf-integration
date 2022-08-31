@@ -17,7 +17,7 @@ describe('list S3 objects', () => {
     s3Mock.reset()
   })
 
-  test('response has no continuation token', async () => {
+  test('response has no continuation token - only 1 page of results', async () => {
     s3Mock.on(ListObjectsV2Command).resolves({
       Contents: [{ Key: 'example-object' }]
     })
@@ -26,7 +26,7 @@ describe('list S3 objects', () => {
     expect(result).toEqual(['example-object'])
   })
 
-  test('has continuation token', async () => {
+  test('response has continuation token - return results for all pages', async () => {
     s3Mock
       .on(ListObjectsV2Command)
       .resolvesOnce({
@@ -51,7 +51,7 @@ describe('list S3 objects', () => {
     ])
   })
 
-  test('respone has no next continuation token', async () => {
+  test('response has no next continuation token - no more pages after the current', async () => {
     s3Mock.on(ListObjectsV2Command).resolves({
       Contents: [{ Key: 'example-object' }],
       ContinuationToken: 'page2'

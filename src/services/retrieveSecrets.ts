@@ -3,12 +3,13 @@ import {
   GetSecretValueCommand,
   GetSecretValueCommandInput
 } from '@aws-sdk/client-secrets-manager'
-const region = process.env.AWS_REGION
+import { REGION } from '../utils/constants'
+
 export const retrieveSecrets = async (
   secretName: string
 ): Promise<{ [key: string]: string }> => {
   const client = new SecretsManagerClient({
-    region: region
+    region: REGION
   })
   const command: GetSecretValueCommandInput = {
     SecretId: secretName

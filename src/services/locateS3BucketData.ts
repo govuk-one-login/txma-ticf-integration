@@ -2,6 +2,7 @@ import { DataRequestParams } from '../types/dataRequestParams'
 import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
 import { listS3Objects } from './listS3Objects'
 import { ANALYSIS_BUCKET_NAME, AUDIT_BUCKET_NAME } from '../utils/constants'
+import { getEpochDate } from '../utils/helpers'
 
 export const locateS3BucketData = async (
   dataRequestParams: DataRequestParams
@@ -32,48 +33,47 @@ export const getObjectPrefixes = (
   dateFrom: string,
   dateTo: string
 ): string[] => {
-  const dateFromParts = dateFrom.split('/')
-  const dateToParts = dateTo.split('/')
+  const startDate = getEpochDate(dateFrom)
+  const endDate = getEpochDate(dateTo)
 
-  const start = Date.UTC(
-    parseInt(dateFromParts[0]),
-    parseInt(dateFromParts[1]) - 1,
-    parseInt(dateFromParts[2])
-  )
-  const end = Date.UTC(
-    parseInt(dateToParts[0]),
-    parseInt(dateToParts[1]) - 1,
-    parseInt(dateToParts[2]),
-    23
-  )
+  if (endDate < startDate) throw Error('End date before start date')
 
-  if (isNaN(start) || isNaN(end)) throw Error('Invalid dates received')
-  if (end < start) throw Error('End date before start date')
+  const timeRange = generateTimeRange(startDate, endDate)
 
-  const currentDate = new Date(start)
-  const dates = []
+  return timeRangeToObjectPrefixes(timeRange)
+}
 
+const generateTimeRange = (epochStartDate: number, epochEndDate: number) => {
   // Include the last hour of the previous day
-  currentDate.setUTCHours(currentDate.getUTCHours() - 1)
+  const iterateHour = new Date(epochStartDate)
+  iterateHour.setUTCHours(iterateHour.getUTCHours() - 1)
 
-  while (currentDate <= new Date(end)) {
-    dates.push(new Date(currentDate))
-    currentDate.setUTCHours(currentDate.getUTCHours() + 1)
+  // Set end to be the last hour in the last day
+  const lastHour = new Date(epochEndDate)
+  lastHour.setUTCHours(lastHour.getUTCHours() + 23)
+
+  const timeRange = []
+
+  while (iterateHour <= new Date(lastHour)) {
+    timeRange.push(new Date(iterateHour))
+    iterateHour.setUTCHours(iterateHour.getUTCHours() + 1)
   }
 
   // Include the first hour of the next day
-  dates.push(new Date(currentDate))
+  timeRange.push(new Date(iterateHour))
 
-  const objects = dates.map((date) => {
+  return timeRange
+}
+
+const timeRangeToObjectPrefixes = (timeRange: Date[]) => {
+  return timeRange.map((date) => {
     const year = date.getUTCFullYear()
     const month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
     const day = date.getUTCDate().toString().padStart(2, '0')
-    const hour = date.getUTCHours().toString().padStart(2, '0')
+    const hours = date.getUTCHours().toString().padStart(2, '0')
 
-    return `${year}/${month}/${day}/${hour}`
+    return `firehose/${year}/${month}/${day}/${hours}`
   })
-
-  return objects
 }
 
 export const getObjectsToCopy = async (

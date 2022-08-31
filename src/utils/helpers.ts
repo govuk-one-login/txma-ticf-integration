@@ -6,3 +6,17 @@ export const getEnv = (name: string) => {
 
   return env
 }
+
+export const getEpochDate = (dateString: string) => {
+  const dateParts = dateString.split('/')
+
+  const epochDate = Date.UTC(
+    parseInt(dateParts[0]),
+    parseInt(dateParts[1]) - 1,
+    parseInt(dateParts[2])
+  )
+
+  if (isNaN(epochDate)) throw Error('String not valid date')
+
+  return epochDate
+}
