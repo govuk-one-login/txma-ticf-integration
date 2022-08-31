@@ -1,24 +1,24 @@
 import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
-import { locateS3BucketData } from './locateS3BucketData'
+import { checkS3BucketData } from './locateS3BucketData'
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { testDataRequest } from '../utils/tests/testDataRequest'
 
 jest.mock('./locateS3BucketData', () => ({
   locateS3BucketData: jest.fn()
 }))
-const mockLocateS3BucketData = locateS3BucketData as jest.Mock<
+const mockLocateS3BucketData = checkS3BucketData as jest.Mock<
   Promise<S3BucketDataLocationResult>
 >
 
 describe('initiate data transfer', () => {
   const givenDataResult = (
     dataAvailable: boolean,
-    standardTierLocations?: string[],
-    glacierTierLocations?: string[]
+    standardTierLocationsToCopy?: string[],
+    glacierTierLocationsToCopy?: string[]
   ) => {
     mockLocateS3BucketData.mockResolvedValue({
-      standardTierLocations,
-      glacierTierLocations,
+      standardTierLocationsToCopy: standardTierLocationsToCopy,
+      glacierTierLocationsToCopy: glacierTierLocationsToCopy,
       dataAvailable
     })
   }

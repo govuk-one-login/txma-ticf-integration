@@ -4,7 +4,7 @@ import { listS3Objects } from './listS3Objects'
 import { ANALYSIS_BUCKET_NAME, AUDIT_BUCKET_NAME } from '../utils/constants'
 import { getEpochDate } from '../utils/helpers'
 
-export const locateS3BucketData = async (
+export const checkS3BucketData = async (
   dataRequestParams: DataRequestParams
 ): Promise<S3BucketDataLocationResult> => {
   console.log('Looking for S3 data using params', dataRequestParams)
@@ -14,19 +14,11 @@ export const locateS3BucketData = async (
     dataRequestParams.dateTo
   )
 
-  const objectsToCopy = await getObjectsToCopy(
+  return await getObjectsToCopy(
     objectPrefixes,
     AUDIT_BUCKET_NAME,
     ANALYSIS_BUCKET_NAME
   )
-  console.log('Objects to copy:', objectsToCopy)
-
-  // For now we keep things in such a way that the webhook will still return a successful result
-  return Promise.resolve({
-    standardTierLocations: ['myLocation1'],
-    glacierTierLocations: ['myGlacierLocation2'],
-    dataAvailable: true
-  })
 }
 
 export const generateObjectPrefixes = (
@@ -47,7 +39,8 @@ export const getObjectsToCopy = async (
   prefixes: string[],
   auditBucketName: string,
   analysisBucketName: string
-): Promise<string[]> => {
+): Promise<S3BucketDataLocationResult> => {
+  //TODO: add handling for when there is no data available for requested dates
   const requestedAuditBucketObjects = await Promise.all(
     prefixes.map(
       async (prefix) =>
@@ -71,7 +64,15 @@ export const getObjectsToCopy = async (
     (object) => !existingAnalysisBucketObjects.includes(object)
   )
 
-  return objectsToCopy
+  console.log('Objects to copy:', objectsToCopy)
+
+  // For now we keep things in such a way that the webhook will still return a successful result
+  //TODO: Implement storage class logic - Storage tier available in listS3Objects() function, it just needs amending
+  return Promise.resolve({
+    standardTierLocationsToCopy: objectsToCopy,
+    glacierTierLocationsToCopy: [],
+    dataAvailable: true
+  })
 }
 
 const generateTimeRange = (epochStartDate: number, epochEndDate: number) => {

@@ -13,6 +13,7 @@ export const listS3Objects = async (
   const command = new ListObjectsV2Command(input)
   const response = await client.send(command)
 
+  //TODO: response.Contents also contains storage tier when implementing ticket TT2-13
   if (!response.Contents) return []
 
   response.Contents.map((item) => item.Key).forEach((item) =>
