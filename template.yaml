@@ -125,10 +125,7 @@ Resources:
             Principal:
               AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
-              - kms:Describe*
-              - kms:Get*
-              - kms:List*
-              - kms:RevokeGrant
+              - kms:*
             Resource:
               - '*'
 
