@@ -1,7 +1,7 @@
 import { DataRequestParams } from '../types/dataRequestParams'
 import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
 import { listS3Objects } from './listS3Objects'
-import { ANALYSIS_BUCKET_NAME, AUDIT_BUCKET_NAME } from '../utils/constants'
+import { getEnv } from '../utils/helpers'
 import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
 
 export const checkS3BucketData = async (
@@ -18,14 +18,20 @@ export const checkS3BucketData = async (
   const requestedAuditBucketObjects = await Promise.all(
     prefixes.map(
       async (prefix) =>
-        await listS3Objects({ Bucket: AUDIT_BUCKET_NAME, Prefix: prefix })
+        await listS3Objects({
+          Bucket: getEnv('AUDIT_BUCKET_NAME'),
+          Prefix: prefix
+        })
     )
   ).then((objects: string[][]) => objects.flat())
 
   const existingAnalysisBucketObjects = await Promise.all(
     prefixes.map(
       async (prefix) =>
-        await listS3Objects({ Bucket: ANALYSIS_BUCKET_NAME, Prefix: prefix })
+        await listS3Objects({
+          Bucket: getEnv('ANALYSIS_BUCKET_NAME'),
+          Prefix: prefix
+        })
     )
   ).then((objects: string[][]) => objects.flat())
 
