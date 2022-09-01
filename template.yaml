@@ -108,7 +108,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::${AWS::AccountId}:root
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
               - kms:CreateGrant
               - kms:Decrypt
@@ -117,13 +117,13 @@ Resources:
               - kms:ReEncrypt*
             Condition:
               StringEquals:
-                kms:ViaService: secretsmanager.${AWS::Region}.amazonaws.com
-                kms:CallerAccount: ${AWS::AccountId}
+                kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
+                kms:CallerAccount: !Sub ${AWS::AccountId}
             Resource:
               - '*'
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::${AWS::AccountId}:root
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
               - kms:Describe*
               - kms:Get*
