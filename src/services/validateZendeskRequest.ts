@@ -22,7 +22,7 @@ export const validateZendeskRequest = (
   const data = JSON.parse(body ?? '{}')
 
   if (!isEmpty(data)) {
-    const isEmailValid = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(
+    const isEmailValid = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(
       data.resultsEmail ?? ''
     )
 
@@ -36,6 +36,10 @@ export const validateZendeskRequest = (
       {
         message: 'Email format invalid',
         isValid: isEmailValid
+      },
+      {
+        message: 'Results Name is missing',
+        isValid: data.resultsName?.length > 0
       },
       {
         message: 'From date is invalid',
