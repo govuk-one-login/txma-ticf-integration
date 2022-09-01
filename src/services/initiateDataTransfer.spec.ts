@@ -1,12 +1,12 @@
 import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
-import { checkS3BucketData } from './locateS3BucketData'
+import { checkS3BucketData } from './checkS3BucketData'
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { testDataRequest } from '../utils/tests/testDataRequest'
 
-jest.mock('./locateS3BucketData', () => ({
-  locateS3BucketData: jest.fn()
+jest.mock('./checkS3BucketData', () => ({
+  checkS3BucketData: jest.fn()
 }))
-const mockLocateS3BucketData = checkS3BucketData as jest.Mock<
+const mockCheckS3BucketData = checkS3BucketData as jest.Mock<
   Promise<S3BucketDataLocationResult>
 >
 
@@ -16,7 +16,7 @@ describe('initiate data transfer', () => {
     standardTierLocationsToCopy?: string[],
     glacierTierLocationsToCopy?: string[]
   ) => {
-    mockLocateS3BucketData.mockResolvedValue({
+    mockCheckS3BucketData.mockResolvedValue({
       standardTierLocationsToCopy: standardTierLocationsToCopy,
       glacierTierLocationsToCopy: glacierTierLocationsToCopy,
       dataAvailable
@@ -37,7 +37,7 @@ describe('initiate data transfer', () => {
       success: false,
       errorMessage: 'No data found for request'
     })
-    expect(mockLocateS3BucketData).toHaveBeenCalledWith(testDataRequest)
+    expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
   })
 
   it('returns true if data can be found for the requested parameters', async () => {
@@ -46,6 +46,6 @@ describe('initiate data transfer', () => {
     expect(await initiateDataTransfer(testDataRequest)).toEqual({
       success: true
     })
-    expect(mockLocateS3BucketData).toHaveBeenCalledWith(testDataRequest)
+    expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
   })
 })

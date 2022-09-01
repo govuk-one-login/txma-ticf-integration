@@ -1,10 +1,4 @@
-import { generateObjectPrefixes, getObjectsToCopy } from './locateS3BucketData'
-import { listS3Objects } from './listS3Objects'
-
-jest.mock('./listS3Objects', () => ({
-  listS3Objects: jest.fn()
-}))
-const mocklistS3Objects = listS3Objects as jest.Mock<Promise<string[]>>
+import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
 
 describe('object prefixes', () => {
   test('dates on same day', () => {
@@ -37,7 +31,7 @@ describe('object prefixes', () => {
       'firehose/2022/08/22/00'
     ]
 
-    const result = generateObjectPrefixes('2022/08/21', '2022/08/21')
+    const result = generateS3ObjectPrefixes('2022/08/21', '2022/08/21')
     expect(result).toEqual(expectedResult)
   })
 
@@ -95,7 +89,7 @@ describe('object prefixes', () => {
       'firehose/2022/08/23/00'
     ]
 
-    const result = generateObjectPrefixes('2022/08/21', '2022/08/22')
+    const result = generateS3ObjectPrefixes('2022/08/21', '2022/08/22')
     expect(result).toEqual(expectedResult)
   })
 
@@ -129,91 +123,19 @@ describe('object prefixes', () => {
       'firehose/2022/11/22/00'
     ]
 
-    const result = generateObjectPrefixes('2022/11/21', '2022/11/21')
+    const result = generateS3ObjectPrefixes('2022/11/21', '2022/11/21')
     expect(result).toEqual(expectedResult)
   })
 
   test('invalid date string', () => {
     expect(() => {
-      generateObjectPrefixes('invalid', 'invalid')
+      generateS3ObjectPrefixes('invalid', 'invalid')
     }).toThrow('String not valid date')
   })
 
   test('end date before start date', () => {
     expect(() => {
-      generateObjectPrefixes('2022/11/21', '2022/11/20')
+      generateS3ObjectPrefixes('2022/11/21', '2022/11/20')
     }).toThrow('End date before start date')
-  })
-})
-
-describe('check objects in analysis bucket', () => {
-  test('all data in analysis bucket', async () => {
-    mocklistS3Objects
-      .mockResolvedValueOnce([
-        'example-object-1',
-        'example-object-2',
-        'example-object-3'
-      ])
-      .mockResolvedValueOnce([
-        'example-object-1',
-        'example-object-2',
-        'example-object-3'
-      ])
-
-    const result = await getObjectsToCopy(
-      ['prefixes'],
-      'auditBucket',
-      'analysisBucket'
-    )
-    expect(result).toEqual([])
-  })
-
-  test('no data in analysis bucket', async () => {
-    mocklistS3Objects
-      .mockResolvedValueOnce([
-        'example-object-1',
-        'example-object-2',
-        'example-object-3'
-      ])
-      .mockResolvedValueOnce([])
-
-    const result = await getObjectsToCopy(
-      ['prefixes'],
-      'auditBucket',
-      'analysisBucket'
-    )
-    expect(result).toEqual([
-      'example-object-1',
-      'example-object-2',
-      'example-object-3'
-    ])
-  })
-
-  test('partial data in analysis bucket', async () => {
-    mocklistS3Objects
-      .mockResolvedValueOnce([
-        'example-object-1',
-        'example-object-2',
-        'example-object-3'
-      ])
-      .mockResolvedValueOnce(['example-object-1'])
-
-    const result = await getObjectsToCopy(
-      ['prefixes'],
-      'auditBucket',
-      'analysisBucket'
-    )
-    expect(result).toEqual(['example-object-2', 'example-object-3'])
-  })
-
-  test('no data in either bucket', async () => {
-    mocklistS3Objects.mockResolvedValue([])
-
-    const result = await getObjectsToCopy(
-      ['prefixes'],
-      'auditBucket',
-      'analysisBucket'
-    )
-    expect(result).toEqual([])
   })
 })

@@ -1,6 +1,6 @@
 import { DataRequestParams } from '../types/dataRequestParams'
 import { InitiateDataTransferResult } from '../types/initiateDataTransferResult'
-import { checkS3BucketData } from './locateS3BucketData'
+import { checkS3BucketData } from './checkS3BucketData'
 
 export const initiateDataTransfer = async (
   dataRequestParams: DataRequestParams
