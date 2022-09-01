@@ -61,7 +61,7 @@ Resources:
   LambdaKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: !Sub alias/${AWS::StackName}/sandbox/lambda-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/lambda-kms-key
+      AliasName: !Sub ${AWS::StackName}/sandbox/lambda-kms-key #TODO: Update to !Sub ${AWS::StackName}/${Environment}/lambda-kms-key
       TargetKeyId: !Ref LambdaKmsKey
 
   LogsKmsKey:
@@ -96,7 +96,7 @@ Resources:
   LogsKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: !Sub alias/${AWS::StackName}/sandbox/logs-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/logs-kms-key
+      AliasName: !Sub ${AWS::StackName}/sandbox/logs-kms-key #TODO: Update to !Sub ${AWS::StackName}/${Environment}/logs-kms-key
       TargetKeyId: !Ref LogsKmsKey
 
   SecretsKmsKey:
@@ -132,7 +132,7 @@ Resources:
   SecretsKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
+      AliasName: !Sub ${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub ${AWS::StackName}/${Environment}/secrets-kms-key
       TargetKeyId: !Ref SecretsKmsKey
 
   # Data Retrieval
