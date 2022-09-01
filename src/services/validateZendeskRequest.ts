@@ -6,33 +6,89 @@ function isEmpty(obj: object): boolean {
 
 const IDENTIFIERS = ['event_id', 'session_id', 'journey_id']
 
+const VALID_PII_TYPES = [
+  'passport_number',
+  'passport_expiry_date',
+  'drivers_license',
+  'name',
+  'dob',
+  'current_address',
+  'previous_address'
+]
+
 export const validateZendeskRequest = (
   body: string | null
 ): ValidatedDataRequestParamsResult => {
   const data = JSON.parse(body ?? '{}')
 
   if (!isEmpty(data)) {
-    const isEmailValid = /^[\w.%+-]+@digital\.cabinet-office\.gov\.uk$/g.test(
+    const isEmailValid = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(
       data.resultsEmail ?? ''
     )
-    const dateFrom: Date = new Date(data.dateFrom)
-    const dateTo: Date = new Date(data.dateTo)
 
     const piiTypes = data.piiTypes.replace(/,/g, '')
-    const piiTypesValidated = /[^,(?! )]+/gm.test(piiTypes)
-
+    const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
+    const piiTypesList = mapSpaceSeparatedStringToList(data.piiTypes)
+    const piiTypesAllValid = piiTypesList?.length
+      ? piiTypesList.every((type) => VALID_PII_TYPES.includes(type))
+      : true
     const fieldValidation = [
-      isEmailValid,
-      dateFrom <= dateTo,
-      IDENTIFIERS.includes(data.identifierType),
-      piiTypesValidated
+      {
+        message: 'Email format invalid',
+        isValid: isEmailValid
+      },
+      {
+        message: 'From date is invalid',
+        isValid: dateFormatCorrect(data.dateFrom)
+      },
+      {
+        message: 'To date is invalid',
+        isValid: dateFormatCorrect(data.dateTo)
+      },
+      {
+        message: 'To Date is before From Date',
+        isValid:
+          !dateFormatCorrect(data.dateFrom) ||
+          !dateFormatCorrect(data.dateTo) ||
+          datesAreInCorrectOrder(data.dateFrom, data.dateTo)
+      },
+      {
+        message: 'Identifier type is invalid',
+        isValid: IDENTIFIERS.includes(data.identifierType)
+      },
+      {
+        message: 'Invalid data in PiiTypes',
+        isValid: piiTypesValidated
+      },
+      {
+        message: 'invalid PII type specified',
+        isValid: piiTypesAllValid
+      }
     ]
 
-    const isValid = fieldValidation.every((element) => element === true)
-
+    let isValid = true
+    const validationMessages: string[] = []
+    fieldValidation.forEach((v) => {
+      if (!v.isValid) {
+        validationMessages.push(v.message)
+      }
+      isValid = isValid && v.isValid
+    })
     return {
+      validationMessage: validationMessages.length
+        ? validationMessages.join(', ')
+        : undefined,
       dataRequestParams: {
-        ...data
+        dateFrom: data.dateFrom,
+        dateTo: data.dateTo,
+        zendeskId: data.zendeskId,
+        sessionIds: mapSpaceSeparatedStringToList(data.sessionIds),
+        journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
+        eventIds: mapSpaceSeparatedStringToList(data.eventIds),
+        piiTypes: mapSpaceSeparatedStringToList(data.piiTypes),
+        identifierType: data.identifierType,
+        resultsEmail: data.resultsEmail,
+        resultsName: data.resultsName
       },
       isValid
     }
@@ -44,4 +100,19 @@ export const validateZendeskRequest = (
     },
     isValid: false
   }
+}
+
+const dateFormatCorrect = (dateString: string) => {
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateString)
+}
+
+const datesAreInCorrectOrder = (dateFrom: string, dateTo: string) => {
+  return new Date(dateFrom) <= new Date(dateTo)
+}
+
+const mapSpaceSeparatedStringToList = (input: string) => {
+  if (!input) {
+    return undefined
+  }
+  return input.replace(/,/g, '').trim().split(' ')
 }

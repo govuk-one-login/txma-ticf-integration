@@ -7,9 +7,9 @@ export interface DataRequestParams {
   dateFrom: string
   dateTo: string
   identifierType: IdentifierTypes
-  sessionIds?: string
-  journeyIds?: string
-  eventIds?: string
-  piiTypes?: string
-  dataPaths?: string
+  sessionIds?: string[]
+  journeyIds?: string[]
+  eventIds?: string[]
+  piiTypes?: string[]
+  dataPaths?: string[]
 }
