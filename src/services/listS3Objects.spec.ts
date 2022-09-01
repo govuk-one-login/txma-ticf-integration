@@ -60,4 +60,11 @@ describe('list S3 objects', () => {
     const result = await listS3Objects(input)
     expect(result).toEqual(['example-object'])
   })
+
+  test('response has no continuation token or contents', async () => {
+    s3Mock.on(ListObjectsV2Command).resolves({})
+
+    const result = await listS3Objects(input)
+    expect(result).toEqual([])
+  })
 })
