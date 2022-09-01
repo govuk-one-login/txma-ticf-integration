@@ -1,11 +1,11 @@
 import { handler } from './initiateDataRequest'
-import { defaultApiRequest } from '../testUtils/events/defaultApiRequest'
+import { defaultApiRequest } from '../utils/tests/events/defaultApiRequest'
 import { validateZendeskRequest } from '../services/validateZendeskRequest'
 import { initiateDataTransfer } from '../services/initiateDataTransfer'
 import { updateZendeskTicket } from '../services/updateZendeskTicket'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
 import { DataRequestParams } from '../types/dataRequestParams'
-import { testDataRequest } from '../testUtils/testDataRequest'
+import { testDataRequest } from '../utils/tests/testDataRequest'
 import { InitiateDataTransferResult } from '../types/initiateDataTransferResult'
 const mockInitiateDataTransfer = initiateDataTransfer as jest.Mock<
   Promise<InitiateDataTransferResult>

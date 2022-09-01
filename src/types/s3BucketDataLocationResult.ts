@@ -1,5 +1,5 @@
 export interface S3BucketDataLocationResult {
-  standardTierLocations?: string[]
-  glacierTierLocations?: string[]
+  standardTierLocationsToCopy?: string[]
+  glacierTierLocationsToCopy?: string[]
   dataAvailable: boolean
 }
