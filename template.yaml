@@ -190,7 +190,7 @@ Resources:
             Status: Enabled
             ExpirationInDays: 30
       LoggingConfiguration:
-        DestinationBucketName: !Sub audit/${AWS::StackName}-sandbox-analysis-bucket #TODO: Update to !Sub audit/${AWS::StackName}-${Environment}-analysis-bucket
+        DestinationBucketName: !Ref AnalysisLogsBucket
         LogFilePrefix: String
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
