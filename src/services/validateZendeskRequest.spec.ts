@@ -74,6 +74,24 @@ describe('validateZendeskRequest', () => {
   const buildValidRequestBody = () =>
     buildValidRequestBodyWithIds('session_id', 'sessionId1')
 
+  const runValidationWithInvalidRequestBody = (requestBody: string | null) => {
+    const validationResult = validateZendeskRequest(requestBody)
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual('No data in request')
+  }
+
+  it('should return an invalid response if request body is null', () => {
+    runValidationWithInvalidRequestBody(null)
+  })
+
+  it('should return an invalid response if request body is blank', () => {
+    runValidationWithInvalidRequestBody('')
+  })
+
+  it('should return an invalid response if request body is malformed', () => {
+    runValidationWithInvalidRequestBody('hello')
+  })
+
   it('should parse data into response if request data is valid', () => {
     const validationResult = validateZendeskRequest(
       JSON.stringify(

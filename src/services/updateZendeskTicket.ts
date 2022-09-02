@@ -1,6 +1,6 @@
 import https from 'node:https'
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
-import { getEnv } from '../utils/helpers'
+import { getEnv, tryParseJSON } from '../utils/helpers'
 import { makeHttpsRequest, base64Encode } from './httpsRequestUtils'
 
 export const updateZendeskTicket = async (
@@ -43,14 +43,5 @@ export const updateZendeskTicket = async (
     console.log('Zendesk ticket validation update successful.', data)
   } catch (error) {
     console.error('Zendesk ticket validation update failed.', error)
-  }
-}
-
-const tryParseJSON = (jsonString: string) => {
-  try {
-    return JSON.parse(jsonString)
-  } catch (error) {
-    console.error('Error parsing JSON: ', error)
-    return {}
   }
 }

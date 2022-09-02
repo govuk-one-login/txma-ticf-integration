@@ -1,4 +1,5 @@
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
+import { tryParseJSON } from '../utils/helpers'
 
 function isEmpty(obj: object): boolean {
   return obj && Object.keys(obj).length === 0
@@ -19,7 +20,7 @@ const VALID_PII_TYPES = [
 export const validateZendeskRequest = (
   body: string | null
 ): ValidatedDataRequestParamsResult => {
-  const data = JSON.parse(body ?? '{}')
+  const data = tryParseJSON(body ?? '{}')
   if (isEmpty(data)) {
     return {
       validationMessage: 'No data in request',
