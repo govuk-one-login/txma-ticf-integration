@@ -37,6 +37,7 @@ Globals:
         NODE_OPTIONS: --enable-source-maps
     PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     Runtime: nodejs16.x
+    Timeout: 15
 
 Resources:
   LambdaKmsKey:
@@ -176,7 +177,22 @@ Resources:
             Method: POST
             RestApiId: !Ref InitiateDataRequestWebhookApi
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+          - Sid: S3Permissions
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource: 
+              - !GetAtt AnalysisBucket.Arn
+              - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
       ReservedConcurrentExecutions: 10
+      Timeout: 900
   
   # Data Analysis
   AnalysisBucket:
