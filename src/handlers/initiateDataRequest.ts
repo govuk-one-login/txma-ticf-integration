@@ -11,10 +11,6 @@ export const handler = async (
   console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
 
   const validatedZendeskRequest = validateZendeskRequest(event.body)
-  // const validatedZendeskRequest = validateZendeskRequest(
-  //   '{"zendeskId":"330","resultsEmail":"kas.alyas@digital.cabinet-office.gov.uk","dateFrom":"2022-08-04","dateTo":"2022-08-08","identifierType":"session_id","sessionIds":"1234","journeyIds":"","eventIds":"","piiTypes":"dob, drivers_license passport_expiry_date","dataPaths":"foo.bar"}'
-  // )
-
   if (!validatedZendeskRequest.isValid) {
     return handleInvalidRequest(event.body, validatedZendeskRequest)
   }
@@ -39,9 +35,8 @@ const handleInvalidRequest = async (
 ) => {
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
-
-  await updateZendeskTicket(requestBody, validationMessage)
-
+  const newTicketStatus = 'closed'
+  await updateZendeskTicket(requestBody, validationMessage, newTicketStatus)
   return {
     statusCode: 400,
     body: JSON.stringify({
