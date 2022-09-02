@@ -43,6 +43,20 @@ export const validateZendeskRequest = (
       isValid: isEmailValid
     },
     {
+      message: 'At least one session id should be provided',
+      isValid:
+        data.identifierType != 'session_id' || data.sessionIds?.length > 0
+    },
+    {
+      message: 'At least one journey id should be provided',
+      isValid:
+        data.identifierType != 'journey_id' || data.journeyIds?.length > 0
+    },
+    {
+      message: 'At least one event id should be provided',
+      isValid: data.identifierType != 'event_id' || data.eventIds?.length > 0
+    },
+    {
       message: 'Results Name is missing',
       isValid: data.resultsName?.length > 0
     },

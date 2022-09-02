@@ -13,7 +13,11 @@ describe('validateZendeskRequest', () => {
     dateTo?: string
     piiTypes?: string
     dataPaths?: string
+    eventIds?: string
+    sessionIds?: string
+    journeyIds?: string
   }
+
   const basicRequestBody: RequestBody = {
     zendeskId: testZendeskId,
     resultsEmail: testValidResultsEmail,
@@ -131,7 +135,6 @@ describe('validateZendeskRequest', () => {
         )
       )
     )
-    console.log('validation message is ', validationResult.validationMessage)
     expect(validationResult.isValid).toEqual(true)
 
     expect(validationResult.dataRequestParams?.dateFrom).toEqual('2021-08-01')
@@ -171,6 +174,39 @@ describe('validateZendeskRequest', () => {
     ])
     expect(validationResult.dataRequestParams?.journeyIds).toBeUndefined()
     expect(validationResult.dataRequestParams?.eventIds).toBeUndefined()
+  })
+
+  it('should return an invalid response if request does not contain sessionIds when required', () => {
+    const requestBody = buildValidRequestBody()
+    requestBody.identifierType = 'session_id'
+    requestBody.sessionIds = ''
+    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual(
+      'At least one session id should be provided'
+    )
+  })
+
+  it('should return an invalid response if request does not contain journeyIds when required', () => {
+    const requestBody = buildValidRequestBody()
+    requestBody.identifierType = 'journey_id'
+    requestBody.journeyIds = ''
+    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual(
+      'At least one journey id should be provided'
+    )
+  })
+
+  it('should return an invalid response if request does not contain eventIds when required', () => {
+    const requestBody = buildValidRequestBody()
+    requestBody.identifierType = 'event_id'
+    requestBody.eventIds = ''
+    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual(
+      'At least one event id should be provided'
+    )
   })
 
   it('should parse data into response if request contains journeyIds', () => {
