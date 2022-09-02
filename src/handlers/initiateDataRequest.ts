@@ -32,7 +32,8 @@ const handleInvalidRequest = async (
 ) => {
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
-  await updateZendeskTicket(requestBody, validationMessage)
+  const newTicketStatus = 'closed'
+  await updateZendeskTicket(requestBody, validationMessage, newTicketStatus)
   return {
     statusCode: 400,
     body: JSON.stringify({
