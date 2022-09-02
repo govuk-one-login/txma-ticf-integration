@@ -67,6 +67,10 @@ export const validateZendeskRequest = (
       {
         message: 'invalid PII type specified',
         isValid: piiTypesAllValid
+      },
+      {
+        message: 'PII types and/or Data Paths must be set',
+        isValid: data.piiTypes?.length > 0 || data.dataPaths?.length > 0
       }
     ]
 
@@ -90,6 +94,7 @@ export const validateZendeskRequest = (
         journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
         eventIds: mapSpaceSeparatedStringToList(data.eventIds),
         piiTypes: mapSpaceSeparatedStringToList(data.piiTypes),
+        dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
         identifierType: data.identifierType,
         resultsEmail: data.resultsEmail,
         resultsName: data.resultsName

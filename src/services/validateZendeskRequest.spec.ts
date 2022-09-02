@@ -8,8 +8,11 @@ describe('validateZendeskRequest', () => {
     zendeskId?: string
     resultsEmail?: string
     resultsName?: string
+    identifierType?: IdentifierTypes
     dateFrom?: string
     dateTo?: string
+    piiTypes?: string
+    dataPaths?: string
   }
   const basicRequestBody: RequestBody = {
     zendeskId: testZendeskId,
@@ -23,9 +26,9 @@ describe('validateZendeskRequest', () => {
     identifierType: IdentifierTypes,
     spaceSeparatedIds: string,
     spaceSeparatedPiiTypes = '',
-    spaceSeparatedDataPaths = ''
+    spaceSeparatedDataPaths = 'myPath1.path'
   ) => {
-    const objectToReturn = {
+    const objectToReturn: RequestBody = {
       ...basicRequestBody,
       identifierType,
       piiTypes: spaceSeparatedPiiTypes,
@@ -49,6 +52,15 @@ describe('validateZendeskRequest', () => {
       'session_id',
       'sessionId1 sessionId2 sessionId3',
       piiTypes
+    )
+  }
+
+  const buildValidRequestBodyWithDataPaths = (dataPaths: string) => {
+    return buildValidRequestBodyWithIds(
+      'session_id',
+      'sessionId1 sessionId2 sessionId3',
+      '',
+      dataPaths
     )
   }
 
@@ -174,6 +186,21 @@ describe('validateZendeskRequest', () => {
       'invalid PII type specified'
     )
   })
+
+  it('should return a valid response with dataPaths set', () => {
+    const validationResult = validateZendeskRequest(
+      JSON.stringify(
+        buildValidRequestBodyWithDataPaths('myPath.path1 myPath.path2')
+      )
+    )
+
+    expect(validationResult.isValid).toEqual(true)
+    expect(validationResult.dataRequestParams?.dataPaths).toEqual([
+      'myPath.path1',
+      'myPath.path2'
+    ])
+  })
+
   const invalidDates = ['', 'blah', '01-08-2021']
   invalidDates.forEach((date) =>
     it(`should return an invalid response if an invalid fromDate of ${date} is passed`, () => {
@@ -246,6 +273,27 @@ describe('validateZendeskRequest', () => {
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Results Name is missing'
+    )
+  })
+
+  it('should return an invalid response if neither piiTypes or dataPaths are set', () => {
+    const requestBody = buildValidRequestBody()
+    requestBody.piiTypes = ''
+    requestBody.dataPaths = ''
+    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual(
+      'PII types and/or Data Paths must be set'
+    )
+  })
+
+  it('should return an invalid response if piiTypes and dataPaths properties are missing', () => {
+    const requestBody = buildValidRequestBody()
+    delete requestBody.dataPaths
+    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual(
+      'PII types and/or Data Paths must be set'
     )
   })
 })
