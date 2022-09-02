@@ -20,94 +20,90 @@ export const validateZendeskRequest = (
   body: string | null
 ): ValidatedDataRequestParamsResult => {
   const data = JSON.parse(body ?? '{}')
-
-  if (!isEmpty(data)) {
-    const isEmailValid = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(
-      data.resultsEmail ?? ''
-    )
-
-    const piiTypes = data.piiTypes.replace(/,/g, '')
-    const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
-    const piiTypesList = mapSpaceSeparatedStringToList(data.piiTypes)
-    const piiTypesAllValid = piiTypesList?.length
-      ? piiTypesList.every((type) => VALID_PII_TYPES.includes(type))
-      : true
-    const fieldValidation = [
-      {
-        message: 'Email format invalid',
-        isValid: isEmailValid
-      },
-      {
-        message: 'Results Name is missing',
-        isValid: data.resultsName?.length > 0
-      },
-      {
-        message: 'From date is invalid',
-        isValid: dateFormatCorrect(data.dateFrom)
-      },
-      {
-        message: 'To date is invalid',
-        isValid: dateFormatCorrect(data.dateTo)
-      },
-      {
-        message: 'To Date is before From Date',
-        isValid:
-          !dateFormatCorrect(data.dateFrom) ||
-          !dateFormatCorrect(data.dateTo) ||
-          datesAreInCorrectOrder(data.dateFrom, data.dateTo)
-      },
-      {
-        message: 'Identifier type is invalid',
-        isValid: IDENTIFIERS.includes(data.identifierType)
-      },
-      {
-        message: 'Invalid data in PiiTypes',
-        isValid: piiTypesValidated
-      },
-      {
-        message: 'invalid PII type specified',
-        isValid: piiTypesAllValid
-      },
-      {
-        message: 'PII types and/or Data Paths must be set',
-        isValid: data.piiTypes?.length > 0 || data.dataPaths?.length > 0
-      }
-    ]
-
-    let isValid = true
-    const validationMessages: string[] = []
-    fieldValidation.forEach((v) => {
-      if (!v.isValid) {
-        validationMessages.push(v.message)
-      }
-      isValid = isValid && v.isValid
-    })
+  if (isEmpty(data)) {
     return {
-      validationMessage: validationMessages.length
-        ? validationMessages.join(', ')
-        : undefined,
-      dataRequestParams: {
-        dateFrom: data.dateFrom,
-        dateTo: data.dateTo,
-        zendeskId: data.zendeskId,
-        sessionIds: mapSpaceSeparatedStringToList(data.sessionIds),
-        journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
-        eventIds: mapSpaceSeparatedStringToList(data.eventIds),
-        piiTypes: mapSpaceSeparatedStringToList(data.piiTypes),
-        dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
-        identifierType: data.identifierType,
-        resultsEmail: data.resultsEmail,
-        resultsName: data.resultsName
-      },
-      isValid
+      validationMessage: 'No data in request',
+      isValid: false
     }
   }
+  const isEmailValid = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(
+    data.resultsEmail ?? ''
+  )
 
-  return {
-    dataRequestParams: {
-      ...data
+  const piiTypes = data.piiTypes.replace(/,/g, '')
+  const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
+  const piiTypesList = mapSpaceSeparatedStringToList(data.piiTypes)
+  const piiTypesAllValid = piiTypesList?.length
+    ? piiTypesList.every((type) => VALID_PII_TYPES.includes(type))
+    : true
+  const fieldValidation = [
+    {
+      message: 'Email format invalid',
+      isValid: isEmailValid
     },
-    isValid: false
+    {
+      message: 'Results Name is missing',
+      isValid: data.resultsName?.length > 0
+    },
+    {
+      message: 'From date is invalid',
+      isValid: dateFormatCorrect(data.dateFrom)
+    },
+    {
+      message: 'To date is invalid',
+      isValid: dateFormatCorrect(data.dateTo)
+    },
+    {
+      message: 'To Date is before From Date',
+      isValid:
+        !dateFormatCorrect(data.dateFrom) ||
+        !dateFormatCorrect(data.dateTo) ||
+        datesAreInCorrectOrder(data.dateFrom, data.dateTo)
+    },
+    {
+      message: 'Identifier type is invalid',
+      isValid: IDENTIFIERS.includes(data.identifierType)
+    },
+    {
+      message: 'Invalid data in PiiTypes',
+      isValid: piiTypesValidated
+    },
+    {
+      message: 'invalid PII type specified',
+      isValid: piiTypesAllValid
+    },
+    {
+      message: 'PII types and/or Data Paths must be set',
+      isValid: data.piiTypes?.length > 0 || data.dataPaths?.length > 0
+    }
+  ]
+
+  let isValid = true
+  const validationMessages: string[] = []
+  fieldValidation.forEach((v) => {
+    if (!v.isValid) {
+      validationMessages.push(v.message)
+    }
+    isValid = isValid && v.isValid
+  })
+  return {
+    validationMessage: validationMessages.length
+      ? validationMessages.join(', ')
+      : undefined,
+    dataRequestParams: {
+      dateFrom: data.dateFrom,
+      dateTo: data.dateTo,
+      zendeskId: data.zendeskId,
+      sessionIds: mapSpaceSeparatedStringToList(data.sessionIds),
+      journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
+      eventIds: mapSpaceSeparatedStringToList(data.eventIds),
+      piiTypes: mapSpaceSeparatedStringToList(data.piiTypes),
+      dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
+      identifierType: data.identifierType,
+      resultsEmail: data.resultsEmail,
+      resultsName: data.resultsName
+    },
+    isValid
   }
 }
 
