@@ -10,6 +10,8 @@ export const validateZendeskRequest = (
       dateTo: '2022/10/10',
       zendeskTicketId: '1234'
     },
-    isValid: true
+    // this is a temporary line for testing updateZendeskTicket
+    // before validateZendeskRequest is implemented
+    isValid: body !== null && !body.includes('resultsEmail')
   }
 }

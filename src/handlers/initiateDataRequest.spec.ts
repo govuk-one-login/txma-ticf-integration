@@ -82,6 +82,7 @@ describe('initate data request handler', () => {
 
   it('returns 400 response when request is invalid', async () => {
     const validationMessage = 'my validation message'
+    const newTicketStatus = 'closed'
     givenRequestValidationResult(false, undefined, validationMessage)
     expect(await callHandlerWithBody()).toEqual({
       statusCode: 400,
@@ -92,7 +93,8 @@ describe('initate data request handler', () => {
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       requestBody,
-      validationMessage
+      validationMessage,
+      newTicketStatus
     )
   })
 
