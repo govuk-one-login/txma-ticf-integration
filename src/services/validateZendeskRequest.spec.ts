@@ -80,6 +80,24 @@ describe('validateZendeskRequest', () => {
     expect(validationResult.validationMessage).toEqual('No data in request')
   }
 
+  const getTodayUtc = (): number => {
+    const today = new Date()
+    return Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+  }
+
+  const getTodayPlusDaysAsString = (days: number): string => {
+    const date = new Date(getTodayUtc())
+    date.setDate(date.getDate() + days)
+    return getDateAsString(date)
+  }
+
+  const getTodayAsString = () => getDateAsString(new Date(getTodayUtc()))
+
+  const getDateAsString = (date: Date): string =>
+    `${date.getFullYear()}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
+
   it('should return an invalid response if request body is null', () => {
     runValidationWithInvalidRequestBody(null)
   })
@@ -93,6 +111,17 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should parse data into response if request data is valid', () => {
+    console.log(
+      'here is the request',
+      JSON.stringify(
+        buildValidRequestBodyWithIds(
+          'session_id',
+          'sessionId1 sessionId2 sessionId3',
+          'dob name passport_number'
+        )
+      )
+    )
+
     const validationResult = validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithIds(
@@ -240,6 +269,36 @@ describe('validateZendeskRequest', () => {
       expect(validationResult.validationMessage).toEqual('To date is invalid')
     })
   )
+
+  const todayDateString = getTodayAsString()
+  const tomorrowDateString = getTodayPlusDaysAsString(1)
+  it(`should return an invalid response if fromDate is ${tomorrowDateString} after today ${todayDateString}`, () => {
+    const dayAfterTomorrowDateString = getTodayPlusDaysAsString(2)
+    const validationResult = validateZendeskRequest(
+      JSON.stringify(
+        buildRequestBodyWithDates(
+          tomorrowDateString,
+          dayAfterTomorrowDateString
+        )
+      )
+    )
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toContain(
+      'From Date is in the future'
+    )
+  })
+
+  it(`should return an invalid response if toDate is ${tomorrowDateString}, after today ${todayDateString}`, () => {
+    const validationResult = validateZendeskRequest(
+      JSON.stringify(
+        buildRequestBodyWithDates(todayDateString, tomorrowDateString)
+      )
+    )
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toContain(
+      'To Date is in the future'
+    )
+  })
 
   it('should return an invalid response if toDate is before fromDate', () => {
     const validationResult = validateZendeskRequest(

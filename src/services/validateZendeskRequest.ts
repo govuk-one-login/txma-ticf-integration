@@ -1,5 +1,5 @@
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
-import { tryParseJSON } from '../utils/helpers'
+import { getEpochDate, tryParseJSON } from '../utils/helpers'
 
 function isEmpty(obj: object): boolean {
   return obj && Object.keys(obj).length === 0
@@ -53,6 +53,17 @@ export const validateZendeskRequest = (
     {
       message: 'To date is invalid',
       isValid: dateFormatCorrect(data.dateTo)
+    },
+    {
+      message: 'From Date is in the future',
+      isValid:
+        !dateFormatCorrect(data.dateFrom) ||
+        dateIsOnOrBeforeToday(data.dateFrom)
+    },
+    {
+      message: 'To Date is in the future',
+      isValid:
+        !dateFormatCorrect(data.dateTo) || dateIsOnOrBeforeToday(data.dateTo)
     },
     {
       message: 'To Date is before From Date',
@@ -114,6 +125,15 @@ const dateFormatCorrect = (dateString: string) => {
 
 const datesAreInCorrectOrder = (dateFrom: string, dateTo: string) => {
   return new Date(dateFrom) <= new Date(dateTo)
+}
+
+const dateIsOnOrBeforeToday = (dateString: string) => {
+  return getEpochDate(dateString) <= getTodayUtc()
+}
+
+const getTodayUtc = (): number => {
+  const today = new Date()
+  return Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
 }
 
 const mapSpaceSeparatedStringToList = (input: string) => {
