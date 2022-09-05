@@ -21,14 +21,3 @@ parameter_overrides=[
     "CodeSigningConfigArn=none",
     "PermissionsBoundary=none"
 ]
-
-[dev.deploy.parameters]
-stack_name = "ticf-integration"
-egion = "eu-west-2"
-tags = "project=\"di-txma-ticf-integration\" stage=\"dev\""
-capabilities = "CAPABILITY_NAMED_IAM"
-parameter_overrides=[
-    "Environment=dev",
-    "CodeSigningConfigArn=none",
-    "PermissionsBoundary=none"
-]
