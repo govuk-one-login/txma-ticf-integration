@@ -232,3 +232,28 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
+
+  # Query Bucket
+  QueryResultsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${AWS::StackName}-sandbox-query-results-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-query-results-bucket
+      LifecycleConfiguration:
+        Rules:
+          - Id: AnalysisCleanupRule
+            Status: Enabled
+            ExpirationInDays: 30
+      LoggingConfiguration:
+        DestinationBucketName: !Sub audit/${AWS::StackName}-sandbox-query-results-bucket #TODO: Update to !Sub audit/${AWS::StackName}-${Environment}-query-results-bucket
+        LogFilePrefix: String
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
