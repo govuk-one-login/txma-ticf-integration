@@ -7,12 +7,14 @@ export const retrieveZendeskApiSecrets =
     checkSecretsSet(secrets, [
       'ZENDESK_API_KEY',
       'ZENDESK_API_USER_ID',
-      'ZENDESK_API_USER_EMAIL'
+      'ZENDESK_API_USER_EMAIL',
+      'ZENDESK_HOSTNAME'
     ])
     return {
       zendeskApiKey: secrets['ZENDESK_API_KEY'],
       zendeskApiUserId: secrets['ZENDESK_API_USER_ID'],
-      zendeskApiUserEmail: secrets['ZENDESK_API_USER_EMAIL']
+      zendeskApiUserEmail: secrets['ZENDESK_API_USER_EMAIL'],
+      zendeskHostName: secrets['ZENDESK_HOSTNAME']
     }
   }
 

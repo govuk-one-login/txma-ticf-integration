@@ -13,6 +13,8 @@ const mockRetrieveSecrets = retrieveSecrets as jest.Mock<
 const TEST_ZENDESK_API_KEY = 'myZendeskApiKey'
 const TEST_ZENDESK_API_USER_ID = 'myZendeskApiUserId'
 const TEST_ZENDESK_API_USER_EMAIL = 'myZendeskApiUserEmail'
+const TEST_ZENDESK_HOSTNAME = 'example-host.zendesk.com'
+
 describe('retrieveZendeskApiSecrets', () => {
   const givenSecretKeysSet = (secrets: { [key: string]: string }) => {
     mockRetrieveSecrets.mockResolvedValue(secrets)
@@ -20,7 +22,8 @@ describe('retrieveZendeskApiSecrets', () => {
   const allSecretKeys = {
     ZENDESK_API_KEY: TEST_ZENDESK_API_KEY,
     ZENDESK_API_USER_ID: TEST_ZENDESK_API_USER_ID,
-    ZENDESK_API_USER_EMAIL: TEST_ZENDESK_API_USER_EMAIL
+    ZENDESK_API_USER_EMAIL: TEST_ZENDESK_API_USER_EMAIL,
+    ZENDESK_HOSTNAME: TEST_ZENDESK_HOSTNAME
   }
 
   const givenAllSecretsAvailable = () => {
@@ -33,12 +36,14 @@ describe('retrieveZendeskApiSecrets', () => {
     expect(secrets.zendeskApiKey).toEqual(TEST_ZENDESK_API_KEY)
     expect(secrets.zendeskApiUserEmail).toEqual(TEST_ZENDESK_API_USER_EMAIL)
     expect(secrets.zendeskApiUserId).toEqual(TEST_ZENDESK_API_USER_ID)
+    expect(secrets.zendeskHostName).toEqual(TEST_ZENDESK_HOSTNAME)
   })
 
   const keyList: string[] = [
     'ZENDESK_API_KEY',
     'ZENDESK_API_USER_ID',
-    'ZENDESK_API_USER_EMAIL'
+    'ZENDESK_API_USER_EMAIL',
+    'ZENDESK_HOSTNAME'
   ]
 
   keyList.forEach((keyToOmit) => {
