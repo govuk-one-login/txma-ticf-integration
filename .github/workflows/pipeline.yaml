@@ -18,7 +18,7 @@ env:
   REGION: eu-west-2
 
 jobs:
-  build_test_and_validate:
+  build-test-and-validate:
     name: Run tests and validation
     if: github.event_name == 'push'
     permissions:
@@ -68,7 +68,7 @@ jobs:
             dist/
             template.yaml
 
-  check_yarn_cache:
+  check-yarn-cache:
     name: Check Yarn cache
     if: github.event_name == 'pull_request' || (github.ref == 'refs/heads/main' && github.event_name == 'push')
     runs-on: ubuntu-latest
@@ -80,7 +80,7 @@ jobs:
       - name: Check Yarn cache
         run: yarn install --immutable --immutable-cache --check-cache
 
-  delete_feature:
+  delete-feature:
     name: Delete feature branch
     if: startsWith(github.event.ref, 'feature') && github.event_name == 'delete'
     runs-on: ubuntu-latest
@@ -110,10 +110,10 @@ jobs:
             --region ${REGION} \
             --no-prompts
 
-  deploy_feature:
+  deploy-feature:
     name: Deploy feature branch
     if: startsWith(github.ref, 'refs/heads/feature')
-    needs: [build_test_and_validate]
+    needs: [build-test-and-validate]
     permissions:
       id-token: write
       contents: read
@@ -147,10 +147,10 @@ jobs:
             --s3-bucket ${DEV_ARTIFACT_BUCKET} \
             --parameter-overrides ParameterKey=Environment,ParameterValue=dev
 
-  package_artifacts:
+  package-artifacts:
     name: Package artifacts for deployment
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [build_test_and_validate, check_yarn_cache]
+    needs: [build-test-and-validate, check-yarn-cache]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
