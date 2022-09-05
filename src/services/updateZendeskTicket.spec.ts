@@ -23,7 +23,8 @@ const allSecretKeys: ZendeskApiSecrets = {
   zendeskApiKey: 'myZendeskApiKey',
   zendeskApiUserId: 'myZendeskApiUserId',
   zendeskApiUserEmail: 'my_zendesk@api-user.email.com',
-  zendeskHostName: 'example-host.zendesk.com'
+  zendeskHostName: 'example-host.zendesk.com',
+  zendeskWebhookSecretKey: 'testSecretKey123'
 }
 const givenAllSecretsAvailable = () => {
   givenSecretKeysSet(allSecretKeys)
