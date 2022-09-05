@@ -1,6 +1,5 @@
 import https from 'node:https'
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
-import { getEnv } from '../utils/helpers'
 import { makeHttpsRequest, base64Encode } from './httpsRequestUtils'
 
 export const updateZendeskTicket = async (
@@ -20,7 +19,7 @@ export const updateZendeskTicket = async (
   const secrets = await retrieveZendeskApiSecrets()
   const options: https.RequestOptions = {
     method: 'PUT',
-    hostname: getEnv('ZENDESK_HOSTNAME'),
+    hostname: secrets.zendeskHostName,
     path: `/api/v2/tickets/${zendeskTicketInfo.zendeskId}`,
     headers: {
       Authorization: base64Encode(

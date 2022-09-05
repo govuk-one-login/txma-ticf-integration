@@ -22,7 +22,8 @@ const givenSecretKeysSet = (secrets: ZendeskApiSecrets) => {
 const allSecretKeys: ZendeskApiSecrets = {
   zendeskApiKey: 'myZendeskApiKey',
   zendeskApiUserId: 'myZendeskApiUserId',
-  zendeskApiUserEmail: 'my_zendesk@api-user.email.com'
+  zendeskApiUserEmail: 'my_zendesk@api-user.email.com',
+  zendeskHostName: 'example-host.zendesk.com'
 }
 const givenAllSecretsAvailable = () => {
   givenSecretKeysSet(allSecretKeys)
