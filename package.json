@@ -11,7 +11,8 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "lint": "prettier . --write ; eslint . --fix",
+    "lint": "prettier . --check ; eslint .",
+    "lint:fix": "prettier . --write ; eslint . --fix",
     "postinstall": "husky install",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
     "test": "jest",
