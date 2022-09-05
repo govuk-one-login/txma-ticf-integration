@@ -248,8 +248,25 @@ Resources:
             Status: Enabled
             ExpirationInDays: 30
       LoggingConfiguration:
-        DestinationBucketName: !Sub audit/${AWS::StackName}-sandbox-query-results-bucket #TODO: Update to !Sub audit/${AWS::StackName}-${Environment}-query-results-bucket
+        DestinationBucketName: !Ref QueryResultsLogsBucket
         LogFilePrefix: String
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  QueryResultsLogsBucket:
+    #checkov:skip=CKV_AWS_18:This is the query results logs bucket
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-sandbox-query-results-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-logs
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
