@@ -259,7 +259,7 @@ Resources:
         Status: Enabled
 
   QueryResultsLogsBucket:
-    #checkov:skip=CKV_AWS_18:This is the lquery results ogs bucket
+    #checkov:skip=CKV_AWS_18:This is the query results logs bucket
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub ${AWS::StackName}-sandbox-query-results-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-logs
