@@ -35,6 +35,7 @@ Globals:
         NODE_OPTIONS: --enable-source-maps
     PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     Runtime: nodejs16.x
+    Timeout: 15
 
 Resources:
   LambdaKmsKey:
@@ -108,7 +109,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::${AWS::AccountId}:root
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
               - kms:CreateGrant
               - kms:Decrypt
@@ -117,25 +118,22 @@ Resources:
               - kms:ReEncrypt*
             Condition:
               StringEquals:
-                kms:ViaService: secretsmanager.${AWS::Region}.amazonaws.com
-                kms:CallerAccount: ${AWS::AccountId}
+                kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
+                kms:CallerAccount: !Sub ${AWS::AccountId}
             Resource:
               - '*'
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::${AWS::AccountId}:root
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
-              - kms:Describe*
-              - kms:Get*
-              - kms:List*
-              - kms:RevokeGrant
+              - kms:*
             Resource:
               - '*'
 
   SecretsKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
       TargetKeyId: !Ref SecretsKmsKey
 
   # Data Retrieval
@@ -176,7 +174,22 @@ Resources:
             Method: POST
             RestApiId: !Ref InitiateDataRequestWebhookApi
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+          - Sid: S3Permissions
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource: 
+              - !GetAtt AnalysisBucket.Arn
+              - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
       ReservedConcurrentExecutions: 10
+      Timeout: 900
   
   # Data Analysis
   AnalysisBucket:
@@ -193,7 +206,7 @@ Resources:
             Status: Enabled
             ExpirationInDays: 30
       LoggingConfiguration:
-        DestinationBucketName: !Sub audit/${AWS::StackName}-sandbox-analysis-bucket #TODO: Update to !Sub audit/${AWS::StackName}-${Environment}-analysis-bucket
+        DestinationBucketName: !Ref AnalysisLogsBucket
         LogFilePrefix: String
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true

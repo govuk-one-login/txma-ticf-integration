@@ -1,4 +1,5 @@
 export interface DataRequestParams {
-  zendeskTicketId: string | null
-  //todo populate fields
+  dateFrom: string
+  dateTo: string
+  zendeskTicketId: string
 }
