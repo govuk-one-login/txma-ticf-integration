@@ -1,10 +1,16 @@
 name: Build, Test and Deploy
 
 on:
+  delete:
+    branches:
+      - 'feature**'
   pull_request:
-    branches: [main]
+    branches:
+      - main
   push:
-    branches: [main]
+    branches:
+      - main
+      - feature**
   workflow_dispatch: {}
 
 env:
@@ -14,6 +20,7 @@ env:
 jobs:
   build_test_and_validate:
     name: Run tests and validation
+    if: github.event_name == 'push'
     permissions:
       id-token: write
       contents: read
@@ -34,8 +41,6 @@ jobs:
           role-to-assume: ${{ secrets.GH_ACTIONS_VALIDATE_ROLE_ARN }}
       - name: Install Yarn v3
         run: corepack enable
-      - name: Check Yarn cache
-        run: yarn install --immutable --immutable-cache --check-cache
       - name: Run linting
         if: always()
         run: yarn lint
@@ -63,10 +68,25 @@ jobs:
             dist/
             template.yaml
 
+  check_yarn_cache:
+    name: Check Yarn cache
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install Yarn v3
+        run: corepack enable
+      - name: Check Yarn cache
+        run: yarn install --immutable --immutable-cache --check-cache
+
   deploy_feature:
     name: Deploy feature branch
     if: startsWith(github.ref, 'refs/heads/feature')
     needs: [build_test_and_validate]
+    permissions:
+      id-token: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifact
@@ -96,8 +116,12 @@ jobs:
             --s3-bucket ${DEV_ARTIFACT_BUCKET}
 
   delete_feature:
+    name: Delete feature branch
     if: startsWith(github.event.ref, 'feature') && github.event_name == 'delete'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
