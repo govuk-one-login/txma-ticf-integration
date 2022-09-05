@@ -137,21 +137,21 @@ Resources:
       TargetKeyId: !Ref SecretsKmsKey
 
   # Data Retrieval
-  InitiateDataRequestWebhookAccessLogGroup:
+  ZendeskWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: /aws/apigateway/initiate-data-request-webhook-api-access-logs
+      LogGroupName: !Sub /aws/apigateway/${ZendeskWebhookApi}-access-logs
       RetentionInDays: 7
   
-  InitiateDataRequestWebhookApi:
+  ZendeskWebhookApi:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we want the lambda to fire off every time a Zendesk ticket is approved
     Type: AWS::Serverless::Api
     Properties:
       AccessLogSetting:
-        DestinationArn: !GetAtt InitiateDataRequestWebhookAccessLogGroup.Arn
+        DestinationArn: !GetAtt ZendeskWebhookAccessLogGroup.Arn
         Format: $context.requestId
-      Name: initiate-data-request-webhook-api
+      Name: !Sub ${AWS::StackName}-zendesk-webhook-api
       StageName: default
       TracingEnabled: true
       
@@ -172,7 +172,7 @@ Resources:
           Properties:
             Path: /zendesk-webhook
             Method: POST
-            RestApiId: !Ref InitiateDataRequestWebhookApi
+            RestApiId: !Ref ZendeskWebhookApi
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
