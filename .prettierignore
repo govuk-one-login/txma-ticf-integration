@@ -7,6 +7,7 @@
 .prettierignore
 .pnp.*
 .yarn
+CODEOWNERS
 coverage/
 dist/
 template.yaml

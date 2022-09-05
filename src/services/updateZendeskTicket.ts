@@ -1,6 +1,5 @@
 import https from 'node:https'
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
-import { getEnv, tryParseJSON } from '../utils/helpers'
 import { makeHttpsRequest, base64Encode } from './httpsRequestUtils'
 
 export const updateZendeskTicket = async (
@@ -20,7 +19,7 @@ export const updateZendeskTicket = async (
   const secrets = await retrieveZendeskApiSecrets()
   const options: https.RequestOptions = {
     method: 'PUT',
-    hostname: getEnv('ZENDESK_HOSTNAME'),
+    hostname: secrets.zendeskHostName,
     path: `/api/v2/tickets/${zendeskTicketInfo.zendeskId}`,
     headers: {
       Authorization: base64Encode(
@@ -43,5 +42,14 @@ export const updateZendeskTicket = async (
     console.log('Zendesk ticket validation update successful.', data)
   } catch (error) {
     console.error('Zendesk ticket validation update failed.', error)
+  }
+}
+
+const tryParseJSON = (jsonString: string) => {
+  try {
+    return JSON.parse(jsonString)
+  } catch (error) {
+    console.error('Error parsing JSON: ', error)
+    return {}
   }
 }

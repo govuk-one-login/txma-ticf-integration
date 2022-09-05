@@ -5,7 +5,7 @@ function isEmpty(obj: object): boolean {
   return obj && Object.keys(obj).length === 0
 }
 
-const IDENTIFIERS = ['event_id', 'session_id', 'journey_id']
+const IDENTIFIERS = ['event_id', 'session_id', 'journey_id', 'user_id']
 
 const VALID_PII_TYPES = [
   'passport_number',
@@ -55,6 +55,10 @@ export const validateZendeskRequest = (
     {
       message: 'At least one event id should be provided',
       isValid: data.identifierType != 'event_id' || data.eventIds?.length > 0
+    },
+    {
+      message: 'At least one user id should be provided',
+      isValid: data.identifierType != 'user_id' || data.userIds?.length > 0
     },
     {
       message: 'Results Name is missing',
@@ -123,6 +127,7 @@ export const validateZendeskRequest = (
       sessionIds: mapSpaceSeparatedStringToList(data.sessionIds),
       journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
       eventIds: mapSpaceSeparatedStringToList(data.eventIds),
+      userIds: mapSpaceSeparatedStringToList(data.userIds),
       piiTypes: mapSpaceSeparatedStringToList(data.piiTypes),
       dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
       identifierType: data.identifierType,

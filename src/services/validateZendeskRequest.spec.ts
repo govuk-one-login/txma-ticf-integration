@@ -16,6 +16,7 @@ describe('validateZendeskRequest', () => {
     eventIds?: string
     sessionIds?: string
     journeyIds?: string
+    userIds?: string
   }
 
   const basicRequestBody: RequestBody = {
@@ -25,6 +26,21 @@ describe('validateZendeskRequest', () => {
     dateFrom: '2021-08-01',
     dateTo: '2021-08-01'
   }
+
+  const fieldKeys = [
+    'zendeskId',
+    'resultsEmail',
+    'resultsName',
+    'identifierType',
+    'dateFrom',
+    'dateTo',
+    'piiTypes',
+    'dataPaths',
+    'eventIds',
+    'sessionIds',
+    'journeyIds',
+    'userIds'
+  ]
 
   const buildValidRequestBodyWithIds = (
     identifierType: IdentifierTypes,
@@ -41,7 +57,8 @@ describe('validateZendeskRequest', () => {
     const identifierTypeToObjectKeyMapping: { [key: string]: string } = {
       event_id: 'eventIds',
       journey_id: 'journeyIds',
-      session_id: 'sessionIds'
+      session_id: 'sessionIds',
+      user_id: 'userIds'
     }
     const identifierObjectKey = identifierTypeToObjectKeyMapping[identifierType]
 
@@ -135,6 +152,10 @@ describe('validateZendeskRequest', () => {
         )
       )
     )
+
+    const fields = Object.keys(validationResult.dataRequestParams ?? {})
+    fields.map((field) => expect(fieldKeys).toContain(field))
+
     expect(validationResult.isValid).toEqual(true)
 
     expect(validationResult.dataRequestParams?.dateFrom).toEqual('2021-08-01')
@@ -149,6 +170,10 @@ describe('validateZendeskRequest', () => {
     expect(validationResult.dataRequestParams?.identifierType).toEqual(
       'session_id'
     )
+    expect(validationResult.dataRequestParams?.sessionIds).toBeDefined()
+    expect(
+      validationResult.dataRequestParams?.sessionIds?.length
+    ).toBeGreaterThanOrEqual(0)
 
     expect(validationResult.dataRequestParams?.piiTypes).toEqual([
       'dob',
@@ -209,6 +234,17 @@ describe('validateZendeskRequest', () => {
     )
   })
 
+  it('should return an invalid response if request does not contain userIds when required', () => {
+    const requestBody = buildValidRequestBody()
+    requestBody.identifierType = 'user_id'
+    requestBody.userIds = ''
+    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual(
+      'At least one user id should be provided'
+    )
+  })
+
   it('should parse data into response if request contains journeyIds', () => {
     const validationResult = validateZendeskRequest(
       JSON.stringify(
@@ -226,6 +262,7 @@ describe('validateZendeskRequest', () => {
     ])
     expect(validationResult.dataRequestParams?.eventIds).toBeUndefined()
     expect(validationResult.dataRequestParams?.sessionIds).toBeUndefined()
+    expect(validationResult.dataRequestParams?.userIds).toBeUndefined()
   })
 
   it('should parse data into response if request contains eventIds', () => {
@@ -237,6 +274,20 @@ describe('validateZendeskRequest', () => {
       'id1',
       'id2',
       'id3'
+    ])
+  })
+
+  it('should parse data into response if request contains userIds', () => {
+    const validationResult = validateZendeskRequest(
+      JSON.stringify(
+        buildValidRequestBodyWithIds('user_id', 'userId1 userId2 userId3')
+      )
+    )
+
+    expect(validationResult.dataRequestParams?.userIds).toEqual([
+      'userId1',
+      'userId2',
+      'userId3'
     ])
   })
 
