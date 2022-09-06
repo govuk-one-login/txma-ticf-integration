@@ -13,7 +13,7 @@ export const isValidSignature = async (
     SIGNING_SECRET_ALGORITHM,
     secrets.zendeskWebhookSecretKey
   )
-  console.log('creating local signature')
+  console.log('Creating local signature')
   const localSignature = hmac.update(timestamp + body).digest('base64')
   console.log('Comparing local signature with header signature')
   return (

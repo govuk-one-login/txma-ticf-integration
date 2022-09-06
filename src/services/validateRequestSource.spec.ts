@@ -1,10 +1,10 @@
 // Under test
 import { isValidSignature } from './validateRequestSource'
 // Dependencies
+import * as crypto from 'crypto'
 import { ZendeskApiSecrets } from '../types/zendeskApiSecrets'
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
 import { exampleEventBody } from '../utils/tests/events/exampleEventBody'
-import * as crypto from 'crypto'
 
 jest.mock('./retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
@@ -26,6 +26,7 @@ const givenAllSecretsAvailable = () => {
   givenSecretKeysSet(allSecretKeys)
 }
 const testTimeStamp = '2022-09-05T09:52:10Z'
+
 const generateTestSignature = () => {
   return crypto
     .createHmac('sha256', allSecretKeys.zendeskWebhookSecretKey)
