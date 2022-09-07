@@ -19,13 +19,16 @@ export const handler = async (
     return await handleInvalidRequest()
   }
   console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
+
   const validatedZendeskRequest = validateZendeskRequest(event.body)
   if (!validatedZendeskRequest.isValid) {
     return await handleInvalidRequest(event.body, validatedZendeskRequest)
   }
+
   const dataTransferInitiateResult = await initiateDataTransfer(
     validatedZendeskRequest.dataRequestParams as DataRequestParams
   )
+
   return {
     statusCode: dataTransferInitiateResult.success ? 200 : 400,
     body: JSON.stringify({
