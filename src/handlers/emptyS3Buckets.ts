@@ -1,8 +1,8 @@
 import { CloudFormationCustomResourceEvent } from 'aws-lambda'
 import { emptyS3Bucket } from '../services/emptyS3Bucket'
 import { listS3Buckets } from '../services/listS3Buckets'
-import https from 'node:https'
 import url from 'node:url'
+import { makeHttpsRequest } from '../services/httpsRequestUtils'
 
 export const handler = async (
   event: CloudFormationCustomResourceEvent
@@ -20,33 +20,33 @@ export const handler = async (
       })
     )
 
-    return sendResponse(event, 'SUCCESS')
+    return await sendResponse(event, 'SUCCESS')
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return sendResponse(event, 'FAILED', error.message)
+      return await sendResponse(event, 'FAILED', error.message)
     } else {
-      return sendResponse(event, 'FAILED', 'Unknown error')
+      return await sendResponse(event, 'FAILED', 'Unknown error')
     }
   }
 }
 
-const sendResponse = (
+const sendResponse = async (
   event: CloudFormationCustomResourceEvent,
   status: 'SUCCESS' | 'FAILED',
   reason?: string
 ) => {
   const parsedUrl = url.parse(event.ResponseURL)
+  console.log('Response URL: ', parsedUrl)
 
-  const data = JSON.stringify({
+  const data = {
     LogicalResourceId: event.LogicalResourceId,
     Reason: reason,
     RequestId: event.RequestId,
-    ResponseURL: event.ResponseURL,
     Status: status,
     StackId: event.StackId,
     PhysicalResourceId:
       'PhysicalResourceId' in event ? event.PhysicalResourceId : undefined
-  })
+  }
 
   const options = {
     hostname: parsedUrl.hostname,
@@ -55,13 +55,8 @@ const sendResponse = (
     method: 'PUT',
     headers: {
       'content-type': '',
-      'content-length': data.length
+      'content-length': JSON.stringify(data).length
     }
   }
-
-  const request = https.request(options, (response) => {
-    console.log(`STATUS: ${response.statusCode}`)
-  })
-  request.write(data)
-  request.end()
+  await makeHttpsRequest(options, data)
 }
