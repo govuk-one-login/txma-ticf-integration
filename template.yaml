@@ -277,7 +277,7 @@ Resources:
         Status: Enabled
 
   # Dev Resources
-  CleanUpS3BucketsFunction:
+  EmptyS3BucketsFunction:
     #checkov:skip=CKV_AWS_116:DLQ not required as failures will be reported to CloudFormation
     #checkov:skip=CKV_AWS_117:VPC not required
     Condition: DeployS3Cleanup
@@ -287,14 +287,24 @@ Resources:
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
-          - Effect: Allow
+          - Sid: CloudFormationListResources
+            Effect: Allow
+            Action:
+              - cloudformation:ListStackResources
+            Resource: '*'
+          - Sid: Logs
+            Effect: Allow
             Action:
               - logs:*
-              - s3:*
-            Resource: '*'
-          - Effect: Deny
+            Resource: arn:aws:logs:*:*:*
+          - Sid: S3Permissions
+            Effect: Allow
             Action:
-             - s3:DeleteBucket
+              - s3:DeleteObject*
+              - s3:GetBucketVersioning
+              - s3:ListBucket
+              - s3:ListBucketVersions
+              - s3:PutBucketVersioning
             Resource: '*'
       ReservedConcurrentExecutions: 10
       Timeout: 900
@@ -302,4 +312,4 @@ Resources:
   EmptyS3Buckets:
     Type: AWS::CloudFormation::CustomResource
     Properties:
-      ServiceToken: !GetAtt CleanUpS3BucketsFunction.Arn
+      ServiceToken: !GetAtt EmptyS3BucketsFunction.Arn
