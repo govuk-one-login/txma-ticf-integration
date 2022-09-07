@@ -1,13 +1,12 @@
-import {
-  CloudFormationCustomResourceDeleteEvent,
-  CloudFormationCustomResourceResponse
-} from 'aws-lambda'
+import { CloudFormationCustomResourceEvent } from 'aws-lambda'
 import { emptyS3Bucket } from '../services/emptyS3Bucket'
 import { listS3Buckets } from '../services/listS3Buckets'
+import https from 'node:https'
+import url from 'node:url'
 
 export const handler = async (
-  event: CloudFormationCustomResourceDeleteEvent
-): Promise<CloudFormationCustomResourceResponse> => {
+  event: CloudFormationCustomResourceEvent
+): Promise<void> => {
   try {
     if (event.RequestType !== 'Delete') return sendResponse(event, 'SUCCESS')
 
@@ -32,16 +31,37 @@ export const handler = async (
 }
 
 const sendResponse = (
-  event: CloudFormationCustomResourceDeleteEvent,
+  event: CloudFormationCustomResourceEvent,
   status: 'SUCCESS' | 'FAILED',
   reason?: string
-): CloudFormationCustomResourceResponse => {
-  return {
-    PhysicalResourceId: event.PhysicalResourceId,
-    StackId: event.StackId,
-    RequestId: event.RequestId,
+) => {
+  const parsedUrl = url.parse(event.ResponseURL)
+
+  const data = JSON.stringify({
     LogicalResourceId: event.LogicalResourceId,
+    Reason: reason,
+    RequestId: event.RequestId,
+    ResponseURL: event.ResponseURL,
     Status: status,
-    Reason: reason
-  } as CloudFormationCustomResourceResponse
+    StackId: event.StackId,
+    PhysicalResourceId:
+      'PhysicalResourceId' in event ? event.PhysicalResourceId : undefined
+  })
+
+  const options = {
+    hostname: parsedUrl.hostname,
+    port: 443,
+    path: parsedUrl.path,
+    method: 'PUT',
+    headers: {
+      'content-type': '',
+      'content-length': data.length
+    }
+  }
+
+  const request = https.request(options, (response) => {
+    console.log(`STATUS: ${response.statusCode}`)
+  })
+  request.write(data)
+  request.end()
 }

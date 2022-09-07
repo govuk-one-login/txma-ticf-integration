@@ -23,6 +23,21 @@ describe('empty s3 buckets handler', () => {
     mockListS3Buckets.mockResolvedValue(['example-bucket'])
   }
 
+  test('event type is not delete', async () => {
+    const updateEvent = {
+      ...defaultCustomResourceDeleteEvent,
+      RequestType: 'Update'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any as CloudFormationCustomResourceDeleteEvent
+
+    expect(await handler(updateEvent)).toEqual({
+      PhysicalResourceId: defaultCustomResourceDeleteEvent.PhysicalResourceId,
+      StackId: defaultCustomResourceDeleteEvent.StackId,
+      RequestId: defaultCustomResourceDeleteEvent.RequestId,
+      LogicalResourceId: defaultCustomResourceDeleteEvent.LogicalResourceId,
+      Status: 'SUCCESS'
+    })
+  })
   test('stack contains no s3 buckets', async () => {
     givenNoS3Buckets()
     expect(
