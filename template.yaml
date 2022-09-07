@@ -23,6 +23,7 @@ Parameters:
     Default: none
 
 Conditions:
+  DeployS3Cleanup: !Equals [ !Ref Environment, dev]
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
 
@@ -274,3 +275,31 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
+
+  # Dev Resources
+  CleanUpS3BucketsFunction:
+    #checkov:skip=CKV_AWS_116:DLQ not required as failures will be reported to CloudFormation
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Condition: DeployS3Cleanup
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: cleanUpS3Buckets.handler
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+          - Effect: Allow
+            Action:
+              - logs:*
+              - s3:*
+            Resource: '*'
+          - Effect: Deny
+            Action:
+             - s3:DeleteBucket
+            Resource: '*'
+      ReservedConcurrentExecutions: 10
+      Timeout: 900
+  
+  EmptyS3Buckets:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt CleanUpS3BucketsFunction.Arn
