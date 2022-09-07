@@ -283,7 +283,7 @@ Resources:
     Condition: DeployS3Cleanup
     Type: AWS::Serverless::Function
     Properties:
-      Handler: cleanUpS3Buckets.handler
+      Handler: emptyS3Buckets.handler
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
