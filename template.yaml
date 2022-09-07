@@ -282,7 +282,7 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       DatabaseInput:
         Description: "TxMA - Event Message Analysis Database"
-        Name: !Sub ${AWS::StackName}-sandbox-analysis-database #TODO: Update to !Sub ${AWS::StackName}-${Environment}-txma-analysis
+        Name:  !Join ["", [ !Join [ "", !Split [ "-", !Sub ${AWS::StackName}]], "sandboxanalysisdatabase" ] ]    #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub ${AWS::StackName}]], "${Environment}", "analysisdatabase" ] ]
 
   AuditAnalysisTable:
     Type: AWS::Glue::Table
@@ -291,7 +291,7 @@ Resources:
       DatabaseName: !Ref AuditAnalysisDatabase
       TableInput:
         Description: "Table contains event message data to be analysed"
-        Name: !Sub ${AWS::StackName}-txma-audit-sandbox-analysis-table #TODO: Update to !Sub ${AWS::StackName}-txma-audit-${Environment}-analysis-table
+        Name: !Join ["", [ !Join [ "", !Split [ "-", !Sub ${AWS::StackName}]], "sandboxanalysistable" ] ] #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub ${AWS::StackName}]], "${Environment}", "analysistable" ] ]
         Parameters: 
           has_encrypted_data: false
           projection.enabled: true
@@ -300,7 +300,7 @@ Resources:
           projection.datetime.format: 'yyyy/MM/dd/HH'
           projection.datetime.interval: 1
           projection.datetime.interval.unit: HOURS
-          storage.location.template: !Join ["", ["s3://", !Sub "${AWS::StackName}", "-sandbox-analysis-bucket/firehose/${datetime}/" ]] #TODO: Update to !Join ["", ["s3://", !Sub "${AWS::StackName}", "-", !Sub "${Environment}, "-analysis-bucket/firehose/${datetime}/" ]]
+          storage.location.template: !Join ["", ["s3://", !Sub "${AWS::StackName}", "-sandbox-analysis-bucket/firehose/${datetime}/" ]] #TODO: Update to !Join ["", ["s3://", !Sub "${AWS::StackName}", "-", !Sub "${Environment}", "-analysis-bucket/firehose/${datetime}/" ]]
         PartitionKeys:
           - {Name: "datetime", Type: string}
         StorageDescriptor:
