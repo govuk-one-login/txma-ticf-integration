@@ -1,6 +1,7 @@
 import { listS3Objects } from './listS3Objects'
 import { checkS3BucketData } from './checkS3BucketData'
 import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
+import { DataRequestParams } from '../types/dataRequestParams'
 
 jest.mock('./listS3Objects', () => ({
   listS3Objects: jest.fn()
@@ -14,10 +15,13 @@ const mockgenerateS3ObjectPrefixes = generateS3ObjectPrefixes as jest.Mock<
   string[]
 >
 
-const mockDataRequestParams = {
+const mockDataRequestParams: DataRequestParams = {
   dateFrom: '2022/10/10',
   dateTo: '2022/10/10',
-  zendeskTicketId: '1234'
+  zendeskId: '123',
+  resultsEmail: 'test@gov.uk',
+  resultsName: 'test name',
+  identifierType: 'event_id'
 }
 
 describe('check objects in analysis bucket', () => {

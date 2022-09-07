@@ -31,7 +31,7 @@ describe('object prefixes', () => {
       'firehose/2022/08/22/00'
     ]
 
-    const result = generateS3ObjectPrefixes('2022/08/21', '2022/08/21')
+    const result = generateS3ObjectPrefixes('2022-08-21', '2022-08-21')
     expect(result).toEqual(expectedResult)
   })
 
@@ -89,7 +89,7 @@ describe('object prefixes', () => {
       'firehose/2022/08/23/00'
     ]
 
-    const result = generateS3ObjectPrefixes('2022/08/21', '2022/08/22')
+    const result = generateS3ObjectPrefixes('2022-08-21', '2022-08-22')
     expect(result).toEqual(expectedResult)
   })
 
@@ -123,19 +123,19 @@ describe('object prefixes', () => {
       'firehose/2022/11/22/00'
     ]
 
-    const result = generateS3ObjectPrefixes('2022/11/21', '2022/11/21')
+    const result = generateS3ObjectPrefixes('2022-11-21', '2022-11-21')
     expect(result).toEqual(expectedResult)
   })
 
   test('invalid date string', () => {
     expect(() => {
       generateS3ObjectPrefixes('invalid', 'invalid')
-    }).toThrow('String not valid date')
+    }).toThrow("String 'invalid' is not a valid date")
   })
 
   test('end date before start date', () => {
     expect(() => {
-      generateS3ObjectPrefixes('2022/11/21', '2022/11/20')
+      generateS3ObjectPrefixes('2022-11-21', '2022-11-20')
     }).toThrow('End date before start date')
   })
 })

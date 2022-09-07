@@ -1,3 +1,3 @@
 import { DataRequestParams } from '../../types/dataRequestParams'
 
-export const testDataRequest = { zendeskTicketId: '' } as DataRequestParams
+export const testDataRequest = { zendeskId: '' } as DataRequestParams
