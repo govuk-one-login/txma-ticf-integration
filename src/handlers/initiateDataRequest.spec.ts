@@ -101,6 +101,7 @@ describe('initate data request handler', () => {
   })
 
   it('returns 400 response when request signature is invalid', async () => {
+    jest.spyOn(global.console, 'warn')
     givenSignatureIsInvalid()
     expect(await callHandlerWithBody()).toEqual({
       statusCode: 400,
@@ -108,6 +109,9 @@ describe('initate data request handler', () => {
         message: 'Invalid request source'
       })
     })
+    expect(console.warn).toHaveBeenLastCalledWith(
+      'Request received with invalid webhook signature'
+    )
   })
 
   it('returns 400 response when request body is invalid', async () => {

@@ -42,6 +42,7 @@ const handleInvalidRequest = async (
 ) => {
   let validationMessage
   if (!validatedZendeskRequest) {
+    console.warn('Request received with invalid webhook signature')
     validationMessage = 'Invalid request source'
   } else {
     validationMessage =
