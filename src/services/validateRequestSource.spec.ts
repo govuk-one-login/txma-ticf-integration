@@ -38,12 +38,22 @@ describe('isValidSignature', () => {
   it('returns true if signature is valid', async () => {
     givenAllSecretsAvailable()
     const testHeaderSignature = generateTestSignature()
-    expect(
-      await isValidSignature(
-        testHeaderSignature,
-        exampleEventBody,
-        testTimeStamp
-      )
-    ).toBe(true)
+    const signatureValid = await isValidSignature(
+      testHeaderSignature,
+      exampleEventBody,
+      testTimeStamp
+    )
+    expect(signatureValid).toBe(true)
+  })
+
+  it('returns false if signature is invalid', async () => {
+    givenAllSecretsAvailable()
+    const testHeaderSignature = 'testInvalidSignature'
+    const signatureValid = await isValidSignature(
+      testHeaderSignature,
+      exampleEventBody,
+      testTimeStamp
+    )
+    expect(signatureValid).toBe(false)
   })
 })
