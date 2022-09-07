@@ -282,7 +282,7 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       DatabaseInput:
         Description: "TxMA - Event Message Analysis Database"
-        Name:  !Join ["", [ !Join [ "", !Split [ "-", !Sub ${AWS::StackName}]], "sandboxanalysisdatabase" ] ]    #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub ${AWS::StackName}]], "${Environment}", "analysisdatabase" ] ]
+        Name:  !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "sandboxanalysisdatabase" ] ]    #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "${Environment}", "analysisdatabase" ] ]
 
   AuditAnalysisTable:
     Type: AWS::Glue::Table
@@ -291,7 +291,7 @@ Resources:
       DatabaseName: !Ref AuditAnalysisDatabase
       TableInput:
         Description: "Table contains event message data to be analysed"
-        Name: !Join ["", [ !Join [ "", !Split [ "-", !Sub ${AWS::StackName}]], "sandboxanalysistable" ] ] #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub ${AWS::StackName}]], "${Environment}", "analysistable" ] ]
+        Name: !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "sandboxanalysistable" ] ] #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "${Environment}", "analysistable" ] ]
         Parameters: 
           has_encrypted_data: false
           projection.enabled: true
