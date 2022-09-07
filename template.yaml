@@ -137,21 +137,21 @@ Resources:
       TargetKeyId: !Ref SecretsKmsKey
 
   # Data Retrieval
-  InitiateDataRequestWebhookAccessLogGroup:
+  ZendeskWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: /aws/apigateway/initiate-data-request-webhook-api-access-logs
+      LogGroupName: !Sub /aws/apigateway/${ZendeskWebhookApi}-access-logs
       RetentionInDays: 7
   
-  InitiateDataRequestWebhookApi:
+  ZendeskWebhookApi:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we want the lambda to fire off every time a Zendesk ticket is approved
     Type: AWS::Serverless::Api
     Properties:
       AccessLogSetting:
-        DestinationArn: !GetAtt InitiateDataRequestWebhookAccessLogGroup.Arn
+        DestinationArn: !GetAtt ZendeskWebhookAccessLogGroup.Arn
         Format: $context.requestId
-      Name: initiate-data-request-webhook-api
+      Name: !Sub ${AWS::StackName}-zendesk-webhook-api
       StageName: default
       TracingEnabled: true
       
@@ -172,7 +172,7 @@ Resources:
           Properties:
             Path: /zendesk-webhook
             Method: POST
-            RestApiId: !Ref InitiateDataRequestWebhookApi
+            RestApiId: !Ref ZendeskWebhookApi
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
@@ -221,6 +221,48 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub ${AWS::StackName}-sandbox-analysis-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-logs
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  # Query Bucket
+  QueryResultsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${AWS::StackName}-sandbox-query-results-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-query-results-bucket
+      LifecycleConfiguration:
+        Rules:
+          - Id: AnalysisCleanupRule
+            Status: Enabled
+            ExpirationInDays: 30
+      LoggingConfiguration:
+        DestinationBucketName: !Ref QueryResultsLogsBucket
+        LogFilePrefix: String
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  QueryResultsLogsBucket:
+    #checkov:skip=CKV_AWS_18:This is the query results logs bucket
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-sandbox-query-results-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-logs
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:

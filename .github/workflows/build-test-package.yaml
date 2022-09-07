@@ -1,15 +1,23 @@
-name: Build, Test and Deploy
+name: Build, Test and Package
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
   push:
-    branches: [main]
+    branches:
+      - main
+      - feature**
   workflow_dispatch: {}
 
+env:
+  DEV_ARTIFACT_BUCKET: ${{ secrets.DEV_ARTIFACT_BUCKET }}
+  REGION: eu-west-2
+
 jobs:
-  build_test_and_validate:
+  build-test-and-validate:
     name: Run tests and validation
+    if: github.event_name == 'push'
     permissions:
       id-token: write
       contents: read
@@ -26,12 +34,10 @@ jobs:
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: eu-west-2
+          aws-region: ${{ env.REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_VALIDATE_ROLE_ARN }}
       - name: Install Yarn v3
         run: corepack enable
-      - name: Check Yarn cache
-        run: yarn install --immutable --immutable-cache --check-cache
       - name: Run linting
         if: always()
         run: yarn lint
@@ -58,10 +64,60 @@ jobs:
           path: |
             dist/
             template.yaml
-  deploy:
-    name: Deploy
+
+  check-yarn-cache:
+    name: Check Yarn cache
+    if: github.event_name == 'pull_request' || (github.ref == 'refs/heads/main' && github.event_name == 'push')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install Yarn v3
+        run: corepack enable
+      - name: Check Yarn cache
+        run: yarn install --immutable --immutable-cache --check-cache
+
+  deploy-feature:
+    name: Deploy feature branch
+    if: startsWith(github.ref, 'refs/heads/feature')
+    needs: [build-test-and-validate]
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: sam-build
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+      - name: Assume the dev account deployment role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
+      - name: Deploy to feature stack in the testing account
+        env:
+          FEATURE_BRANCH_NAME: ${{ github.event.ref }}
+        run: |
+          stack_name=$(echo ${FEATURE_BRANCH_NAME##*/} | tr -cd '[a-zA-Z0-9-]' | tr '[:upper:]' '[:lower:]')
+          sam deploy \
+            --stack-name ${stack_name:0:32} \
+            --capabilities CAPABILITY_IAM \
+            --region ${REGION} \
+            --no-fail-on-empty-changeset \
+            --s3-bucket ${DEV_ARTIFACT_BUCKET} \
+            --parameter-overrides ParameterKey=Environment,ParameterValue=dev
+
+  package-artifacts:
+    name: Package artifacts for deployment
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [build_test_and_validate]
+    needs: [build-test-and-validate, check-yarn-cache]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -80,9 +136,9 @@ jobs:
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: eu-west-2
+          aws-region: ${{ env.REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
-      - name: Deploy SAM app
+      - name: Package SAM app
         uses: alphagov/di-devplatform-upload-action@v2
         with:
           artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
