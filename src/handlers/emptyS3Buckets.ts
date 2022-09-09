@@ -8,8 +8,7 @@ export const handler = async (
   event: CloudFormationCustomResourceEvent
 ): Promise<void> => {
   try {
-    if (event.RequestType !== 'Delete')
-      return await sendResponse(event, 'SUCCESS')
+    if (event.RequestType !== 'Delete') return
 
     console.log('step 1')
     const stackId = event.StackId
@@ -50,7 +49,7 @@ const sendResponse = async (
     Status: status,
     StackId: event.StackId,
     PhysicalResourceId:
-      'PhysicalResourceId' in event ? event.PhysicalResourceId : undefined
+      'PhysicalResourceId' in event ? event.PhysicalResourceId : ''
   }
 
   const options = {
