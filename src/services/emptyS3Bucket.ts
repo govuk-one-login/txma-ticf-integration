@@ -26,28 +26,34 @@ export const emptyS3Bucket = async (bucketName: string): Promise<void> => {
     const objectVersions = await listS3ObjectVersions({
       Bucket: bucketName
     })
-    objectVersions.deleteMarkers.forEach(async (marker) => {
-      const command = new DeleteObjectCommand({
-        Bucket: bucketName,
-        Key: marker
+    await Promise.all(
+      objectVersions.deleteMarkers.map((marker) => {
+        const command = new DeleteObjectCommand({
+          Bucket: bucketName,
+          Key: marker
+        })
+        s3Client.send(command)
       })
-      await s3Client.send(command)
-    })
-    objectVersions.versions.forEach(async (version) => {
-      const command = new DeleteObjectCommand({
-        Bucket: bucketName,
-        Key: version
+    )
+    await Promise.all(
+      objectVersions.versions.map((version) => {
+        const command = new DeleteObjectCommand({
+          Bucket: bucketName,
+          Key: version
+        })
+        s3Client.send(command)
       })
-      await s3Client.send(command)
-    })
+    )
   }
 
   const objects = await listS3Objects({ Bucket: bucketName })
-  objects.forEach(async (object) => {
-    const command = new DeleteObjectCommand({
-      Bucket: bucketName,
-      Key: object
+  await Promise.all(
+    objects.map((object) => {
+      const command = new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: object
+      })
+      s3Client.send(command)
     })
-    await s3Client.send(command)
-  })
+  )
 }

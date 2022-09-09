@@ -15,8 +15,8 @@ export const handler = async (
     if (s3Buckets.length === 0) return sendResponse(event, 'SUCCESS')
 
     await Promise.all(
-      s3Buckets.map(async (bucket) => {
-        await emptyS3Bucket(bucket)
+      s3Buckets.map((bucket) => {
+        emptyS3Bucket(bucket)
       })
     )
 
