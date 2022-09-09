@@ -45,7 +45,7 @@ const sendResponse = async (
     Status: status,
     StackId: event.StackId,
     PhysicalResourceId:
-      'PhysicalResourceId' in event ? event.PhysicalResourceId : undefined
+      'PhysicalResourceId' in event ? event.PhysicalResourceId : ''
   }
 
   const options = {
