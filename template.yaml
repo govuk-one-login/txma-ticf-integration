@@ -188,6 +188,12 @@ Resources:
             Action:
               - logs:*
             Resource: arn:aws:logs:*:*:*
+          - Sid: SecretsManager
+            Effect: Allow
+            Action:
+             - secretsmanager:GetSecretValue
+            Resource: 
+              - arn:aws:secretsmanager:::zendesk-api-secrets
       ReservedConcurrentExecutions: 10
       Timeout: 900
   
