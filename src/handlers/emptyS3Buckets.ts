@@ -65,6 +65,6 @@ const sendResponse = async (
 }
 
 const formatStackId = (stackId: string): string => {
-  const splitStackId = stackId.split('stack/')
-  return `${splitStackId[1]}-custom-resource`
+  const splitStackIdArray = stackId.split('stack/')
+  return `${splitStackIdArray[1]}-custom-resource`
 }
