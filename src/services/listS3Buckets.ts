@@ -11,9 +11,13 @@ export const listS3Buckets = async (stackId: string): Promise<string[]> => {
 
   if (!response.StackResourceSummaries) return []
 
-  return response.StackResourceSummaries.map((resource) => {
-    if (resource.ResourceType === 'AWS::S3::Bucket') {
-      return resource.PhysicalResourceId
+  const filteredResources = response.StackResourceSummaries.filter(
+    (resource) => {
+      resource.ResourceType === 'AWS::S3::Bucket'
     }
+  )
+
+  return filteredResources.map((resource) => {
+    return resource.PhysicalResourceId
   }) as string[]
 }
