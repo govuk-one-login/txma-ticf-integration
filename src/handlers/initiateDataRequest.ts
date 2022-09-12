@@ -51,11 +51,10 @@ const handleInvalidRequest = async (
 
 const handleInvalidSignature = async () => {
   console.warn('Request received with invalid webhook signature')
-  const validationMessage = 'Invalid request source'
   return {
     statusCode: 400,
     body: JSON.stringify({
-      message: validationMessage
+      message: 'Invalid request source'
     })
   }
 }
