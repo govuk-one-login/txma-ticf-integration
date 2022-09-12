@@ -1,11 +1,17 @@
+import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 import * as crypto from 'crypto'
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
 
-export const isValidSignature = async (
-  headerSignature: string,
-  body: string,
-  timestamp: string
+export const isSignatureInvalid = async (
+  headers: APIGatewayProxyEventHeaders | undefined,
+  body: string | null
 ) => {
+  if (!headers) return true
+
+  const headerSignature = headers['X-Zendesk-Webhook-Signature']
+  const headerTimestamp = headers['X-Zendesk-Webhook-Signature-Timestamp']
+  if (!(headerSignature && body && headerTimestamp)) return true
+
   const secrets = await retrieveZendeskApiSecrets()
   const SIGNING_SECRET_ALGORITHM = 'sha256'
   console.log('Creating HMAC')
@@ -14,9 +20,9 @@ export const isValidSignature = async (
     secrets.zendeskWebhookSecretKey
   )
   console.log('Creating local signature')
-  const localSignature = hmac.update(timestamp + body).digest('base64')
+  const localSignature = hmac.update(headerTimestamp + body).digest('base64')
   console.log('Comparing local signature with header signature')
-  return (
+  return !(
     Buffer.compare(
       Buffer.from(headerSignature),
       Buffer.from(localSignature)

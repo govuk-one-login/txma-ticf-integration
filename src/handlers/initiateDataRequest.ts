@@ -1,7 +1,7 @@
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda'
 import { initiateDataTransfer } from '../services/initiateDataTransfer'
 import { updateZendeskTicket } from '../services/updateZendeskTicket'
-import { isValidSignature } from '../services/validateRequestSource'
+import { isSignatureInvalid } from '../services/validateRequestSource'
 import { validateZendeskRequest } from '../services/validateZendeskRequest'
 import { DataRequestParams } from '../types/dataRequestParams'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
@@ -9,14 +9,8 @@ import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestP
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const headerSignature = event.headers['X-Zendesk-Webhook-Signature'] as string
-  const timestamp = event.headers[
-    'X-Zendesk-Webhook-Signature-Timestamp'
-  ] as string
-  if (
-    !(await isValidSignature(headerSignature, event.body as string, timestamp))
-  ) {
-    return await handleInvalidRequest()
+  if (await isSignatureInvalid(event.headers, event.body)) {
+    return await handleInvalidSignature()
   }
   console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
 
@@ -40,19 +34,24 @@ export const handler = async (
 }
 
 const handleInvalidRequest = async (
-  requestBody: string | null = null,
-  validatedZendeskRequest: ValidatedDataRequestParamsResult | null = null
+  requestBody: string | null,
+  validatedZendeskRequest: ValidatedDataRequestParamsResult
 ) => {
-  let validationMessage
-  if (!validatedZendeskRequest) {
-    console.warn('Request received with invalid webhook signature')
-    validationMessage = 'Invalid request source'
-  } else {
-    validationMessage =
-      validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
-    const newTicketStatus = 'closed'
-    await updateZendeskTicket(requestBody, validationMessage, newTicketStatus)
+  const validationMessage =
+    validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
+  const newTicketStatus = 'closed'
+  await updateZendeskTicket(requestBody, validationMessage, newTicketStatus)
+  return {
+    statusCode: 400,
+    body: JSON.stringify({
+      message: validationMessage
+    })
   }
+}
+
+const handleInvalidSignature = async () => {
+  console.warn('Request received with invalid webhook signature')
+  const validationMessage = 'Invalid request source'
   return {
     statusCode: 400,
     body: JSON.stringify({
