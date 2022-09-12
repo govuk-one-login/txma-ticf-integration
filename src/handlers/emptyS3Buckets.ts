@@ -15,11 +15,15 @@ export const handler = async (
     const s3Buckets = await listS3Buckets(stackId)
     if (s3Buckets.length === 0) return await sendResponse(event, 'SUCCESS')
 
+    console.log(s3Buckets)
+
     await Promise.all(
       s3Buckets.map((bucket) => {
         emptyS3Bucket(bucket)
       })
     )
+
+    console.log('Buckets emptied')
 
     return await sendResponse(event, 'SUCCESS')
   } catch (error: unknown) {
@@ -38,6 +42,8 @@ const sendResponse = async (
 ) => {
   const parsedUrl = url.parse(event.ResponseURL)
   console.log('Response URL: ', parsedUrl)
+
+  console.log(event.RequestType)
 
   const data = {
     LogicalResourceId: event.LogicalResourceId,
@@ -61,10 +67,14 @@ const sendResponse = async (
       'content-length': JSON.stringify(data).length
     }
   }
+  console.log(data)
+
   await makeHttpsRequest(options, data)
 }
 
 const formatStackId = (stackId: string): string => {
-  const splitStackIdArray = stackId.split('stack/')
-  return `${splitStackIdArray[1]}-custom-resource`
+  const splitStackId = stackId.split('stack/')
+  const shortStackId =
+    splitStackId.length > 0 ? splitStackId[1] : splitStackId[0]
+  return `${shortStackId}-custom-resource`
 }
