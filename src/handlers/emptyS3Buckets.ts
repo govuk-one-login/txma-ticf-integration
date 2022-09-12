@@ -48,7 +48,7 @@ const sendResponse = async (
     PhysicalResourceId:
       'PhysicalResourceId' in event
         ? event.PhysicalResourceId
-        : `${event.StackId}-custom-resource`
+        : formatStackId(event.StackId)
   }
 
   const options = {
@@ -62,4 +62,9 @@ const sendResponse = async (
     }
   }
   await makeHttpsRequest(options, data)
+}
+
+const formatStackId = (stackId: string): string => {
+  const splitStackId = stackId.split('stack/')
+  return `${splitStackId[1]}-custom-resource`
 }
