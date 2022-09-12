@@ -191,7 +191,7 @@ Resources:
           - Sid: SecretsManager
             Effect: Allow
             Action:
-             - secretsmanager:GetSecretValue
+              - secretsmanager:GetSecretValue
             Resource: 
               - arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
           - Sid: KmsSecretsDecryptionKey
