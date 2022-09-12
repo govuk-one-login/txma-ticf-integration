@@ -11,12 +11,10 @@ export const handler = async (
     if (event.RequestType !== 'Delete')
       return await sendResponse(event, 'SUCCESS')
 
-    console.log('step 1')
     const stackId = event.StackId
     const s3Buckets = await listS3Buckets(stackId)
     if (s3Buckets.length === 0) return await sendResponse(event, 'SUCCESS')
 
-    console.log('step 2')
     await Promise.all(
       s3Buckets.map((bucket) => {
         emptyS3Bucket(bucket)
@@ -26,10 +24,8 @@ export const handler = async (
     return await sendResponse(event, 'SUCCESS')
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log('step 3')
       return await sendResponse(event, 'FAILED', error.message)
     } else {
-      console.log('step 4')
       return await sendResponse(event, 'FAILED', 'Unknown error')
     }
   }
@@ -50,7 +46,9 @@ const sendResponse = async (
     Status: status,
     StackId: event.StackId,
     PhysicalResourceId:
-      'PhysicalResourceId' in event ? event.PhysicalResourceId : ''
+      'PhysicalResourceId' in event
+        ? event.PhysicalResourceId
+        : `${event.StackId}-custom-resource`
   }
 
   const options = {
@@ -63,6 +61,5 @@ const sendResponse = async (
       'content-length': JSON.stringify(data).length
     }
   }
-  console.log(data)
   await makeHttpsRequest(options, data)
 }

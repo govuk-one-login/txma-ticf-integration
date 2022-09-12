@@ -314,4 +314,3 @@ Resources:
     Condition: DeployS3Cleanup
     Properties:
       ServiceToken: !GetAtt EmptyS3BucketsFunction.Arn
-      StackName: !Sub ${AWS::StackName}

@@ -21,7 +21,6 @@ export const makeHttpsRequest = async (
 
       response.on('end', () => {
         try {
-          console.log(chunks)
           chunks = chunks.length > 0 ? JSON.parse(chunks) : {}
         } catch (error) {
           reject(error)
