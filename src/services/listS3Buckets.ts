@@ -13,7 +13,7 @@ export const listS3Buckets = async (stackId: string): Promise<string[]> => {
 
   const filteredResources = response.StackResourceSummaries.filter(
     (resource) => {
-      resource.ResourceType === 'AWS::S3::Bucket'
+      return resource.ResourceType === 'AWS::S3::Bucket'
     }
   )
 
