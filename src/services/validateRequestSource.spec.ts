@@ -50,6 +50,7 @@ describe('isSignatureInvalid', () => {
 
   it('returns true if header signature is invalid', async () => {
     testHeaders['X-Zendesk-Webhook-Signature'] = 'testInvalidSignature'
+
     const signatureValidationResult = await isSignatureInvalid(
       testHeaders,
       exampleEventBody
@@ -60,6 +61,7 @@ describe('isSignatureInvalid', () => {
 
   it('returns true if header signature is undefined', async () => {
     testHeaders['X-Zendesk-Webhook-Signature'] = undefined
+
     const signatureValidationResult = await isSignatureInvalid(
       testHeaders,
       exampleEventBody
@@ -70,6 +72,7 @@ describe('isSignatureInvalid', () => {
 
   it('returns true if header signature timestamp is undefined', async () => {
     testHeaders['X-Zendesk-Webhook-Signature-Timestamp'] = undefined
+
     const signatureValidationResult = await isSignatureInvalid(
       testHeaders,
       exampleEventBody
