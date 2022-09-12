@@ -193,7 +193,13 @@ Resources:
             Action:
              - secretsmanager:GetSecretValue
             Resource: 
-              - arn:aws:secretsmanager:::zendesk-api-secrets
+              - arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
+          - Sid: KmsSecretsDecryptionKey
+            Effect: Allow
+            Action:
+             - kms:Decrypt
+            Resource:
+              - !GetAtt SecretsKmsKey.Arn
       ReservedConcurrentExecutions: 10
       Timeout: 900
   
