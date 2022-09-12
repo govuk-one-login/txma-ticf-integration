@@ -11,8 +11,6 @@ import { listS3ObjectVersions } from './listS3ObjectVersions'
 export const emptyS3Bucket = async (bucketName: string): Promise<void> => {
   const s3Client = new S3Client({ region: getEnv('AWS_REGION') })
 
-  console.log(`bucket name: ${bucketName}`)
-
   const getVersioningCommand = new GetBucketVersioningCommand({
     Bucket: bucketName
   })
