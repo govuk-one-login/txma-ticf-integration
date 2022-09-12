@@ -97,7 +97,6 @@ describe('initate data request handler', () => {
         message: 'data transfer initiated'
       })
     })
-
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
     expect(initiateDataTransfer).toHaveBeenCalledWith(testDataRequest)
   })
