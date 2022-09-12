@@ -197,7 +197,7 @@ Resources:
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
-             - kms:Decrypt
+              - kms:Decrypt
             Resource:
               - !GetAtt SecretsKmsKey.Arn
       ReservedConcurrentExecutions: 10
