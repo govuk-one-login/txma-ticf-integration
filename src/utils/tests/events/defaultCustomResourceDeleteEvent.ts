@@ -1,3 +1,5 @@
+import { CloudFormationCustomResourceDeleteEvent } from 'aws-lambda'
+
 export const defaultCustomResourceDeleteEvent = {
   LogicalResourceId: 'ExampleBucket',
   PhysicalResourceId: 'example-bucket',
@@ -10,4 +12,4 @@ export const defaultCustomResourceDeleteEvent = {
   ResponseURL: '',
   ServiceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
   StackId: 'stack-id'
-}
+} as CloudFormationCustomResourceDeleteEvent
