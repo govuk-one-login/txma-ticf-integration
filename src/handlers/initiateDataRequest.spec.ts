@@ -135,7 +135,7 @@ describe('initate data request handler', () => {
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       requestBody,
-      validationMessage,
+      `Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: ${validationMessage}`,
       newTicketStatus
     )
   })

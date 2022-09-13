@@ -40,7 +40,11 @@ const handleInvalidRequest = async (
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
   const newTicketStatus = 'closed'
-  await updateZendeskTicket(requestBody, validationMessage, newTicketStatus)
+  await updateZendeskTicket(
+    requestBody,
+    `Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: ${validationMessage}`,
+    newTicketStatus
+  )
   return {
     statusCode: 400,
     body: JSON.stringify({
