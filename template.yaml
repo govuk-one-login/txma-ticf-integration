@@ -130,6 +130,36 @@ Resources:
             Resource:
               - '*'
 
+    QueueKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:CreateGrant
+              - kms:Decrypt
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Condition:
+              StringEquals:
+                kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
+                kms:CallerAccount: !Sub ${AWS::AccountId}
+            Resource:
+              - '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:*
+            Resource:
+              - '*'
+
   SecretsKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
@@ -203,6 +233,10 @@ Resources:
       ReservedConcurrentExecutions: 10
       Timeout: 900
   
+  InitiateDataRequestQueue:
+    Type: AWS::SQS::Queue
+    KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+
   # Data Analysis
   AnalysisBucket:
     Type: AWS::S3::Bucket
