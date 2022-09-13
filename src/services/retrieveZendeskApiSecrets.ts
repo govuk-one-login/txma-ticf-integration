@@ -8,13 +8,15 @@ export const retrieveZendeskApiSecrets =
       'ZENDESK_API_KEY',
       'ZENDESK_API_USER_ID',
       'ZENDESK_API_USER_EMAIL',
-      'ZENDESK_HOSTNAME'
+      'ZENDESK_HOSTNAME',
+      'ZENDESK_WEBHOOK_SECRET_KEY'
     ])
     return {
       zendeskApiKey: secrets['ZENDESK_API_KEY'],
       zendeskApiUserId: secrets['ZENDESK_API_USER_ID'],
       zendeskApiUserEmail: secrets['ZENDESK_API_USER_EMAIL'],
-      zendeskHostName: secrets['ZENDESK_HOSTNAME']
+      zendeskHostName: secrets['ZENDESK_HOSTNAME'],
+      zendeskWebhookSecretKey: secrets['ZENDESK_WEBHOOK_SECRET_KEY']
     }
   }
 

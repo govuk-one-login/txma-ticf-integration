@@ -14,6 +14,7 @@ const TEST_ZENDESK_API_KEY = 'myZendeskApiKey'
 const TEST_ZENDESK_API_USER_ID = 'myZendeskApiUserId'
 const TEST_ZENDESK_API_USER_EMAIL = 'myZendeskApiUserEmail'
 const TEST_ZENDESK_HOSTNAME = 'example-host.zendesk.com'
+const TEST_ZENDESK_WEBHOOK_SECRET_KEY = 'testSecretKey123'
 
 describe('retrieveZendeskApiSecrets', () => {
   const givenSecretKeysSet = (secrets: { [key: string]: string }) => {
@@ -23,7 +24,8 @@ describe('retrieveZendeskApiSecrets', () => {
     ZENDESK_API_KEY: TEST_ZENDESK_API_KEY,
     ZENDESK_API_USER_ID: TEST_ZENDESK_API_USER_ID,
     ZENDESK_API_USER_EMAIL: TEST_ZENDESK_API_USER_EMAIL,
-    ZENDESK_HOSTNAME: TEST_ZENDESK_HOSTNAME
+    ZENDESK_HOSTNAME: TEST_ZENDESK_HOSTNAME,
+    ZENDESK_WEBHOOK_SECRET_KEY: TEST_ZENDESK_WEBHOOK_SECRET_KEY
   }
 
   const givenAllSecretsAvailable = () => {
@@ -37,13 +39,17 @@ describe('retrieveZendeskApiSecrets', () => {
     expect(secrets.zendeskApiUserEmail).toEqual(TEST_ZENDESK_API_USER_EMAIL)
     expect(secrets.zendeskApiUserId).toEqual(TEST_ZENDESK_API_USER_ID)
     expect(secrets.zendeskHostName).toEqual(TEST_ZENDESK_HOSTNAME)
+    expect(secrets.zendeskWebhookSecretKey).toEqual(
+      TEST_ZENDESK_WEBHOOK_SECRET_KEY
+    )
   })
 
   const keyList: string[] = [
     'ZENDESK_API_KEY',
     'ZENDESK_API_USER_ID',
     'ZENDESK_API_USER_EMAIL',
-    'ZENDESK_HOSTNAME'
+    'ZENDESK_HOSTNAME',
+    'ZENDESK_WEBHOOK_SECRET_KEY'
   ]
 
   keyList.forEach((keyToOmit) => {

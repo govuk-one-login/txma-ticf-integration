@@ -3,4 +3,5 @@ export interface ZendeskApiSecrets {
   zendeskApiUserId: string
   zendeskApiUserEmail: string
   zendeskHostName: string
+  zendeskWebhookSecretKey: string
 }
