@@ -130,7 +130,13 @@ Resources:
             Resource:
               - '*'
 
-    QueueKmsKey:
+  SecretsKmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
+      TargetKeyId: !Ref SecretsKmsKey
+
+  QueueKmsKey:
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -160,11 +166,11 @@ Resources:
             Resource:
               - '*'
 
-  SecretsKmsKeyAlias:
+  QueueKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: !Sub alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
-      TargetKeyId: !Ref SecretsKmsKey
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/queue-kms-key
+      TargetKeyId: !Ref QueueKmsKey
 
   # Data Retrieval
   ZendeskWebhookAccessLogGroup:
@@ -235,7 +241,8 @@ Resources:
   
   InitiateDataRequestQueue:
     Type: AWS::SQS::Queue
-    KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
 
   # Data Analysis
   AnalysisBucket:
