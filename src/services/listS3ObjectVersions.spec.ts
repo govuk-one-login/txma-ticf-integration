@@ -55,7 +55,7 @@ describe('list S3 objects', () => {
     })
   })
 
-  test('respnse has NextKeyMarker', async () => {
+  test('response has NextKeyMarker', async () => {
     s3Mock
       .on(ListObjectVersionsCommand)
       .resolvesOnce({
@@ -74,7 +74,7 @@ describe('list S3 objects', () => {
     })
   })
 
-  test('respnse has NextVersionIdMarker', async () => {
+  test('response has NextVersionIdMarker', async () => {
     s3Mock
       .on(ListObjectVersionsCommand)
       .resolvesOnce({
@@ -93,7 +93,7 @@ describe('list S3 objects', () => {
     })
   })
 
-  test('respnse has both NextKeyMarker and NextVersionIdMarker', async () => {
+  test('response has both NextKeyMarker and NextVersionIdMarker', async () => {
     s3Mock
       .on(ListObjectVersionsCommand)
       .resolvesOnce({
