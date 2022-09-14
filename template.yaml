@@ -233,6 +233,12 @@ Resources:
               - sqs:SendMessage
             Resource:
               - !GetAtt InitiateDataRequestQueue.Arn
+          - Sid: AllowQueueKmsAccess
+            Effect: Allow
+            Action:
+              - kms:GenerateDataKey
+            Resource:
+              - !GetAtt QueueKmsKey.Arn 
       ReservedConcurrentExecutions: 10
       Timeout: 900
   
