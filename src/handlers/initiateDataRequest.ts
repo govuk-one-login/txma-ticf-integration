@@ -5,10 +5,20 @@ import { isSignatureInvalid } from '../services/validateRequestSource'
 import { validateZendeskRequest } from '../services/validateZendeskRequest'
 import { DataRequestParams } from '../types/dataRequestParams'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
-
+import { sendInitiateDataTransferMessage } from '../services/queue/sendInitiateDataTransferMessage'
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  // TODO: remove this test code
+  await sendInitiateDataTransferMessage({
+    zendeskId: '123',
+    resultsEmail: 'test@test.gov.uk',
+    resultsName: 'Test Person',
+    dateFrom: '2021-08-20',
+    dateTo: '2021-08-20',
+    identifierType: 'session_id'
+  })
+
   if (await isSignatureInvalid(event.headers, event.body)) {
     return await handleInvalidSignature()
   }
