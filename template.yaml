@@ -152,10 +152,10 @@ Resources:
               - kms:DescribeKey
               - kms:GenerateDataKey*
               - kms:ReEncrypt*
-            Condition:
-              StringEquals:
-                kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
-                kms:CallerAccount: !Sub ${AWS::AccountId}
+            # Condition:
+            #   StringEquals:
+            #     kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
+            #     kms:CallerAccount: !Sub ${AWS::AccountId}
             Resource:
               - '*'
           - Effect: Allow
@@ -230,12 +230,6 @@ Resources:
               - secretsmanager:GetSecretValue
             Resource: 
               - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
-          - Sid: KmsSecretsDecryptionKey
-            Effect: Allow
-            Action:
-              - kms:Decrypt
-            Resource:
-              - !GetAtt SecretsKmsKey.Arn
       ReservedConcurrentExecutions: 10
       Timeout: 900
   
@@ -280,6 +274,12 @@ Resources:
             Action:
               - logs:*
             Resource: arn:aws:logs:*:*:*
+          - Sid: KmsQueueAllowDecrypt
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt QueueKmsKey.Arn 
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         Type: SQS
