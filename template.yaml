@@ -277,7 +277,6 @@ Resources:
               - logs:*
             Resource: arn:aws:logs:*:*:*
       ReservedConcurrentExecutions: 10
-      Timeout: 900  
   # Data Analysis
   AnalysisBucket:
     Type: AWS::S3::Bucket
