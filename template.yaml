@@ -152,10 +152,6 @@ Resources:
               - kms:DescribeKey
               - kms:GenerateDataKey*
               - kms:ReEncrypt*
-            # Condition:
-            #   StringEquals:
-            #     kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
-            #     kms:CallerAccount: !Sub ${AWS::AccountId}
             Resource:
               - '*'
           - Effect: Allow
