@@ -19,6 +19,8 @@ export const handler = async (
     return await handleInvalidRequest(event.body, validatedZendeskRequest)
   }
 
+  console.log('Zendesk request was valid')
+
   const dataTransferInitiateResult = await initiateDataTransfer(
     validatedZendeskRequest.dataRequestParams as DataRequestParams
   )
@@ -37,6 +39,7 @@ const handleInvalidRequest = async (
   requestBody: string | null,
   validatedZendeskRequest: ValidatedDataRequestParamsResult
 ) => {
+  console.log('Zendesk request was invalid')
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
   const newTicketStatus = 'closed'
