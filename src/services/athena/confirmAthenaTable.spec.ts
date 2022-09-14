@@ -27,13 +27,18 @@ describe('confirm Athena Table', () => {
     })
 
     const result = await confirmAthenaTable(input)
-    expect(result).toBe(true)
+    expect(result).toEqual({
+      tableAvailable: true
+    })
   })
 
   test('athena table does not exist', async () => {
     athenaMock.on(GetTableMetadataCommand).resolves({})
 
     const result = await confirmAthenaTable(input)
-    expect(result).toBe(false)
+    expect(result).toEqual({
+      tableAvailable: false,
+      errorMessage: 'Athena Data Source Table test table not found'
+    })
   })
 })

@@ -4,18 +4,22 @@ import {
   GetTableMetadataCommandInput
 } from '@aws-sdk/client-athena'
 import { getEnv } from '../../utils/helpers'
+import { ConfirmAthenaTableResult } from '../../types/confirmAthenaTableResult'
 
 export const confirmAthenaTable = async (
   input: GetTableMetadataCommandInput
-): Promise<boolean> => {
+): Promise<ConfirmAthenaTableResult> => {
   const client = new AthenaClient({ region: getEnv('AWS_REGION') })
   const command = new GetTableMetadataCommand(input)
 
-  try {
-    const response = await client.send(command)
-    return response.TableMetadata?.Name === input.TableName
-  } catch (error) {
-    console.log(error)
-    return Promise.reject(error)
+  const response = await client.send(command)
+
+  if (!response.TableMetadata) {
+    return Promise.resolve({
+      tableAvailable: false,
+      errorMessage: `Athena Data Source Table ${input.TableName} not found`
+    })
   }
+
+  return Promise.resolve({ tableAvailable: true })
 }
