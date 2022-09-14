@@ -244,8 +244,12 @@ Resources:
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
 
+  InitiateDataRequestDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+
   ProcessDataRequestFunction:
-    #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
@@ -256,11 +260,11 @@ Resources:
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
       Events:
-        MySQSEvent:
+        InitiateDataRequestEvent:
           Type: SQS
           Properties:
             Queue: !GetAtt InitiateDataRequestQueue.Arn
-            BatchSize: 10
+            BatchSize: 1
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
@@ -277,6 +281,10 @@ Resources:
               - logs:*
             Resource: arn:aws:logs:*:*:*
       ReservedConcurrentExecutions: 10
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
+
   # Data Analysis
   AnalysisBucket:
     Type: AWS::S3::Bucket
