@@ -1,18 +1,17 @@
 import { mockClient } from 'aws-sdk-client-mock'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import {
-  AthenaClient,
-  GetTableMetadataCommand,
-  GetTableMetadataCommandInput
-} from '@aws-sdk/client-athena'
+  GlueClient,
+  GetTableCommand,
+  GetTableCommandInput
+} from '@aws-sdk/client-glue'
 
-const athenaMock = mockClient(AthenaClient)
+const athenaMock = mockClient(GlueClient)
 
 describe('confirm Athena Table', () => {
-  const input: GetTableMetadataCommandInput = {
-    CatalogName: 'test catalog',
+  const input: GetTableCommandInput = {
     DatabaseName: 'test database',
-    TableName: 'test table'
+    Name: 'test table'
   }
 
   beforeEach(() => {
@@ -20,25 +19,26 @@ describe('confirm Athena Table', () => {
   })
 
   test('athena table exists', async () => {
-    athenaMock.on(GetTableMetadataCommand).resolves({
-      TableMetadata: {
+    athenaMock.on(GetTableCommand).resolves({
+      Table: {
         Name: 'test table'
       }
     })
 
     const result = await confirmAthenaTable(input)
     expect(result).toEqual({
-      tableAvailable: true
+      tableAvailable: true,
+      message: 'Athena Data Source Table test table found'
     })
   })
 
   test('athena table does not exist', async () => {
-    athenaMock.on(GetTableMetadataCommand).resolves({})
+    athenaMock.on(GetTableCommand).resolves({})
 
     const result = await confirmAthenaTable(input)
     expect(result).toEqual({
       tableAvailable: false,
-      errorMessage: 'Athena Data Source Table test table not found'
+      message: 'Athena Data Source Table test table not found'
     })
   })
 })

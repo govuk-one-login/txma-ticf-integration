@@ -136,6 +136,39 @@ Resources:
       AliasName: !Sub alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
       TargetKeyId: !Ref SecretsKmsKey
 
+    QueueKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:CreateGrant
+              - kms:Decrypt
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource:
+              - '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:*
+            Resource:
+              - '*'
+
+  QueueKmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/queue-kms-key
+      TargetKeyId: !Ref QueueKmsKey
+
+
   # Data Retrieval
   ZendeskWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
@@ -202,6 +235,67 @@ Resources:
               - !GetAtt SecretsKmsKey.Arn
       ReservedConcurrentExecutions: 10
       Timeout: 900
+  
+  InitiateAthenaQueryFunction:
+    #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: initiateAthenaQuery.handler
+      Environment:
+        Variables:
+          ATHENA_DATABASE_NAME: !Ref AuditAnalysisDatabase
+          ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
+      Events:
+        InitiateAthenaQueryEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt InitiateAthenaQueryQueue.Arn
+            BatchSize: 1
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+          - Sid: AthenaPermissions
+            Effect: Allow
+            Action: 
+              - glue:GetTable
+            Resource: 
+              - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
+              - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/*
+              - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/*
+              - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:userDefinedFunction/*
+          - Sid: SqsPermissions
+            Effect: Allow
+            Action:
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Resource: 
+              - !GetAtt InitiateAthenaQueryQueue.Arn
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Sid: SecretsManager
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: 
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
+          - Sid: KmsSecretsDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SecretsKmsKey.Arn
+      ReservedConcurrentExecutions: 10
+
+  #NOTE - This is a placeholder SQS queue which will be replaced - it is here to enable the Athena lambda to be created 
+  InitiateAthenaQueryQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
   
   # Data Analysis
   AnalysisBucket:
