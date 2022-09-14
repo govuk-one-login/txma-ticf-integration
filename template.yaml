@@ -197,7 +197,7 @@ Resources:
         Variables:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
-          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket,
+          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
       Events:
         Api:
