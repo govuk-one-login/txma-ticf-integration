@@ -8,6 +8,7 @@ import { DataRequestParams } from '../types/dataRequestParams'
 import { testDataRequest } from '../utils/tests/testDataRequest'
 import { InitiateDataTransferResult } from '../types/initiateDataTransferResult'
 import { isSignatureInvalid } from '../services/validateRequestSource'
+
 const mockInitiateDataTransfer = initiateDataTransfer as jest.Mock<
   Promise<InitiateDataTransferResult>
 >
@@ -32,6 +33,10 @@ jest.mock('../services/updateZendeskTicket', () => ({
 
 jest.mock('../services/validateRequestSource', () => ({
   isSignatureInvalid: jest.fn()
+}))
+
+jest.mock('../services/queue/sendInitiateDataTransferMessage', () => ({
+  sendInitiateDataTransferMessage: jest.fn()
 }))
 
 describe('initate data request handler', () => {
