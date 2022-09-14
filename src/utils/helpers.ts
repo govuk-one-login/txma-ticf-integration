@@ -10,7 +10,7 @@ export const getEnv = (name: EnvironmentVar['name']) => {
 }
 
 export const getEpochDate = (dateString: string) => {
-  const dateParts = dateString.split('/')
+  const dateParts = dateString.split('-')
 
   const epochDate = Date.UTC(
     parseInt(dateParts[0]),
@@ -18,7 +18,17 @@ export const getEpochDate = (dateString: string) => {
     parseInt(dateParts[2])
   )
 
-  if (isNaN(epochDate)) throw Error('String not valid date')
+  if (isNaN(epochDate))
+    throw Error(`String '${dateString}' is not a valid date`)
 
   return epochDate
+}
+
+export const tryParseJSON = (jsonString: string) => {
+  try {
+    return JSON.parse(jsonString)
+  } catch (error) {
+    console.error('Error parsing JSON: ', error)
+    return {}
+  }
 }
