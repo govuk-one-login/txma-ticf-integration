@@ -244,6 +244,40 @@ Resources:
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
 
+  ProcessDataRequestFunction:
+    #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: processDataRequest.handler
+      Environment:
+        Variables:
+          #TODO: Update with parameterised bucket name when merging with TxMA 1
+          AUDIT_BUCKET_NAME: audit-sandbox-message-batch
+          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt InitiateDataRequestQueue.Arn
+            BatchSize: 10
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+          - Sid: S3Permissions
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource: 
+              - !GetAtt AnalysisBucket.Arn
+              - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
+      ReservedConcurrentExecutions: 10
+      Timeout: 900  
   # Data Analysis
   AnalysisBucket:
     Type: AWS::S3::Bucket
