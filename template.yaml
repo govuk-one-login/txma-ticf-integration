@@ -136,7 +136,7 @@ Resources:
       AliasName: !Sub alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
       TargetKeyId: !Ref SecretsKmsKey
 
-    QueueKmsKey:
+  QueueKmsKey:
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
