@@ -226,6 +226,12 @@ Resources:
               - secretsmanager:GetSecretValue
             Resource: 
               - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
+          - Sid: AllowQueueSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt InitiateDataRequestQueue.Arn
       ReservedConcurrentExecutions: 10
       Timeout: 900
   
