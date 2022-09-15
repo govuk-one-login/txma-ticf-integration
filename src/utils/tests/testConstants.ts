@@ -9,3 +9,4 @@ export const ALL_SECRET_KEYS: ZendeskApiSecrets = {
   zendeskWebhookSecretKey: 'testSecretKey123'
 }
 export const ENCODED_AUTH_VALUE = 'EncodedAuthValue'
+export const TEST_ZENDESK_SECRET_NAME = 'myZendeskSecretName'
