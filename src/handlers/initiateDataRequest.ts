@@ -18,9 +18,11 @@ export const handler = async (
     return await handleInvalidRequest(event.body, validatedZendeskRequest)
   }
 
-  await sendInitiateDataTransferMessage(
+  const messageId = await sendInitiateDataTransferMessage(
     validatedZendeskRequest.dataRequestParams as DataRequestParams
   )
+
+  console.log(`Sent data transfer queue message with id '${messageId}'`)
 
   return {
     statusCode: 200,

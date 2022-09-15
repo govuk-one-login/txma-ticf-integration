@@ -9,11 +9,13 @@ jest.mock('../../utils/helpers', () => ({
 }))
 
 const MOCK_QUEUE_URL = 'http://my_queue_url'
+const MOCK_MESSAGE_ID = 'MyMessageId'
 describe('sendSqsMessage', () => {
   it('sends message to correct queue', async () => {
-    sqsMock.on(SendMessageCommand).resolves({ MessageId: 'MyMessageId' })
+    sqsMock.on(SendMessageCommand).resolves({ MessageId: MOCK_MESSAGE_ID })
 
-    await sendSqsMessage(testDataRequest, MOCK_QUEUE_URL)
+    const messageId = await sendSqsMessage(testDataRequest, MOCK_QUEUE_URL)
+    expect(messageId).toEqual(MOCK_MESSAGE_ID)
     expect(sqsMock).toHaveReceivedCommandWith(SendMessageCommand, {
       QueueUrl: MOCK_QUEUE_URL,
       MessageBody: JSON.stringify(testDataRequest)
