@@ -105,7 +105,6 @@ Resources:
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: ${AWS::StackName}-ZendeskApiSecrets
-      SecretString: '{"secret": "mySecret"}'
       KmsKeyId: !Ref SecretsKmsKey
 
   SecretsKmsKey:
