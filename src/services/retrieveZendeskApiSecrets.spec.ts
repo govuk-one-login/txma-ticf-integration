@@ -2,13 +2,24 @@
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
 // Dependencies
 import { retrieveSecrets } from './retrieveSecrets'
+import { getEnv } from '../utils/helpers'
+jest.mock('../utils/helpers', () => ({
+  getEnv: jest.fn()
+}))
 jest.mock('./retrieveSecrets', () => ({
   retrieveSecrets: jest.fn()
 }))
 
+const mockGetEnv = getEnv as jest.Mock<string>
+
 const mockRetrieveSecrets = retrieveSecrets as jest.Mock<
   Promise<{ [key: string]: string }>
 >
+const TEST_SECRET_NAME = 'mySecretName'
+
+const givenEnvVariable = () => {
+  mockGetEnv.mockReturnValue(TEST_SECRET_NAME)
+}
 
 const TEST_ZENDESK_API_KEY = 'myZendeskApiKey'
 const TEST_ZENDESK_API_USER_ID = 'myZendeskApiUserId'
@@ -33,6 +44,7 @@ describe('retrieveZendeskApiSecrets', () => {
   }
 
   it('should return object containing secrets when available', async () => {
+    givenEnvVariable()
     givenAllSecretsAvailable()
     const secrets = await retrieveZendeskApiSecrets()
     expect(secrets.zendeskApiKey).toEqual(TEST_ZENDESK_API_KEY)
@@ -42,6 +54,7 @@ describe('retrieveZendeskApiSecrets', () => {
     expect(secrets.zendeskWebhookSecretKey).toEqual(
       TEST_ZENDESK_WEBHOOK_SECRET_KEY
     )
+    expect(retrieveSecrets).toHaveBeenCalledWith(TEST_SECRET_NAME)
   })
 
   const keyList: string[] = [
@@ -64,7 +77,7 @@ describe('retrieveZendeskApiSecrets', () => {
       givenSecretKeysSet(secretCollection)
 
       expect(retrieveZendeskApiSecrets()).rejects.toThrow(
-        `Secret with key ${keyToOmit} not set in zendesk-api-secrets`
+        `Secret with key ${keyToOmit} not set in ${TEST_SECRET_NAME}`
       )
     })
   })

@@ -173,6 +173,7 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets 
       Events:
         Api:
           Type: Api
