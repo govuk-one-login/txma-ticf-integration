@@ -101,6 +101,13 @@ Resources:
       AliasName: !Sub alias/${AWS::StackName}/sandbox/logs-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/logs-kms-key
       TargetKeyId: !Ref LogsKmsKey
 
+  SecretsSet:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: ${AWS::StackName}-ZendeskApiSecrets
+      SecretString: '{"secret": "mySecret"}'
+      KmsKeyId: !Ref SecretsKmsKey
+
   SecretsKmsKey:
     Type: AWS::KMS::Key
     Properties:
