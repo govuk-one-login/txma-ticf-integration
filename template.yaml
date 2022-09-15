@@ -23,6 +23,7 @@ Parameters:
     Default: none
 
 Conditions:
+  DeployS3Cleanup: !Equals [ !Ref Environment, dev]
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
 
@@ -444,3 +445,42 @@ Resources:
           EncryptionConfiguration:
             EncryptionOption: "SSE_S3"
           OutputLocation: !Join ['', ['s3://', !Ref QueryResultsBucket, '/'] ]
+
+  # Dev Resources
+  EmptyS3BucketsFunction:
+    #checkov:skip=CKV_AWS_116:DLQ not required as failures will be reported to CloudFormation
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Condition: DeployS3Cleanup
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: emptyS3Buckets.handler
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+          - Sid: CloudFormationListResources
+            Effect: Allow
+            Action:
+              - cloudformation:ListStackResources
+            Resource: '*'
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Sid: S3Permissions
+            Effect: Allow
+            Action:
+              - s3:DeleteObject*
+              - s3:GetBucketVersioning
+              - s3:ListBucket
+              - s3:ListBucketVersions
+              - s3:PutBucketVersioning
+            Resource: '*'
+      ReservedConcurrentExecutions: 10
+      Timeout: 900
+  
+  EmptyS3Buckets:
+    Type: AWS::CloudFormation::CustomResource
+    Condition: DeployS3Cleanup
+    Properties:
+      ServiceToken: !GetAtt EmptyS3BucketsFunction.Arn

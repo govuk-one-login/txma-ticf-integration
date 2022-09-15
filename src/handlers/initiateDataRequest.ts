@@ -34,6 +34,7 @@ const handleInvalidRequest = async (
   requestBody: string | null,
   validatedZendeskRequest: ValidatedDataRequestParamsResult
 ) => {
+  console.log('Zendesk request was invalid')
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
   const newTicketStatus = 'closed'
