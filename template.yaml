@@ -109,6 +109,7 @@ Resources:
     Properties:
       Name: !Sub ${AWS::StackName}-ZendeskApiSecrets
       KmsKeyId: !Ref SecretsKmsKeyAlias
+      SecretString: !Ref ZendeskApiSecrets
 
   SecretsKmsKey:
     Type: AWS::KMS::Key
