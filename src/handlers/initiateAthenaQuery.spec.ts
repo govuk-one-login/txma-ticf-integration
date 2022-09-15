@@ -24,6 +24,11 @@ describe('initiate athena query handler', () => {
   getEnvMock.mockReturnValue('test')
 
   it('confirms whether the athena data source exists', async () => {
+    confirmAthenaTableMock.mockResolvedValue({
+      tableAvailable: true,
+      message: 'test message'
+    })
+
     await handler(testAthenaQueryEvent)
     expect(confirmAthenaTableMock).toHaveBeenCalled()
   })
