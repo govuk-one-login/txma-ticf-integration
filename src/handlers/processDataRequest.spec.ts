@@ -24,8 +24,8 @@ describe('processDataRequest', () => {
     expect(initiateDataTransferMock).toHaveBeenCalledWith(testDataRequest)
   })
 
-  it('should throw an appropriate error if there is no data in the event', () => {
-    expect(handler({ Records: [] })).rejects.toThrow('No data in event')
+  it('should throw an appropriate error if there is no data in the event', async () => {
+    await expect(handler({ Records: [] })).rejects.toThrow('No data in event')
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
   })
 
@@ -33,7 +33,7 @@ describe('processDataRequest', () => {
     const initiateDataRequestEvent = constructInitiateDataRequestEvent(
       JSON.stringify({ someProperty: 'someValue' })
     )
-    expect(handler(initiateDataRequestEvent)).rejects.toThrow(
+    await expect(handler(initiateDataRequestEvent)).rejects.toThrow(
       'Request data was not of the correct type'
     )
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
