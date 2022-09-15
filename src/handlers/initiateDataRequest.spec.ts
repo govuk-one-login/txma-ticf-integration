@@ -34,10 +34,6 @@ jest.mock('../services/queue/sendInitiateDataTransferMessage', () => ({
 }))
 
 describe('initate data request handler', () => {
-  beforeEach(() => {
-    mockSendInitiateDataTransferMessage.mockReset()
-  })
-
   const givenRequestValidationResult = (
     isValid: boolean,
     dataRequestParams?: DataRequestParams,
@@ -73,6 +69,11 @@ describe('initate data request handler', () => {
       body: requestBody
     })
   }
+
+  beforeEach(() => {
+    mockSendInitiateDataTransferMessage.mockReset()
+  })
+
   it('returns 200 response when request is valid', async () => {
     givenValidRequest()
     givenSignatureIsValid()
