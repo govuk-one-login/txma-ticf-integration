@@ -15,8 +15,9 @@
     "lint:fix": "prettier . --write ; eslint . --fix",
     "postinstall": "husky install",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
-    "test": "jest",
-    "test:cov": "jest --coverage"
+    "test": "jest -c jest.config.ts",
+    "test:cov": "jest -c jest.config.ts --coverage",
+    "test:integration": "jest -c jest.integration.config.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.154.0",
@@ -30,6 +31,7 @@
     "@typescript-eslint/eslint-plugin": "5.33.0",
     "@typescript-eslint/parser": "5.33.0",
     "aws-sdk-client-mock": "1.0.0",
+    "axios": "^0.27.2",
     "eslint": "8.21.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-jest": "26.8.3",
