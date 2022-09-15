@@ -104,16 +104,17 @@ jobs:
       - name: Deploy to feature stack in the testing account
         env:
           FEATURE_BRANCH_NAME: ${{ github.event.ref }}
+          ZENDESK_API_SECRETS: ${{ secrets.TEST_ZENDESK_SECRETS }}
         run: |
+          echo "::add-mask::$ZENDESK_API_SECRETS"
           stack_name=$(echo ${FEATURE_BRANCH_NAME##*/} | tr -cd '[a-zA-Z0-9-]' | tr '[:upper:]' '[:lower:]')
-          echo "::add-mask::${{ secrets.ZENDESK_SECRETS }}"
           sam deploy \
             --stack-name ${stack_name:0:32} \
             --capabilities CAPABILITY_IAM \
             --region ${REGION} \
             --no-fail-on-empty-changeset \
             --s3-bucket ${DEV_ARTIFACT_BUCKET} \
-            --parameter-overrides ParameterKey=Environment,ParameterValue=dev ParameterKey=ZendeskApiSecrets,ParameterValue=${{ secrets.ZENDESK_SECRETS }}
+            --parameter-overrides ParameterKey=Environment,ParameterValue=dev ParameterKey=ZendeskApiSecrets,ParameterValue=$ZENDESK_API_SECRETS
 
   package-artifacts:
     name: Package artifacts for deployment
