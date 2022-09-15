@@ -34,7 +34,16 @@ describe('processDataRequest', () => {
       JSON.stringify({ someProperty: 'someValue' })
     )
     await expect(handler(initiateDataRequestEvent)).rejects.toThrow(
-      'Request data was not of the correct type'
+      'Event data was not of the correct type'
+    )
+    expect(initiateDataTransferMock).not.toHaveBeenCalled()
+  })
+
+  it('should throw an appropriate error if the request includes non-JSON data', async () => {
+    const initiateDataRequestEvent =
+      constructInitiateDataRequestEvent('some message')
+    await expect(handler(initiateDataRequestEvent)).rejects.toThrow(
+      'Event data did not include a valid JSON body'
     )
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
   })
