@@ -1,3 +1,5 @@
 process.env.ANALYSIS_BUCKET_NAME = 'analysis-bucket'
 process.env.AUDIT_BUCKET_NAME = 'audit-bucket'
 process.env.AWS_REGION = 'eu-west-2'
+process.env.ATHENA_DATABASE_NAME = 'test_database'
+process.env.ATHENA_TABLE_NAME = 'test_table'

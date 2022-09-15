@@ -1,5 +1,4 @@
 import { handler } from './initiateAthenaQuery'
-import { getEnv } from '../utils/helpers'
 import { confirmAthenaTable } from '../services/athena/confirmAthenaTable'
 import { ConfirmAthenaTableResult } from '../types/confirmAthenaTableResult'
 import { testAthenaQueryEvent } from '../utils/tests/events/initiateAthenaQueryEvent'
@@ -7,21 +6,15 @@ import { testAthenaQueryEvent } from '../utils/tests/events/initiateAthenaQueryE
 jest.mock('../services/athena/confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
 }))
-jest.mock('../utils/helpers', () => ({
-  getEnv: jest.fn()
-}))
 
 const confirmAthenaTableMock = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
 >
-const getEnvMock = getEnv as jest.Mock<string>
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
     confirmAthenaTableMock.mockReset()
   })
-
-  getEnvMock.mockReturnValue('test')
 
   it('confirms whether the athena data source exists', async () => {
     confirmAthenaTableMock.mockResolvedValue({
