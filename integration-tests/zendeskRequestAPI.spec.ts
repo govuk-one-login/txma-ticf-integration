@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-describe('Zendesk request API', () => {
-  it('returns a Invalid request source on invalid Zendesk Webhook Signature', async () => {
+describe('Zendesk request integrity', () => {
+  it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
     const awsBaseUrl = process.env.AWS_BASE_URL as string
     const invalidSignature = 'cCxJHacr678ZZigFZZlYq4qz2XLWPEOeS+PPDuTivwQ='
 
@@ -33,13 +33,14 @@ describe('Zendesk request API', () => {
         data
       })
         .then(() => {
-          throw 'Axios did not recieve an error'
+          throw 'Gateway did not return an error'
         })
         .catch((error) => {
           if (error.response) {
             return error.response
           }
-          throw 'Axios did not recieve a response error'
+          console.log(error)
+          throw 'No response recieved from gateway'
         })
     }
 
