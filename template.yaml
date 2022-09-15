@@ -21,9 +21,6 @@ Parameters:
     Description: The ARN of the permissions boundary to apply to any role created by the template
     Type: String
     Default: none
-  ZendeskApiSecrets:
-    Type: String
-    Default: '{}'
 
 Conditions:
   DeployS3Cleanup: !Equals [ !Ref Environment, dev]
@@ -109,7 +106,6 @@ Resources:
     Properties:
       Name: !Sub ${AWS::StackName}-ZendeskApiSecrets
       KmsKeyId: !Ref SecretsKmsKeyAlias
-      SecretString: !Ref ZendeskApiSecrets
 
   SecretsKmsKey:
     Type: AWS::KMS::Key
