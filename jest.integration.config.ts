@@ -2,9 +2,9 @@ import type { Config } from '@jest/types'
 
 const config: Config.InitialOptions = {
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
-  testPathIgnorePatterns: ['/integration-tests/'],
+  testPathIgnorePatterns: ['/src/'],
   preset: 'ts-jest',
-  setupFiles: ['<rootDir>/src/utils/tests/setup/testEnvVars.ts'],
+  setupFiles: ['<rootDir>/.integration.test.env'],
   verbose: true
 }
 
