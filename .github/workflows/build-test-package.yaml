@@ -112,7 +112,7 @@ jobs:
             --region ${REGION} \
             --no-fail-on-empty-changeset \
             --s3-bucket ${DEV_ARTIFACT_BUCKET} \
-            --parameter-overrides ParameterKey=Environment,ParameterValue=dev
+            --parameter-overrides ParameterKey=Environment,ParameterValue=dev ParameterKey=ZendeskApiSecrets,ParameterValue=${{ secrets.ZENDESK_SECRETS }}
 
   package-artifacts:
     name: Package artifacts for deployment
