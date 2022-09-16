@@ -2,21 +2,19 @@ import { handler } from './initiateAthenaQuery'
 import { confirmAthenaTable } from '../services/athena/confirmAthenaTable'
 import { ConfirmAthenaTableResult } from '../types/confirmAthenaTableResult'
 import { testAthenaQueryEvent } from '../utils/tests/events/initiateAthenaQueryEvent'
-// import { updateZendeskTicket } from '../services/updateZendeskTicket'
-
-// NOTE - updateZendeskTicket tests to be uncommented once trigger event finalised, see handler file
+import { updateZendeskTicket } from '../services/updateZendeskTicket'
 
 jest.mock('../services/athena/confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
 }))
-// jest.mock('./services/updateZendeskTicket', () => ({
-//   updateZendeskTicket: jest.fn()
-// }))
+jest.mock('../services/updateZendeskTicket', () => ({
+  updateZendeskTicket: jest.fn()
+}))
 
 const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
 >
-// const mockUpdateZendeskTicket = updateZendeskTicket as jest.Mock
+const mockUpdateZendeskTicket = updateZendeskTicket as jest.Mock
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
@@ -33,24 +31,17 @@ describe('initiate athena query handler', () => {
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
   })
 
-  it('throws an error if there is no athena data source', async () => {
+  it('updates zendesk and throws an error if there is no athena data source', async () => {
     mockConfirmAthenaTable.mockResolvedValue({
       tableAvailable: false,
       message: 'test error message'
     })
-    expect(handler(testAthenaQueryEvent)).rejects.toThrow('test error message')
+    await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
+      'test error message'
+    )
+    expect(mockConfirmAthenaTable).toHaveBeenCalled()
+    expect(mockUpdateZendeskTicket).toHaveBeenCalled()
   })
-
-  // it('closes the Zendesk ticket if the data source does not exist', async () => {
-  //   mockConfirmAthenaTable.mockResolvedValue({
-  //     tableAvailable: false,
-  //     message: 'test message'
-  //   })
-
-  //   await handler(testAthenaQueryEvent)
-  //   expect(mockConfirmAthenaTable).toHaveBeenCalled()
-  //   expect(mockUpdateZendeskTicket).toHaveBeenCalled()
-  // })
 
   it('throws an error if there is no data in the SQS Event', async () => {
     expect(handler({ Records: [] })).rejects.toThrow(
