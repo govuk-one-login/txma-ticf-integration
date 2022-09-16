@@ -12,3 +12,5 @@ export const ENCODED_AUTH_VALUE = 'EncodedAuthValue'
 export const MOCK_INITIATE_DATA_REQUEST_QUEUE_URL =
   'https://initiate_data_request_queue_'
 export const TEST_ZENDESK_SECRET_NAME = 'myZendeskSecretName'
+export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
+export const TEST_AUDIT_BUCKET = 'myAuditBucket'

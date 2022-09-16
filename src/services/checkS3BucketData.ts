@@ -16,6 +16,7 @@ export const checkS3BucketData = async (
   )
 
   //TODO: add handling for when there is no data available for requested dates
+
   const requestedAuditBucketObjects = await retrieveS3ObjectsForPrefixes(
     prefixes,
     getEnv('AUDIT_BUCKET_NAME')
@@ -31,11 +32,10 @@ export const checkS3BucketData = async (
     existingAnalysisBucketObjects
   )
 
+  console.log('Objects present in auditBucket', requestedAuditBucketObjects)
   const objectsToCopy = requestedAuditBucketObjects.filter(
     (object) =>
-      !existingAnalysisBucketObjects
-        .map((object) => object.Key)
-        .includes(object.Key)
+      !existingAnalysisBucketObjects.map((o) => o.Key).includes(object.Key)
   )
 
   console.log('Objects to copy:', objectsToCopy)
