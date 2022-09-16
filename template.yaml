@@ -94,7 +94,7 @@ Resources:
             Condition:
               ArnLike:
                 kms:EncryptionContext:aws:logs:arn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*
-  
+
   LogsKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
@@ -143,6 +143,38 @@ Resources:
       AliasName: !Sub alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
       TargetKeyId: !Ref SecretsKmsKey
 
+  QueueKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:CreateGrant
+              - kms:Decrypt
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource:
+              - '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:*
+            Resource:
+              - '*'
+
+  QueueKmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/queue-kms-key
+      TargetKeyId: !Ref QueueKmsKey
+
   # Data Retrieval
   ZendeskWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
@@ -150,7 +182,7 @@ Resources:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
       LogGroupName: !Sub /aws/apigateway/${ZendeskWebhookApi}-access-logs
       RetentionInDays: 7
-  
+
   ZendeskWebhookApi:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we want the lambda to fire off every time a Zendesk ticket is approved
     Type: AWS::Serverless::Api
@@ -161,7 +193,7 @@ Resources:
       Name: !Sub ${AWS::StackName}-zendesk-webhook-api
       StageName: default
       TracingEnabled: true
-      
+
   InitiateDataRequestFunction:
     #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
     #checkov:skip=CKV_AWS_117:VPC not required
@@ -173,7 +205,8 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
-          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets 
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets
+          INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
       Events:
         Api:
           Type: Api
@@ -188,7 +221,7 @@ Resources:
             Effect: Allow
             Action:
               - s3:ListBucket
-            Resource: 
+            Resource:
               - !GetAtt AnalysisBucket.Arn
               - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
           - Sid: Logs
@@ -200,7 +233,7 @@ Resources:
             Effect: Allow
             Action:
               - secretsmanager:GetSecretValue
-            Resource: 
+            Resource:
               - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
               - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskApiSecrets-??????
           - Sid: KmsSecretsDecryptionKey
@@ -209,9 +242,76 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SecretsKmsKey.Arn
+          - Sid: AllowQueueSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt InitiateDataRequestQueue.Arn
+          - Sid: AllowQueueKmsAccess
+            Effect: Allow
+            Action:
+              - kms:GenerateDataKey
+              - kms:Encrypt
+              # For some reason, Decrypt is needed to add items to the queue.
+              # See here for some discussion of this: https://github.com/aws/aws-cdk/issues/6609
+              - kms:Decrypt
+            Resource:
+              - !GetAtt QueueKmsKey.Arn
       ReservedConcurrentExecutions: 10
       Timeout: 900
-  
+
+  ProcessDataRequestFunction:
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: processDataRequest.handler
+      Environment:
+        Variables:
+          #TODO: Update with parameterised bucket name when merging with TxMA 1
+          AUDIT_BUCKET_NAME: audit-sandbox-message-batch
+          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+      Events:
+        InitiateDataRequestEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt InitiateDataRequestQueue.Arn
+            BatchSize: 1
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+            - Sid: S3Permissions
+              Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource:
+                - !GetAtt AnalysisBucket.Arn
+                - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+            - Sid: Logs
+              Effect: Allow
+              Action:
+                - logs:*
+              Resource: arn:aws:logs:*:*:*
+            - Sid: KmsQueueAllowDecrypt
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                - !GetAtt QueueKmsKey.Arn
+      ReservedConcurrentExecutions: 10
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
+  InitiateDataRequestQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+
+  InitiateDataRequestDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+
   # Data Analysis
   AnalysisBucket:
     Type: AWS::S3::Bucket
@@ -313,7 +413,7 @@ Resources:
       TableInput:
         Description: "Table contains event message data to be analysed"
         Name: !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "_sandbox_analysis_table" ] ] #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "_", "${Environment}", "_analysis_table" ] ]
-        Parameters: 
+        Parameters:
           has_encrypted_data: false
           projection.enabled: true
           projection.datetime.type: date
@@ -391,7 +491,7 @@ Resources:
             Resource: '*'
       ReservedConcurrentExecutions: 10
       Timeout: 900
-  
+
   EmptyS3Buckets:
     Type: AWS::CloudFormation::CustomResource
     Condition: DeployS3Cleanup
