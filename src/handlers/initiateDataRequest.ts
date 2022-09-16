@@ -1,11 +1,10 @@
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda'
-import { initiateDataTransfer } from '../services/initiateDataTransfer'
 import { updateZendeskTicket } from '../services/updateZendeskTicket'
 import { isSignatureInvalid } from '../services/validateRequestSource'
 import { validateZendeskRequest } from '../services/validateZendeskRequest'
-import { DataRequestParams } from '../types/dataRequestParams'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
-
+import { sendInitiateDataTransferMessage } from '../services/queue/sendInitiateDataTransferMessage'
+import { DataRequestParams } from '../types/dataRequestParams'
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -19,16 +18,16 @@ export const handler = async (
     return await handleInvalidRequest(event.body, validatedZendeskRequest)
   }
 
-  const dataTransferInitiateResult = await initiateDataTransfer(
+  const messageId = await sendInitiateDataTransferMessage(
     validatedZendeskRequest.dataRequestParams as DataRequestParams
   )
 
+  console.log(`Sent data transfer queue message with id '${messageId}'`)
+
   return {
-    statusCode: dataTransferInitiateResult.success ? 200 : 400,
+    statusCode: 200,
     body: JSON.stringify({
-      message: dataTransferInitiateResult.success
-        ? 'data transfer initiated'
-        : dataTransferInitiateResult.errorMessage
+      message: 'data transfer initiated'
     })
   }
 }
@@ -37,10 +36,15 @@ const handleInvalidRequest = async (
   requestBody: string | null,
   validatedZendeskRequest: ValidatedDataRequestParamsResult
 ) => {
+  console.log('Zendesk request was invalid')
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
   const newTicketStatus = 'closed'
-  await updateZendeskTicket(requestBody, validationMessage, newTicketStatus)
+  await updateZendeskTicket(
+    requestBody,
+    `Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: ${validationMessage}`,
+    newTicketStatus
+  )
   return {
     statusCode: 400,
     body: JSON.stringify({

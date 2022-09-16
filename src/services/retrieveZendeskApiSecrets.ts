@@ -1,10 +1,12 @@
 import { ZendeskApiSecrets } from '../types/zendeskApiSecrets'
+import { getEnv } from '../utils/helpers'
 import { retrieveSecrets } from './retrieveSecrets'
-const SECRET_NAME = 'zendesk-api-secrets'
+
 export const retrieveZendeskApiSecrets =
   async (): Promise<ZendeskApiSecrets> => {
-    const secrets = await retrieveSecrets(SECRET_NAME)
-    checkSecretsSet(secrets, [
+    const secretName = getEnv('ZENDESK_API_SECRETS_NAME')
+    const secrets = await retrieveSecrets(secretName)
+    checkSecretsSet(secretName, secrets, [
       'ZENDESK_API_KEY',
       'ZENDESK_API_USER_ID',
       'ZENDESK_API_USER_EMAIL',
@@ -21,17 +23,19 @@ export const retrieveZendeskApiSecrets =
   }
 
 const checkSecretsSet = (
+  secretName: string,
   secrets: { [key: string]: string },
   secretKeys: string[]
 ) => {
-  secretKeys.forEach((k) => checkSecretSet(secrets, k))
+  secretKeys.forEach((k) => checkSecretSet(secretName, secrets, k))
 }
 
 const checkSecretSet = (
+  secretName: string,
   secrets: { [key: string]: string },
   secretKey: string
 ) => {
   if (!secrets[secretKey]) {
-    throw new Error(`Secret with key ${secretKey} not set in ${SECRET_NAME}`)
+    throw new Error(`Secret with key ${secretKey} not set in ${secretName}`)
   }
 }
