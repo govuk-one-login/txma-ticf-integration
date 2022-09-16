@@ -13,9 +13,10 @@ export const handler = async (event: SQSEvent): Promise<void> => {
 
   // NOTE - This will need to be updated once the mechanism for retrieving the Zendesk Ticket information is finalised
   // Zendesk Ticket ID could be passed in the SQS Event or could be retrieved from a database
-  // if (!doesAthenaTableExist.tableAvailable) {
-  //   await updateZendeskTicket('zendeskevent', doesAthenaTableExist.message, 'closed')
-  // }
+  if (!doesAthenaTableExist.tableAvailable) {
+    //   await updateZendeskTicket('zendeskevent', doesAthenaTableExist.message, 'closed')
+    throw new Error(doesAthenaTableExist.message)
+  }
 
   console.log(doesAthenaTableExist.message)
 
