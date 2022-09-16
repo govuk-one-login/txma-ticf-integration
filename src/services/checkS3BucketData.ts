@@ -3,6 +3,7 @@ import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
 import { listS3Objects } from './listS3Objects'
 import { getEnv } from '../utils/helpers'
 import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
+import { _Object } from '@aws-sdk/client-s3'
 
 export const checkS3BucketData = async (
   dataRequestParams: DataRequestParams
@@ -15,25 +16,15 @@ export const checkS3BucketData = async (
   )
 
   //TODO: add handling for when there is no data available for requested dates
-  const requestedAuditBucketObjects = await Promise.all(
-    prefixes.map(
-      async (prefix) =>
-        await listS3Objects({
-          Bucket: getEnv('AUDIT_BUCKET_NAME'),
-          Prefix: prefix
-        })
-    )
-  ).then((objects: string[][]) => objects.flat())
+  const requestedAuditBucketObjects = await retrieveS3ObjectsForPrefixes(
+    prefixes,
+    getEnv('AUDIT_BUCKET_NAME')
+  )
 
-  const existingAnalysisBucketObjects = await Promise.all(
-    prefixes.map(
-      async (prefix) =>
-        await listS3Objects({
-          Bucket: getEnv('ANALYSIS_BUCKET_NAME'),
-          Prefix: prefix
-        })
-    )
-  ).then((objects: string[][]) => objects.flat())
+  const existingAnalysisBucketObjects = await retrieveS3ObjectsForPrefixes(
+    prefixes,
+    getEnv('ANALYSIS_BUCKET_NAME')
+  )
 
   console.log(
     'Objects present in analysis bucket:',
@@ -41,7 +32,10 @@ export const checkS3BucketData = async (
   )
 
   const objectsToCopy = requestedAuditBucketObjects.filter(
-    (object) => !existingAnalysisBucketObjects.includes(object)
+    (object) =>
+      !existingAnalysisBucketObjects
+        .map((object) => object.Key)
+        .includes(object.Key)
   )
 
   console.log('Objects to copy:', objectsToCopy)
@@ -49,8 +43,23 @@ export const checkS3BucketData = async (
   // For now we keep things in such a way that the webhook will still return a successful result
   //TODO: Implement storage class logic - Storage tier available in listS3Objects() function, it just needs amending
   return Promise.resolve({
-    standardTierLocationsToCopy: objectsToCopy,
+    standardTierLocationsToCopy: objectsToCopy.map((o) => o.Key as string),
     glacierTierLocationsToCopy: [],
     dataAvailable: true
   })
+}
+
+const retrieveS3ObjectsForPrefixes = async (
+  prefixes: string[],
+  bucketName: string
+): Promise<_Object[]> => {
+  return Promise.all(
+    prefixes.map(
+      async (prefix) =>
+        await listS3Objects({
+          Bucket: bucketName,
+          Prefix: prefix
+        })
+    )
+  ).then((objects: _Object[][]) => objects.flat())
 }

@@ -2,11 +2,12 @@ import { listS3Objects } from './listS3Objects'
 import { checkS3BucketData } from './checkS3BucketData'
 import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
 import { DataRequestParams } from '../types/dataRequestParams'
+import { StorageClass, _Object } from '@aws-sdk/client-s3'
 
 jest.mock('./listS3Objects', () => ({
   listS3Objects: jest.fn()
 }))
-const mocklistS3Objects = listS3Objects as jest.Mock<Promise<string[]>>
+const mocklistS3Objects = listS3Objects as jest.Mock<Promise<_Object[]>>
 
 jest.mock('./generateS3ObjectPrefixes', () => ({
   generateS3ObjectPrefixes: jest.fn()
@@ -31,52 +32,89 @@ describe('check objects in analysis bucket', () => {
     'firehose/2022/10/10/23'
   ]
   mockgenerateS3ObjectPrefixes.mockReturnValue(prefixes)
+  const generateS3ObjectDataForKey = (
+    key: string,
+    storageClass: StorageClass
+  ): _Object => ({
+    Key: key,
+    StorageClass: storageClass
+  })
+
+  const generateS3ObjectDataForKeys = (
+    keys: string[],
+    storageClass: StorageClass
+  ): _Object[] => keys.map((k) => generateS3ObjectDataForKey(k, storageClass))
 
   const givenAllDataInBothBuckets = (prefixes: string[]) => {
-    prefixes.forEach((prefix) => {
-      mocklistS3Objects.mockResolvedValueOnce([
-        `${prefix}/example-object-1`,
-        `${prefix}/example-object-2`,
-        `${prefix}/example-object-3`
-      ])
-    })
+    prefixes.forEach((prefix) =>
+      mocklistS3Objects.mockResolvedValueOnce(
+        generateS3ObjectDataForKeys(
+          [
+            `${prefix}/example-object-1`,
+            `${prefix}/example-object-2`,
+            `${prefix}/example-object-3`
+          ],
+          'STANDARD'
+        )
+      )
+    )
 
-    prefixes.forEach((prefix) => {
-      mocklistS3Objects.mockResolvedValueOnce([
-        `${prefix}/example-object-1`,
-        `${prefix}/example-object-2`,
-        `${prefix}/example-object-3`
-      ])
-    })
+    prefixes.forEach((prefix) =>
+      mocklistS3Objects.mockResolvedValueOnce(
+        generateS3ObjectDataForKeys(
+          [
+            `${prefix}/example-object-1`,
+            `${prefix}/example-object-2`,
+            `${prefix}/example-object-3`
+          ],
+          'STANDARD'
+        )
+      )
+    )
   }
 
   const givenNoDataInAnalysisBucket = (prefixes: string[]) => {
     prefixes.forEach((prefix) => {
       mocklistS3Objects
-        .mockResolvedValueOnce([
-          `${prefix}/example-object-1`,
-          `${prefix}/example-object-2`,
-          `${prefix}/example-object-3`
-        ])
+        .mockResolvedValueOnce(
+          generateS3ObjectDataForKeys(
+            [
+              `${prefix}/example-object-1`,
+              `${prefix}/example-object-2`,
+              `${prefix}/example-object-3`
+            ],
+            'STANDARD'
+          )
+        )
         .mockResolvedValue([])
     })
   }
 
   const givenPartialDataInAnalysisBucket = (prefixes: string[]) => {
     prefixes.forEach((prefix) => {
-      mocklistS3Objects.mockResolvedValueOnce([
-        `${prefix}/example-object-1`,
-        `${prefix}/example-object-2`,
-        `${prefix}/example-object-3`
-      ])
-
-      prefixes.forEach((prefix, index) => {
-        if (index > 1) {
-          mocklistS3Objects.mockResolvedValueOnce([
+      mocklistS3Objects.mockResolvedValueOnce(
+        generateS3ObjectDataForKeys(
+          [
             `${prefix}/example-object-1`,
             `${prefix}/example-object-2`,
             `${prefix}/example-object-3`
-          ])
+          ],
+          'STANDARD'
+        )
+      )
+
+      prefixes.forEach((prefix, index) => {
+        if (index > 1) {
+          mocklistS3Objects.mockResolvedValueOnce(
+            generateS3ObjectDataForKeys(
+              [
+                `${prefix}/example-object-1`,
+                `${prefix}/example-object-2`,
+                `${prefix}/example-object-3`
+              ],
+              'STANDARD'
+            )
+          )
         }
       })
     })
@@ -126,12 +164,22 @@ describe('check objects in analysis bucket', () => {
     givenPartialDataInAnalysisBucket(prefixes)
 
     mocklistS3Objects
-      .mockResolvedValueOnce([
-        'firehose/2022/10/10/21/example-object-1',
-        'firehose/2022/10/10/21/example-object-2',
-        'firehose/2022/10/10/21/example-object-3'
-      ])
-      .mockResolvedValueOnce(['firehose/2022/10/10/21/example-object-1'])
+      .mockResolvedValueOnce(
+        generateS3ObjectDataForKeys(
+          [
+            'firehose/2022/10/10/21/example-object-1',
+            'firehose/2022/10/10/21/example-object-2',
+            'firehose/2022/10/10/21/example-object-3'
+          ],
+          'STANDARD'
+        )
+      )
+      .mockResolvedValueOnce(
+        generateS3ObjectDataForKeys(
+          ['firehose/2022/10/10/21/example-object-1'],
+          'STANDARD'
+        )
+      )
 
     const result = await checkS3BucketData(mockDataRequestParams)
     expect(result).toEqual({
