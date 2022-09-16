@@ -303,6 +303,7 @@ Resources:
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
+  
   InitiateDataRequestQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -358,7 +359,6 @@ Resources:
   # Data Analysis
 
   InitiateAthenaQueryFunction:
-    #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
@@ -411,9 +411,17 @@ Resources:
             Resource:
               - !GetAtt SecretsKmsKey.Arn
       ReservedConcurrentExecutions: 10
+      DeadLetterQueue:
+        TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn 
+        Type: SQS
 
   #NOTE - This is a placeholder SQS queue which will be replaced - it is here to enable the Athena lambda to be created 
   InitiateAthenaQueryQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+
+  InitiateAthenaQueryDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
