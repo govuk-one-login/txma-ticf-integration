@@ -7,7 +7,7 @@ import { givenAllSecretsAvailable } from '../utils/tests/mocks/retrieveSecretKey
 import { ALL_SECRET_KEYS } from '../utils/tests/testConstants'
 import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 
-jest.mock('./retrieveZendeskApiSecrets', () => ({
+jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
 }))
 const generateTestHeaders = (): APIGatewayProxyEventHeaders => {

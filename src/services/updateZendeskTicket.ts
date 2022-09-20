@@ -1,5 +1,5 @@
 import https from 'node:https'
-import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
+import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import { makeHttpsRequest, base64Encode } from './httpsRequestUtils'
 
 export const updateZendeskTicket = async (

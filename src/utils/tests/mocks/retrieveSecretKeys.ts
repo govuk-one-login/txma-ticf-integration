@@ -1,4 +1,4 @@
-import { retrieveZendeskApiSecrets } from '../../../services/retrieveZendeskApiSecrets'
+import { retrieveZendeskApiSecrets } from '../../../secrets/retrieveZendeskApiSecrets'
 import { ZendeskApiSecrets } from '../../../types/zendeskApiSecrets'
 import { ALL_SECRET_KEYS } from '../testConstants'
 

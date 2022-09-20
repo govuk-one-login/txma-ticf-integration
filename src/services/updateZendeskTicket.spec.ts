@@ -12,7 +12,7 @@ import * as mockHttpsRequestUtils from '../utils/tests/mocks/httpsRequestUtils'
 
 const zendeskTicketMessage = 'Something was invalid.'
 
-jest.mock('./retrieveZendeskApiSecrets', () => ({
+jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
 }))
 
