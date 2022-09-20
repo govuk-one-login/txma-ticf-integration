@@ -493,7 +493,7 @@ Resources:
 
   QueryRequestDynamoDBTable: 
     Type: AWS::DynamoDB::Table
-    Properties: 
+    Properties:
       AttributeDefinitions: 
         - AttributeName: "zendeskId"
           AttributeType: "S"
@@ -509,37 +509,49 @@ Resources:
           AttributeType: "S"
         - AttributeName: "requestInfo"
           AttributeType: "B"
-      KeySchema: 
+      KeySchema:
         - AttributeName: "zendeskId"
           KeyType: "HASH"
       GlobalSecondaryIndexes:
         - IndexName: s3MoveIdIndex
-          KeySchema: 
+          KeySchema:
             - AttributeName: "s3MoveId"
               KeyType: "HASH"
-          Projection: 
+          Projection:
             ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
         - IndexName: glacierRetrieveIdIndex
-          KeySchema: 
+          KeySchema:
             - AttributeName: "glacierRetrieveId"
               KeyType: "HASH"
-          Projection: 
+          Projection:
             ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
         - IndexName: glacierMoveIdIndex
-          KeySchema: 
+          KeySchema:
             - AttributeName: "glacierMoveId"
               KeyType: "HASH"
-          Projection: 
+          Projection:
             ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
         - IndexName: athenaQueryIdIndex
-          KeySchema: 
+          KeySchema:
             - AttributeName: "athenaQueryId"
               KeyType: "HASH"
-          Projection: 
+          Projection:
             ProjectionType: "KEYS_ONLY"
-      ProvisionedThroughput: 
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
       SSESpecification:
