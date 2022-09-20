@@ -81,29 +81,6 @@ describe('check objects in analysis bucket', () => {
     })
   }
 
-  const givenAllDataInBothBuckets = (prefixes: string[]) => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
-    givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
-  }
-
-  const givenNoDataInAnalysisBucket = (prefixes: string[]) => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
-    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
-  }
-
-  const givenPartialDataInAnalysisBucket = (prefixes: string[]) => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
-    givenNoDataInBucketForPrefixes(
-      [prefixes[0], prefixes[1]],
-      TEST_ANALYSIS_BUCKET
-    )
-    givenDataInBucketForPrefixes(
-      [prefixes[2]],
-      TEST_ANALYSIS_BUCKET,
-      'STANDARD'
-    )
-  }
-
   const givenNoDataInEitherBucket = () => {
     when(listS3Objects).defaultResolvedValue([])
   }
@@ -113,7 +90,8 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('all data in analysis bucket', async () => {
-    givenAllDataInBothBuckets(prefixes)
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
 
     const result = await checkS3BucketData(mockDataRequestParams)
     expect(result).toEqual({
@@ -124,7 +102,8 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, all audit data is standard tier', async () => {
-    givenNoDataInAnalysisBucket(prefixes)
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
 
     const result = await checkS3BucketData(mockDataRequestParams)
     expect(result).toEqual({
@@ -144,12 +123,66 @@ describe('check objects in analysis bucket', () => {
     })
   })
 
-  // test('no data in analysis bucket, all audit data is glacier tier')
+  test('no data in analysis bucket, all audit data in glacier tier', async () => {
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'GLACIER')
 
-  // test('no data in analysis bucket, some audit data is glacier tier')
+    const result = await checkS3BucketData(mockDataRequestParams)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3',
+        'firehose/2022/10/10/23/example-object-1',
+        'firehose/2022/10/10/23/example-object-2',
+        'firehose/2022/10/10/23/example-object-3'
+      ],
+      standardTierLocationsToCopy: []
+    })
+  })
+
+  test('no data in analysis bucket, some audit data in glacier tier', async () => {
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+    givenDataInBucketForPrefixes(
+      [prefixes[0], prefixes[2]],
+      TEST_AUDIT_BUCKET,
+      'GLACIER'
+    )
+    givenDataInBucketForPrefixes([prefixes[1]], TEST_AUDIT_BUCKET, 'STANDARD')
+    const result = await checkS3BucketData(mockDataRequestParams)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/23/example-object-1',
+        'firehose/2022/10/10/23/example-object-2',
+        'firehose/2022/10/10/23/example-object-3'
+      ],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3'
+      ]
+    })
+  })
 
   test('partial data in analysis bucket', async () => {
-    givenPartialDataInAnalysisBucket(prefixes)
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenNoDataInBucketForPrefixes(
+      [prefixes[0], prefixes[1]],
+      TEST_ANALYSIS_BUCKET
+    )
+    givenDataInBucketForPrefixes(
+      [prefixes[2]],
+      TEST_ANALYSIS_BUCKET,
+      'STANDARD'
+    )
 
     const result = await checkS3BucketData(mockDataRequestParams)
     expect(result).toEqual({

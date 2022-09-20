@@ -15,8 +15,6 @@ export const checkS3BucketData = async (
     dataRequestParams.dateTo
   )
 
-  //TODO: add handling for when there is no data available for requested dates
-
   const requestedAuditBucketObjects = await retrieveS3ObjectsForPrefixes(
     prefixes,
     getEnv('AUDIT_BUCKET_NAME')
@@ -40,11 +38,13 @@ export const checkS3BucketData = async (
 
   console.log('Objects to copy:', objectsToCopy)
 
-  // For now we keep things in such a way that the webhook will still return a successful result
-  //TODO: Implement storage class logic - Storage tier available in listS3Objects() function, it just needs amending
   return Promise.resolve({
-    standardTierLocationsToCopy: objectsToCopy.map((o) => o.Key as string),
-    glacierTierLocationsToCopy: [],
+    standardTierLocationsToCopy: objectsToCopy
+      .filter((o) => o.StorageClass === 'STANDARD')
+      .map((o) => o.Key as string),
+    glacierTierLocationsToCopy: objectsToCopy
+      .filter((o) => o.StorageClass === 'GLACIER')
+      .map((o) => o.Key as string),
     dataAvailable:
       requestedAuditBucketObjects?.length > 0 ||
       existingAnalysisBucketObjects?.length > 0
