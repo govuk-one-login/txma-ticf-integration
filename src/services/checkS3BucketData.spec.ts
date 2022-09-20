@@ -49,42 +49,14 @@ describe('check objects in analysis bucket', () => {
     storageClass: StorageClass
   ): _Object[] => keys.map((k) => generateS3ObjectDataForKey(k, storageClass))
 
-  const givenAllDataInBothBuckets = (prefixes: string[]) => {
-    prefixes.forEach((prefix) =>
-      when(listS3Objects)
-        .calledWith({ Prefix: prefix, Bucket: TEST_AUDIT_BUCKET })
-        .mockResolvedValue(
-          generateS3ObjectDataForKeys(
-            [
-              `${prefix}/example-object-1`,
-              `${prefix}/example-object-2`,
-              `${prefix}/example-object-3`
-            ],
-            'STANDARD'
-          )
-        )
-    )
-
-    prefixes.forEach((prefix) =>
-      when(listS3Objects)
-        .calledWith({ Prefix: prefix, Bucket: TEST_ANALYSIS_BUCKET })
-        .mockResolvedValue(
-          generateS3ObjectDataForKeys(
-            [
-              `${prefix}/example-object-1`,
-              `${prefix}/example-object-2`,
-              `${prefix}/example-object-3`
-            ],
-            'STANDARD'
-          )
-        )
-    )
-  }
-
-  const givenNoDataInAnalysisBucket = (prefixes: string[]) => {
+  const givenDataInBucketForPrefixes = (
+    prefixes: string[],
+    bucketName: string,
+    storageClass: StorageClass
+  ) => {
     prefixes.forEach((prefix) => {
       when(listS3Objects)
-        .calledWith({ Prefix: prefix, Bucket: TEST_AUDIT_BUCKET })
+        .calledWith({ Prefix: prefix, Bucket: bucketName })
         .mockResolvedValue(
           generateS3ObjectDataForKeys(
             [
@@ -92,53 +64,44 @@ describe('check objects in analysis bucket', () => {
               `${prefix}/example-object-2`,
               `${prefix}/example-object-3`
             ],
-            'STANDARD'
+            storageClass
           )
         )
+    })
+  }
 
+  const givenNoDataInBucketForPrefixes = (
+    prefixes: string[],
+    bucketName: string
+  ) => {
+    prefixes.forEach((prefix) => {
       when(listS3Objects)
-        .calledWith({ Prefix: prefix, Bucket: TEST_ANALYSIS_BUCKET })
+        .calledWith({ Prefix: prefix, Bucket: bucketName })
         .mockResolvedValue([])
     })
   }
 
-  const givenPartialDataInAnalysisBucket = (prefixes: string[]) => {
-    prefixes.forEach((prefix) => {
-      when(listS3Objects)
-        .calledWith({ Bucket: TEST_AUDIT_BUCKET, Prefix: prefix })
-        .mockResolvedValue(
-          generateS3ObjectDataForKeys(
-            [
-              `${prefix}/example-object-1`,
-              `${prefix}/example-object-2`,
-              `${prefix}/example-object-3`
-            ],
-            'STANDARD'
-          )
-        )
+  const givenAllDataInBothBuckets = (prefixes: string[]) => {
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
+  }
 
-      prefixes.forEach((prefix, index) => {
-        if (index <= 1) {
-          when(listS3Objects)
-            .calledWith({ Prefix: prefix, Bucket: TEST_ANALYSIS_BUCKET })
-            .mockResolvedValue([])
-        }
-        if (index > 1) {
-          when(listS3Objects)
-            .calledWith({ Prefix: prefix, Bucket: TEST_ANALYSIS_BUCKET })
-            .mockResolvedValue(
-              generateS3ObjectDataForKeys(
-                [
-                  `${prefix}/example-object-1`,
-                  `${prefix}/example-object-2`,
-                  `${prefix}/example-object-3`
-                ],
-                'STANDARD'
-              )
-            )
-        }
-      })
-    })
+  const givenNoDataInAnalysisBucket = (prefixes: string[]) => {
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+  }
+
+  const givenPartialDataInAnalysisBucket = (prefixes: string[]) => {
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenNoDataInBucketForPrefixes(
+      [prefixes[0], prefixes[1]],
+      TEST_ANALYSIS_BUCKET
+    )
+    givenDataInBucketForPrefixes(
+      [prefixes[2]],
+      TEST_ANALYSIS_BUCKET,
+      'STANDARD'
+    )
   }
 
   const givenNoDataInEitherBucket = () => {
@@ -160,7 +123,7 @@ describe('check objects in analysis bucket', () => {
     })
   })
 
-  test('no data in analysis bucket', async () => {
+  test('no data in analysis bucket, all audit data is standard tier', async () => {
     givenNoDataInAnalysisBucket(prefixes)
 
     const result = await checkS3BucketData(mockDataRequestParams)
@@ -180,6 +143,10 @@ describe('check objects in analysis bucket', () => {
       ]
     })
   })
+
+  // test('no data in analysis bucket, all audit data is glacier tier')
+
+  // test('no data in analysis bucket, some audit data is glacier tier')
 
   test('partial data in analysis bucket', async () => {
     givenPartialDataInAnalysisBucket(prefixes)
