@@ -1,11 +1,10 @@
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda'
-import { initiateDataTransfer } from '../services/initiateDataTransfer'
 import { updateZendeskTicket } from '../services/updateZendeskTicket'
 import { isSignatureInvalid } from '../services/validateRequestSource'
 import { validateZendeskRequest } from '../services/validateZendeskRequest'
-import { DataRequestParams } from '../types/dataRequestParams'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
-
+import { sendInitiateDataTransferMessage } from '../services/queue/sendInitiateDataTransferMessage'
+import { DataRequestParams } from '../types/dataRequestParams'
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -19,18 +18,16 @@ export const handler = async (
     return await handleInvalidRequest(event.body, validatedZendeskRequest)
   }
 
-  console.log('Zendesk request was valid')
-
-  const dataTransferInitiateResult = await initiateDataTransfer(
+  const messageId = await sendInitiateDataTransferMessage(
     validatedZendeskRequest.dataRequestParams as DataRequestParams
   )
 
+  console.log(`Sent data transfer queue message with id '${messageId}'`)
+
   return {
-    statusCode: dataTransferInitiateResult.success ? 200 : 400,
+    statusCode: 200,
     body: JSON.stringify({
-      message: dataTransferInitiateResult.success
-        ? 'data transfer initiated'
-        : dataTransferInitiateResult.errorMessage
+      message: 'data transfer initiated'
     })
   }
 }

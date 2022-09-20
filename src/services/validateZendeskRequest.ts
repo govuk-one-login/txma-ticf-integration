@@ -1,9 +1,5 @@
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
-import { getEpochDate, tryParseJSON } from '../utils/helpers'
-
-function isEmpty(obj: object): boolean {
-  return obj && Object.keys(obj).length === 0
-}
+import { getEpochDate, tryParseJSON, isEmpty } from '../utils/helpers'
 
 const IDENTIFIERS = ['event_id', 'session_id', 'journey_id', 'user_id']
 

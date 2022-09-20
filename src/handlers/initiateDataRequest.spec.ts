@@ -1,16 +1,12 @@
 import { handler } from './initiateDataRequest'
 import { defaultApiRequest } from '../utils/tests/events/defaultApiRequest'
 import { validateZendeskRequest } from '../services/validateZendeskRequest'
-import { initiateDataTransfer } from '../services/initiateDataTransfer'
 import { updateZendeskTicket } from '../services/updateZendeskTicket'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
 import { DataRequestParams } from '../types/dataRequestParams'
 import { testDataRequest } from '../utils/tests/testDataRequest'
-import { InitiateDataTransferResult } from '../types/initiateDataTransferResult'
 import { isSignatureInvalid } from '../services/validateRequestSource'
-const mockInitiateDataTransfer = initiateDataTransfer as jest.Mock<
-  Promise<InitiateDataTransferResult>
->
+import { sendInitiateDataTransferMessage } from '../services/queue/sendInitiateDataTransferMessage'
 const mockValidateZendeskRequest =
   validateZendeskRequest as jest.Mock<ValidatedDataRequestParamsResult>
 
@@ -18,12 +14,11 @@ const mockUpdateZendeskTicket = updateZendeskTicket as jest.Mock
 
 const mockIsSignatureInvalid = isSignatureInvalid as jest.Mock<Promise<boolean>>
 
+const mockSendInitiateDataTransferMessage =
+  sendInitiateDataTransferMessage as jest.Mock
+
 jest.mock('../services/validateZendeskRequest', () => ({
   validateZendeskRequest: jest.fn()
-}))
-
-jest.mock('../services/initiateDataTransfer', () => ({
-  initiateDataTransfer: jest.fn()
 }))
 
 jest.mock('../services/updateZendeskTicket', () => ({
@@ -32,6 +27,10 @@ jest.mock('../services/updateZendeskTicket', () => ({
 
 jest.mock('../services/validateRequestSource', () => ({
   isSignatureInvalid: jest.fn()
+}))
+
+jest.mock('../services/queue/sendInitiateDataTransferMessage', () => ({
+  sendInitiateDataTransferMessage: jest.fn()
 }))
 
 describe('initate data request handler', () => {
@@ -49,20 +48,6 @@ describe('initate data request handler', () => {
 
   const givenValidRequest = () => {
     givenRequestValidationResult(true, testDataRequest)
-  }
-
-  const givenDataResult = (success: boolean, errorMessage?: string) => {
-    mockInitiateDataTransfer.mockImplementation(() =>
-      Promise.resolve({ success, errorMessage: errorMessage })
-    )
-  }
-
-  const givenDataAvailable = () => {
-    givenDataResult(true)
-  }
-
-  const givenNoDataAvailable = (errorMessage: string) => {
-    givenDataResult(false, errorMessage)
   }
 
   const givenSignatureValidationResult = (isValid: boolean) => {
@@ -84,9 +69,13 @@ describe('initate data request handler', () => {
       body: requestBody
     })
   }
-  it('returns 200 response when request is valid and data found', async () => {
+
+  beforeEach(() => {
+    mockSendInitiateDataTransferMessage.mockReset()
+  })
+
+  it('returns 200 response when request is valid', async () => {
     givenValidRequest()
-    givenDataAvailable()
     givenSignatureIsValid()
 
     const handlerCallResult = await callHandlerWithBody()
@@ -98,7 +87,9 @@ describe('initate data request handler', () => {
       })
     })
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
-    expect(initiateDataTransfer).toHaveBeenCalledWith(testDataRequest)
+    expect(mockSendInitiateDataTransferMessage).toHaveBeenCalledWith(
+      testDataRequest
+    )
   })
 
   it('returns 400 response when request signature is invalid', async () => {
@@ -116,6 +107,7 @@ describe('initate data request handler', () => {
     expect(console.warn).toHaveBeenLastCalledWith(
       'Request received with invalid webhook signature'
     )
+    expect(sendInitiateDataTransferMessage).not.toHaveBeenCalled()
   })
 
   it('returns 400 response when request body is invalid', async () => {
@@ -138,21 +130,5 @@ describe('initate data request handler', () => {
       `Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: ${validationMessage}`,
       newTicketStatus
     )
-  })
-
-  it('returns 400 response when no data available', async () => {
-    const noDataAvailableErrorMessage = 'my no data available message'
-    givenValidRequest()
-    givenSignatureIsValid()
-    givenNoDataAvailable(noDataAvailableErrorMessage)
-
-    const handlerCallResult = await callHandlerWithBody()
-
-    expect(handlerCallResult).toEqual({
-      statusCode: 400,
-      body: JSON.stringify({
-        message: noDataAvailableErrorMessage
-      })
-    })
   })
 })

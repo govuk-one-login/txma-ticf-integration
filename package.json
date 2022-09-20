@@ -21,8 +21,10 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "3.163.0",
+    "@aws-sdk/client-glue": "3.163.0",
     "@aws-sdk/client-s3": "3.163.0",
-    "@aws-sdk/client-secrets-manager": "3.163.0"
+    "@aws-sdk/client-secrets-manager": "3.163.0",
+    "@aws-sdk/client-sqs": "3.170.0"
   },
   "devDependencies": {
     "@jest/types": "28.1.3",
