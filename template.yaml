@@ -219,6 +219,8 @@ Resources:
       Timeout: 900
   
   SendEmailRequestToNotify:
+    #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
+    #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       Handler: sendEmailRequestToNotify.handler
