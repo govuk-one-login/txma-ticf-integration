@@ -204,7 +204,7 @@ describe('check objects in analysis bucket', () => {
 
     const result = await checkS3BucketData(mockDataRequestParams)
     expect(result).toEqual({
-      dataAvailable: true,
+      dataAvailable: false,
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: []
     })

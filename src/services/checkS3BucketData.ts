@@ -45,7 +45,9 @@ export const checkS3BucketData = async (
   return Promise.resolve({
     standardTierLocationsToCopy: objectsToCopy.map((o) => o.Key as string),
     glacierTierLocationsToCopy: [],
-    dataAvailable: true
+    dataAvailable:
+      requestedAuditBucketObjects?.length > 0 ||
+      existingAnalysisBucketObjects?.length > 0
   })
 }
 
