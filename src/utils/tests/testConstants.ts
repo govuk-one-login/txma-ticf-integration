@@ -1,6 +1,6 @@
 import { ZendeskApiSecrets } from '../../types/zendeskApiSecrets'
 
-export const TICKET_ID = '123'
+export const ZENDESK_TICKET_ID = '123'
 export const ALL_SECRET_KEYS: ZendeskApiSecrets = {
   zendeskApiKey: 'myZendeskApiKey',
   zendeskApiUserId: 'myZendeskApiUserId',

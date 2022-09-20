@@ -1,7 +1,8 @@
 import { DataRequestParams } from '../../types/dataRequestParams'
+import { ZENDESK_TICKET_ID } from './testConstants'
 
 export const testDataRequest = {
-  zendeskId: '123',
+  zendeskId: ZENDESK_TICKET_ID,
   resultsEmail: 'myuser@test.gov.uk',
   resultsName: 'my name',
   dateFrom: '2021-08-21',
