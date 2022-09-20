@@ -218,6 +218,36 @@ Resources:
       ReservedConcurrentExecutions: 10
       Timeout: 900
   
+  SendEmailRequestToNotify:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: sendEmailRequestToNotify.handler
+      Environment:
+        Variables:
+          NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifyApiSecrets
+      KmsKeyArn: !GetAtt LamnbdaKmsKey.Arn
+      Policies: 
+        - Statement:
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Sid: SecretManager
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-NotifyApiSecrets-??????
+          - Sid: KmsSecretsDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SecretsKmsKey.Arn
+      ReservedConcurrentExecutions: 10
+      Timeout: 900
+
   # Data Analysis
   AnalysisBucket:
     Type: AWS::S3::Bucket

@@ -23,8 +23,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       }
     )
   )
-  console.log(await response)
-  return await response
+  console.log(response)
+  return response
 }
 // need to add options.personalisation to  enter text into the email.
 // need to grab recipient email address from event body
