@@ -11,7 +11,6 @@ import {
 jest.mock('./listS3Objects', () => ({
   listS3Objects: jest.fn()
 }))
-//const mocklistS3Objects = listS3Objects as jest.Mock<Promise<_Object[]>>
 
 jest.mock('./generateS3ObjectPrefixes', () => ({
   generateS3ObjectPrefixes: jest.fn()
@@ -87,8 +86,17 @@ describe('check objects in analysis bucket', () => {
 
   beforeEach(() => {
     when(listS3Objects).resetWhenMocks()
+    jest.spyOn(global.console, 'log')
   })
 
+  const assertNumberOfFilesLogged = (
+    standardTierFiles: number,
+    glacierTierFiles: number
+  ) => {
+    expect(console.log).toHaveBeenLastCalledWith(
+      `Number of standard tier files to copy was ${standardTierFiles}, glacier tier files to copy was ${glacierTierFiles}`
+    )
+  }
   test('all data in analysis bucket', async () => {
     givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
     givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
@@ -99,6 +107,7 @@ describe('check objects in analysis bucket', () => {
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: []
     })
+    assertNumberOfFilesLogged(0, 0)
   })
 
   test('no data in analysis bucket, all audit data is standard tier', async () => {
@@ -121,6 +130,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-3'
       ]
     })
+    assertNumberOfFilesLogged(9, 0)
   })
 
   test('no data in analysis bucket, all audit data in glacier tier', async () => {
@@ -143,6 +153,7 @@ describe('check objects in analysis bucket', () => {
       ],
       standardTierLocationsToCopy: []
     })
+    assertNumberOfFilesLogged(0, 9)
   })
 
   test('no data in analysis bucket, some audit data in glacier tier', async () => {
@@ -170,6 +181,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/22/example-object-3'
       ]
     })
+    assertNumberOfFilesLogged(3, 6)
   })
 
   test('partial data in analysis bucket', async () => {
@@ -197,6 +209,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/22/example-object-3'
       ]
     })
+    assertNumberOfFilesLogged(6, 0)
   })
 
   test('no data in either bucket', async () => {
@@ -208,5 +221,6 @@ describe('check objects in analysis bucket', () => {
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: []
     })
+    assertNumberOfFilesLogged(0, 0)
   })
 })

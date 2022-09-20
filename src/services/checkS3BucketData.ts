@@ -36,15 +36,20 @@ export const checkS3BucketData = async (
       !existingAnalysisBucketObjects.map((o) => o.Key).includes(object.Key)
   )
 
-  console.log('Objects to copy:', objectsToCopy)
+  const standardTierLocationsToCopy = objectsToCopy
+    .filter((o) => o.StorageClass === 'STANDARD')
+    .map((o) => o.Key as string)
 
+  const glacierTierLocationsToCopy = objectsToCopy
+    .filter((o) => o.StorageClass === 'GLACIER')
+    .map((o) => o.Key as string)
+
+  console.log(
+    `Number of standard tier files to copy was ${standardTierLocationsToCopy?.length}, glacier tier files to copy was ${glacierTierLocationsToCopy?.length}`
+  )
   return Promise.resolve({
-    standardTierLocationsToCopy: objectsToCopy
-      .filter((o) => o.StorageClass === 'STANDARD')
-      .map((o) => o.Key as string),
-    glacierTierLocationsToCopy: objectsToCopy
-      .filter((o) => o.StorageClass === 'GLACIER')
-      .map((o) => o.Key as string),
+    standardTierLocationsToCopy,
+    glacierTierLocationsToCopy,
     dataAvailable:
       requestedAuditBucketObjects?.length > 0 ||
       existingAnalysisBucketObjects?.length > 0

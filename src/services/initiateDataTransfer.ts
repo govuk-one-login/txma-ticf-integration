@@ -7,6 +7,7 @@ export const initiateDataTransfer = async (
 ) => {
   const bucketData = await checkS3BucketData(dataRequestParams)
   if (!bucketData.dataAvailable) {
+    console.log('No data found for period, closing Zendesk ticket')
     await updateZendeskTicketById(
       dataRequestParams.zendeskId,
       'Your ticket has been closed because no data was available for the requested dates',
