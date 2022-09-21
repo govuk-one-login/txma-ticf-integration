@@ -16,11 +16,13 @@ export const checkS3BucketData = async (
   )
 
   const requestedAuditBucketObjects = await retrieveS3ObjectsForPrefixes(
+    dataRequestParams,
     prefixes,
     getEnv('AUDIT_BUCKET_NAME')
   )
 
   const existingAnalysisBucketObjects = await retrieveS3ObjectsForPrefixes(
+    dataRequestParams,
     prefixes,
     getEnv('ANALYSIS_BUCKET_NAME')
   )
@@ -57,10 +59,11 @@ export const checkS3BucketData = async (
 }
 
 const retrieveS3ObjectsForPrefixes = async (
+  dataRequestParams: DataRequestParams,
   prefixes: string[],
   bucketName: string
 ): Promise<_Object[]> => {
-  return Promise.all(
+  const rawData = await Promise.all(
     prefixes.map(
       async (prefix) =>
         await listS3Objects({
@@ -69,4 +72,10 @@ const retrieveS3ObjectsForPrefixes = async (
         })
     )
   ).then((objects: _Object[][]) => objects.flat())
+  if (rawData.some((o) => !o.Key)) {
+    console.warn(
+      `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', date from '${dataRequestParams.dateFrom}', date to '${dataRequestParams.dateTo}'.`
+    )
+  }
+  return rawData.filter((o) => !!o.Key)
 }

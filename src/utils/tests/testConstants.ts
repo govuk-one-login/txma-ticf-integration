@@ -14,3 +14,5 @@ export const MOCK_INITIATE_DATA_REQUEST_QUEUE_URL =
 export const TEST_ZENDESK_SECRET_NAME = 'myZendeskSecretName'
 export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
 export const TEST_AUDIT_BUCKET = 'myAuditBucket'
+export const TEST_DATE_FROM = '2021-08-21'
+export const TEST_DATE_TO = '2021-08-21'
