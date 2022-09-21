@@ -309,8 +309,8 @@ Resources:
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
       RedrivePolicy:
-        DeadLetterTargetArn: InitiateDataRequestDeadLetterQueue.Arn
-        MaxReceiveCount: 5
+        deadLetterTargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
+        maxReceiveCount: 5
 
   InitiateDataRequestDeadLetterQueue:
     Type: AWS::SQS::Queue
@@ -424,8 +424,8 @@ Resources:
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
       RedrivePolicy:
-        DeadLetterTargetArn: InitiateAthenaQueryDeadLetterQueue.Arn
-        MaxReceiveCount: 5
+        deadLetterTargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
+        maxReceiveCount: 5
 
   InitiateAthenaQueryDeadLetterQueue:
     Type: AWS::SQS::Queue
