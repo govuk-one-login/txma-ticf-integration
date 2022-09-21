@@ -3,7 +3,7 @@ import { updateZendeskTicket } from './updateZendeskTicket'
 // Dependencies
 import { exampleEventBody } from '../utils/tests/events/exampleEventBody'
 import {
-  ALL_SECRET_KEYS,
+  ALL_ZENDESK_SECRETS,
   TICKET_ID,
   ENCODED_AUTH_VALUE
 } from '../utils/tests/testConstants'
@@ -43,7 +43,7 @@ describe('updating a zendesk ticket', () => {
 
     expect(mockHttpsRequestUtils.mockBase64Encode.mock.calls.length).toBe(1)
     expect(mockHttpsRequestUtils.mockBase64Encode).toHaveBeenCalledWith(
-      `${ALL_SECRET_KEYS.zendeskApiUserEmail}/token:${ALL_SECRET_KEYS.zendeskApiKey}`
+      `${ALL_ZENDESK_SECRETS.zendeskApiUserEmail}/token:${ALL_ZENDESK_SECRETS.zendeskApiKey}`
     )
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest.mock.calls.length).toBe(1)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toHaveBeenCalledWith(
@@ -61,7 +61,7 @@ describe('updating a zendesk ticket', () => {
           status: newTicketStatus,
           comment: {
             body: zendeskTicketMessage,
-            author_id: ALL_SECRET_KEYS.zendeskApiUserId
+            author_id: ALL_ZENDESK_SECRETS.zendeskApiUserId
           }
         }
       }
