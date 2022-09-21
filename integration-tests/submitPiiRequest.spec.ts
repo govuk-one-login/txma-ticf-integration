@@ -60,11 +60,11 @@ describe('Submit a PII request with approved ticket data', () => {
     // check logs in Cloudwatch - Cloudwatch API
     AWS.config.update({ region: 'eu-west-2' })
     const cloudwatchLogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' })
-    // const logGroupName = '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG'
+    const logGroupName =
+      '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG'
     console.log(cloudwatchLogs)
     const logStreamParams = {
-      logGroupName:
-        '/aws/lambda/ticf-integration-ValidateZendeskRequestFunction-oV51PBIx2rSM',
+      logGroupName: `${logGroupName}`,
       descending: true,
       logStreamNamePrefix:
         '2022/09/20/[$LATEST]1ebb7288e141430f95bc38b9ab95f28c',
