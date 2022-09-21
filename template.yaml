@@ -227,7 +227,7 @@ Resources:
       Environment:
         Variables:
           NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifyApiSecrets
-      KmsKeyArn: !GetAtt LamnbdaKmsKey.Arn
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies: 
         - Statement:
           - Sid: Logs
