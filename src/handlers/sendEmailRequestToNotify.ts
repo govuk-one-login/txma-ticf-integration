@@ -2,6 +2,7 @@ import { APIGatewayProxyEvent } from 'aws-lambda'
 import NotifyClient from 'notifications-node-client'
 import { retrieveNotifySecrets } from '../secrets/retrieveNotifySecrets'
 
+// event type is a placeholder
 export const handler = async (event: APIGatewayProxyEvent) => {
   if (!event.body) return 'No body'
   const requestDetails = JSON.parse(event.body)
