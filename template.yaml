@@ -308,6 +308,9 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+      RedrivePolicy:
+        DeadLetterTargetArn: InitiateDataRequestDeadLetterQueue.Arn
+        MaxReceiveCount: 5
 
   InitiateDataRequestDeadLetterQueue:
     Type: AWS::SQS::Queue
@@ -420,6 +423,9 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+      RedrivePolicy:
+        DeadLetterTargetArn: InitiateAthenaQueryDeadLetterQueue.Arn
+        MaxReceiveCount: 5
 
   InitiateAthenaQueryDeadLetterQueue:
     Type: AWS::SQS::Queue
