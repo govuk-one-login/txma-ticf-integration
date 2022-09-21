@@ -8,7 +8,7 @@ interface Options {
   }
 }
 declare module 'notifications-node-client' {
-  export default class NotifyClient {
+  export class NotifyClient {
     constructor(apiKey: string)
     sendEmail(
       templateId: string,

@@ -14,5 +14,7 @@ export const ALL_NOTIFY_SECRETS: NotifyApiSecrets = {
   notifyTemplateId: 'myNotifyTemplateId'
 }
 export const ENCODED_AUTH_VALUE = 'EncodedAuthValue'
+export const MOCK_INITIATE_DATA_REQUEST_QUEUE_URL =
+  'https://initiate_data_request_queue_'
 export const TEST_ZENDESK_SECRET_NAME = 'myZendeskSecretName'
 export const TEST_NOTIFY_SECRET_NAME = 'myNotifySecretName'

@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda'
-import NotifyClient from 'notifications-node-client'
+import { NotifyClient } from 'notifications-node-client'
 import { retrieveNotifySecrets } from '../secrets/retrieveNotifySecrets'
 
 // event type is a placeholder

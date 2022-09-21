@@ -22,7 +22,7 @@ const callHandlerWithBody = async () => {
 }
 
 describe('initiate sendEmailRequest handler', () => {
-  xit('returns a response when email was sent', async () => {
+  it('returns a response when email was sent', async () => {
     givenNotifySecretsAvailable()
     const result = await callHandlerWithBody()
     expect(result).toHaveBeenCalled()
