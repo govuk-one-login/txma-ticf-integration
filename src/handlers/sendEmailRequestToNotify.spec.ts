@@ -30,6 +30,11 @@ const givenNotifySecretsAvailable = async () => {
 const givenSuccessfulSendEmailRequest = async () => {
   mockSendEmail.mockResolvedValue(testSuccessfulNotifyResponse)
 }
+const givenUnsuccessfulSendEmailRequest = async () => {
+  mockSendEmail.mockImplementation(() => {
+    throw new Error('There was an error sending request to Notify')
+  })
+}
 const callHandlerWithBody = async () => {
   return await handler({
     ...defaultApiRequest,
@@ -43,11 +48,12 @@ const callHandlerWithBody = async () => {
 }
 
 describe('initiate sendEmailRequest handler', () => {
-  beforeEach(() => {
-    jest.spyOn(global.console, 'log')
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   it('creates a NotifyClient and calls sendEmail with correct parameters', async () => {
+    jest.spyOn(global.console, 'log')
     await givenNotifySecretsAvailable()
     await givenSuccessfulSendEmailRequest()
     await callHandlerWithBody()
@@ -71,5 +77,28 @@ describe('initiate sendEmailRequest handler', () => {
       subjectLine: 'Your data query has completed'
     })
   })
-  // it('returns a 400 status code with a re')
+  xit('returns a 400 status code with a message', async () => {
+    jest.spyOn(global.console, 'error')
+    await givenNotifySecretsAvailable()
+    await givenUnsuccessfulSendEmailRequest()
+    await callHandlerWithBody()
+
+    expect(NotifyClient).toHaveBeenCalledWith('myNotifyApiKey')
+    expect(mockSendEmail).toThrowError()
+    expect(mockSendEmail).toHaveBeenCalledWith(
+      ALL_NOTIFY_SECRETS.notifyTemplateId,
+      TEST_NOTIFY_EMAIL,
+      {
+        personalisation: {
+          firstName: TEST_NOTIFY_NAME,
+          zendeskId: TICKET_ID,
+          signedUrl: TEST_SIGNED_URL
+        }
+      }
+    )
+    expect(console.error).toHaveBeenCalledWith(
+      'There was an error sending a request to Notify: ',
+      Error('There was an error sending request to Notify')
+    )
+  })
 })
