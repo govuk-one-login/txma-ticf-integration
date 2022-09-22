@@ -1,13 +1,9 @@
 /* eslint-disable no-unused-vars */
-interface Options {
-  personalisation: {
-    firstName: string
-    zendeskId: string
-    signedUrl: string
-    reference: string
-  }
-}
+
 declare module 'notifications-node-client' {
+  interface Options {
+    personalisation: import('./personalisationOptions')
+  }
   export class NotifyClient {
     constructor(apiKey: string)
     sendEmail(
