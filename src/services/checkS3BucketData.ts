@@ -77,5 +77,10 @@ const retrieveS3ObjectsForPrefixes = async (
       `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', date from '${dataRequestParams.dateFrom}', date to '${dataRequestParams.dateTo}'.`
     )
   }
-  return rawData.filter((o) => !!o.Key)
+  if (rawData.some((o) => !o.StorageClass)) {
+    console.warn(
+      `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', date from '${dataRequestParams.dateFrom}', date to '${dataRequestParams.dateTo}'.`
+    )
+  }
+  return rawData.filter((o) => !!o.Key && !!o.StorageClass)
 }

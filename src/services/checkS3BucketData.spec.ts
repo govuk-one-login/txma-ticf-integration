@@ -103,6 +103,18 @@ describe('check objects in analysis bucket', () => {
     )
   }
 
+  const assertFilesMissingKeysLogged = (bucketName: string) => {
+    expect(console.warn).toHaveBeenLastCalledWith(
+      `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', date from '${TEST_DATE_FROM}', date to '${TEST_DATE_TO}'.`
+    )
+  }
+
+  const assertFilesMissingStorageClassLogged = (bucketName: string) => {
+    expect(console.warn).toHaveBeenLastCalledWith(
+      `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', date from '${TEST_DATE_FROM}', date to '${TEST_DATE_TO}'.`
+    )
+  }
+
   test('all data in analysis bucket', async () => {
     givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
     givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
@@ -116,13 +128,17 @@ describe('check objects in analysis bucket', () => {
     assertNumberOfFilesLogged(0, 0)
   })
 
-  test('data with missing keys in analysis bucket is ignored', async () => {
-    givenDataInBucketForPrefixes(
-      [prefixes[0], prefixes[1]],
-      TEST_AUDIT_BUCKET,
-      'STANDARD'
-    )
-    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+  test('all data in analysis bucket', async () => {
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: []
+    })
+    assertNumberOfFilesLogged(0, 0)
   })
 
   test('no data in analysis bucket, all audit data is standard tier', async () => {
@@ -173,9 +189,35 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0)
-    expect(console.warn).toHaveBeenLastCalledWith(
-      `Some data in the bucket '${TEST_AUDIT_BUCKET}' had missing keys, which have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', date from '${TEST_DATE_FROM}', date to '${TEST_DATE_TO}'.`
+    assertFilesMissingKeysLogged(TEST_AUDIT_BUCKET)
+  })
+
+  test('no data in analysis bucket, audit bucket data contains some data with missing storage class', async () => {
+    givenDataInBucketForPrefixes(
+      [prefixes[0], prefixes[2]],
+      TEST_AUDIT_BUCKET,
+      'STANDARD'
     )
+    givenDataInBucketForPrefix(prefixes[1], TEST_AUDIT_BUCKET, [
+      { Key: 'firehose/2022/10/10/22/example-object-1' }
+    ])
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/23/example-object-1',
+        'firehose/2022/10/10/23/example-object-2',
+        'firehose/2022/10/10/23/example-object-3'
+      ]
+    })
+    assertNumberOfFilesLogged(6, 0)
+    assertFilesMissingStorageClassLogged(TEST_AUDIT_BUCKET)
   })
 
   test('no data in analysis bucket, all audit data in glacier tier', async () => {
@@ -255,6 +297,78 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0)
+  })
+
+  test('partial data in analysis bucket, some data in analysis bucket missing keys', async () => {
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenNoDataInBucketForPrefixes(
+      [prefixes[0], prefixes[1]],
+      TEST_ANALYSIS_BUCKET
+    )
+    givenDataInBucketForPrefix(prefixes[2], TEST_ANALYSIS_BUCKET, [
+      { StorageClass: 'STANDARD' },
+      {
+        Key: 'firehose/2022/10/10/23/example-object-2',
+        StorageClass: 'STANDARD'
+      },
+      {
+        Key: 'firehose/2022/10/10/23/example-object-3',
+        StorageClass: 'STANDARD'
+      }
+    ])
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3',
+        'firehose/2022/10/10/23/example-object-1'
+      ]
+    })
+    assertNumberOfFilesLogged(7, 0)
+    assertFilesMissingKeysLogged(TEST_ANALYSIS_BUCKET)
+  })
+
+  test('partial data in analysis bucket, some data in analysis bucket missing storage class', async () => {
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenNoDataInBucketForPrefixes(
+      [prefixes[0], prefixes[1]],
+      TEST_ANALYSIS_BUCKET
+    )
+    givenDataInBucketForPrefix(prefixes[2], TEST_ANALYSIS_BUCKET, [
+      { Key: 'firehose/2022/10/10/23/example-object-1' },
+      {
+        Key: 'firehose/2022/10/10/23/example-object-2',
+        StorageClass: 'STANDARD'
+      },
+      {
+        Key: 'firehose/2022/10/10/23/example-object-3',
+        StorageClass: 'STANDARD'
+      }
+    ])
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3',
+        'firehose/2022/10/10/23/example-object-1'
+      ]
+    })
+    assertNumberOfFilesLogged(7, 0)
+    assertFilesMissingStorageClassLogged(TEST_ANALYSIS_BUCKET)
   })
 
   test('no data in either bucket', async () => {
