@@ -10,6 +10,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
   const requestDetails = tryParseJSON(event.body)
   const secrets = await retrieveNotifySecrets()
   const notifyClient = new NotifyClient(secrets.notifyApiKey)
+  console.log('Sending request to Notify')
   const response = await Promise.resolve(
     notifyClient.sendEmail(secrets.notifyTemplateId, requestDetails.email, {
       personalisation: {
@@ -19,6 +20,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       }
     })
   )
+  console.log(response)
   const objResponse: AxiosResponse = tryParseJSON(response)
   const configData = tryParseJSON(objResponse.config.data)
   const logObject = {
