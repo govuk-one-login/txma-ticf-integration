@@ -1,7 +1,12 @@
 import axios from 'axios'
 import { authoriseAs } from './utils/helpers'
-// import { AWS } from 'aws-sdk'
-import AWS = require('aws-sdk')
+import { cloudWatchLogsClient } from './libs/cloudWatchLogsClient'
+import {
+  FilterLogEventsCommand,
+  FilterLogEventsCommandInput,
+  FilterLogEventsCommandOutput,
+  FilteredLogEvent
+} from '@aws-sdk/client-cloudwatch-logs'
 // import { getLogStreams } from 'aws-testing-library'
 
 import {
@@ -11,7 +16,6 @@ import {
 } from './utils/validateTestParameters'
 
 import { validRequestData, ticketApprovalData } from './utils/requestData'
-import { AWSError } from 'aws-sdk'
 
 describe('Submit a PII request with approved ticket data', () => {
   const createRequestEndpoint = '/api/v2/requests.json'
@@ -21,7 +25,7 @@ describe('Submit a PII request with approved ticket data', () => {
   const agentUsername: string = getAgentUsername()
 
   it('Should log an entry in cloud watch if request is valid', async () => {
-    const response = await axios({
+    const axiosResponse = await axios({
       url: `${zendeskBaseURL}${createRequestEndpoint}`,
       method: 'POST',
       headers: {
@@ -31,12 +35,12 @@ describe('Submit a PII request with approved ticket data', () => {
       data: validRequestData
     })
 
-    console.log(response.request)
+    console.log(axiosResponse.request)
 
-    expect(response.status).toBe(201)
-    expect(response.data.request.id).toBeGreaterThanOrEqual(1)
+    expect(axiosResponse.status).toBe(201)
+    expect(axiosResponse.data.request.id).toBeGreaterThanOrEqual(1)
 
-    const ticketID = response.data.request.id
+    const ticketID = axiosResponse.data.request.id
 
     console.log(`TICKET ID: ${ticketID}`)
 
@@ -57,31 +61,52 @@ describe('Submit a PII request with approved ticket data', () => {
       expect.arrayContaining(['approved'])
     )
 
-    // check logs in Cloudwatch - Cloudwatch API
-    AWS.config.update({ region: 'eu-west-2' })
-    const cloudwatchLogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' })
-    const logGroupName =
-      '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG'
-    console.log(cloudwatchLogs)
-    const logStreamParams = {
-      logGroupName: `${logGroupName}`,
-      descending: true,
-      logStreamNamePrefix:
-        '2022/09/20/[$LATEST]1ebb7288e141430f95bc38b9ab95f28c',
-      orderBy: 'LastEventTime'
+    // CHECK LOGS IN CLOUDWATCH - Cloudwatch API v3
+    const startTimeMs: number = Date.parse('2022-09-21T14:38:12.209Z')
+    const endTimeMs: number = Date.parse('2022-09-21T15:41:42.010+01:00')
+    const params: FilterLogEventsCommandInput = {
+      logGroupName:
+        '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
+      startTime: startTimeMs,
+      endTime: endTimeMs,
+      logStreamNamePrefix: '2022/09/21/[$LATEST]'
     }
-    const logStreamResult = cloudwatchLogs.describeLogStreams(
-      logStreamParams,
-      (error: AWSError, data: any) => {
-        if (error) {
-          throw new Error(error.message)
-        } else {
-          return data
-        }
-      }
-    )
-    expect(logStreamResult).toBeDefined()
-    console.log(logStreamResult)
+    const command = new FilterLogEventsCommand(params)
+    const cloudWatchResponse: FilterLogEventsCommandOutput =
+      await cloudWatchLogsClient.send(command)
+    const events: FilteredLogEvent[] | undefined = cloudWatchResponse.events
+    console.log('FILTERED EVENTS')
+    events?.map((event) => {
+      console.log(event.message)
+    })
+    expect(events).toBeDefined()
+    expect(events?.length).toBeGreaterThanOrEqual(1)
+
+    // check logs in Cloudwatch - Cloudwatch API v2
+    // AWS.config.update({ region: 'eu-west-2' })
+    // const cloudwatchLogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' })
+    // const logGroupName =
+    //   '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG'
+    // console.log(cloudwatchLogs)
+    // const logStreamParams = {
+    //   logGroupName: `${logGroupName}`,
+    //   descending: true,
+    //   logStreamNamePrefix:
+    //     '2022/09/20/[$LATEST]1ebb7288e141430f95bc38b9ab95f28c',
+    //   orderBy: 'LastEventTime'
+    // }
+    // const logStreamResult = cloudwatchLogs.describeLogStreams(
+    //   logStreamParams,
+    //   (error: AWSError, data: any) => {
+    //     if (error) {
+    //       throw new Error(error.message)
+    //     } else {
+    //       return data
+    //     }
+    //   }
+    // )
+    // expect(logStreamResult).toBeDefined()
+    // console.log(logStreamResult)
 
     // describe subscription filters for the lambda log group
     // let existingSubscriptionFilterParams = {
