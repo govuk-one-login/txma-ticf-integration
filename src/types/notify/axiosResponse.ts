@@ -1,4 +1,4 @@
-export interface AxiosResponse {
+export interface CustomAxiosResponse {
   status: number
   statusText: string
   config: {

@@ -1,3 +1,4 @@
+import { CustomAxiosResponse } from '../../types/notify/axiosResponse'
 import {
   ALL_NOTIFY_SECRETS,
   TEST_NOTIFY_EMAIL,
@@ -5,7 +6,7 @@ import {
   TICKET_ID
 } from './testConstants'
 
-export const testSuccessfulNotifyResponse = JSON.stringify({
+export const testSuccessfulNotifyResponse: CustomAxiosResponse = {
   status: 201,
   statusText: 'Created',
   config: {
@@ -17,8 +18,7 @@ export const testSuccessfulNotifyResponse = JSON.stringify({
       "personalisation":{
         "firstName":"${TEST_NOTIFY_NAME}",
         "zendeskId":"${TICKET_ID}",
-        "signedUrl":"signedurl.com",
-        "reference":""
+        "signedUrl":"signedurl.com"
       }
     }`
   },
@@ -27,4 +27,4 @@ export const testSuccessfulNotifyResponse = JSON.stringify({
       subject: 'Your data query has completed'
     }
   }
-})
+}

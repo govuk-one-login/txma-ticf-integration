@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent } from 'aws-lambda'
 import { NotifyClient } from 'notifications-node-client'
 import { retrieveNotifySecrets } from '../secrets/retrieveNotifySecrets'
-import { AxiosResponse } from '../types/notify/axiosResponse'
+import { CustomAxiosResponse } from '../types/notify/axiosResponse'
 import { tryParseJSON } from '../utils/helpers'
 
 // event type is a placeholder
@@ -10,8 +10,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
   const requestDetails = tryParseJSON(event.body)
   const secrets = await retrieveNotifySecrets()
   const notifyClient = new NotifyClient(secrets.notifyApiKey)
+
   console.log('Sending request to Notify')
-  const response = await Promise.resolve(
+  const response = (await Promise.resolve(
     notifyClient.sendEmail(secrets.notifyTemplateId, requestDetails.email, {
       personalisation: {
         firstName: requestDetails.firstName,
@@ -19,14 +20,12 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         signedUrl: requestDetails.signedUrl
       }
     })
-  )
-  console.log(response)
-  const objResponse: AxiosResponse = tryParseJSON(response)
-  const configData = tryParseJSON(objResponse.config.data)
+  )) as unknown as CustomAxiosResponse
+
   const logObject = {
-    status: objResponse.status,
-    emailSentTo: configData.email_address,
-    subjectLine: objResponse.data.content.subject
+    status: response.status,
+    emailSentTo: requestDetails.email,
+    subjectLine: response.data.content.subject
   }
   console.log(logObject)
 }
