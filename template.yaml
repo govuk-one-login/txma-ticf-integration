@@ -451,12 +451,12 @@ Resources:
             Resource:
               - !GetAtt SecretsKmsKey.Arn
           - Sid: DynamoDBPutQuery
-              Effect: Allow
-              Action:
-                - dynamodb:PutItem
-                - dynamodb:Query
-              Resource:
-                - !GetAtt QueryRequestDynamoDBTable.Arn
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:Query
+            Resource:
+              - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn 
