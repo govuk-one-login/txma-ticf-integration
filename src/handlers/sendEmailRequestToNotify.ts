@@ -7,7 +7,10 @@ export const handler = async (event: APIGatewayProxyEvent) => {
   if (!event.body) return 'No body'
   const requestDetails = JSON.parse(event.body)
   const secrets = await retrieveNotifySecrets()
+  console.log('I get here')
   const notifyClient = new NotifyClient(secrets.notifyApiKey)
+  console.log(notifyClient)
+  console.log(notifyClient.sendEmail)
   const response = await Promise.resolve(
     notifyClient.sendEmail(
       secrets.notifyTemplateId,
