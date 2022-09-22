@@ -175,6 +175,37 @@ Resources:
       AliasName: !Sub alias/${AWS::StackName}/sandbox/queue-kms-key
       TargetKeyId: !Ref QueueKmsKey
 
+  DatabaseKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:CreateGrant
+              - kms:Decrypt
+              - kms:DescribeKey
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource:
+              - '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:*
+            Resource:
+              - '*'
+
+  DatabaseKmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/database-kms-key
+      TargetKeyId: !Ref DatabaseKmsKey
 
   # Data Retrieval
   ZendeskWebhookAccessLogGroup:
@@ -299,6 +330,12 @@ Resources:
                 - kms:Decrypt
               Resource:
                 - !GetAtt QueueKmsKey.Arn
+            - Sid: DynamoDBPut
+              Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+                - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         Type: SQS
@@ -413,6 +450,13 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SecretsKmsKey.Arn
+          - Sid: DynamoDBPutQuery
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:Query
+            Resource:
+              - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn 
@@ -535,6 +579,70 @@ Resources:
           EncryptionConfiguration:
             EncryptionOption: "SSE_S3"
           OutputLocation: !Join ['', ['s3://', !Ref QueryResultsBucket, '/'] ]
+
+  QueryRequestDynamoDBTable: 
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions: 
+        - AttributeName: "zendeskId"
+          AttributeType: "S"
+        - AttributeName: "s3MoveId"
+          AttributeType: "S"
+        - AttributeName: "glacierRetrieveId"
+          AttributeType: "S"
+        - AttributeName: "glacierMoveId"
+          AttributeType: "S"
+        - AttributeName: "athenaQueryId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "zendeskId"
+          KeyType: "HASH"
+      GlobalSecondaryIndexes:
+        - IndexName: s3MoveIdIndex
+          KeySchema:
+            - AttributeName: "s3MoveId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: glacierRetrieveIdIndex
+          KeySchema:
+            - AttributeName: "glacierRetrieveId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: glacierMoveIdIndex
+          KeySchema:
+            - AttributeName: "glacierMoveId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: athenaQueryIdIndex
+          KeySchema:
+            - AttributeName: "athenaQueryId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+        KMSMasterKeyId: !GetAtt DatabaseKmsKey.Arn
 
   # Dev Resources
   EmptyS3BucketsFunction:
