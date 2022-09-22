@@ -192,6 +192,34 @@ describe('check objects in analysis bucket', () => {
     assertFilesMissingKeysLogged(TEST_AUDIT_BUCKET)
   })
 
+  test('no data in analysis bucket, audit bucket data contains some data with undefined keys', async () => {
+    givenDataInBucketForPrefixes(
+      [prefixes[0], prefixes[2]],
+      TEST_AUDIT_BUCKET,
+      'STANDARD'
+    )
+    givenDataInBucketForPrefix(prefixes[1], TEST_AUDIT_BUCKET, [
+      { StorageClass: 'STANDARD', Key: undefined }
+    ])
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/23/example-object-1',
+        'firehose/2022/10/10/23/example-object-2',
+        'firehose/2022/10/10/23/example-object-3'
+      ]
+    })
+    assertNumberOfFilesLogged(6, 0)
+    assertFilesMissingKeysLogged(TEST_AUDIT_BUCKET)
+  })
+
   test('no data in analysis bucket, audit bucket data contains some data with missing storage class', async () => {
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
@@ -200,6 +228,37 @@ describe('check objects in analysis bucket', () => {
     )
     givenDataInBucketForPrefix(prefixes[1], TEST_AUDIT_BUCKET, [
       { Key: 'firehose/2022/10/10/22/example-object-1' }
+    ])
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/23/example-object-1',
+        'firehose/2022/10/10/23/example-object-2',
+        'firehose/2022/10/10/23/example-object-3'
+      ]
+    })
+    assertNumberOfFilesLogged(6, 0)
+    assertFilesMissingStorageClassLogged(TEST_AUDIT_BUCKET)
+  })
+
+  test('no data in analysis bucket, audit bucket data contains some data with undefined storage class', async () => {
+    givenDataInBucketForPrefixes(
+      [prefixes[0], prefixes[2]],
+      TEST_AUDIT_BUCKET,
+      'STANDARD'
+    )
+    givenDataInBucketForPrefix(prefixes[1], TEST_AUDIT_BUCKET, [
+      {
+        Key: 'firehose/2022/10/10/22/example-object-1',
+        StorageClass: undefined
+      }
     ])
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
 
@@ -335,6 +394,42 @@ describe('check objects in analysis bucket', () => {
     assertFilesMissingKeysLogged(TEST_ANALYSIS_BUCKET)
   })
 
+  test('partial data in analysis bucket, some data in analysis bucket with undefined keys', async () => {
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenNoDataInBucketForPrefixes(
+      [prefixes[0], prefixes[1]],
+      TEST_ANALYSIS_BUCKET
+    )
+    givenDataInBucketForPrefix(prefixes[2], TEST_ANALYSIS_BUCKET, [
+      { StorageClass: 'STANDARD', Key: undefined },
+      {
+        Key: 'firehose/2022/10/10/23/example-object-2',
+        StorageClass: 'STANDARD'
+      },
+      {
+        Key: 'firehose/2022/10/10/23/example-object-3',
+        StorageClass: 'STANDARD'
+      }
+    ])
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3',
+        'firehose/2022/10/10/23/example-object-1'
+      ]
+    })
+    assertNumberOfFilesLogged(7, 0)
+    assertFilesMissingKeysLogged(TEST_ANALYSIS_BUCKET)
+  })
+
   test('partial data in analysis bucket, some data in analysis bucket missing storage class', async () => {
     givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
     givenNoDataInBucketForPrefixes(
@@ -343,6 +438,45 @@ describe('check objects in analysis bucket', () => {
     )
     givenDataInBucketForPrefix(prefixes[2], TEST_ANALYSIS_BUCKET, [
       { Key: 'firehose/2022/10/10/23/example-object-1' },
+      {
+        Key: 'firehose/2022/10/10/23/example-object-2',
+        StorageClass: 'STANDARD'
+      },
+      {
+        Key: 'firehose/2022/10/10/23/example-object-3',
+        StorageClass: 'STANDARD'
+      }
+    ])
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3',
+        'firehose/2022/10/10/23/example-object-1'
+      ]
+    })
+    assertNumberOfFilesLogged(7, 0)
+    assertFilesMissingStorageClassLogged(TEST_ANALYSIS_BUCKET)
+  })
+
+  test('partial data in analysis bucket, some data in analysis bucket with undefined storage class', async () => {
+    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenNoDataInBucketForPrefixes(
+      [prefixes[0], prefixes[1]],
+      TEST_ANALYSIS_BUCKET
+    )
+    givenDataInBucketForPrefix(prefixes[2], TEST_ANALYSIS_BUCKET, [
+      {
+        Key: 'firehose/2022/10/10/23/example-object-1',
+        StorageClass: undefined
+      },
       {
         Key: 'firehose/2022/10/10/23/example-object-2',
         StorageClass: 'STANDARD'
