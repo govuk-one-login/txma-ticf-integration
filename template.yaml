@@ -407,6 +407,7 @@ Resources:
         Variables:
           ATHENA_DATABASE_NAME: !Ref AuditAnalysisDatabase
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
+          DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
       Events:
         InitiateAthenaQueryEvent:
           Type: SQS
