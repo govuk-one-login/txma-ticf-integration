@@ -78,7 +78,7 @@ describe('initiate sendEmailRequest handler', () => {
       subjectLine: 'Your data query has completed'
     })
   })
-  xit('returns a 400 status code with a message', async () => {
+  it('returns a 400 status code with a message', async () => {
     jest.spyOn(global.console, 'error')
     await givenNotifySecretsAvailable()
     await givenUnsuccessfulSendEmailRequest()
