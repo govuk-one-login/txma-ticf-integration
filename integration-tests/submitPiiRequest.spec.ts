@@ -35,8 +35,6 @@ describe('Submit a PII request with approved ticket data', () => {
       data: validRequestData
     })
 
-    console.log(axiosResponse.request)
-
     expect(axiosResponse.status).toBe(201)
     expect(axiosResponse.data.request.id).toBeGreaterThanOrEqual(1)
 
@@ -69,7 +67,8 @@ describe('Submit a PII request with approved ticket data', () => {
         '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
       startTime: startTimeMs,
       endTime: endTimeMs,
-      logStreamNamePrefix: '2022/09/21/[$LATEST]'
+      logStreamNamePrefix: '2022/09/21/[$LATEST]',
+      filterPattern: `${'Zendesk request was invalid'}`
     }
     const command = new FilterLogEventsCommand(params)
     const cloudWatchResponse: FilterLogEventsCommandOutput =
