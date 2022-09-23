@@ -28,7 +28,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     throw 'No Zendesk ticket ID present in SQS event record. Cannot continue or update ticket.'
   }
 
-  const requestData = getQueryByZendeskId(zendeskTicketInfo.zendeskId)
+  const requestData = await getQueryByZendeskId(zendeskTicketInfo.zendeskId)
   console.log(requestData)
 
   return
