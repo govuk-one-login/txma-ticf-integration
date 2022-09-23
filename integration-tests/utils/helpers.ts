@@ -10,4 +10,11 @@ const authoriseAs = (username: string) => {
   )
 }
 
-export { generateRandomNumber, authoriseAs }
+const getLogStreamPrefix = () => {
+  const dateFormat = new Intl.DateTimeFormat('en-GB')
+  const dateParts = dateFormat.format(new Date()).split('/')
+  return `${
+    dateParts[2] + '/' + dateParts[1] + '/' + dateParts[0] + '[$LATEST]'
+  }`
+}
+export { generateRandomNumber, authoriseAs, getLogStreamPrefix }

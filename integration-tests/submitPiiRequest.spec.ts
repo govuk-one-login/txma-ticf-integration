@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { authoriseAs } from './utils/helpers'
+import { authoriseAs, getLogStreamPrefix } from './utils/helpers'
 import { cloudWatchLogsClient } from './libs/cloudWatchLogsClient'
 import {
   FilterLogEventsCommand,
@@ -43,6 +43,9 @@ describe('Submit a PII request with approved ticket data', () => {
     console.log(`TICKET ID: ${ticketID}`)
 
     // approve and submit ticket (fires webhook)
+    // const startTimeMs: number = Date.parse('2022-09-21T14:38:12.209Z')
+    const startTime: number = Date.now()
+
     const approvalResponse = await axios({
       url: `${zendeskBaseURL}${ticketsEndpoint}/${ticketID}`,
       method: 'PUT',
@@ -60,16 +63,27 @@ describe('Submit a PII request with approved ticket data', () => {
     )
 
     // CHECK LOGS IN CLOUDWATCH - Cloudwatch API v3
-    const startTimeMs: number = Date.parse('2022-09-21T14:38:12.209Z')
-    const endTimeMs: number = Date.parse('2022-09-21T15:41:42.010+01:00')
+
+    // const endTimeMs: number = Date.parse('2022-09-21T15:41:42.010+01:00')
+    const endTime = Date.now()
+    console.log('START TIME: ' + startTime)
+    console.log('END TIME: ' + endTime)
+    console.log('LOG STREAM PREFIX: ' + getLogStreamPrefix())
+
     const params: FilterLogEventsCommandInput = {
       logGroupName:
-        '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
-      startTime: startTimeMs,
-      endTime: endTimeMs,
-      logStreamNamePrefix: '2022/09/21/[$LATEST]',
-      filterPattern: `${'Zendesk request was invalid'}`
+        '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG'
     }
+
+    // const params: FilterLogEventsCommandInput = {
+    //   logGroupName:
+    //     '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
+    //   startTime: startTime,
+    //   endTime: endTime,
+    //   logStreamNamePrefix: getLogStreamPrefix(),
+    //   filterPattern: `${'INFO "Sent data transfer queue message with id"'}`
+    // }
+
     const command = new FilterLogEventsCommand(params)
     const cloudWatchResponse: FilterLogEventsCommandOutput =
       await cloudWatchLogsClient.send(command)
@@ -80,69 +94,5 @@ describe('Submit a PII request with approved ticket data', () => {
     })
     expect(events).toBeDefined()
     expect(events?.length).toBeGreaterThanOrEqual(1)
-
-    // check logs in Cloudwatch - Cloudwatch API v2
-    // AWS.config.update({ region: 'eu-west-2' })
-    // const cloudwatchLogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' })
-    // const logGroupName =
-    //   '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG'
-    // console.log(cloudwatchLogs)
-    // const logStreamParams = {
-    //   logGroupName: `${logGroupName}`,
-    //   descending: true,
-    //   logStreamNamePrefix:
-    //     '2022/09/20/[$LATEST]1ebb7288e141430f95bc38b9ab95f28c',
-    //   orderBy: 'LastEventTime'
-    // }
-    // const logStreamResult = cloudwatchLogs.describeLogStreams(
-    //   logStreamParams,
-    //   (error: AWSError, data: any) => {
-    //     if (error) {
-    //       throw new Error(error.message)
-    //     } else {
-    //       return data
-    //     }
-    //   }
-    // )
-    // expect(logStreamResult).toBeDefined()
-    // console.log(logStreamResult)
-
-    // describe subscription filters for the lambda log group
-    // let existingSubscriptionFilterParams = {
-    //   logGroupName: '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
-    //   limit: 11
-    // }
-
-    // cloudwatchLogs.describeSubscriptionFilters(existingSubscriptionFilterParams, (error, data) => {
-    //   if(error) {
-    //     throw new Error(`Error describing subscription filters. ${error}`)
-    //   } else {
-    //     console.log('Success', data.subscriptionFilters)
-    //   }
-    // })
-
-    // // create a subscription filter for the lambda log group
-    // var newSubscriptionFilterParams = {
-    //   destinationArn: 'arn:aws:lambda:eu-west-2:428504475239:function:ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
-    //   filterName: 'Integration-test-cloudwatch-log-subscription-filter',
-    //   filterPattern: 'ERROR',
-    //   logGroupName: '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
-    // };
-
-    // cloudwatchLogs.putSubscriptionFilter(newSubscriptionFilterParams, (error, data) => {
-    //   if(error){
-    //     throw new Error(`Error creating new subscription filter. ${error}`)
-    //   } else {
-    //     console.log('Success', data)
-    //   }
-    // })
-
-    // check logs in Cloudwatch - AWS testing library
-    // const functionName =
-    //   'ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG'
-    // const region = 'eu-west-2'
-    // const logStream = getLogStreams(region, functionName)
-    // console.log(logStream)
-    // expect(logStream).toBeDefined()
   })
 })
