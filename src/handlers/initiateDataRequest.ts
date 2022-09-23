@@ -8,10 +8,11 @@ import { DataRequestParams } from '../types/dataRequestParams'
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
+
   if (await isSignatureInvalid(event.headers, event.body)) {
     return await handleInvalidSignature()
   }
-  console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
 
   const validatedZendeskRequest = validateZendeskRequest(event.body)
   if (!validatedZendeskRequest.isValid) {
