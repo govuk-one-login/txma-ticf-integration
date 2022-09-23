@@ -454,7 +454,7 @@ Resources:
             Effect: Allow
             Action:
               - dynamodb:PutItem
-              - dynamodb:Query
+              - dynamodb:GetItem
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
