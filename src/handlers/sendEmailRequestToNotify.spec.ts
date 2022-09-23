@@ -49,6 +49,9 @@ const callHandlerWithBody = async (customBody: string) => {
 }
 
 describe('initiate sendEmailRequest handler', () => {
+  beforeEach(() => {
+    jest.spyOn(global.console, 'error')
+  })
   afterEach(() => {
     jest.clearAllMocks()
   })
@@ -57,6 +60,7 @@ describe('initiate sendEmailRequest handler', () => {
     jest.spyOn(global.console, 'log')
     await givenNotifySecretsAvailable()
     await givenSuccessfulSendEmailRequest()
+
     await callHandlerWithBody(validEventBody)
 
     expect(NotifyClient).toHaveBeenCalledWith('myNotifyApiKey')
@@ -79,9 +83,9 @@ describe('initiate sendEmailRequest handler', () => {
     })
   })
   it('returns a 400 status code with a message', async () => {
-    jest.spyOn(global.console, 'error')
     await givenNotifySecretsAvailable()
     await givenUnsuccessfulSendEmailRequest()
+
     await callHandlerWithBody(validEventBody)
 
     expect(NotifyClient).toHaveBeenCalledWith('myNotifyApiKey')
@@ -102,14 +106,31 @@ describe('initiate sendEmailRequest handler', () => {
       Error('There was an error sending request to Notify')
     )
   })
-  it('returns from the function when no event body is present', async () => {
+  it('returns from the function and logs an error when no event body is present', async () => {
     const invalidEventBody = ''
-    jest.spyOn(global.console, 'log')
     await givenNotifySecretsAvailable()
+
     await callHandlerWithBody(invalidEventBody)
 
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.error).toHaveBeenCalledWith(
       'Could not find event body. An email has not been sent'
     )
+    expect(NotifyClient).not.toHaveBeenCalled()
+  })
+  it('returns from the function and logs an error when a value is missing from the event body', async () => {
+    const invalidEventBody = `{
+      "email": "${TEST_NOTIFY_EMAIL}",
+      "firstName": "${TEST_NOTIFY_NAME}",
+      "zendeskId": "${TICKET_ID}"
+    }`
+    await givenNotifySecretsAvailable()
+
+    await callHandlerWithBody(invalidEventBody)
+
+    expect(console.error).toHaveBeenLastCalledWith(
+      'There was an error sending a request to Notify: ',
+      Error('Required details were not all present in event body')
+    )
+    expect(NotifyClient).not.toHaveBeenCalled()
   })
 })
