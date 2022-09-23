@@ -6,44 +6,36 @@ import { tryParseJSON } from '../utils/helpers'
 
 // event type is a placeholder
 export const handler = async (event: APIGatewayProxyEvent) => {
-  if (!event.body) return 'No body'
+  if (!event.body) {
+    console.log('Could not find event body. An email has not been sent')
+    return
+  }
+
   const requestDetails = tryParseJSON(event.body)
   const secrets = await retrieveNotifySecrets()
   const notifyClient = new NotifyClient(secrets.notifyApiKey)
 
   console.log('Sending request to Notify')
-  // const response = (await Promise.resolve(
-  //   notifyClient.sendEmail(secrets.notifyTemplateId, requestDetails.email, {
-  //     personalisation: {
-  //       firstName: requestDetails.firstName,
-  //       zendeskId: requestDetails.zendeskId,
-  //       signedUrl: requestDetails.signedUrl
-  //     }
-  //   })
-  // )) as unknown as CustomAxiosResponse
+  try {
+    const response = (await Promise.resolve(
+      notifyClient.sendEmail(secrets.notifyTemplateId, requestDetails.email, {
+        personalisation: {
+          firstName: requestDetails.firstName,
+          zendeskId: requestDetails.zendeskId,
+          signedUrl: requestDetails.signedUrl
+        }
+      })
+    )) as unknown as CustomAxiosResponse
 
-  const response = (await new Promise((resolve, reject) => {
-    try {
-      resolve(
-        notifyClient.sendEmail(secrets.notifyTemplateId, requestDetails.email, {
-          personalisation: {
-            firstName: requestDetails.firstName,
-            zendeskId: requestDetails.zendeskId,
-            signedUrl: requestDetails.signedUrl
-          }
-        })
-      )
-    } catch (error) {
-      console.error('There was an error sending a request to Notify: ', error)
-      reject(error)
-      return
+    const logObject = {
+      status: response.status,
+      emailSentTo: requestDetails.email,
+      subjectLine: response.data.content.subject
     }
-  })) as unknown as CustomAxiosResponse
 
-  const logObject = {
-    status: response.status,
-    emailSentTo: requestDetails.email,
-    subjectLine: response.data.content.subject
+    console.log(logObject)
+  } catch (error) {
+    console.error('There was an error sending a request to Notify: ', error)
+    return
   }
-  console.log(logObject)
 }

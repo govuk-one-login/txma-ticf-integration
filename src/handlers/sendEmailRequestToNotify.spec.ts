@@ -35,15 +35,16 @@ const givenUnsuccessfulSendEmailRequest = async () => {
     throw new Error('There was an error sending request to Notify')
   })
 }
-const callHandlerWithBody = async () => {
-  return await handler({
-    ...defaultApiRequest,
-    body: `{
+const validEventBody = `{
       "email": "${TEST_NOTIFY_EMAIL}",
       "firstName": "${TEST_NOTIFY_NAME}",
       "zendeskId": "${TICKET_ID}",
       "signedUrl": "${TEST_SIGNED_URL}"
     }`
+const callHandlerWithBody = async (customBody: string) => {
+  return await handler({
+    ...defaultApiRequest,
+    body: customBody
   })
 }
 
@@ -56,7 +57,7 @@ describe('initiate sendEmailRequest handler', () => {
     jest.spyOn(global.console, 'log')
     await givenNotifySecretsAvailable()
     await givenSuccessfulSendEmailRequest()
-    await callHandlerWithBody()
+    await callHandlerWithBody(validEventBody)
 
     expect(NotifyClient).toHaveBeenCalledWith('myNotifyApiKey')
     expect(mockSendEmail).toHaveBeenCalledTimes(1)
@@ -81,7 +82,7 @@ describe('initiate sendEmailRequest handler', () => {
     jest.spyOn(global.console, 'error')
     await givenNotifySecretsAvailable()
     await givenUnsuccessfulSendEmailRequest()
-    await callHandlerWithBody()
+    await callHandlerWithBody(validEventBody)
 
     expect(NotifyClient).toHaveBeenCalledWith('myNotifyApiKey')
     expect(mockSendEmail).toThrowError()
@@ -99,6 +100,16 @@ describe('initiate sendEmailRequest handler', () => {
     expect(console.error).toHaveBeenCalledWith(
       'There was an error sending a request to Notify: ',
       Error('There was an error sending request to Notify')
+    )
+  })
+  it('returns from the function when no event body is present', async () => {
+    const invalidEventBody = ''
+    jest.spyOn(global.console, 'log')
+    await givenNotifySecretsAvailable()
+    await callHandlerWithBody(invalidEventBody)
+
+    expect(console.log).toHaveBeenCalledWith(
+      'Could not find event body. An email has not been sent'
     )
   })
 })
