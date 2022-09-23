@@ -1,5 +1,7 @@
 import { SQSEvent } from 'aws-lambda'
 import { confirmAthenaTable } from '../services/athena/confirmAthenaTable'
+import { getQueryByZendeskId } from '../services/dynamoDB/dynamoDBGet'
+import { tryParseJSON } from '../utils/helpers'
 import { updateZendeskTicket } from '../services/updateZendeskTicket'
 
 export const handler = async (event: SQSEvent): Promise<void> => {
@@ -18,7 +20,16 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     throw new Error(doesAthenaTableExist.message)
   }
 
-  console.log(doesAthenaTableExist.message)
+  const zendeskTicketInfo = tryParseJSON(eventData)
+  if (!zendeskTicketInfo.zendeskId) {
+    console.error(
+      'No Zendesk ticket ID present in SQS event record. Cannot continue or update ticket.'
+    )
+    throw 'No Zendesk ticket ID present in SQS event record. Cannot continue or update ticket.'
+  }
+
+  const requestData = getQueryByZendeskId(zendeskTicketInfo.zendeskId)
+  console.log(requestData)
 
   return
 }
