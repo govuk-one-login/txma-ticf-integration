@@ -10,6 +10,6 @@ declare module 'notifications-node-client' {
       templateId: string,
       emailAddress: string,
       options: Options
-    ): string
+    ): import('./customAxiosResponse')
   }
 }

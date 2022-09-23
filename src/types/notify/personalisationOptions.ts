@@ -1,4 +1,4 @@
-export default interface PersonalisationOptions {
+export interface PersonalisationOptions {
   firstName: string
   zendeskId: string
   signedUrl: string

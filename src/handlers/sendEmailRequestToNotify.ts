@@ -1,8 +1,7 @@
 import { APIGatewayProxyEvent } from 'aws-lambda'
 import { NotifyClient } from 'notifications-node-client'
 import { retrieveNotifySecrets } from '../secrets/retrieveNotifySecrets'
-import { CustomAxiosResponse } from '../types/notify/axiosResponse'
-import PersonalisationOptions from '../types/notify/personalisationOptions'
+import { PersonalisationOptions } from '../types/notify/personalisationOptions'
 import { tryParseJSON } from '../utils/helpers'
 
 // event type is a placeholder
@@ -20,7 +19,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const notifyClient = new NotifyClient(secrets.notifyApiKey)
 
     console.log('Sending request to Notify')
-    const response = (await Promise.resolve(
+    const response = await Promise.resolve(
       notifyClient.sendEmail(secrets.notifyTemplateId, requestDetails.email, {
         personalisation: {
           firstName: requestDetails.firstName,
@@ -28,7 +27,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
           signedUrl: requestDetails.signedUrl
         }
       })
-    )) as unknown as CustomAxiosResponse
+    )
 
     const logObject = {
       status: response.status,

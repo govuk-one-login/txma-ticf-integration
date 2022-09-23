@@ -1,4 +1,4 @@
-import { CustomAxiosResponse } from '../../types/notify/axiosResponse'
+import { CustomAxiosResponse } from '../../types/notify/customAxiosResponse'
 import {
   ALL_NOTIFY_SECRETS,
   TEST_NOTIFY_EMAIL,
