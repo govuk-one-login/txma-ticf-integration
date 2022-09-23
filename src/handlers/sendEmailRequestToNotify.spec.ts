@@ -108,7 +108,6 @@ describe('initiate sendEmailRequest handler', () => {
   })
   it('returns from the function and logs an error when no event body is present', async () => {
     const invalidEventBody = ''
-    await givenNotifySecretsAvailable()
 
     await callHandlerWithBody(invalidEventBody)
 
