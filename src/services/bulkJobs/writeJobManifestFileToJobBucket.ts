@@ -7,6 +7,7 @@ export const writeJobManifestFileToJobBucket = async (
   manifestFileName: string
 ): Promise<string> => {
   const client = new S3Client(getEnv('AWS_REGION'))
+  console.log(`Writing job manifest file to ${manifestFileName}`)
   const response = await client.send(
     new PutObjectCommand({
       Key: manifestFileName,
