@@ -1,5 +1,6 @@
 import { SQSEvent } from 'aws-lambda'
 import { confirmAthenaTable } from '../services/athena/confirmAthenaTable'
+import { createQuerySql } from '../services/athena/createQuerySql'
 import { getQueryByZendeskId } from '../services/dynamoDB/dynamoDBGet'
 import { tryParseJSON } from '../utils/helpers'
 import { updateZendeskTicket } from '../services/updateZendeskTicket'
@@ -30,6 +31,11 @@ export const handler = async (event: SQSEvent): Promise<void> => {
 
   const requestData = await getQueryByZendeskId(zendeskTicketInfo.zendeskId)
   console.log(requestData)
+
+  if (requestData?.Item) {
+    const querySql = createQuerySql(requestData)
+    console.log(querySql)
+  }
 
   return
 }
