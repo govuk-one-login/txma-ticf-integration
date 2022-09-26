@@ -21,15 +21,15 @@ describe('initiate athena query handler', () => {
     mockConfirmAthenaTable.mockReset()
   })
 
-  // it('confirms whether the athena data source exists', async () => {
-  //   mockConfirmAthenaTable.mockResolvedValue({
-  //     tableAvailable: true,
-  //     message: 'test message'
-  //   })
+  it('confirms whether the athena data source exists', async () => {
+    mockConfirmAthenaTable.mockResolvedValue({
+      tableAvailable: true,
+      message: 'test message'
+    })
 
-  //   await handler(testAthenaQueryEvent)
-  //   expect(mockConfirmAthenaTable).toHaveBeenCalled()
-  // })
+    await handler(testAthenaQueryEvent)
+    expect(mockConfirmAthenaTable).toHaveBeenCalled()
+  })
 
   it('updates zendesk and throws an error if there is no athena data source', async () => {
     mockConfirmAthenaTable.mockResolvedValue({
