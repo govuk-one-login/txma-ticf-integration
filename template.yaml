@@ -186,18 +186,10 @@ Resources:
             Principal:
               AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
-              - kms:CreateGrant
               - kms:Decrypt
               - kms:DescribeKey
               - kms:GenerateDataKey*
               - kms:ReEncrypt*
-            Resource:
-              - '*'
-          - Effect: Allow
-            Principal:
-              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
-            Action:
-              - kms:*
             Resource:
               - '*'
 
