@@ -116,20 +116,26 @@ describe('initiate sendEmailRequest handler', () => {
     )
     expect(NotifyClient).not.toHaveBeenCalled()
   })
-  it('returns from the function and logs an error when a value is missing from the event body', async () => {
-    const invalidEventBody = `{
-      "email": "${TEST_NOTIFY_EMAIL}",
-      "firstName": "${TEST_NOTIFY_NAME}",
-      "zendeskId": "${TICKET_ID}"
-    }`
-    await givenNotifySecretsAvailable()
+  it.each(['firstName', 'email', 'signedUrl', 'zendeskId'])(
+    'returns from the function and logs an error when %p is missing from the event body',
+    async (missingPropertyName: string) => {
+      const eventBodyParams = {
+        email: TEST_NOTIFY_EMAIL,
+        firstName: TEST_NOTIFY_NAME,
+        zendeskId: TICKET_ID,
+        signedUrl: TEST_SIGNED_URL
+      } as { [key: string]: string }
+      delete eventBodyParams[missingPropertyName]
+      console.log(eventBodyParams)
+      await givenNotifySecretsAvailable()
 
-    await callHandlerWithBody(invalidEventBody)
+      await callHandlerWithBody(JSON.stringify(eventBodyParams))
 
-    expect(console.error).toHaveBeenLastCalledWith(
-      'There was an error sending a request to Notify: ',
-      Error('Required details were not all present in event body')
-    )
-    expect(NotifyClient).not.toHaveBeenCalled()
-  })
+      expect(console.error).toHaveBeenLastCalledWith(
+        'There was an error sending a request to Notify: ',
+        Error('Required details were not all present in event body')
+      )
+      expect(NotifyClient).not.toHaveBeenCalled()
+    }
+  )
 })
