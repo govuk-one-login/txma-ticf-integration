@@ -23,5 +23,5 @@ export const listS3Files = async (
     await listS3Files(input, objects)
   }
 
-  return objects
+  return objects.filter((o) => !o.Key?.endsWith('/'))
 }

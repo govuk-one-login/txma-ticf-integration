@@ -26,6 +26,18 @@ describe('list S3 objects', () => {
     expect(result).toEqual([{ Key: 'example-object' }])
   })
 
+  test('folders in the output are ignored', async () => {
+    s3Mock.on(ListObjectsV2Command).resolves({
+      Contents: [
+        { Key: 'example-folder/' },
+        { Key: 'example-folder/example-file' }
+      ]
+    })
+
+    const result = await listS3Files(input)
+    expect(result).toEqual([{ Key: 'example-folder/example-file' }])
+  })
+
   test('response has continuation token - return results for all pages', async () => {
     s3Mock
       .on(ListObjectsV2Command)
