@@ -186,10 +186,7 @@ Resources:
             Principal:
               AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
-              - kms:Decrypt
-              - kms:DescribeKey
-              - kms:GenerateDataKey*
-              - kms:ReEncrypt*
+              - kms:*
             Resource:
               - '*'
 
