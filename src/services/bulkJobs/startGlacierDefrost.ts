@@ -16,16 +16,13 @@ export const startGlacierDefrost = async (
     return
   }
 
-  const manifestFileName = `glacier-defrost-for-ticket-id-${zendeskTicketId}`
-  const manifestFileDetails = await writeJobManifestFileToJobBucket(
+  const manifestFileName = `glacier-defrost-for-ticket-id-${zendeskTicketId}.csv`
+  const manifestFileEtag = await writeJobManifestFileToJobBucket(
     getEnv('AUDIT_BUCKET_NAME'),
     filesToDefrost,
     manifestFileName
   )
-  const jobId = await createBulkDefrostJob(
-    manifestFileName,
-    manifestFileDetails.ETag as string
-  )
+  const jobId = await createBulkDefrostJob(manifestFileName, manifestFileEtag)
   console.log(
     `Started Glacier defrost for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
   )

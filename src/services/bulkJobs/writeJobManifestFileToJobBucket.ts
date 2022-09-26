@@ -1,15 +1,11 @@
-import {
-  S3Client,
-  PutObjectCommand,
-  PutObjectCommandOutput
-} from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getEnv } from '../../utils/helpers'
 
 export const writeJobManifestFileToJobBucket = async (
   sourceBucket: string,
   fileList: string[],
   manifestFileName: string
-): Promise<PutObjectCommandOutput> => {
+): Promise<string> => {
   const client = new S3Client(getEnv('AWS_REGION'))
   const response = await client.send(
     new PutObjectCommand({
@@ -19,7 +15,7 @@ export const writeJobManifestFileToJobBucket = async (
     })
   )
 
-  return response
+  return response.ETag as string
 }
 
 const createManifestFile = (sourceBucket: string, fileList: string[]) =>
