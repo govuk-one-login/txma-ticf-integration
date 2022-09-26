@@ -186,17 +186,6 @@ Resources:
             Principal:
               AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
             Action:
-              - kms:CreateGrant
-              - kms:Decrypt
-              - kms:DescribeKey
-              - kms:GenerateDataKey*
-              - kms:ReEncrypt*
-            Resource:
-              - '*'
-          - Effect: Allow
-            Principal:
-              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
-            Action:
               - kms:*
             Resource:
               - '*'
@@ -303,6 +292,7 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets
       Events:
         InitiateDataRequestEvent:
@@ -343,6 +333,12 @@ Resources:
                 - kms:Decrypt
               Resource:
                 - !GetAtt SecretsKmsKey.Arn
+            - Sid: KmsDatabaseDecryptionKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                - !GetAtt DatabaseKmsKey.Arn
             - Sid: DynamoDBPut
               Effect: Allow
               Action:
@@ -420,6 +416,7 @@ Resources:
         Variables:
           ATHENA_DATABASE_NAME: !Ref AuditAnalysisDatabase
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
+          DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
       Events:
         InitiateAthenaQueryEvent:
           Type: SQS
@@ -463,11 +460,17 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SecretsKmsKey.Arn
+          - Sid: KmsDatabaseDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt DatabaseKmsKey.Arn
           - Sid: DynamoDBPutQuery
             Effect: Allow
             Action:
               - dynamodb:PutItem
-              - dynamodb:Query
+              - dynamodb:GetItem
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
