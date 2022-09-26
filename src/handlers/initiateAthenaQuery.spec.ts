@@ -2,19 +2,19 @@ import { handler } from './initiateAthenaQuery'
 import { confirmAthenaTable } from '../services/athena/confirmAthenaTable'
 import { ConfirmAthenaTableResult } from '../types/confirmAthenaTableResult'
 import { testAthenaQueryEvent } from '../utils/tests/events/initiateAthenaQueryEvent'
-import { updateZendeskTicket } from '../services/updateZendeskTicket'
+import { updateZendeskTicketById } from '../services/updateZendeskTicket'
 
 jest.mock('../services/athena/confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
 }))
 jest.mock('../services/updateZendeskTicket', () => ({
-  updateZendeskTicket: jest.fn()
+  updateZendeskTicketById: jest.fn()
 }))
 
 const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
 >
-const mockUpdateZendeskTicket = updateZendeskTicket as jest.Mock
+const mockUpdateZendeskTicket = updateZendeskTicketById as jest.Mock
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
