@@ -7,4 +7,5 @@ export interface EnvironmentVar {
     | 'ATHENA_TABLE_NAME'
     | 'INITIATE_DATA_REQUEST_QUEUE_URL'
     | 'ZENDESK_API_SECRETS_NAME'
+    | 'BATCH_JOB_MANIFEST_BUCKET_ARN'
 }

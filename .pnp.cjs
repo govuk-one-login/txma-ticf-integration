@@ -36,6 +36,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-glue", "npm:3.163.0"],\
             ["@aws-sdk/client-s3", "npm:3.163.0"],\
+            ["@aws-sdk/client-s3-control", "npm:3.163.0"],\
             ["@aws-sdk/client-secrets-manager", "npm:3.163.0"],\
             ["@aws-sdk/client-sqs", "npm:3.170.0"],\
             ["@jest/types", "npm:28.1.3"],\
@@ -376,6 +377,58 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["entities", "npm:2.2.0"],\
             ["fast-xml-parser", "npm:3.19.0"],\
             ["tslib", "npm:2.4.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-sdk/client-s3-control", [\
+        ["npm:3.163.0", {\
+          "packageLocation": "./.yarn/cache/@aws-sdk-client-s3-control-npm-3.163.0-e1af9580a3-bfbd4656da.zip/node_modules/@aws-sdk/client-s3-control/",\
+          "packageDependencies": [\
+            ["@aws-sdk/client-s3-control", "npm:3.163.0"],\
+            ["@aws-crypto/sha256-browser", "npm:2.0.0"],\
+            ["@aws-crypto/sha256-js", "npm:2.0.0"],\
+            ["@aws-sdk/client-sts", "npm:3.163.0"],\
+            ["@aws-sdk/config-resolver", "npm:3.163.0"],\
+            ["@aws-sdk/credential-provider-node", "npm:3.163.0"],\
+            ["@aws-sdk/fetch-http-handler", "npm:3.162.0"],\
+            ["@aws-sdk/hash-blob-browser", "npm:3.162.0"],\
+            ["@aws-sdk/hash-node", "npm:3.162.0"],\
+            ["@aws-sdk/hash-stream-node", "npm:3.162.0"],\
+            ["@aws-sdk/invalid-dependency", "npm:3.162.0"],\
+            ["@aws-sdk/md5-js", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-apply-body-checksum", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-content-length", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-host-header", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-logger", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-recursion-detection", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-retry", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-sdk-s3-control", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-serde", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-signing", "npm:3.163.0"],\
+            ["@aws-sdk/middleware-stack", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-user-agent", "npm:3.162.0"],\
+            ["@aws-sdk/node-config-provider", "npm:3.162.0"],\
+            ["@aws-sdk/node-http-handler", "npm:3.162.0"],\
+            ["@aws-sdk/protocol-http", "npm:3.162.0"],\
+            ["@aws-sdk/smithy-client", "npm:3.162.0"],\
+            ["@aws-sdk/types", "npm:3.162.0"],\
+            ["@aws-sdk/url-parser", "npm:3.162.0"],\
+            ["@aws-sdk/util-base64-browser", "npm:3.109.0"],\
+            ["@aws-sdk/util-base64-node", "npm:3.55.0"],\
+            ["@aws-sdk/util-body-length-browser", "npm:3.154.0"],\
+            ["@aws-sdk/util-body-length-node", "npm:3.55.0"],\
+            ["@aws-sdk/util-defaults-mode-browser", "npm:3.162.0"],\
+            ["@aws-sdk/util-defaults-mode-node", "npm:3.163.0"],\
+            ["@aws-sdk/util-user-agent-browser", "npm:3.162.0"],\
+            ["@aws-sdk/util-user-agent-node", "virtual:e8847fa6c93fa12574425aa2fe66729e460ae3df5ebbf6f8e33a7e324c20413213976ccdede71a000c324447e8c4b05c5037424166f87420d602a00b5b18ba3e#npm:3.162.0"],\
+            ["@aws-sdk/util-utf8-browser", "npm:3.109.0"],\
+            ["@aws-sdk/util-utf8-node", "npm:3.109.0"],\
+            ["@aws-sdk/xml-builder", "npm:3.142.0"],\
+            ["entities", "npm:2.2.0"],\
+            ["fast-xml-parser", "npm:3.19.0"],\
+            ["tslib", "npm:2.4.0"],\
+            ["uuid", "npm:8.3.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1045,6 +1098,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@aws-sdk/middleware-apply-body-checksum", [\
+        ["npm:3.162.0", {\
+          "packageLocation": "./.yarn/cache/@aws-sdk-middleware-apply-body-checksum-npm-3.162.0-730a49e216-18036f3b91.zip/node_modules/@aws-sdk/middleware-apply-body-checksum/",\
+          "packageDependencies": [\
+            ["@aws-sdk/middleware-apply-body-checksum", "npm:3.162.0"],\
+            ["@aws-sdk/is-array-buffer", "npm:3.55.0"],\
+            ["@aws-sdk/protocol-http", "npm:3.162.0"],\
+            ["@aws-sdk/types", "npm:3.162.0"],\
+            ["tslib", "npm:2.4.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@aws-sdk/middleware-bucket-endpoint", [\
         ["npm:3.162.0", {\
           "packageLocation": "./.yarn/cache/@aws-sdk-middleware-bucket-endpoint-npm-3.162.0-51d44bcc6d-e4d6e02c1a.zip/node_modules/@aws-sdk/middleware-bucket-endpoint/",\
@@ -1216,6 +1282,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@aws-sdk-middleware-sdk-s3-npm-3.162.0-d58120f7a2-b94c55ebe0.zip/node_modules/@aws-sdk/middleware-sdk-s3/",\
           "packageDependencies": [\
             ["@aws-sdk/middleware-sdk-s3", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-bucket-endpoint", "npm:3.162.0"],\
+            ["@aws-sdk/protocol-http", "npm:3.162.0"],\
+            ["@aws-sdk/types", "npm:3.162.0"],\
+            ["@aws-sdk/util-arn-parser", "npm:3.55.0"],\
+            ["tslib", "npm:2.4.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-sdk/middleware-sdk-s3-control", [\
+        ["npm:3.162.0", {\
+          "packageLocation": "./.yarn/cache/@aws-sdk-middleware-sdk-s3-control-npm-3.162.0-8b22e62970-a4bc5d489c.zip/node_modules/@aws-sdk/middleware-sdk-s3-control/",\
+          "packageDependencies": [\
+            ["@aws-sdk/middleware-sdk-s3-control", "npm:3.162.0"],\
             ["@aws-sdk/middleware-bucket-endpoint", "npm:3.162.0"],\
             ["@aws-sdk/protocol-http", "npm:3.162.0"],\
             ["@aws-sdk/types", "npm:3.162.0"],\
@@ -5149,6 +5229,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-glue", "npm:3.163.0"],\
             ["@aws-sdk/client-s3", "npm:3.163.0"],\
+            ["@aws-sdk/client-s3-control", "npm:3.163.0"],\
             ["@aws-sdk/client-secrets-manager", "npm:3.163.0"],\
             ["@aws-sdk/client-sqs", "npm:3.170.0"],\
             ["@jest/types", "npm:28.1.3"],\

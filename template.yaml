@@ -272,6 +272,7 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          BATCH_JOB_MANIFEST_BUCKET_ARN: !GetAtt BatchJobManifestBucket.Arn
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -347,6 +348,47 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub ${AWS::StackName}-sandbox-analysis-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-logs
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  BatchJobManifestBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${AWS::StackName}-batch-job-manifest-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-batch-job-manifest-bucket
+      LifecycleConfiguration:
+        Rules:
+          - Id: BatchJobManifestCleanupRule
+            Status: Enabled
+            ExpirationInDays: 5
+      LoggingConfiguration:
+        DestinationBucketName: !Ref BatchJobBucketLogsBucket
+        LogFilePrefix: String
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  BatchJobBucketLogsBucket:
+    #checkov:skip=CKV_AWS_18:This is the logs bucket
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-sandbox-batch-job-bucket-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}--batch-job-bucket-log
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
