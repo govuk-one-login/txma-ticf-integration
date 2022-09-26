@@ -175,6 +175,26 @@ Resources:
       AliasName: !Sub alias/${AWS::StackName}/sandbox/queue-kms-key
       TargetKeyId: !Ref QueueKmsKey
 
+  DatabaseKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action:
+              - kms:*
+            Resource:
+              - '*'
+
+  DatabaseKmsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub alias/${AWS::StackName}/sandbox/database-kms-key
+      TargetKeyId: !Ref DatabaseKmsKey
 
   # Data Retrieval
   ZendeskWebhookAccessLogGroup:
@@ -272,6 +292,8 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets
           BATCH_JOB_MANIFEST_BUCKET_ARN: !GetAtt BatchJobManifestBucket.Arn
       Events:
         InitiateDataRequestEvent:
@@ -300,6 +322,30 @@ Resources:
                 - kms:Decrypt
               Resource:
                 - !GetAtt QueueKmsKey.Arn
+            - Sid: SecretsManager
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskApiSecrets-??????
+            - Sid: KmsSecretsDecryptionKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                - !GetAtt SecretsKmsKey.Arn
+            - Sid: KmsDatabaseDecryptionKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                - !GetAtt DatabaseKmsKey.Arn
+            - Sid: DynamoDBPut
+              Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+                - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         Type: SQS
@@ -412,6 +458,7 @@ Resources:
         Variables:
           ATHENA_DATABASE_NAME: !Ref AuditAnalysisDatabase
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
+          DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
       Events:
         InitiateAthenaQueryEvent:
           Type: SQS
@@ -455,6 +502,19 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SecretsKmsKey.Arn
+          - Sid: KmsDatabaseDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt DatabaseKmsKey.Arn
+          - Sid: DynamoDBPutQuery
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+            Resource:
+              - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn 
@@ -577,6 +637,70 @@ Resources:
           EncryptionConfiguration:
             EncryptionOption: "SSE_S3"
           OutputLocation: !Join ['', ['s3://', !Ref QueryResultsBucket, '/'] ]
+
+  QueryRequestDynamoDBTable: 
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions: 
+        - AttributeName: "zendeskId"
+          AttributeType: "S"
+        - AttributeName: "s3MoveId"
+          AttributeType: "S"
+        - AttributeName: "glacierRetrieveId"
+          AttributeType: "S"
+        - AttributeName: "glacierMoveId"
+          AttributeType: "S"
+        - AttributeName: "athenaQueryId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "zendeskId"
+          KeyType: "HASH"
+      GlobalSecondaryIndexes:
+        - IndexName: s3MoveIdIndex
+          KeySchema:
+            - AttributeName: "s3MoveId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: glacierRetrieveIdIndex
+          KeySchema:
+            - AttributeName: "glacierRetrieveId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: glacierMoveIdIndex
+          KeySchema:
+            - AttributeName: "glacierMoveId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: athenaQueryIdIndex
+          KeySchema:
+            - AttributeName: "athenaQueryId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+        KMSMasterKeyId: !GetAtt DatabaseKmsKey.Arn
 
   # Dev Resources
   EmptyS3BucketsFunction:

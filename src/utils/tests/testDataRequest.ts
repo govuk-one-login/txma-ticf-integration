@@ -1,11 +1,16 @@
 import { DataRequestParams } from '../../types/dataRequestParams'
+import {
+  TEST_DATE_FROM,
+  TEST_DATE_TO,
+  ZENDESK_TICKET_ID
+} from './testConstants'
 
 export const testDataRequest = {
-  zendeskId: '123',
+  zendeskId: ZENDESK_TICKET_ID,
   resultsEmail: 'myuser@test.gov.uk',
   resultsName: 'my name',
-  dateFrom: '2021-08-21',
-  dateTo: '2021-08-21',
+  dateFrom: TEST_DATE_FROM,
+  dateTo: TEST_DATE_TO,
   identifierType: 'event_id',
   eventIds: ['123', '456'],
   piiTypes: ['passport_number']
