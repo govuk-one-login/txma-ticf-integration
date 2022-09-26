@@ -1,12 +1,14 @@
 import {
   TEST_NOTIFY_SECRET_NAME,
+  TEST_ANALYSIS_BUCKET,
+  TEST_AUDIT_BUCKET,
   TEST_ZENDESK_SECRET_NAME
 } from '../testConstants'
 
 import { MOCK_INITIATE_DATA_REQUEST_QUEUE_URL } from '../testConstants'
 
-process.env.ANALYSIS_BUCKET_NAME = 'analysis-bucket'
-process.env.AUDIT_BUCKET_NAME = 'audit-bucket'
+process.env.ANALYSIS_BUCKET_NAME = TEST_ANALYSIS_BUCKET
+process.env.AUDIT_BUCKET_NAME = TEST_AUDIT_BUCKET
 process.env.AWS_REGION = 'eu-west-2'
 process.env.ATHENA_DATABASE_NAME = 'test_database'
 process.env.ATHENA_TABLE_NAME = 'test_table'

@@ -1,5 +1,4 @@
 import { initiateDataTransfer } from '../services/initiateDataTransfer'
-import { InitiateDataTransferResult } from '../types/initiateDataTransferResult'
 import { handler } from './processDataRequest'
 import { constructInitiateDataRequestEvent } from '../utils/tests/events/initiateDataRequestEvent'
 import { testDataRequest } from '../utils/tests/testDataRequest'
@@ -7,9 +6,7 @@ jest.mock('../services/initiateDataTransfer', () => ({
   initiateDataTransfer: jest.fn()
 }))
 
-const initiateDataTransferMock = initiateDataTransfer as jest.Mock<
-  Promise<InitiateDataTransferResult>
->
+const initiateDataTransferMock = initiateDataTransfer as jest.Mock
 
 describe('processDataRequest', () => {
   beforeEach(() => {

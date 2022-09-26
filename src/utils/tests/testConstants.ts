@@ -1,7 +1,7 @@
 import { NotifyApiSecrets } from '../../types/notifyApiSecrets'
 import { ZendeskApiSecrets } from '../../types/zendeskApiSecrets'
 
-export const TICKET_ID = '123'
+export const ZENDESK_TICKET_ID = '123'
 export const ALL_ZENDESK_SECRETS: ZendeskApiSecrets = {
   zendeskApiKey: 'myZendeskApiKey',
   zendeskApiUserId: 'myZendeskApiUserId',
@@ -21,3 +21,7 @@ export const TEST_NOTIFY_SECRET_NAME = 'myNotifySecretName'
 export const TEST_NOTIFY_EMAIL = 'test@email.com'
 export const TEST_NOTIFY_NAME = 'TestName'
 export const TEST_SIGNED_URL = 'signed.url.com'
+export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
+export const TEST_AUDIT_BUCKET = 'myAuditBucket'
+export const TEST_DATE_FROM = '2021-08-21'
+export const TEST_DATE_TO = '2021-08-21'

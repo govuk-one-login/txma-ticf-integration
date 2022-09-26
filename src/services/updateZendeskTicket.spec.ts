@@ -1,16 +1,20 @@
 // Under test
-import { updateZendeskTicket } from './updateZendeskTicket'
+import {
+  updateZendeskTicket,
+  updateZendeskTicketById
+} from './updateZendeskTicket'
 // Dependencies
 import { exampleEventBody } from '../utils/tests/events/exampleEventBody'
 import {
   ALL_ZENDESK_SECRETS,
-  TICKET_ID,
+  ZENDESK_TICKET_ID,
   ENCODED_AUTH_VALUE
 } from '../utils/tests/testConstants'
 import { givenAllSecretsAvailable } from '../utils/tests/mocks/retrieveSecretKeys'
 import * as mockHttpsRequestUtils from '../utils/tests/mocks/httpsRequestUtils'
 
 const zendeskTicketMessage = 'Something was invalid.'
+const NEW_TICKET_STATUS = 'closed'
 
 jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
@@ -32,15 +36,29 @@ describe('updating a zendesk ticket', () => {
     jest.clearAllMocks()
   })
 
-  it('a single api call was made', async () => {
+  it('a single api call was made with event body', async () => {
     mockHttpsRequestUtils.givenSuccessfulApiCall()
-    const newTicketStatus = 'closed'
     await updateZendeskTicket(
       exampleEventBody,
       zendeskTicketMessage,
-      newTicketStatus
+      NEW_TICKET_STATUS
     )
 
+    expectSuccessfulApiCallToBeMade()
+  })
+
+  it('a single api call was made with zendesk ID', async () => {
+    mockHttpsRequestUtils.givenSuccessfulApiCall()
+    await updateZendeskTicketById(
+      ZENDESK_TICKET_ID,
+      zendeskTicketMessage,
+      NEW_TICKET_STATUS
+    )
+
+    expectSuccessfulApiCallToBeMade()
+  })
+
+  const expectSuccessfulApiCallToBeMade = () => {
     expect(mockHttpsRequestUtils.mockBase64Encode.mock.calls.length).toBe(1)
     expect(mockHttpsRequestUtils.mockBase64Encode).toHaveBeenCalledWith(
       `${ALL_ZENDESK_SECRETS.zendeskApiUserEmail}/token:${ALL_ZENDESK_SECRETS.zendeskApiKey}`
@@ -50,7 +68,7 @@ describe('updating a zendesk ticket', () => {
       {
         method: 'PUT',
         hostname: 'example-host.zendesk.com',
-        path: `/api/v2/tickets/${TICKET_ID}`,
+        path: `/api/v2/tickets/${ZENDESK_TICKET_ID}`,
         headers: {
           Authorization: ENCODED_AUTH_VALUE,
           'Content-Type': 'application/json'
@@ -58,7 +76,7 @@ describe('updating a zendesk ticket', () => {
       },
       {
         ticket: {
-          status: newTicketStatus,
+          status: NEW_TICKET_STATUS,
           comment: {
             body: zendeskTicketMessage,
             author_id: ALL_ZENDESK_SECRETS.zendeskApiUserId
@@ -70,12 +88,22 @@ describe('updating a zendesk ticket', () => {
       'Zendesk ticket validation update successful.',
       { theReturnData: '123' }
     )
-  })
-
+  }
   it('a single api call fails', async () => {
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()
 
     await updateZendeskTicket(exampleEventBody, zendeskTicketMessage)
+    expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
+    expect(console.error).toHaveBeenLastCalledWith(
+      'Zendesk ticket validation update failed.',
+      Error('There was an error.')
+    )
+  })
+
+  it('a single api call fails with zendesk ID', async () => {
+    mockHttpsRequestUtils.givenUnsuccessfulApiCall()
+
+    await updateZendeskTicketById(ZENDESK_TICKET_ID, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(console.error).toHaveBeenLastCalledWith(
       'Zendesk ticket validation update failed.',

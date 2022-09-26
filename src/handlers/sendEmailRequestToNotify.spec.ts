@@ -5,7 +5,7 @@ import {
   TEST_NOTIFY_EMAIL,
   TEST_NOTIFY_NAME,
   TEST_SIGNED_URL,
-  TICKET_ID
+  ZENDESK_TICKET_ID
 } from '../utils/tests/testConstants'
 import { handler } from './sendEmailRequestToNotify'
 import { NotifyClient } from 'notifications-node-client'
@@ -38,7 +38,7 @@ const givenUnsuccessfulSendEmailRequest = async () => {
 const validEventBody = `{
       "email": "${TEST_NOTIFY_EMAIL}",
       "firstName": "${TEST_NOTIFY_NAME}",
-      "zendeskId": "${TICKET_ID}",
+      "zendeskId": "${ZENDESK_TICKET_ID}",
       "signedUrl": "${TEST_SIGNED_URL}"
     }`
 const callHandlerWithBody = async (customBody: string) => {
@@ -71,7 +71,7 @@ describe('initiate sendEmailRequest handler', () => {
       {
         personalisation: {
           firstName: TEST_NOTIFY_NAME,
-          zendeskId: TICKET_ID,
+          zendeskId: ZENDESK_TICKET_ID,
           signedUrl: TEST_SIGNED_URL
         }
       }
@@ -96,7 +96,7 @@ describe('initiate sendEmailRequest handler', () => {
       {
         personalisation: {
           firstName: TEST_NOTIFY_NAME,
-          zendeskId: TICKET_ID,
+          zendeskId: ZENDESK_TICKET_ID,
           signedUrl: TEST_SIGNED_URL
         }
       }
@@ -122,7 +122,7 @@ describe('initiate sendEmailRequest handler', () => {
       const eventBodyParams = {
         email: TEST_NOTIFY_EMAIL,
         firstName: TEST_NOTIFY_NAME,
-        zendeskId: TICKET_ID,
+        zendeskId: ZENDESK_TICKET_ID,
         signedUrl: TEST_SIGNED_URL
       } as { [key: string]: string }
       delete eventBodyParams[missingPropertyName]

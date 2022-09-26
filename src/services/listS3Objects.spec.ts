@@ -23,7 +23,7 @@ describe('list S3 objects', () => {
     })
 
     const result = await listS3Objects(input)
-    expect(result).toEqual(['example-object'])
+    expect(result).toEqual([{ Key: 'example-object' }])
   })
 
   test('response has continuation token - return results for all pages', async () => {
@@ -45,9 +45,9 @@ describe('list S3 objects', () => {
       })
     const result = await listS3Objects(input)
     expect(result).toEqual([
-      'example-object-1',
-      'example-object-2',
-      'example-object-3'
+      { Key: 'example-object-1' },
+      { Key: 'example-object-2' },
+      { Key: 'example-object-3' }
     ])
   })
 
@@ -58,7 +58,7 @@ describe('list S3 objects', () => {
     })
 
     const result = await listS3Objects(input)
-    expect(result).toEqual(['example-object'])
+    expect(result).toEqual([{ Key: 'example-object' }])
   })
 
   test('response has no continuation token or contents', async () => {

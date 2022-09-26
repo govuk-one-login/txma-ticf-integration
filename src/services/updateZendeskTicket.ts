@@ -17,11 +17,24 @@ export const updateZendeskTicket = async (
     console.error('No Zendesk ticket ID present. Cannot update ticket.')
     return
   }
+
+  await updateZendeskTicketById(
+    zendeskTicketInfo.zendeskId,
+    message,
+    ticketStatus
+  )
+}
+
+export const updateZendeskTicketById = async (
+  zendeskTicketId: string,
+  message: string,
+  ticketStatus: string | null = null
+) => {
   const secrets = await retrieveZendeskApiSecrets()
   const options: https.RequestOptions = {
     method: 'PUT',
     hostname: secrets.zendeskHostName,
-    path: `/api/v2/tickets/${zendeskTicketInfo.zendeskId}`,
+    path: `/api/v2/tickets/${zendeskTicketId}`,
     headers: {
       Authorization: base64Encode(
         `${secrets.zendeskApiUserEmail}/token:${secrets.zendeskApiKey}`

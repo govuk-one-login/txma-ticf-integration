@@ -13,7 +13,9 @@ export const emptyS3Bucket = async (bucketName: string): Promise<void> => {
     await deleteObjectVersions(bucketName)
   }
   const objects = await listS3Objects({ Bucket: bucketName })
-  await Promise.all(objects.map((object) => deleteObject(bucketName, object)))
+  await Promise.all(
+    objects.map((object) => deleteObject(bucketName, object.Key as string))
+  )
 }
 
 const s3Client = new S3Client({ region: getEnv('AWS_REGION') })
