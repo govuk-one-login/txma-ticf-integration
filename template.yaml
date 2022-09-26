@@ -303,6 +303,7 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -330,6 +331,12 @@ Resources:
                 - kms:Decrypt
               Resource:
                 - !GetAtt QueueKmsKey.Arn
+            - Sid: KmsDatabaseDecryptionKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                - !GetAtt DatabaseKmsKey.Arn
             - Sid: DynamoDBPut
               Effect: Allow
               Action:
