@@ -126,7 +126,27 @@ describe('initiate sendEmailRequest handler', () => {
         signedUrl: TEST_SIGNED_URL
       } as { [key: string]: string }
       delete eventBodyParams[missingPropertyName]
-      console.log(eventBodyParams)
+      await givenNotifySecretsAvailable()
+
+      await callHandlerWithBody(JSON.stringify(eventBodyParams))
+
+      expect(console.error).toHaveBeenLastCalledWith(
+        'There was an error sending a request to Notify: ',
+        Error('Required details were not all present in event body')
+      )
+      expect(NotifyClient).not.toHaveBeenCalled()
+    }
+  )
+  it.each(['firstName', 'email', 'signedUrl', 'zendeskId'])(
+    'returns from the function and logs an error when %p is an empty string',
+    async (emptyStringPropertyName: string) => {
+      const eventBodyParams = {
+        email: TEST_NOTIFY_EMAIL,
+        firstName: TEST_NOTIFY_NAME,
+        zendeskId: ZENDESK_TICKET_ID,
+        signedUrl: TEST_SIGNED_URL
+      } as { [key: string]: string }
+      eventBodyParams[emptyStringPropertyName] = ''
       await givenNotifySecretsAvailable()
 
       await callHandlerWithBody(JSON.stringify(eventBodyParams))
