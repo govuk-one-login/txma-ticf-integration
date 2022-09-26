@@ -303,6 +303,7 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -330,6 +331,18 @@ Resources:
                 - kms:Decrypt
               Resource:
                 - !GetAtt QueueKmsKey.Arn
+            - Sid: SecretsManager
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskApiSecrets-??????
+            - Sid: KmsSecretsDecryptionKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                - !GetAtt SecretsKmsKey.Arn
             - Sid: DynamoDBPut
               Effect: Allow
               Action:
