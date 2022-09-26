@@ -5,7 +5,8 @@ import {
   DeleteObjectCommand,
   GetBucketVersioningCommand,
   PutBucketVersioningCommand,
-  S3Client
+  S3Client,
+  _Object
 } from '@aws-sdk/client-s3'
 import { listS3Objects } from './listS3Objects'
 import { listS3ObjectVersions } from './listS3ObjectVersions'
@@ -15,7 +16,7 @@ const s3Mock = mockClient(S3Client)
 jest.mock('./listS3Objects', () => ({
   listS3Objects: jest.fn()
 }))
-const mockListS3Objects = listS3Objects as jest.Mock<Promise<string[]>>
+const mockListS3Objects = listS3Objects as jest.Mock<Promise<_Object[]>>
 
 jest.mock('./listS3ObjectVersions', () => ({
   listS3ObjectVersions: jest.fn()
@@ -35,12 +36,13 @@ describe('empty s3 bucket', () => {
 
   test('s3 bucket does not have versioning enabled', async () => {
     s3Mock.on(GetBucketVersioningCommand).resolves({})
-    mockListS3Objects.mockResolvedValue(['object-1'])
+    mockListS3Objects.mockResolvedValue([{ Key: 'object-1' }])
     s3Mock.on(DeleteObjectCommand).resolves({})
 
     await emptyS3Bucket(bucketName)
-
-    expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1)
+    expect(s3Mock).toHaveReceivedCommandWith(DeleteObjectCommand, {
+      Key: 'object-1'
+    })
   })
 
   test('s3 bucket has versioning enabled', async () => {
@@ -49,7 +51,7 @@ describe('empty s3 bucket', () => {
     })
     s3Mock.on(PutBucketVersioningCommand).resolves({})
     s3Mock.on(DeleteObjectCommand).resolves({})
-    mockListS3Objects.mockResolvedValue(['object-1'])
+    mockListS3Objects.mockResolvedValue([{ Key: 'object-1' }])
     mocklistS3ObjectVersions.mockResolvedValue({
       deleteMarkers: ['version-1'],
       versions: ['version-1']
