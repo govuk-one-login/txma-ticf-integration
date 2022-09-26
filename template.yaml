@@ -451,6 +451,12 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SecretsKmsKey.Arn
+          - Sid: KmsDatabaseDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt DatabaseKmsKey.Arn
           - Sid: DynamoDBPutQuery
             Effect: Allow
             Action:
