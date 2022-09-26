@@ -5,14 +5,14 @@ import {
   S3Client
 } from '@aws-sdk/client-s3'
 import { getEnv } from '../utils/helpers'
-import { listS3Objects } from './listS3Objects'
+import { listS3Files } from './listS3Files'
 import { listS3ObjectVersions } from './listS3ObjectVersions'
 
 export const emptyS3Bucket = async (bucketName: string): Promise<void> => {
   if (await versioningStatusEnabled(bucketName)) {
     await deleteObjectVersions(bucketName)
   }
-  const objects = await listS3Objects({ Bucket: bucketName })
+  const objects = await listS3Files({ Bucket: bucketName })
   await Promise.all(
     objects.map((object) => deleteObject(bucketName, object.Key as string))
   )

@@ -6,7 +6,7 @@ import {
 } from '@aws-sdk/client-s3'
 import { getEnv } from '../utils/helpers'
 
-export const listS3Objects = async (
+export const listS3Files = async (
   input: ListObjectsV2CommandInput,
   objects: _Object[] = []
 ): Promise<_Object[]> => {
@@ -20,7 +20,7 @@ export const listS3Objects = async (
 
   if (response.NextContinuationToken) {
     input.ContinuationToken = response.NextContinuationToken
-    await listS3Objects(input, objects)
+    await listS3Files(input, objects)
   }
 
   return objects
