@@ -1,6 +1,6 @@
 import { DataRequestParams } from '../types/dataRequestParams'
 import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
-import { listS3Objects } from './listS3Objects'
+import { listS3Files } from './listS3Files'
 import { getEnv } from '../utils/helpers'
 import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
 import { _Object } from '@aws-sdk/client-s3'
@@ -66,7 +66,7 @@ const retrieveS3ObjectsForPrefixes = async (
   const rawData = await Promise.all(
     prefixes.map(
       async (prefix) =>
-        await listS3Objects({
+        await listS3Files({
           Bucket: bucketName,
           Prefix: prefix
         })
