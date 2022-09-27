@@ -23,12 +23,13 @@ describe('startGlacierDefrost', () => {
     const fileList = ['myFile1', 'myFile2']
     await startGlacierDefrost(fileList, ZENDESK_TICKET_ID)
     expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
+      ClientRequestToken: `glacier-defrost-for-ticket-id-${ZENDESK_TICKET_ID}`,
       AccountId: TEST_AWS_ACCOUNT_ID,
       RoleArn: TEST_BATCH_JOB_ROLE_ARN,
       Operation: {
         S3InitiateRestoreObject: {
           ExpirationInDays: 5,
-          GlacierJobTier: 'Bulk'
+          GlacierJobTier: 'BULK'
         }
       },
       Manifest: {
