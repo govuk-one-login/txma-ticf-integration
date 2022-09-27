@@ -467,7 +467,6 @@ Resources:
             Service:
             - batch.amazonaws.com
           Action: sts:AssumeRole
-      RoleName: BatchJobsRole
       Policies:
       - PolicyName: AllowS3BatchRestore
         PolicyDocument:
