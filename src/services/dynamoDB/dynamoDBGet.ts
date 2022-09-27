@@ -17,17 +17,33 @@ export const getQueryByZendeskId = async (
   const data = await ddbClient.send(new GetItemCommand(params))
   console.log(data)
   console.log(data.Item?.requestInfo?.M)
+  console.log(data.Item?.requestInfo?.M?.eventIds?.L)
   if (!data.Item?.requestInfo?.M) {
     throw new Error(
       `Request info not returned from db for zendesk ticket: ${zendeskId}`
     )
   }
 
-  if (!isDataRequestParams(data.Item?.requestInfo?.M)) {
+  const dataRequestParams = {
+    zendeskId: data.Item?.requestInfo?.M?.zendeskId?.S,
+    resultsEmail: data.Item?.requestInfo?.M?.resultsEmail?.S,
+    resultsName: data.Item?.requestInfo?.M?.resultsName?.S,
+    dateFrom: data.Item?.requestInfo?.M?.dateFrom?.S,
+    dateTo: data.Item?.requestInfo?.M?.dateTo?.S,
+    identifierType: data.Item?.requestInfo?.M?.identifierType?.S
+    // sessionIds?: string[]
+    // journeyIds?: string[]
+    // eventIds?: string[]
+    // userIds?: string[]
+    // piiTypes?: string[]
+    // dataPaths?: string[]
+  }
+
+  if (!isDataRequestParams(dataRequestParams)) {
     throw new Error(
       `Event data returned from db was not of correct type for zendesk ticket: ${zendeskId}`
     )
   }
 
-  return data.Item?.requestInfo?.M as DataRequestParams
+  return dataRequestParams
 }
