@@ -17,7 +17,7 @@ export const getZendeskUser = async (userId: string) => {
   }
 
   const data = (await makeHttpsRequest(options)) as ZendeskUser
-  console.log('Found user', data)
+  console.log('Found user:', data)
 
   return data
 }
