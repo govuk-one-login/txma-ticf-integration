@@ -379,13 +379,8 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
-          - Sid: SecretManager
-            Effect: Allow
-            Action:
-              - secretsmanager:GetSecretValue
-            Resource:
               - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-NotifyApiSecrets-??????
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskApiSecrets-??????
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
