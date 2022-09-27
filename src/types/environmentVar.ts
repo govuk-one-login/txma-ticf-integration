@@ -11,4 +11,5 @@ export interface EnvironmentVar {
     | 'BATCH_JOB_MANIFEST_BUCKET_ARN'
     | 'BATCH_JOB_MANIFEST_BUCKET_NAME'
     | 'ACCOUNT_ID'
+    | 'BATCH_JOB_ROLE_ARN'
 }

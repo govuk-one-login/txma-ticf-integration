@@ -38,6 +38,7 @@ const createBulkDefrostJob = async (
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     AccountId: getEnv('ACCOUNT_ID'),
+    RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Operation: {
       S3InitiateRestoreObject: {
         ExpirationInDays: 5,

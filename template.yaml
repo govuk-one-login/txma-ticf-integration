@@ -296,6 +296,7 @@ Resources:
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets
           BATCH_JOB_MANIFEST_BUCKET_ARN: !GetAtt BatchJobManifestBucket.Arn
           BATCH_JOB_MANIFEST_BUCKET_NAME: !Ref BatchJobManifestBucket
+          BATCH_JOB_ROLE_ARN: !GetAtt BatchJobsRole.Arn
           ACCOUNT_ID: !Sub ${AWS::AccountId}
       Events:
         InitiateDataRequestEvent:
@@ -454,6 +455,19 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
+
+  BatchJobsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Policies:
+        - Statement:
+            - Sid: AllowAuditBucketRestore
+              Effect: Allow
+              Action:
+                - s3:RestoreObject
+              Resource:
+                - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+
 
   # Data Analysis
 

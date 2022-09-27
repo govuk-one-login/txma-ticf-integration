@@ -5,6 +5,7 @@ import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
 import {
   TEST_AWS_ACCOUNT_ID,
   TEST_BATCH_JOB_MANIFEST_BUCKET_ARN,
+  TEST_BATCH_JOB_ROLE_ARN,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { when } from 'jest-when'
@@ -23,6 +24,7 @@ describe('startGlacierDefrost', () => {
     await startGlacierDefrost(fileList, ZENDESK_TICKET_ID)
     expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
       AccountId: TEST_AWS_ACCOUNT_ID,
+      RoleArn: TEST_BATCH_JOB_ROLE_ARN,
       Operation: {
         S3InitiateRestoreObject: {
           ExpirationInDays: 5,
