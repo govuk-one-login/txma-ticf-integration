@@ -317,7 +317,7 @@ Resources:
               Action:
                 - s3:PutObject
               Resource:
-                - !GetAtt BatchJobManifestBucket.Arn
+                - !GetAtt BatchJobManifestBucket.Arn/*
             - Sid: Logs
               Effect: Allow
               Action:
