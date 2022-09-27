@@ -39,22 +39,22 @@ const compareTicketAndRequestParameter = (
   ticketParam?: string | string[],
   requestParam?: string | string[]
 ) => {
-  let compareTicketParam: string | undefined
-  let compareRequestParam: string | undefined
+  let stringyfiedTicketParam: string | undefined
+  let stringyfiedRequestParam: string | undefined
 
   if (Array.isArray(ticketParam)) {
-    compareTicketParam = ticketParam.sort().toString()
+    stringyfiedTicketParam = ticketParam.sort().toString()
   } else {
-    compareTicketParam = ticketParam
+    stringyfiedTicketParam = ticketParam
   }
 
   if (Array.isArray(requestParam)) {
-    compareRequestParam = requestParam.sort.toString()
+    stringyfiedRequestParam = requestParam.sort.toString()
   } else {
-    compareRequestParam = requestParam
+    stringyfiedRequestParam = requestParam
   }
 
-  return compareTicketParam === compareRequestParam
+  return stringyfiedTicketParam === stringyfiedRequestParam
 }
 
 const compareTicketAndRequestDetails = (

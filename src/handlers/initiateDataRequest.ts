@@ -28,8 +28,18 @@ export const handler = async (
   const requestParams =
     validatedZendeskRequest.dataRequestParams as DataRequestParams
 
-  if (!(await matchZendeskTicket(requestParams))) {
-    return await handleUnmatchedRequest(requestParams)
+  try {
+    if (!(await matchZendeskTicket(requestParams))) {
+      return await handleUnmatchedRequest(requestParams)
+    }
+  } catch (error) {
+    console.error(error)
+    return {
+      statusCode: 404,
+      body: JSON.stringify({
+        message: 'Zendesk ticket not found'
+      })
+    }
   }
 
   const messageId = await sendInitiateDataTransferMessage(requestParams)
@@ -87,7 +97,7 @@ const handleUnmatchedRequest = async (requestDetails: DataRequestParams) => {
   return {
     statusCode: 400,
     body: JSON.stringify({
-      message: 'Request parameters to not match a Zendesk Ticket'
+      message: 'Request parameters do not match a Zendesk Ticket'
     })
   }
 }
