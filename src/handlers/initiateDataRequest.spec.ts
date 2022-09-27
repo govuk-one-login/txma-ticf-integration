@@ -7,12 +7,15 @@ import { DataRequestParams } from '../types/dataRequestParams'
 import { testDataRequest } from '../utils/tests/testDataRequest'
 import { isSignatureInvalid } from '../services/validateRequestSource'
 import { sendInitiateDataTransferMessage } from '../services/queue/sendInitiateDataTransferMessage'
+import { matchZendeskTicket } from '../services/matchZendeskTicket'
 const mockValidateZendeskRequest =
   validateZendeskRequest as jest.Mock<ValidatedDataRequestParamsResult>
 
 const mockUpdateZendeskTicket = updateZendeskTicket as jest.Mock
 
 const mockIsSignatureInvalid = isSignatureInvalid as jest.Mock<Promise<boolean>>
+
+const mockMatchZendeskTicket = matchZendeskTicket as jest.Mock<Promise<boolean>>
 
 const mockSendInitiateDataTransferMessage =
   sendInitiateDataTransferMessage as jest.Mock
@@ -27,6 +30,10 @@ jest.mock('../services/updateZendeskTicket', () => ({
 
 jest.mock('../services/validateRequestSource', () => ({
   isSignatureInvalid: jest.fn()
+}))
+
+jest.mock('../services/matchZendeskTicket', () => ({
+  matchZendeskTicket: jest.fn()
 }))
 
 jest.mock('../services/queue/sendInitiateDataTransferMessage', () => ({
@@ -62,6 +69,14 @@ describe('initate data request handler', () => {
     givenSignatureValidationResult(true)
   }
 
+  const givenMatchZendeskTicketResult = (matches: boolean) => {
+    mockMatchZendeskTicket.mockImplementation(() => Promise.resolve(matches))
+  }
+
+  const givenMatchesZendeskTicket = () => {
+    givenMatchZendeskTicketResult(true)
+  }
+
   const requestBody = 'myBody'
   const callHandlerWithBody = async () => {
     return await handler({
@@ -77,6 +92,7 @@ describe('initate data request handler', () => {
   it('returns 200 response when request is valid', async () => {
     givenValidRequest()
     givenSignatureIsValid()
+    givenMatchesZendeskTicket()
 
     const handlerCallResult = await callHandlerWithBody()
 
