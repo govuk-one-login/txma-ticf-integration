@@ -45,6 +45,9 @@ const createBulkDefrostJob = async (
         GlacierJobTier: 'Bulk'
       }
     },
+    Report: {
+      Enabled: false
+    },
     Manifest: {
       Spec: {
         Format: 'S3BatchOperations_CSV_20180820',

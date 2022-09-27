@@ -455,18 +455,40 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
-
+        
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - batch.amazonaws.com
+          Action: sts:AssumeRole
+      RoleName: BatchJobsRole
       Policies:
-        - Statement:
-            - Sid: AllowAuditBucketRestore
-              Effect: Allow
+      - PolicyName: AllowS3BatchRestore
+        PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
               Action:
                 - s3:RestoreObject
               Resource:
-                - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+                - arn:aws:s3:::audit-sandbox-message-batch/* #TODO: Update with parameter when merging with TxMA 1
+            - Effect: Allow
+              Action:
+                -  "s3:GetObject"
+                -  "s3:GetObjectVersion"
+              Resource:
+                - !GetAtt BatchJobManifestBucket.Arn
+            - Effect: Allow
+              Action:
+                - "s3:PutObject"
+              Resource:
+                - !GetAtt BatchJobReportBucket.Arn
 
 
   # Data Analysis
