@@ -1,4 +1,4 @@
-import { listS3Objects } from './listS3Objects'
+import { listS3Files } from './listS3Files'
 import { checkS3BucketData } from './checkS3BucketData'
 import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
 import { StorageClass, _Object } from '@aws-sdk/client-s3'
@@ -11,8 +11,8 @@ import {
   ZENDESK_TICKET_ID
 } from '../utils/tests/testConstants'
 import { testDataRequest } from '../utils/tests/testDataRequest'
-jest.mock('./listS3Objects', () => ({
-  listS3Objects: jest.fn()
+jest.mock('./listS3Files', () => ({
+  listS3Files: jest.fn()
 }))
 
 jest.mock('./generateS3ObjectPrefixes', () => ({
@@ -47,7 +47,7 @@ describe('check objects in analysis bucket', () => {
     bucketName: string,
     objects: _Object[]
   ) => {
-    when(listS3Objects)
+    when(listS3Files)
       .calledWith({ Prefix: prefix, Bucket: bucketName })
       .mockResolvedValue(objects)
   }
@@ -78,18 +78,18 @@ describe('check objects in analysis bucket', () => {
     bucketName: string
   ) => {
     prefixes.forEach((prefix) => {
-      when(listS3Objects)
+      when(listS3Files)
         .calledWith({ Prefix: prefix, Bucket: bucketName })
         .mockResolvedValue([])
     })
   }
 
   const givenNoDataInEitherBucket = () => {
-    when(listS3Objects).defaultResolvedValue([])
+    when(listS3Files).defaultResolvedValue([])
   }
 
   beforeEach(() => {
-    when(listS3Objects).resetWhenMocks()
+    when(listS3Files).resetWhenMocks()
     jest.spyOn(global.console, 'log')
     jest.spyOn(global.console, 'warn')
   })

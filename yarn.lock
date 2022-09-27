@@ -203,6 +203,51 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-dynamodb@npm:3.163.0":
+  version: 3.163.0
+  resolution: "@aws-sdk/client-dynamodb@npm:3.163.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 2.0.0
+    "@aws-crypto/sha256-js": 2.0.0
+    "@aws-sdk/client-sts": 3.163.0
+    "@aws-sdk/config-resolver": 3.163.0
+    "@aws-sdk/credential-provider-node": 3.163.0
+    "@aws-sdk/fetch-http-handler": 3.162.0
+    "@aws-sdk/hash-node": 3.162.0
+    "@aws-sdk/invalid-dependency": 3.162.0
+    "@aws-sdk/middleware-content-length": 3.162.0
+    "@aws-sdk/middleware-endpoint-discovery": 3.163.0
+    "@aws-sdk/middleware-host-header": 3.162.0
+    "@aws-sdk/middleware-logger": 3.162.0
+    "@aws-sdk/middleware-recursion-detection": 3.162.0
+    "@aws-sdk/middleware-retry": 3.162.0
+    "@aws-sdk/middleware-serde": 3.162.0
+    "@aws-sdk/middleware-signing": 3.163.0
+    "@aws-sdk/middleware-stack": 3.162.0
+    "@aws-sdk/middleware-user-agent": 3.162.0
+    "@aws-sdk/node-config-provider": 3.162.0
+    "@aws-sdk/node-http-handler": 3.162.0
+    "@aws-sdk/protocol-http": 3.162.0
+    "@aws-sdk/smithy-client": 3.162.0
+    "@aws-sdk/types": 3.162.0
+    "@aws-sdk/url-parser": 3.162.0
+    "@aws-sdk/util-base64-browser": 3.109.0
+    "@aws-sdk/util-base64-node": 3.55.0
+    "@aws-sdk/util-body-length-browser": 3.154.0
+    "@aws-sdk/util-body-length-node": 3.55.0
+    "@aws-sdk/util-defaults-mode-browser": 3.162.0
+    "@aws-sdk/util-defaults-mode-node": 3.163.0
+    "@aws-sdk/util-user-agent-browser": 3.162.0
+    "@aws-sdk/util-user-agent-node": 3.162.0
+    "@aws-sdk/util-utf8-browser": 3.109.0
+    "@aws-sdk/util-utf8-node": 3.109.0
+    "@aws-sdk/util-waiter": 3.162.0
+    tslib: ^2.3.1
+    uuid: ^8.3.2
+  checksum: 9ebc3bd67d357eccc5a1c11c20b70009d006e963dd6ee9dae6513ee7acd872df05f4b0cd7316f39c93fe72b0db92332bcb0577618d262ba3ea5b9cdd8e8b1ac1
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-glue@npm:3.163.0":
   version: 3.163.0
   resolution: "@aws-sdk/client-glue@npm:3.163.0"
@@ -776,6 +821,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/endpoint-cache@npm:3.55.0":
+  version: 3.55.0
+  resolution: "@aws-sdk/endpoint-cache@npm:3.55.0"
+  dependencies:
+    mnemonist: 0.38.3
+    tslib: ^2.3.1
+  checksum: 562f0ebaca1717010a23bca507a1118afd191a7a2eb87fb2d331361180f2f98f8ba3d0955f0a90fc2ff72e2b5832bb03577ea52cb9c5699ee28df1abc30c5b6a
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/eventstream-codec@npm:3.162.0":
   version: 3.162.0
   resolution: "@aws-sdk/eventstream-codec@npm:3.162.0"
@@ -995,6 +1050,19 @@ __metadata:
     "@aws-sdk/types": 3.170.0
     tslib: ^2.3.1
   checksum: f096386d16744eea3ea02fc96973ace9cc920a68a7ba29e52bfdaa2f5ad4a8d22b25c5957d87d62e148db668ce66485937681a3771f532e01189daed0a9d4be9
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-endpoint-discovery@npm:3.163.0":
+  version: 3.163.0
+  resolution: "@aws-sdk/middleware-endpoint-discovery@npm:3.163.0"
+  dependencies:
+    "@aws-sdk/config-resolver": 3.163.0
+    "@aws-sdk/endpoint-cache": 3.55.0
+    "@aws-sdk/protocol-http": 3.162.0
+    "@aws-sdk/types": 3.162.0
+    tslib: ^2.3.1
+  checksum: 6ffd0e65d64ec0435cec253211f974a31a3070701700379eb5f43895a7fd7b475af612b122a65255046f5c3bc1e1106991512397e2c443b56685174fa4d5fdb3
   languageName: node
   linkType: hard
 
@@ -4240,6 +4308,7 @@ __metadata:
   resolution: "di-txma-ticf-integration@workspace:."
   dependencies:
     "@aws-sdk/client-cloudformation": 3.163.0
+    "@aws-sdk/client-dynamodb": 3.163.0
     "@aws-sdk/client-glue": 3.163.0
     "@aws-sdk/client-s3": 3.163.0
     "@aws-sdk/client-secrets-manager": 3.163.0
@@ -6453,6 +6522,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mnemonist@npm:0.38.3":
+  version: 0.38.3
+  resolution: "mnemonist@npm:0.38.3"
+  dependencies:
+    obliterator: ^1.6.1
+  checksum: 894237fc6fd71ec0056eb4a20d9b16dbcd3d77620098dcd3888bdfe3d7a6c9b94355f480aba61a277a16e63c0b99c43f517c0bb283033f982e24b9fcae797447
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.1.2":
   version: 2.1.2
   resolution: "ms@npm:2.1.2"
@@ -6598,6 +6676,13 @@ __metadata:
   version: 1.12.2
   resolution: "object-inspect@npm:1.12.2"
   checksum: a534fc1b8534284ed71f25ce3a496013b7ea030f3d1b77118f6b7b1713829262be9e6243acbcb3ef8c626e2b64186112cb7f6db74e37b2789b9c789ca23048b2
+  languageName: node
+  linkType: hard
+
+"obliterator@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "obliterator@npm:1.6.1"
+  checksum: 12412ce97bc9680a50ec1e865c9f106f924497f0b73c01947031079da7c9a0f5212f3a1aeea3227f7771ed4a273e42b2a2e6ff93578301c8117dbb3135770133
   languageName: node
   linkType: hard
 
