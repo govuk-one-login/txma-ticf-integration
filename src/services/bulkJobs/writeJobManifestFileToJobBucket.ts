@@ -11,7 +11,7 @@ export const writeJobManifestFileToJobBucket = async (
   const response = await client.send(
     new PutObjectCommand({
       Key: manifestFileName,
-      Bucket: getEnv('BATCH_JOB_MANIFEST_BUCKET_ARN'),
+      Bucket: getEnv('BATCH_JOB_MANIFEST_BUCKET_NAME'),
       Body: createManifestFile(sourceBucket, fileList)
     })
   )

@@ -295,6 +295,7 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets
           BATCH_JOB_MANIFEST_BUCKET_ARN: !GetAtt BatchJobManifestBucket.Arn
+          BATCH_JOB_MANIFEST_BUCKET_NAME: !Ref BatchJobManifestBucket
       Events:
         InitiateDataRequestEvent:
           Type: SQS
