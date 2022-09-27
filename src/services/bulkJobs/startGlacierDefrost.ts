@@ -22,6 +22,9 @@ export const startGlacierDefrost = async (
     filesToDefrost,
     manifestFileName
   )
+  console.log(
+    `Starting Glacier defrost for zendesk ticket with id '${zendeskTicketId}'`
+  )
   const jobId = await createBulkDefrostJob(manifestFileName, manifestFileEtag)
   console.log(
     `Started Glacier defrost for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
