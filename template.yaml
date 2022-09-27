@@ -365,6 +365,7 @@ Resources:
       Environment:
         Variables:
           NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifyApiSecrets
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets 
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies: 
         - Statement:
