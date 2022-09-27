@@ -312,6 +312,12 @@ Resources:
               Resource:
                 - !GetAtt AnalysisBucket.Arn
                 - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+            - Sid: S3AllowJobManifestWrite
+              Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource:
+                - !GetAtt BatchJobManifestBucket.Arn
             - Sid: Logs
               Effect: Allow
               Action:
