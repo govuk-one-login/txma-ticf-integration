@@ -18,25 +18,26 @@ export const getQueryByZendeskId = async (
   console.log(data)
   console.log(data.Item?.requestInfo?.M)
   console.log(data.Item?.requestInfo?.M?.eventIds?.L)
-  if (!data.Item?.requestInfo?.M) {
+  const responseObject = data.Item?.requestInfo?.M
+  if (!responseObject) {
     throw new Error(
       `Request info not returned from db for zendesk ticket: ${zendeskId}`
     )
   }
 
   const dataRequestParams = {
-    zendeskId: data.Item?.requestInfo?.M?.zendeskId?.S,
-    resultsEmail: data.Item?.requestInfo?.M?.resultsEmail?.S,
-    resultsName: data.Item?.requestInfo?.M?.resultsName?.S,
-    dateFrom: data.Item?.requestInfo?.M?.dateFrom?.S,
-    dateTo: data.Item?.requestInfo?.M?.dateTo?.S,
-    identifierType: data.Item?.requestInfo?.M?.identifierType?.S
-    // sessionIds?: string[]
-    // journeyIds?: string[]
-    // eventIds?: string[]
-    // userIds?: string[]
-    // piiTypes?: string[]
-    // dataPaths?: string[]
+    zendeskId: responseObject?.zendeskId?.S,
+    resultsEmail: responseObject?.resultsEmail?.S,
+    resultsName: responseObject?.resultsName?.S,
+    dateFrom: responseObject?.dateFrom?.S,
+    dateTo: responseObject?.dateTo?.S,
+    identifierType: responseObject?.identifierType?.S,
+    sessionIds: responseObject?.sessionIds?.L?.map((_k, v) => v),
+    journeyIds: responseObject?.journeyIds?.L?.map((_k, v) => v),
+    eventIds: responseObject?.eventIds?.L?.map((_k, v) => v),
+    userIds: responseObject?.userIds?.L?.map((_k, v) => v),
+    piiTypes: responseObject?.piiTypes?.L?.map((_k, v) => v),
+    dataPaths: responseObject?.dataPaths?.L?.map((_k, v) => v)
   }
 
   if (!isDataRequestParams(dataRequestParams)) {
