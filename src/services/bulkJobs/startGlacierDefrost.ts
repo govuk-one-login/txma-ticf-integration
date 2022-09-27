@@ -37,6 +37,7 @@ const createBulkDefrostJob = async (
 ): Promise<string | undefined> => {
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
+    AccountId: getEnv('ACCOUNT_ID'),
     Operation: {
       S3InitiateRestoreObject: {
         ExpirationInDays: 5,

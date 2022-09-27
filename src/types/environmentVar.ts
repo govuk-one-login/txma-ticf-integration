@@ -10,4 +10,5 @@ export interface EnvironmentVar {
     | 'ZENDESK_API_SECRETS_NAME'
     | 'BATCH_JOB_MANIFEST_BUCKET_ARN'
     | 'BATCH_JOB_MANIFEST_BUCKET_NAME'
+    | 'ACCOUNT_ID'
 }

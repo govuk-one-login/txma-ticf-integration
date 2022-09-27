@@ -3,6 +3,7 @@ import { startGlacierDefrost } from './startGlacierDefrost'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
 import {
+  TEST_AWS_ACCOUNT_ID,
   TEST_BATCH_JOB_MANIFEST_BUCKET_ARN,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
@@ -21,6 +22,7 @@ describe('startGlacierDefrost', () => {
     const fileList = ['myFile1', 'myFile2']
     await startGlacierDefrost(fileList, ZENDESK_TICKET_ID)
     expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
+      AccountId: TEST_AWS_ACCOUNT_ID,
       Operation: {
         S3InitiateRestoreObject: {
           ExpirationInDays: 5,
