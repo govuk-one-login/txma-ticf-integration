@@ -45,6 +45,7 @@ const createBulkDefrostJob = async (
     ClientRequestToken: `glacier-defrost-for-ticket-id-${zendeskTicketId}`,
     AccountId: getEnv('ACCOUNT_ID'),
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
+    Priority: 1,
     Operation: {
       S3InitiateRestoreObject: {
         ExpirationInDays: 5,

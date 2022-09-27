@@ -26,6 +26,7 @@ describe('startGlacierDefrost', () => {
       ClientRequestToken: `glacier-defrost-for-ticket-id-${ZENDESK_TICKET_ID}`,
       AccountId: TEST_AWS_ACCOUNT_ID,
       RoleArn: TEST_BATCH_JOB_ROLE_ARN,
+      Priority: 1,
       Operation: {
         S3InitiateRestoreObject: {
           ExpirationInDays: 5,
