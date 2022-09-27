@@ -375,9 +375,9 @@ Resources:
               - logs:*
             Resource: arn:aws:logs:*:*:*
           - Sid: SecretManager
-            Effecet: Allow
+            Effect: Allow
             Action:
-              - secrestmanager:GetSecretValue
+              - secretsmanager:GetSecretValue
             Resource:
               - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
           - Sid: SecretManager
