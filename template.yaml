@@ -455,7 +455,7 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
-        
+
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
@@ -484,13 +484,6 @@ Resources:
                 -  "s3:GetObjectVersion"
               Resource:
                 - !GetAtt BatchJobManifestBucket.Arn
-            - Effect: Allow
-              Action:
-                - "s3:PutObject"
-              Resource:
-                - !GetAtt BatchJobReportBucket.Arn
-
-
   # Data Analysis
 
   InitiateAthenaQueryFunction:
