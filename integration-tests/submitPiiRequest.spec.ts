@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { authoriseAs, getLogStreamPrefix } from './utils/helpers'
+import { authoriseAs, getLatestLogStreamName } from './utils/helpers'
 import { cloudWatchLogsClient } from './libs/cloudWatchLogsClient'
 import {
   FilterLogEventsCommand,
@@ -7,7 +7,6 @@ import {
   FilterLogEventsCommandOutput,
   FilteredLogEvent
 } from '@aws-sdk/client-cloudwatch-logs'
-// import { getLogStreams } from 'aws-testing-library'
 
 import {
   getEndUsername,
@@ -17,12 +16,14 @@ import {
 
 import { validRequestData, ticketApprovalData } from './utils/requestData'
 
-describe('Submit a PII request with approved ticket data', () => {
+describe.only('Submit a PII request with approved ticket data', () => {
   const createRequestEndpoint = '/api/v2/requests.json'
   const ticketsEndpoint = '/api/v2/tickets'
   const zendeskBaseURL: string = getZendeskBaseURL()
   const endUsername: string = getEndUsername()
   const agentUsername: string = getAgentUsername()
+
+  jest.setTimeout(20000)
 
   it('Should log an entry in cloud watch if request is valid', async () => {
     const axiosResponse = await axios({
@@ -43,9 +44,6 @@ describe('Submit a PII request with approved ticket data', () => {
     console.log(`TICKET ID: ${ticketID}`)
 
     // approve and submit ticket (fires webhook)
-    // const startTimeMs: number = Date.parse('2022-09-21T14:38:12.209Z')
-    const startTime: number = Date.now()
-
     const approvalResponse = await axios({
       url: `${zendeskBaseURL}${ticketsEndpoint}/${ticketID}`,
       method: 'PUT',
@@ -63,36 +61,52 @@ describe('Submit a PII request with approved ticket data', () => {
     )
 
     // CHECK LOGS IN CLOUDWATCH - Cloudwatch API v3
+    // const startTime = Date.now() + 60 * 60 * 1000
 
-    // const endTimeMs: number = Date.parse('2022-09-21T15:41:42.010+01:00')
-    const endTime = Date.now()
-    console.log('START TIME: ' + startTime)
-    console.log('END TIME: ' + endTime)
-    console.log('LOG STREAM PREFIX: ' + getLogStreamPrefix())
+    // Fetch latest log stream until the one logged after request
+    const filterPattern = 'INFO received Zendesk webhook'
+    let latestLogStreamName = ''
 
-    const params: FilterLogEventsCommandInput = {
-      logGroupName:
-        '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG'
+    latestLogStreamName = await getLatestLogStreamName()
+    console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
+
+    let eventMatched = false
+
+    while (!eventMatched) {
+      const filterLogEventsParams: FilterLogEventsCommandInput = {
+        logGroupName:
+          '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
+        logStreamNames: [latestLogStreamName],
+        filterPattern: filterPattern
+      }
+
+      const filterLogEventsCommand = new FilterLogEventsCommand(
+        filterLogEventsParams
+      )
+      const filterLogEventsResponse: FilterLogEventsCommandOutput =
+        await cloudWatchLogsClient.send(filterLogEventsCommand)
+      const filterLogEvents: FilteredLogEvent[] | undefined =
+        filterLogEventsResponse.events
+
+      expect(filterLogEvents).toBeDefined()
+      expect(filterLogEvents?.length).toBeGreaterThanOrEqual(1)
+
+      filterLogEvents!.map((e) => {
+        console.log(`EVENT MESSAGE: ${e.message}`)
+        if (
+          e.message?.includes(`"zendeskId`) &&
+          e.message.includes(`${ticketID}`)
+        ) {
+          console.log('Ticket Event matched')
+          eventMatched = true
+        } else {
+          console.log('Ticket event not found')
+          getLatestLogStreamName().then(
+            (result) =>
+              (latestLogStreamName = result == undefined ? '' : result)
+          )
+        }
+      })
     }
-
-    // const params: FilterLogEventsCommandInput = {
-    //   logGroupName:
-    //     '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
-    //   startTime: startTime,
-    //   endTime: endTime,
-    //   logStreamNamePrefix: getLogStreamPrefix(),
-    //   filterPattern: `${'INFO "Sent data transfer queue message with id"'}`
-    // }
-
-    const command = new FilterLogEventsCommand(params)
-    const cloudWatchResponse: FilterLogEventsCommandOutput =
-      await cloudWatchLogsClient.send(command)
-    const events: FilteredLogEvent[] | undefined = cloudWatchResponse.events
-    console.log('FILTERED EVENTS')
-    events?.map((event) => {
-      console.log(event.message)
-    })
-    expect(events).toBeDefined()
-    expect(events?.length).toBeGreaterThanOrEqual(1)
   })
 })
