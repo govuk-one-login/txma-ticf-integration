@@ -85,7 +85,7 @@ describe('updating a zendesk ticket', () => {
       }
     )
     expect(console.log).toHaveBeenLastCalledWith(
-      'Zendesk ticket validation update successful.',
+      'Zendesk ticket update successful.',
       { theReturnData: '123' }
     )
   }
@@ -95,7 +95,7 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicket(exampleEventBody, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(console.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket validation update failed.',
+      'Zendesk ticket update failed.',
       Error('There was an error.')
     )
   })
@@ -106,7 +106,7 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicketById(ZENDESK_TICKET_ID, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(console.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket validation update failed.',
+      'Zendesk ticket update failed.',
       Error('There was an error.')
     )
   })
