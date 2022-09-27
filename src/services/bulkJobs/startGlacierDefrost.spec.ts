@@ -32,6 +32,9 @@ describe('startGlacierDefrost', () => {
           GlacierJobTier: 'BULK'
         }
       },
+      Report: {
+        Enabled: false
+      },
       Manifest: {
         Spec: {
           Format: 'S3BatchOperations_CSV_20180820',
