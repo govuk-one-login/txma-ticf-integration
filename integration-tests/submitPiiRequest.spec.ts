@@ -1,6 +1,4 @@
-import axios from 'axios'
 import {
-  authoriseAs,
   getLatestLogStreamName,
   getMatchingLogEvents,
   extractRequestID
@@ -13,18 +11,8 @@ import {
   FilteredLogEvent
 } from '@aws-sdk/client-cloudwatch-logs'
 
-import {
-  getAgentUsername,
-  getZendeskBaseURL
-} from './utils/validateTestParameters'
-
-import { ticketApprovalData } from './utils/requestData'
-
 import { createZendeskRequest } from './libs/raiseZendeskRequest'
-
-const ticketsEndpoint = '/api/v2/tickets'
-const zendeskBaseURL: string = getZendeskBaseURL()
-const agentUsername: string = getAgentUsername()
+import { approveZendeskRequest } from './libs/approveZendeskRequest'
 
 describe.only('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(30000)
@@ -32,22 +20,7 @@ describe.only('Submit a PII request with approved ticket data', () => {
   it('Should log an entry in cloud watch if request is valid', async () => {
     const ticketID = await createZendeskRequest()
 
-    // approve and submit ticket (fires webhook)
-    const approvalResponse = await axios({
-      url: `${zendeskBaseURL}${ticketsEndpoint}/${ticketID}`,
-      method: 'PUT',
-      headers: {
-        Authorization: `Basic ${authoriseAs(agentUsername)}`,
-        'Content-Type': 'application/json'
-      },
-      data: ticketApprovalData
-    })
-
-    expect(approvalResponse.status).toEqual(200)
-    expect(approvalResponse.data.ticket.status).toBe('open')
-    expect(approvalResponse.data.ticket.tags).toEqual(
-      expect.arrayContaining(['approved'])
-    )
+    await approveZendeskRequest(ticketID)
 
     // CHECK LOGS IN CLOUDWATCH - Cloudwatch API v3
     // Fetch latest log stream until the one logged after request
