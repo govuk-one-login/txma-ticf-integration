@@ -1,11 +1,24 @@
+import { CreateQuerySqlResult } from '../../types/createQuerySqlResult'
 import {
   DataRequestParams,
   IdentifierTypes
 } from '../../types/dataRequestParams'
 import { getEnv } from '../../utils/helpers'
 
-export const createQuerySql = (requestData: DataRequestParams): string => {
-  const sqlWhereStatement = formatWhereStatment(requestData)
+export const createQuerySql = (
+  requestData: DataRequestParams
+): CreateQuerySqlResult => {
+  const identifierType = requestData.identifierType
+  const identifiers = getIdentifiers(identifierType, requestData)
+
+  if (identifiers.length < 1) {
+    return {
+      sqlGenerated: false,
+      error: `No ids of type: ${identifierType}`
+    }
+  }
+
+  const sqlWhereStatement = formatWhereStatment(identifierType, identifiers)
 
   const dataSource = `${getEnv('ATHENA_DATABASE_NAME')}.${getEnv(
     'ATHENA_TABLE_NAME'
@@ -13,14 +26,16 @@ export const createQuerySql = (requestData: DataRequestParams): string => {
 
   const queryString = `SELECT restricted FROM ${dataSource} WHERE ${sqlWhereStatement}`
 
-  return queryString
+  return {
+    sqlGenerated: true,
+    sql: queryString
+  }
 }
 
-const formatWhereStatment = (requestData: DataRequestParams): string => {
-  const identifierType = requestData.identifierType
-
-  const identifiers = getIdentifiers(identifierType, requestData)
-
+const formatWhereStatment = (
+  identifierType: IdentifierTypes,
+  identifiers: string[]
+): string => {
   const whereStatementsArray = identifiers.map(
     (identifier) => `${identifierType}='${identifier}'`
   )
@@ -40,7 +55,7 @@ const getIdentifiers = (
     return requestData.sessionIds
   } else if (identifierType === 'user_id' && requestData.userIds) {
     return requestData.userIds
-  } else {
-    throw new Error(`No ids of type: ${identifierType}`)
   }
+
+  return []
 }

@@ -32,9 +32,10 @@ export const handler = async (event: SQSEvent): Promise<void> => {
   const requestData = await getQueryByZendeskId(zendeskTicketInfo.zendeskId)
   console.log(requestData)
 
-  if (requestData?.Item) {
-    const querySql = createQuerySql(requestData)
-    console.log(querySql)
+  const querySqlGenerated = createQuerySql(requestData)
+
+  if (!querySqlGenerated.sqlGenerated) {
+    throw new Error(querySqlGenerated.error)
   }
 
   return
