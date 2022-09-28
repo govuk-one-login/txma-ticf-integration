@@ -42,6 +42,7 @@ const createBulkDefrostJob = async (
 ): Promise<string | undefined> => {
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
+    ConfirmationRequired: false,
     ClientRequestToken: `glacier-defrost-for-ticket-id-${zendeskTicketId}`,
     AccountId: getEnv('ACCOUNT_ID'),
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
