@@ -15,3 +15,27 @@ export const testDataRequest = {
   eventIds: ['123', '456'],
   piiTypes: ['passport_number']
 } as DataRequestParams
+
+export const testDataRequestWithValues = {
+  zendeskId: ZENDESK_TICKET_ID,
+  resultsEmail: 'myuser@test.gov.uk',
+  resultsName: 'my name',
+  dateFrom: TEST_DATE_FROM,
+  dateTo: TEST_DATE_TO,
+  dataPaths: ['path_to_data1', 'path_to_data2'],
+  identifierType: 'event_id',
+  eventIds: ['123', '456'],
+  journeyIds: ['123', '456'],
+  piiTypes: ['passport_number'],
+  sessionIds: ['123', '456'],
+  userIds: ['123', '456']
+} as DataRequestParams
+
+export const testDataRequestWithUndefinedValues = {
+  zendeskId: ZENDESK_TICKET_ID,
+  resultsEmail: 'myuser@test.gov.uk',
+  resultsName: 'my name',
+  dateFrom: TEST_DATE_FROM,
+  dateTo: TEST_DATE_TO,
+  identifierType: 'event_id'
+} as DataRequestParams

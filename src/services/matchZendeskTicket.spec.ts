@@ -6,7 +6,11 @@ import {
   TEST_DATE_TO,
   ZENDESK_TICKET_ID
 } from '../utils/tests/testConstants'
-import { testDataRequest } from '../utils/tests/testDataRequest'
+import {
+  testDataRequest,
+  testDataRequestWithUndefinedValues,
+  testDataRequestWithValues
+} from '../utils/tests/testDataRequest'
 import { getZendeskTicket } from './getZendeskTicket'
 import { getZendeskUser } from './getZendeskUser'
 import { matchZendeskTicket } from './matchZendeskTicket'
@@ -31,6 +35,14 @@ describe('match zendesk ticket details', () => {
   afterEach(() => {
     jest.clearAllMocks()
   })
+
+  const updateKey = <K extends keyof DataRequestParams>(
+    key: K,
+    value: DataRequestParams[K],
+    requestParams: DataRequestParams
+  ) => {
+    requestParams[key] = value
+  }
 
   const givenZendeskTicketMatches = () => {
     mockGetZendeskTicket.mockImplementation(() =>
@@ -85,7 +97,76 @@ describe('match zendesk ticket details', () => {
     )
   }
 
-  const givenZendeskTicketDoesNotMatch = (
+  const givenZendeskTicketDoesNotMatchValues = (
+    parameterName: string,
+    parameterValue: string | string[] | undefined
+  ) => {
+    mockGetZendeskTicket.mockImplementation(() =>
+      Promise.resolve({
+        id: ZENDESK_TICKET_ID,
+        requester_id: '123',
+        custom_fields: [
+          {
+            id: '1',
+            value: 'path_to_data1 path_to_data2'
+          },
+          {
+            id: '2',
+            value: TEST_DATE_FROM
+          },
+          {
+            id: '3',
+            value: TEST_DATE_TO
+          },
+          {
+            id: '4',
+            value: '123 456'
+          },
+          {
+            id: '5',
+            value: 'event_id'
+          },
+          {
+            id: '6',
+            value: '123 456'
+          },
+          {
+            id: '7',
+            value: 'passport_number'
+          },
+          {
+            id: '8',
+            value: '123 456'
+          },
+          {
+            id: '9',
+            value: '123 456'
+          }
+        ]
+      })
+    )
+
+    mockGetZendeskUser.mockImplementation(() =>
+      Promise.resolve({
+        email: 'myuser@test.gov.uk',
+        name: 'my name'
+      })
+    )
+    const newRequest = Object.assign(
+      {},
+      testDataRequestWithValues
+    ) as DataRequestParams
+
+    updateKey(
+      parameterName as keyof DataRequestParams,
+      parameterValue,
+      newRequest
+    )
+
+    return newRequest
+  }
+
+  const givenZendeskTicketDoesNotMatchWhenMissingValues = (
     parameterName: string,
     parameterValue: string | string[] | undefined
   ) => {
@@ -108,7 +189,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: '4',
-            value: '123 456'
+            value: null
           },
           {
             id: '5',
@@ -120,7 +201,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: '7',
-            value: 'passport_number'
+            value: null
           },
           {
             id: '8',
@@ -140,16 +221,17 @@ describe('match zendesk ticket details', () => {
         name: 'my name'
       })
     )
-    const newRequest = Object.assign({}, testDataRequest) as DataRequestParams
 
-    const updateKey = <K extends keyof DataRequestParams>(
-      key: K,
-      value: DataRequestParams[K]
-    ) => {
-      newRequest[key] = value
-    }
+    const newRequest = Object.assign(
+      {},
+      testDataRequestWithUndefinedValues
+    ) as DataRequestParams
 
-    updateKey(parameterName as keyof DataRequestParams, parameterValue)
+    updateKey(
+      parameterName as keyof DataRequestParams,
+      parameterValue,
+      newRequest
+    )
 
     return newRequest
   }
@@ -215,6 +297,7 @@ describe('match zendesk ticket details', () => {
     ['zendeskId', '123456789'],
     ['resultsEmail', 'notmyemail@example.gov.uk'],
     ['resultsName', 'not my name'],
+    ['identifierType', '123456789'],
     ['dataPaths', ['123456789']],
     ['dateFrom', '123456789'],
     ['dateTo', '123456789'],
@@ -222,12 +305,12 @@ describe('match zendesk ticket details', () => {
     ['journeyIds', ['123456789']],
     ['piiTypes', ['123456789']]
   ])(
-    '%p does not match',
+    '%p does not match given values',
     async (
       parameterName: string,
       parameterValue: string | string[] | undefined
     ) => {
-      const request = givenZendeskTicketDoesNotMatch(
+      const request = givenZendeskTicketDoesNotMatchValues(
         parameterName,
         parameterValue
       )
@@ -244,14 +327,50 @@ describe('match zendesk ticket details', () => {
 
   test.each([
     ['zendeskId', undefined],
-    ['eventIds', undefined]
+    ['resultsEmail', undefined],
+    ['resultsName', undefined],
+    ['identifierType', undefined],
+    ['dataPaths', undefined],
+    ['dateFrom', undefined],
+    ['dateTo', undefined],
+    ['eventIds', undefined],
+    ['journeyIds', undefined],
+    ['piiTypes', undefined]
   ])(
-    '%p does not match missing values',
+    '%p does not match with missing request value',
     async (
       parameterName: string,
       parameterValue: string | string[] | undefined
     ) => {
-      const request = givenZendeskTicketDoesNotMatch(
+      const request = givenZendeskTicketDoesNotMatchValues(
+        parameterName,
+        parameterValue
+      )
+
+      const matchResult = await matchZendeskTicket(request)
+
+      expect(matchResult).toEqual(false)
+      expect(console.warn).toHaveBeenCalledWith(
+        'Request does not match values on Ticket, the following parameters do not match:',
+        [parameterName]
+      )
+    }
+  )
+
+  test.each([
+    ['resultsEmail', 'notmyemail@example.gov.uk'],
+    ['resultsName', 'not my name'],
+    ['dataPaths', ['123456789']],
+    ['eventIds', ['123456789']],
+    ['journeyIds', ['123456789']],
+    ['piiTypes', ['123456789']]
+  ])(
+    'does not match when ticket missing value %p',
+    async (
+      parameterName: string,
+      parameterValue: string | string[] | undefined
+    ) => {
+      const request = givenZendeskTicketDoesNotMatchWhenMissingValues(
         parameterName,
         parameterValue
       )
