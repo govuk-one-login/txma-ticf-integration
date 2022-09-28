@@ -435,14 +435,6 @@ Resources:
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:userDefinedFunction/*
-          # - Sid: SqsPermissions
-          #   Effect: Allow
-          #   Action:
-          #     - sqs:ReceiveMessage
-          #     - sqs:DeleteMessage
-          #     - sqs:GetQueueAttributes
-          #   Resource: 
-          #     - !GetAtt InitiateAthenaQueryQueue.Arn
           - Sid: KmsQueueAllowDecrypt
             Effect: Allow
             Action:
