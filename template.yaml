@@ -435,14 +435,20 @@ Resources:
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:userDefinedFunction/*
-          - Sid: SqsPermissions
+          # - Sid: SqsPermissions
+          #   Effect: Allow
+          #   Action:
+          #     - sqs:ReceiveMessage
+          #     - sqs:DeleteMessage
+          #     - sqs:GetQueueAttributes
+          #   Resource: 
+          #     - !GetAtt InitiateAthenaQueryQueue.Arn
+          - Sid: KmsQueueAllowDecrypt
             Effect: Allow
             Action:
-              - sqs:ReceiveMessage
-              - sqs:DeleteMessage
-              - sqs:GetQueueAttributes
-            Resource: 
-              - !GetAtt InitiateAthenaQueryQueue.Arn
+              - kms:Decrypt
+            Resource:
+              - !GetAtt QueueKmsKey.Arn
           - Sid: Logs
             Effect: Allow
             Action:
@@ -475,8 +481,8 @@ Resources:
               - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
-        TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn 
         Type: SQS
+        TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn 
 
   #NOTE - This is a placeholder SQS queue which will be replaced - it is here to enable the Athena lambda to be created 
   InitiateAthenaQueryQueue:
