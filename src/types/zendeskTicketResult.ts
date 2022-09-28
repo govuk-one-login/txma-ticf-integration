@@ -10,7 +10,7 @@ export interface ZendeskTicket {
 
 export interface CustomField {
   id: string
-  value: string
+  value: string | null
 }
 
 export const isZendesktTicketResult = (

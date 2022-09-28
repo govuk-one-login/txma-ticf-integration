@@ -14,9 +14,11 @@ export const matchZendeskTicket = async (requestParams: DataRequestParams) => {
     ticketDetails.requester_id
   )) as ZendeskUser
 
-  if (compareTicketAndRequestDetails(ticketDetails, userDetails, requestParams))
-    return true
-  else return false
+  return compareTicketAndRequestDetails(
+    ticketDetails,
+    userDetails,
+    requestParams
+  )
 }
 
 const getZendeskCustomFieldValue = (
@@ -25,31 +27,37 @@ const getZendeskCustomFieldValue = (
 ) => {
   const assert = <T>(field: T | undefined): T => {
     if (field === undefined || field === null) {
-      throw new TypeError('Custom field not found')
+      throw new TypeError(`Custom field with id ${id} not found`)
     }
 
     return field
   }
 
   return assert(ticketDetails.custom_fields.find((field) => field.id === id))
-    .value
+    .value as string
 }
 
-const compareTicketAndRequestParameter = (
-  ticketParam?: string | string[],
-  requestParam?: string | string[]
+const compareTicketAndRequestParam = (
+  ticketParam: string | string[] | null,
+  requestParam: string | string[] | undefined
 ) => {
-  let stringyfiedTicketParam: string | undefined
+  if (ticketParam === null && requestParam === undefined) return true
+
+  let stringyfiedTicketParam: string | null
   let stringyfiedRequestParam: string | undefined
 
   if (Array.isArray(ticketParam)) {
-    stringyfiedTicketParam = ticketParam.sort().toString()
+    stringyfiedTicketParam = ticketParam
+      .sort((a, b) => a.localeCompare(b))
+      .toString()
   } else {
     stringyfiedTicketParam = ticketParam
   }
 
   if (Array.isArray(requestParam)) {
-    stringyfiedRequestParam = requestParam.sort.toString()
+    stringyfiedRequestParam = requestParam
+      .sort((a, b) => a.localeCompare(b))
+      .toString()
   } else {
     stringyfiedRequestParam = requestParam
   }
@@ -64,114 +72,80 @@ const compareTicketAndRequestDetails = (
 ) => {
   const mismatchedParameters: string[] = []
 
-  if (
-    !compareTicketAndRequestParameter(ticketDetails.id, requestParams.zendeskId)
+  const ticketDataPaths: string[] = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_DATA_PATHS')
+  )?.split(' ')
+  const ticketDateFrom: string = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_DATE_FROM')
   )
+  const ticketDateTo: string = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_DATE_TO')
+  )
+  const ticketEventIds: string[] = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_EVENT_IDS')
+  )?.split(' ')
+
+  const ticketIdentifierType: string = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_IDENTIFIER_TYPE')
+  )
+  const ticketJourneyIds: string[] = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_JOURNEY_IDS')
+  )?.split(' ')
+  const ticketPiiTypes: string[] = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_PII_TYPES')
+  )?.split(' ')
+  const ticketSessionIds: string[] = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_SESSION_IDS')
+  )?.split(' ')
+  const ticketUserIds: string[] = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnv('ZENDESK_FIELD_USER_IDS')
+  )?.split(' ')
+
+  if (!compareTicketAndRequestParam(ticketDetails.id, requestParams.zendeskId))
     mismatchedParameters.push('zendeskId')
   if (
-    !compareTicketAndRequestParameter(
-      userDetails.email,
-      requestParams.resultsEmail
-    )
+    !compareTicketAndRequestParam(userDetails.email, requestParams.resultsEmail)
   )
     mismatchedParameters.push('resultsEmail')
   if (
-    !compareTicketAndRequestParameter(
-      userDetails.name,
-      requestParams.resultsName
-    )
+    !compareTicketAndRequestParam(userDetails.name, requestParams.resultsName)
   )
     mismatchedParameters.push('resultsName')
-  if (
-    !compareTicketAndRequestParameter(
-      getZendeskCustomFieldValue(
-        ticketDetails,
-        getEnv('ZENDESK_FIELD_DATA_PATHS')
-      )?.split(' '),
-      requestParams.dataPaths
-    )
-  )
+  if (!compareTicketAndRequestParam(ticketDataPaths, requestParams.dataPaths))
     mismatchedParameters.push('dataPaths')
-  if (
-    !compareTicketAndRequestParameter(
-      getZendeskCustomFieldValue(
-        ticketDetails,
-        getEnv('ZENDESK_FIELD_DATE_FROM')
-      ),
-      requestParams.dateFrom
-    )
-  )
+  if (!compareTicketAndRequestParam(ticketDateFrom, requestParams.dateFrom))
     mismatchedParameters.push('dateFrom')
-  if (
-    !compareTicketAndRequestParameter(
-      getZendeskCustomFieldValue(
-        ticketDetails,
-        getEnv('ZENDESK_FIELD_DATE_TO')
-      ),
-      requestParams.dateTo
-    )
-  )
+  if (!compareTicketAndRequestParam(ticketDateTo, requestParams.dateTo))
     mismatchedParameters.push('dateTo')
-  if (
-    !compareTicketAndRequestParameter(
-      getZendeskCustomFieldValue(
-        ticketDetails,
-        getEnv('ZENDESK_FIELD_EVENT_IDS')
-      )?.split(' '),
-      requestParams.eventIds
-    )
-  )
+  if (!compareTicketAndRequestParam(ticketEventIds, requestParams.eventIds))
     mismatchedParameters.push('eventIds')
   if (
-    getZendeskCustomFieldValue(
-      ticketDetails,
-      getEnv('ZENDESK_FIELD_IDENTIFIER_TYPE')
-    ) !== requestParams.identifierType
+    !compareTicketAndRequestParam(
+      ticketIdentifierType,
+      requestParams.identifierType
+    )
   )
     mismatchedParameters.push('identifierType')
-  if (
-    !compareTicketAndRequestParameter(
-      getZendeskCustomFieldValue(
-        ticketDetails,
-        getEnv('ZENDESK_FIELD_JOURNEY_IDS')
-      )?.split(' '),
-      requestParams.journeyIds
-    )
-  )
+  if (!compareTicketAndRequestParam(ticketJourneyIds, requestParams.journeyIds))
     mismatchedParameters.push('journeyIds')
-  if (
-    !compareTicketAndRequestParameter(
-      getZendeskCustomFieldValue(
-        ticketDetails,
-        getEnv('ZENDESK_FIELD_PII_TYPES')
-      )?.split(' '),
-      requestParams.piiTypes
-    )
-  )
+  if (!compareTicketAndRequestParam(ticketPiiTypes, requestParams.piiTypes))
     mismatchedParameters.push('piiTypes')
-  if (
-    !compareTicketAndRequestParameter(
-      getZendeskCustomFieldValue(
-        ticketDetails,
-        getEnv('ZENDESK_FIELD_SESSION_IDS')
-      )?.split(' '),
-      requestParams.sessionIds
-    )
-  )
+  if (!compareTicketAndRequestParam(ticketSessionIds, requestParams.sessionIds))
     mismatchedParameters.push('sessionIds')
-  if (
-    !compareTicketAndRequestParameter(
-      getZendeskCustomFieldValue(
-        ticketDetails,
-        getEnv('ZENDESK_FIELD_USER_IDS')
-      )?.split(' '),
-      requestParams.userIds
-    )
-  )
+  if (!compareTicketAndRequestParam(ticketUserIds, requestParams.userIds))
     mismatchedParameters.push('userIds')
 
   if (mismatchedParameters.length > 0) {
-    console.log(
+    console.warn(
       'Request does not match values on Ticket, the following parameters do not match:',
       mismatchedParameters
     )
