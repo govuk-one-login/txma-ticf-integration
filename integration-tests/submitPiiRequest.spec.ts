@@ -14,39 +14,23 @@ import {
 } from '@aws-sdk/client-cloudwatch-logs'
 
 import {
-  getEndUsername,
   getAgentUsername,
   getZendeskBaseURL
 } from './utils/validateTestParameters'
 
-import { validRequestData, ticketApprovalData } from './utils/requestData'
+import { ticketApprovalData } from './utils/requestData'
+
+import { createZendeskRequest } from './libs/raiseZendeskRequest'
+
+const ticketsEndpoint = '/api/v2/tickets'
+const zendeskBaseURL: string = getZendeskBaseURL()
+const agentUsername: string = getAgentUsername()
 
 describe.only('Submit a PII request with approved ticket data', () => {
-  const createRequestEndpoint = '/api/v2/requests.json'
-  const ticketsEndpoint = '/api/v2/tickets'
-  const zendeskBaseURL: string = getZendeskBaseURL()
-  const endUsername: string = getEndUsername()
-  const agentUsername: string = getAgentUsername()
-
   jest.setTimeout(30000)
 
   it('Should log an entry in cloud watch if request is valid', async () => {
-    const axiosResponse = await axios({
-      url: `${zendeskBaseURL}${createRequestEndpoint}`,
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${authoriseAs(endUsername)}`,
-        'Content-Type': 'application/json'
-      },
-      data: validRequestData
-    })
-
-    expect(axiosResponse.status).toBe(201)
-    expect(axiosResponse.data.request.id).toBeGreaterThanOrEqual(1)
-
-    const ticketID = axiosResponse.data.request.id
-
-    console.log(`TICKET ID: ${ticketID}`)
+    const ticketID = await createZendeskRequest()
 
     // approve and submit ticket (fires webhook)
     const approvalResponse = await axios({
