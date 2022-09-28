@@ -32,12 +32,12 @@ export const getQueryByZendeskId = async (
     dateFrom: responseObject?.dateFrom?.S,
     dateTo: responseObject?.dateTo?.S,
     identifierType: responseObject?.identifierType?.S,
-    sessionIds: responseObject?.sessionIds?.L?.map((_k, v) => v),
-    journeyIds: responseObject?.journeyIds?.L?.map((_k, v) => v),
-    eventIds: responseObject?.eventIds?.L?.map((_k, v) => v),
-    userIds: responseObject?.userIds?.L?.map((_k, v) => v),
-    piiTypes: responseObject?.piiTypes?.L?.map((_k, v) => v),
-    dataPaths: responseObject?.dataPaths?.L?.map((_k, v) => v)
+    sessionIds: responseObject?.sessionIds?.L?.map((id) => id.S),
+    journeyIds: responseObject?.journeyIds?.L?.map((id) => id.S),
+    eventIds: responseObject?.eventIds?.L?.map((id) => id.S),
+    userIds: responseObject?.userIds?.L?.map((id) => id.S),
+    piiTypes: responseObject?.piiTypes?.L?.map((piiType) => piiType.S),
+    dataPaths: responseObject?.dataPaths?.L?.map((path) => path.S)
   }
 
   if (!isDataRequestParams(dataRequestParams)) {
