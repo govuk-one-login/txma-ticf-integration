@@ -1,5 +1,6 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getEnv } from '../../utils/helpers'
+import { createManifestFileText } from './createManifestFileText'
 
 export const writeJobManifestFileToJobBucket = async (
   sourceBucket: string,
@@ -12,17 +13,9 @@ export const writeJobManifestFileToJobBucket = async (
     new PutObjectCommand({
       Key: manifestFileName,
       Bucket: getEnv('BATCH_JOB_MANIFEST_BUCKET_NAME'),
-      Body: createManifestFile(sourceBucket, fileList)
+      Body: createManifestFileText(sourceBucket, fileList)
     })
   )
   console.log('wrote manifest to S3 with etag ', response.ETag)
   return response.ETag as string
 }
-
-const createManifestFile = (sourceBucket: string, fileList: string[]) =>
-  fileList
-    .map((file) => createManifestFileLine(sourceBucket, file))
-    .join('\r\n')
-
-const createManifestFileLine = (sourceBucket: string, fileKey: string) =>
-  `${sourceBucket},${fileKey}`
