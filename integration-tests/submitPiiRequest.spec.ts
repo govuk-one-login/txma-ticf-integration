@@ -1,5 +1,10 @@
 import axios from 'axios'
-import { authoriseAs, getLatestLogStreamName } from './utils/helpers'
+import {
+  authoriseAs,
+  getLatestLogStreamName,
+  getMatchingLogEvents,
+  extractRequestID
+} from './utils/helpers'
 import { cloudWatchLogsClient } from './libs/cloudWatchLogsClient'
 import {
   FilterLogEventsCommand,
@@ -23,7 +28,7 @@ describe.only('Submit a PII request with approved ticket data', () => {
   const endUsername: string = getEndUsername()
   const agentUsername: string = getAgentUsername()
 
-  jest.setTimeout(20000)
+  jest.setTimeout(30000)
 
   it('Should log an entry in cloud watch if request is valid', async () => {
     const axiosResponse = await axios({
@@ -61,13 +66,13 @@ describe.only('Submit a PII request with approved ticket data', () => {
     )
 
     // CHECK LOGS IN CLOUDWATCH - Cloudwatch API v3
-    // const startTime = Date.now() + 60 * 60 * 1000
-
     // Fetch latest log stream until the one logged after request
     const filterPattern = 'INFO received Zendesk webhook'
+    let logStreamRequestID = ''
     let latestLogStreamName = ''
 
-    latestLogStreamName = await getLatestLogStreamName()
+    const result = await getLatestLogStreamName()
+    latestLogStreamName = result.logStreamName
     console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
 
     let eventMatched = false
@@ -92,21 +97,37 @@ describe.only('Submit a PII request with approved ticket data', () => {
       expect(filterLogEvents?.length).toBeGreaterThanOrEqual(1)
 
       filterLogEvents!.map((e) => {
-        console.log(`EVENT MESSAGE: ${e.message}`)
         if (
           e.message?.includes(`"zendeskId`) &&
-          e.message.includes(`${ticketID}`)
+          e.message.includes(`"${ticketID}`)
         ) {
           console.log('Ticket Event matched')
+          console.log(`TICKET ID: ${ticketID}`)
+          console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
+          console.log(`MATCHED EVENT: ${e.message}`)
+          logStreamRequestID = extractRequestID(e.message)
+
           eventMatched = true
         } else {
           console.log('Ticket event not found')
-          getLatestLogStreamName().then(
-            (result) =>
-              (latestLogStreamName = result == undefined ? '' : result)
-          )
+          getLatestLogStreamName().then((result) => {
+            latestLogStreamName = result.logStreamName
+          })
         }
       })
     }
+
+    // filter for ticket's validation event
+    const validRequestFilterPattern = `"${logStreamRequestID}" transfer`
+    console.log(`VALIDATION FILTER PATTERN: ${validRequestFilterPattern}`)
+    let validationEvents: FilteredLogEvent[] = []
+    validationEvents = await getMatchingLogEvents(
+      validRequestFilterPattern,
+      latestLogStreamName
+    )
+
+    expect(validationEvents).toBeDefined()
+    expect(validationEvents?.length).toEqual(1)
+    console.log(`VALIDATION EVENT: ${validationEvents?.[0].message}`)
   })
 })
