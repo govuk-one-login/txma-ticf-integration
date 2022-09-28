@@ -16,9 +16,7 @@ export const getQueryByZendeskId = async (
 
   const data = await ddbClient.send(new GetItemCommand(params))
   console.log(data)
-  console.log(data.Item?.requestInfo?.M)
-  console.log(data.Item?.requestInfo?.M?.eventIds?.L)
-  const responseObject = data.Item?.requestInfo?.M
+  const responseObject = data?.Item?.requestInfo?.M
   if (!responseObject) {
     throw new Error(
       `Request info not returned from db for zendesk ticket: ${zendeskId}`
