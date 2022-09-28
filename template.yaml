@@ -359,6 +359,7 @@ Resources:
               Effect: Allow
               Action:
                 - s3:CreateJob
+              Resource: '*'
             - Sid: AllowBatchJobPassRole
               Effect: Allow
               Action:
