@@ -355,6 +355,16 @@ Resources:
                 - dynamodb:PutItem
               Resource:
                 - !GetAtt QueryRequestDynamoDBTable.Arn
+            - Sid: AllowS3JobCreate
+              Effect: Allow
+              Action:
+                - s3:CreateJob
+            - Sid: AllowBatchJobPassRole
+              Effect: Allow
+              Action:
+                - iam:PassRole
+              Resource:
+                - !GetAtt BatchJobsRole.Arn
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         Type: SQS
@@ -465,7 +475,7 @@ Resources:
         - Effect: Allow
           Principal:
             Service:
-            - batch.amazonaws.com
+            - batchoperations.s3.amazonaws.com
           Action: sts:AssumeRole
       Policies:
       - PolicyName: AllowS3BatchRestore
