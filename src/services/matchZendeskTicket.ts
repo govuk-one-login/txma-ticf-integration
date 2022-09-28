@@ -37,32 +37,25 @@ const getZendeskCustomFieldValue = (
     .value as string
 }
 
-const compareTicketAndRequestParam = (
-  ticketParam: string | string[] | null,
-  requestParam: string | string[] | undefined
+const matchArrayParams = (
+  ticketParam: string[] | null,
+  requestParam: string[] | undefined
 ) => {
   if (ticketParam === null && requestParam === undefined) return true
 
-  let stringyfiedTicketParam: string | null
-  let stringyfiedRequestParam: string | undefined
+  return (
+    ticketParam?.sort((a, b) => a.localeCompare(b)).toString() ===
+    requestParam?.sort((a, b) => a.localeCompare(b)).toString()
+  )
+}
 
-  if (Array.isArray(ticketParam)) {
-    stringyfiedTicketParam = ticketParam
-      .sort((a, b) => a.localeCompare(b))
-      .toString()
-  } else {
-    stringyfiedTicketParam = ticketParam
-  }
+const matchStringParams = (
+  ticketParam: string | null,
+  requestParam: string | undefined
+) => {
+  if (ticketParam === null && requestParam === undefined) return true
 
-  if (Array.isArray(requestParam)) {
-    stringyfiedRequestParam = requestParam
-      .sort((a, b) => a.localeCompare(b))
-      .toString()
-  } else {
-    stringyfiedRequestParam = requestParam
-  }
-
-  return stringyfiedTicketParam === stringyfiedRequestParam
+  return ticketParam === requestParam
 }
 
 const compareTicketAndRequestDetails = (
@@ -110,38 +103,29 @@ const compareTicketAndRequestDetails = (
     getEnv('ZENDESK_FIELD_USER_IDS')
   )?.split(' ')
 
-  if (!compareTicketAndRequestParam(ticketDetails.id, requestParams.zendeskId))
+  if (!matchStringParams(ticketDetails.id, requestParams.zendeskId))
     mismatchedParameters.push('zendeskId')
-  if (
-    !compareTicketAndRequestParam(userDetails.email, requestParams.resultsEmail)
-  )
+  if (!matchStringParams(userDetails.email, requestParams.resultsEmail))
     mismatchedParameters.push('resultsEmail')
-  if (
-    !compareTicketAndRequestParam(userDetails.name, requestParams.resultsName)
-  )
+  if (!matchStringParams(userDetails.name, requestParams.resultsName))
     mismatchedParameters.push('resultsName')
-  if (!compareTicketAndRequestParam(ticketDataPaths, requestParams.dataPaths))
+  if (!matchArrayParams(ticketDataPaths, requestParams.dataPaths))
     mismatchedParameters.push('dataPaths')
-  if (!compareTicketAndRequestParam(ticketDateFrom, requestParams.dateFrom))
+  if (!matchStringParams(ticketDateFrom, requestParams.dateFrom))
     mismatchedParameters.push('dateFrom')
-  if (!compareTicketAndRequestParam(ticketDateTo, requestParams.dateTo))
+  if (!matchStringParams(ticketDateTo, requestParams.dateTo))
     mismatchedParameters.push('dateTo')
-  if (!compareTicketAndRequestParam(ticketEventIds, requestParams.eventIds))
+  if (!matchArrayParams(ticketEventIds, requestParams.eventIds))
     mismatchedParameters.push('eventIds')
-  if (
-    !compareTicketAndRequestParam(
-      ticketIdentifierType,
-      requestParams.identifierType
-    )
-  )
+  if (!matchStringParams(ticketIdentifierType, requestParams.identifierType))
     mismatchedParameters.push('identifierType')
-  if (!compareTicketAndRequestParam(ticketJourneyIds, requestParams.journeyIds))
+  if (!matchArrayParams(ticketJourneyIds, requestParams.journeyIds))
     mismatchedParameters.push('journeyIds')
-  if (!compareTicketAndRequestParam(ticketPiiTypes, requestParams.piiTypes))
+  if (!matchArrayParams(ticketPiiTypes, requestParams.piiTypes))
     mismatchedParameters.push('piiTypes')
-  if (!compareTicketAndRequestParam(ticketSessionIds, requestParams.sessionIds))
+  if (!matchArrayParams(ticketSessionIds, requestParams.sessionIds))
     mismatchedParameters.push('sessionIds')
-  if (!compareTicketAndRequestParam(ticketUserIds, requestParams.userIds))
+  if (!matchArrayParams(ticketUserIds, requestParams.userIds))
     mismatchedParameters.push('userIds')
 
   if (mismatchedParameters.length > 0) {
