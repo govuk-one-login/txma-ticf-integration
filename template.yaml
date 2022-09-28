@@ -493,7 +493,7 @@ Resources:
                 -  "s3:GetObject"
                 -  "s3:GetObjectVersion"
               Resource:
-                - !GetAtt BatchJobManifestBucket.Arn
+                - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
   # Data Analysis
 
   InitiateAthenaQueryFunction:
