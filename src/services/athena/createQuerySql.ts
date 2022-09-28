@@ -1,23 +1,37 @@
-import { DataRequestParams } from '../../types/dataRequestParams'
+import {
+  DataRequestParams,
+  IdentifierTypes
+} from '../../types/dataRequestParams'
 import { getEnv } from '../../utils/helpers'
 
 export const createQuerySql = (requestData: DataRequestParams): string => {
-  const identifiers = getIdentifiers(requestData)
-
-  console.log(identifiers)
+  const sqlWhereStatement = formatWhereStatment(requestData)
 
   const dataSource = `${getEnv('ATHENA_DATABASE_NAME')}.${getEnv(
     'ATHENA_TABLE_NAME'
   )}`
 
-  const queryString = `SELECT * FROM ${dataSource}`
+  const queryString = `SELECT restricted FROM ${dataSource} WHERE ${sqlWhereStatement}`
 
   return queryString
 }
 
-const getIdentifiers = (requestData: DataRequestParams): string[] => {
+const formatWhereStatment = (requestData: DataRequestParams): string => {
   const identifierType = requestData.identifierType
 
+  const identifiers = getIdentifiers(identifierType, requestData)
+
+  const whereStatementsArray = identifiers.map(
+    (identifier) => `${identifierType}='${identifier}'`
+  )
+
+  return whereStatementsArray.join(' OR ')
+}
+
+const getIdentifiers = (
+  identifierType: IdentifierTypes,
+  requestData: DataRequestParams
+): string[] => {
   if (identifierType === 'event_id' && requestData.eventIds) {
     return requestData.eventIds
   } else if (identifierType === 'journey_id' && requestData.journeyIds) {
@@ -26,6 +40,7 @@ const getIdentifiers = (requestData: DataRequestParams): string[] => {
     return requestData.sessionIds
   } else if (identifierType === 'user_id' && requestData.userIds) {
     return requestData.userIds
+  } else {
+    throw new Error(`No ids of type: ${identifierType}`)
   }
-  return []
 }
