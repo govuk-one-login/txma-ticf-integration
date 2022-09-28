@@ -1,3 +1,4 @@
+import { DataRequestParams } from '../types/dataRequestParams'
 import { ZendeskTicket } from '../types/zendeskTicketResult'
 import { ZendeskUser } from '../types/zendeskUser'
 import {
@@ -84,27 +85,30 @@ describe('match zendesk ticket details', () => {
     )
   }
 
-  const givenZendeskTicketDoesNotMatch = () => {
+  const givenZendeskTicketDoesNotMatch = (
+    parameterName: string,
+    parameterValue: string | string[] | undefined
+  ) => {
     mockGetZendeskTicket.mockImplementation(() =>
       Promise.resolve({
-        id: '1234',
+        id: ZENDESK_TICKET_ID,
         requester_id: '123',
         custom_fields: [
           {
             id: '1',
-            value: '123'
+            value: null
           },
           {
             id: '2',
-            value: '2019-10-12'
+            value: TEST_DATE_FROM
           },
           {
             id: '3',
-            value: '2022-10-12'
+            value: TEST_DATE_TO
           },
           {
             id: '4',
-            value: '456 678'
+            value: '123 456'
           },
           {
             id: '5',
@@ -112,11 +116,11 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: '6',
-            value: '123'
+            value: null
           },
           {
             id: '7',
-            value: 'passport_number name'
+            value: 'passport_number'
           },
           {
             id: '8',
@@ -132,10 +136,22 @@ describe('match zendesk ticket details', () => {
 
     mockGetZendeskUser.mockImplementation(() =>
       Promise.resolve({
-        email: 'notmyuser@test.gov.uk',
-        name: 'not my name'
+        email: 'myuser@test.gov.uk',
+        name: 'my name'
       })
     )
+    const newRequest = Object.assign({}, testDataRequest) as DataRequestParams
+
+    const updateKey = <K extends keyof DataRequestParams>(
+      key: K,
+      value: DataRequestParams[K]
+    ) => {
+      newRequest[key] = value
+    }
+
+    updateKey(parameterName as keyof DataRequestParams, parameterValue)
+
+    return newRequest
   }
 
   const givenCustomFieldNotFound = () => {
@@ -195,27 +211,60 @@ describe('match zendesk ticket details', () => {
     expect(matchResult).toEqual(true)
   })
 
-  test('ticket and request do not match', async () => {
-    givenZendeskTicketDoesNotMatch()
+  test.each([
+    ['zendeskId', '123456789'],
+    ['resultsEmail', 'notmyemail@example.gov.uk'],
+    ['resultsName', 'not my name'],
+    ['dataPaths', ['123456789']],
+    ['dateFrom', '123456789'],
+    ['dateTo', '123456789'],
+    ['eventIds', ['123456789']],
+    ['journeyIds', ['123456789']],
+    ['piiTypes', ['123456789']]
+  ])(
+    '%p does not match',
+    async (
+      parameterName: string,
+      parameterValue: string | string[] | undefined
+    ) => {
+      const request = givenZendeskTicketDoesNotMatch(
+        parameterName,
+        parameterValue
+      )
 
-    const matchResult = await matchZendeskTicket(testDataRequest)
+      const matchResult = await matchZendeskTicket(request)
 
-    expect(matchResult).toEqual(false)
-    expect(console.warn).toHaveBeenCalledWith(
-      'Request does not match values on Ticket, the following parameters do not match:',
-      [
-        'zendeskId',
-        'resultsEmail',
-        'resultsName',
-        'dataPaths',
-        'dateFrom',
-        'dateTo',
-        'eventIds',
-        'journeyIds',
-        'piiTypes'
-      ]
-    )
-  })
+      expect(matchResult).toEqual(false)
+      expect(console.warn).toHaveBeenCalledWith(
+        'Request does not match values on Ticket, the following parameters do not match:',
+        [parameterName]
+      )
+    }
+  )
+
+  test.each([
+    ['zendeskId', undefined],
+    ['eventIds', undefined]
+  ])(
+    '%p does not match missing values',
+    async (
+      parameterName: string,
+      parameterValue: string | string[] | undefined
+    ) => {
+      const request = givenZendeskTicketDoesNotMatch(
+        parameterName,
+        parameterValue
+      )
+
+      const matchResult = await matchZendeskTicket(request)
+
+      expect(matchResult).toEqual(false)
+      expect(console.warn).toHaveBeenCalledWith(
+        'Request does not match values on Ticket, the following parameters do not match:',
+        [parameterName]
+      )
+    }
+  )
 
   test('custom field not found in ticket', async () => {
     givenCustomFieldNotFound()

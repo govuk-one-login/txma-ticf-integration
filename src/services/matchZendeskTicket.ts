@@ -38,10 +38,10 @@ const getZendeskCustomFieldValue = (
 }
 
 const matchArrayParams = (
-  ticketParam: string[] | null,
+  ticketParam: string[] | undefined,
   requestParam: string[] | undefined
 ) => {
-  if (ticketParam === null && requestParam === undefined) return true
+  if (ticketParam === undefined && requestParam === undefined) return true
 
   return (
     ticketParam?.sort((a, b) => a.localeCompare(b)).toString() ===
@@ -63,7 +63,7 @@ const compareTicketAndRequestDetails = (
   userDetails: ZendeskUser,
   requestParams: DataRequestParams
 ) => {
-  const mismatchedParameters: string[] = []
+  const unmatchedParameters: string[] = []
 
   const ticketDataPaths: string[] = getZendeskCustomFieldValue(
     ticketDetails,
@@ -104,34 +104,34 @@ const compareTicketAndRequestDetails = (
   )?.split(' ')
 
   if (!matchStringParams(ticketDetails.id, requestParams.zendeskId))
-    mismatchedParameters.push('zendeskId')
+    unmatchedParameters.push('zendeskId')
   if (!matchStringParams(userDetails.email, requestParams.resultsEmail))
-    mismatchedParameters.push('resultsEmail')
+    unmatchedParameters.push('resultsEmail')
   if (!matchStringParams(userDetails.name, requestParams.resultsName))
-    mismatchedParameters.push('resultsName')
+    unmatchedParameters.push('resultsName')
   if (!matchArrayParams(ticketDataPaths, requestParams.dataPaths))
-    mismatchedParameters.push('dataPaths')
+    unmatchedParameters.push('dataPaths')
   if (!matchStringParams(ticketDateFrom, requestParams.dateFrom))
-    mismatchedParameters.push('dateFrom')
+    unmatchedParameters.push('dateFrom')
   if (!matchStringParams(ticketDateTo, requestParams.dateTo))
-    mismatchedParameters.push('dateTo')
+    unmatchedParameters.push('dateTo')
   if (!matchArrayParams(ticketEventIds, requestParams.eventIds))
-    mismatchedParameters.push('eventIds')
+    unmatchedParameters.push('eventIds')
   if (!matchStringParams(ticketIdentifierType, requestParams.identifierType))
-    mismatchedParameters.push('identifierType')
+    unmatchedParameters.push('identifierType')
   if (!matchArrayParams(ticketJourneyIds, requestParams.journeyIds))
-    mismatchedParameters.push('journeyIds')
+    unmatchedParameters.push('journeyIds')
   if (!matchArrayParams(ticketPiiTypes, requestParams.piiTypes))
-    mismatchedParameters.push('piiTypes')
+    unmatchedParameters.push('piiTypes')
   if (!matchArrayParams(ticketSessionIds, requestParams.sessionIds))
-    mismatchedParameters.push('sessionIds')
+    unmatchedParameters.push('sessionIds')
   if (!matchArrayParams(ticketUserIds, requestParams.userIds))
-    mismatchedParameters.push('userIds')
+    unmatchedParameters.push('userIds')
 
-  if (mismatchedParameters.length > 0) {
+  if (unmatchedParameters.length > 0) {
     console.warn(
       'Request does not match values on Ticket, the following parameters do not match:',
-      mismatchedParameters
+      unmatchedParameters
     )
     return false
   } else {
