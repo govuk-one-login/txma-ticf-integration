@@ -1,12 +1,9 @@
 import axios, { AxiosResponse } from 'axios'
-import {
-  getEndUsername,
-  getZendeskBaseURL
-} from '../utils/validateTestParameters'
+import { getEndUsername, getZendeskBaseURL } from '../lib/zendeskParameters'
 
-import { authoriseAs } from '../utils/helpers'
+import { authoriseAs } from './helpers'
 
-import { validRequestData } from '../utils/requestData'
+import { validRequestData } from '../lib/requestData'
 
 const createRequestEndpoint = '/api/v2/requests.json'
 const zendeskBaseURL: string = getZendeskBaseURL()

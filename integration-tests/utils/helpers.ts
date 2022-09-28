@@ -1,5 +1,6 @@
-import { getZendeskAPIToken } from './validateTestParameters'
-import { cloudWatchLogsClient } from '../libs/cloudWatchLogsClient'
+import { getZendeskAPIToken } from '../lib/zendeskParameters'
+import { initiateDataRequestLambdalogGroupName } from '../lib/cloudWatchParameters'
+import { cloudWatchLogsClient } from './cloudWatchLogsClient'
 import {
   DescribeLogStreamsCommandInput,
   DescribeLogStreamsCommandOutput,
@@ -29,14 +30,9 @@ const getLogStreamPrefix = () => {
   }`
 }
 
-const getLatestLogStreamName = async () => {
-  interface LogStreamDetails {
-    logStreamName: string
-  }
-
+const getLatestLogStreamName = async (): Promise<string> => {
   const describeLogStreamsParams: DescribeLogStreamsCommandInput = {
-    logGroupName:
-      '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
+    logGroupName: initiateDataRequestLambdalogGroupName,
     orderBy: 'LastEventTime',
     descending: true,
     limit: 1
@@ -48,31 +44,20 @@ const getLatestLogStreamName = async () => {
 
   const describeLogStreamsResponse: DescribeLogStreamsCommandOutput =
     await cloudWatchLogsClient.send(describeLogStreamsCommand)
-  const latestLogStreams: LogStream[] | undefined =
-    describeLogStreamsResponse.logStreams
 
-  if (latestLogStreams && latestLogStreams.length > 0) {
-    // const streamName = latestLogStreams[0].logStreamName
-    //   ? latestLogStreams[0].logStreamName
-    //   : ''
-    const streamName = latestLogStreams[0].logStreamName as string
-    const result: LogStreamDetails = {
-      logStreamName: streamName
-    }
-    return result
-  } else {
-    throw new Error('No log stream found')
-  }
+  const latestLogStreams: LogStream[] =
+    describeLogStreamsResponse.logStreams ?? []
+
+  expect(latestLogStreams.length).toEqual(1)
+  return latestLogStreams[0].logStreamName as string
 }
 
 const getMatchingLogEvents = async (
   filterPattern: string,
   streamName: string
 ): Promise<FilteredLogEvent[]> => {
-  console.log(`CALLED, ${filterPattern}, ${streamName}`)
   const filterLogEventsParams: FilterLogEventsCommandInput = {
-    logGroupName:
-      '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
+    logGroupName: initiateDataRequestLambdalogGroupName,
     logStreamNames: [streamName],
     filterPattern: `${filterPattern}`
   }
@@ -80,38 +65,13 @@ const getMatchingLogEvents = async (
   const filterLogEventsCommand = new FilterLogEventsCommand(
     filterLogEventsParams
   )
-
-  // await cloudWatchLogsClient
-  //   .send(filterLogEventsCommand)
-  //   .then((result) => {
-  //     if (result.events) {
-  //       return result.events
-  //     } else {
-  //       throw new Error('No events matched')
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     throw new Error(error)
-  //   })
-
   const filterLogEventsResponse: FilterLogEventsCommandOutput =
     await cloudWatchLogsClient.send(filterLogEventsCommand)
 
-  console.log(`COMMAND SENT`)
+  const filterLogEvents: FilteredLogEvent[] =
+    filterLogEventsResponse.events ?? []
 
-  const filterLogEvents: FilteredLogEvent[] | undefined =
-    filterLogEventsResponse.events
-
-  console.log(`LOG EVENTS ARRAY SIZE: ${filterLogEvents?.length}`)
-
-  if (filterLogEvents && filterLogEvents.length > 0) {
-    filterLogEvents?.map((e) => {
-      console.log(e.message)
-    })
-    return filterLogEvents
-  } else {
-    return []
-  }
+  return filterLogEvents
 }
 
 const extractRequestID = (message: string) => {

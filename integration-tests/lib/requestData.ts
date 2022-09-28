@@ -1,4 +1,4 @@
-import { generateRandomNumber } from './helpers'
+import { generateRandomNumber } from '../utils/helpers'
 
 const validRequestData = {
   request: {

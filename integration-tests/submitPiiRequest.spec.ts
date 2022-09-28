@@ -3,16 +3,10 @@ import {
   getMatchingLogEvents,
   extractRequestID
 } from './utils/helpers'
-import { cloudWatchLogsClient } from './libs/cloudWatchLogsClient'
-import {
-  FilterLogEventsCommand,
-  FilterLogEventsCommandInput,
-  FilterLogEventsCommandOutput,
-  FilteredLogEvent
-} from '@aws-sdk/client-cloudwatch-logs'
+import { FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs'
 
-import { createZendeskRequest } from './libs/raiseZendeskRequest'
-import { approveZendeskRequest } from './libs/approveZendeskRequest'
+import { createZendeskRequest } from './utils/raiseZendeskRequest'
+import { approveZendeskRequest } from './utils/approveZendeskRequest'
 
 describe.only('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(30000)
@@ -22,59 +16,42 @@ describe.only('Submit a PII request with approved ticket data', () => {
 
     await approveZendeskRequest(ticketID)
 
-    // CHECK LOGS IN CLOUDWATCH - Cloudwatch API v3
-    // Fetch latest log stream until the one logged after request
-    const filterPattern = 'INFO received Zendesk webhook'
-    let logStreamRequestID = ''
-    let latestLogStreamName = ''
-
-    const result = await getLatestLogStreamName()
-    latestLogStreamName = result.logStreamName
+    // Cloudwatch - Fetch latest log stream containing the ticket details
+    let latestLogStreamName = await getLatestLogStreamName()
     console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
-
+    let logStreamRequestID
     let eventMatched = false
 
     while (!eventMatched) {
-      const filterLogEventsParams: FilterLogEventsCommandInput = {
-        logGroupName:
-          '/aws/lambda/ticf-integration-InitiateDataRequestFunction-FgC9L2iTU6pG',
-        logStreamNames: [latestLogStreamName],
-        filterPattern: filterPattern
-      }
-
-      const filterLogEventsCommand = new FilterLogEventsCommand(
-        filterLogEventsParams
+      const logEvents = await getMatchingLogEvents(
+        'INFO received Zendesk webhook',
+        latestLogStreamName
       )
-      const filterLogEventsResponse: FilterLogEventsCommandOutput =
-        await cloudWatchLogsClient.send(filterLogEventsCommand)
-      const filterLogEvents: FilteredLogEvent[] | undefined =
-        filterLogEventsResponse.events
-
-      expect(filterLogEvents).toBeDefined()
-      expect(filterLogEvents?.length).toBeGreaterThanOrEqual(1)
-
-      filterLogEvents!.map((e) => {
-        if (
-          e.message?.includes(`"zendeskId`) &&
-          e.message.includes(`"${ticketID}`)
-        ) {
-          console.log('Ticket Event matched')
-          console.log(`TICKET ID: ${ticketID}`)
-          console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
-          console.log(`MATCHED EVENT: ${e.message}`)
-          logStreamRequestID = extractRequestID(e.message)
-
-          eventMatched = true
-        } else {
-          console.log('Ticket event not found')
-          getLatestLogStreamName().then((result) => {
-            latestLogStreamName = result.logStreamName
-          })
-        }
+      if (logEvents.length == 0) {
+        latestLogStreamName = await getLatestLogStreamName()
+        continue
+      }
+      const matchingEvent = logEvents.filter((event) => {
+        return (
+          event.message?.includes(`"zendeskId`) &&
+          event.message.includes(`"${ticketID}`)
+        )
       })
+      if (matchingEvent.length == 1) {
+        console.log(
+          `Event for ticket ${ticketID} found in log stream: ${latestLogStreamName}`
+        )
+        const message: string = matchingEvent[0].message as string
+        console.log(`MATCHED EVENT: ${message}`)
+        logStreamRequestID = extractRequestID(message)
+        eventMatched = true
+      } else {
+        console.log('Ticket event not found in current stream')
+        latestLogStreamName = await getLatestLogStreamName()
+      }
     }
 
-    // filter for ticket's validation event
+    // filter for ticket's successful validation event in the same log stream
     const validRequestFilterPattern = `"${logStreamRequestID}" transfer`
     console.log(`VALIDATION FILTER PATTERN: ${validRequestFilterPattern}`)
     let validationEvents: FilteredLogEvent[] = []
@@ -83,8 +60,7 @@ describe.only('Submit a PII request with approved ticket data', () => {
       latestLogStreamName
     )
 
-    expect(validationEvents).toBeDefined()
-    expect(validationEvents?.length).toEqual(1)
-    console.log(`VALIDATION EVENT: ${validationEvents?.[0].message}`)
+    expect(validationEvents.length).toEqual(1)
+    console.log(`VALIDATION EVENT: ${validationEvents[0].message}`)
   })
 })

@@ -1,12 +1,9 @@
 import axios from 'axios'
-import { ticketApprovalData } from '../utils/requestData'
+import { ticketApprovalData } from '../lib/requestData'
 
-import { authoriseAs } from '../utils/helpers'
+import { authoriseAs } from './helpers'
 
-import {
-  getAgentUsername,
-  getZendeskBaseURL
-} from '../utils/validateTestParameters'
+import { getAgentUsername, getZendeskBaseURL } from '../lib/zendeskParameters'
 
 const ticketsEndpoint = '/api/v2/tickets'
 const zendeskBaseURL: string = getZendeskBaseURL()
