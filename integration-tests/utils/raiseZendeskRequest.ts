@@ -3,13 +3,14 @@ import { getEndUsername, getZendeskBaseURL } from '../lib/zendeskParameters'
 
 import { authoriseAs } from './helpers'
 
-import { validRequestData } from '../lib/requestData'
+import { validRequestData, invalidRequestData } from '../lib/requestData'
 
 const createRequestEndpoint = '/api/v2/requests.json'
 const zendeskBaseURL: string = getZendeskBaseURL()
 const endUsername: string = getEndUsername()
 
-const createZendeskRequest = async (): Promise<string> => {
+const createZendeskRequest = async (valid = true): Promise<string> => {
+  const requestData = valid ? validRequestData : invalidRequestData
   const axiosResponse: AxiosResponse<any, any> = await axios({
     url: `${zendeskBaseURL}${createRequestEndpoint}`,
     method: 'POST',
@@ -17,7 +18,7 @@ const createZendeskRequest = async (): Promise<string> => {
       Authorization: `Basic ${authoriseAs(endUsername)}`,
       'Content-Type': 'application/json'
     },
-    data: validRequestData
+    data: requestData
   })
 
   expect(axiosResponse.status).toBe(201)

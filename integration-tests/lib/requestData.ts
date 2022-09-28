@@ -32,6 +32,38 @@ const validRequestData = {
   }
 }
 
+const invalidRequestData = {
+  request: {
+    subject: `Integration Test Request - ` + generateRandomNumber(),
+    ticket_form_id: 5603412248860,
+    custom_fields: [
+      {
+        id: 5605352623260,
+        value: 'event_id'
+      },
+      {
+        id: 5605423021084,
+        value: '637783 3256'
+      },
+      {
+        id: 5605700069916,
+        value: '2023-05-05'
+      },
+      {
+        id: 5641719421852,
+        value: ['drivers_license']
+      },
+      {
+        id: 5698447116060,
+        value: ''
+      }
+    ],
+    comment: {
+      body: 'PII request created in integration test'
+    }
+  }
+}
+
 const ticketApprovalData = {
   ticket: {
     tags: ['process_started', 'approved'],
@@ -49,4 +81,4 @@ const ticketApprovalData = {
   }
 }
 
-export { validRequestData, ticketApprovalData }
+export { validRequestData, ticketApprovalData, invalidRequestData }
