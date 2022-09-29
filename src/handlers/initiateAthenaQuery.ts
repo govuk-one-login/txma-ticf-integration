@@ -32,8 +32,8 @@ export const handler = async (event: SQSEvent): Promise<void> => {
 
   const querySqlGenerated = createQuerySql(requestData)
 
-  if (!querySqlGenerated.sqlGenerated) {
-    await updateZendeskTicket(eventData, querySqlGenerated.error, 'closed')
+  if (!querySqlGenerated.sqlGenerated && querySqlGenerated.error) {
+    await updateZendeskTicketById(zendeskId, querySqlGenerated.error, 'closed')
     throw new Error(querySqlGenerated.error)
   }
 
