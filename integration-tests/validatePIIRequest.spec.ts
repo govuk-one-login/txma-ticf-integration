@@ -9,7 +9,7 @@ import { createZendeskRequest } from './utils/raiseZendeskRequest'
 import { approveZendeskRequest } from './utils/approveZendeskRequest'
 
 describe('Submit a PII request with approved ticket data', () => {
-  jest.setTimeout(30000)
+  jest.setTimeout(45000)
 
   it('Should log a success in cloud watch if Zendesk request is valid', async () => {
     const ticketID = await createZendeskRequest(true)
@@ -46,7 +46,6 @@ describe('Submit a PII request with approved ticket data', () => {
         logStreamRequestID = extractRequestID(message)
         eventMatched = true
       } else {
-        console.log('Ticket event not found in current stream')
         latestLogStreamName = await getLatestLogStreamName()
       }
     }
@@ -98,7 +97,6 @@ describe('Submit a PII request with approved ticket data', () => {
         logStreamRequestID = extractRequestID(message)
         eventMatched = true
       } else {
-        console.log('Ticket event not found in current stream')
         latestLogStreamName = await getLatestLogStreamName()
       }
     }

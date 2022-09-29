@@ -1,4 +1,7 @@
-import { generateRandomNumber } from '../utils/helpers'
+import {
+  generateRandomNumber,
+  generateZendeskRequestDate
+} from '../utils/helpers'
 
 const validRequestData = {
   request: {
@@ -15,7 +18,7 @@ const validRequestData = {
       },
       {
         id: 5605700069916,
-        value: '2022-09-05'
+        value: generateZendeskRequestDate(-60)
       },
       {
         id: 5641719421852,
@@ -47,7 +50,7 @@ const invalidRequestData = {
       },
       {
         id: 5605700069916,
-        value: '2023-05-05'
+        value: generateZendeskRequestDate(50)
       },
       {
         id: 5641719421852,

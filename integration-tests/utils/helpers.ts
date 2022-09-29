@@ -22,6 +22,15 @@ const authoriseAs = (username: string) => {
   )
 }
 
+const generateZendeskRequestDate = (offset: number): string => {
+  const today: Date = new Date()
+  today.setDate(today.getDate() + offset)
+
+  const dateFormat: Intl.DateTimeFormat = new Intl.DateTimeFormat('en-GB')
+  const dateParts: string[] = dateFormat.format(today).split('/')
+  return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`
+}
+
 const getLogStreamPrefix = () => {
   const dateFormat = new Intl.DateTimeFormat('en-GB')
   const dateParts = dateFormat.format(new Date()).split('/')
@@ -90,5 +99,6 @@ export {
   getLogStreamPrefix,
   getLatestLogStreamName,
   getMatchingLogEvents,
-  extractRequestID
+  extractRequestID,
+  generateZendeskRequestDate
 }
