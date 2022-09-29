@@ -18,29 +18,27 @@ export const createQuerySql = (
     }
   }
 
+  if (!requestData.dataPaths || requestData.dataPaths.length < 1) {
+    return {
+      sqlGenerated: false,
+      error: 'No dataPaths in request'
+    }
+  }
+
+  const sqlSelectStatement = formatSelectStatement(requestData.dataPaths)
+
   const sqlWhereStatement = formatWhereStatment(identifierType, identifiers)
 
   const dataSource = `${getEnv('ATHENA_DATABASE_NAME')}.${getEnv(
     'ATHENA_TABLE_NAME'
   )}`
 
-  const queryString = `SELECT restricted FROM ${dataSource} WHERE ${sqlWhereStatement}`
+  const queryString = `SELECT ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement}`
 
   return {
     sqlGenerated: true,
     sql: queryString
   }
-}
-
-const formatWhereStatment = (
-  identifierType: IdentifierTypes,
-  identifiers: string[]
-): string => {
-  const whereStatementsArray = identifiers.map(
-    (identifier) => `${identifierType}='${identifier}'`
-  )
-
-  return whereStatementsArray.join(' OR ')
 }
 
 const getIdentifiers = (
@@ -58,4 +56,37 @@ const getIdentifiers = (
   }
 
   return []
+}
+
+const formatSelectStatement = (
+  dataPaths: string[] | undefined
+): string | undefined => {
+  const formattedDataPaths = dataPaths?.map((dataPath) =>
+    formatDataPath(dataPath)
+  )
+
+  return formattedDataPaths?.join(', ')
+}
+
+const formatDataPath = (dataPath: string): string => {
+  const splitDataPath = dataPath.split('.')
+
+  const dataColumn = splitDataPath.shift()
+
+  const dataTarget = splitDataPath.join('.')
+
+  const newResultName = splitDataPath.join('_').toLowerCase()
+
+  return `json_extract(${dataColumn}, '$.${dataTarget}') as ${newResultName}`
+}
+
+const formatWhereStatment = (
+  identifierType: IdentifierTypes,
+  identifiers: string[]
+): string => {
+  const whereStatementsArray = identifiers.map(
+    (identifier) => `${identifierType}='${identifier}'`
+  )
+
+  return whereStatementsArray.join(' OR ')
 }

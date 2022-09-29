@@ -1,14 +1,22 @@
 import { createQuerySql } from './createQuerySql'
 import {
   testDataRequest,
-  noEventIdTestDataRequest
+  noEventIdTestDataRequest,
+  dataPathsTestDataRequest
 } from '../../utils/tests/testDataRequest'
 
 describe('create Query SQL', () => {
-  test('returns a formatted SQL query string', () => {
-    expect(createQuerySql(testDataRequest)).toEqual({
+  test('returns a formatted SQL query string if all conditions satisfied', () => {
+    expect(createQuerySql(dataPathsTestDataRequest)).toEqual({
       sqlGenerated: true,
-      sql: "SELECT restricted FROM test_database.test_table WHERE event_id='123' OR event_id='456'"
+      sql: "SELECT json_extract(restricted, '$.user.firstName') as user_firstname, json_extract(restricted, '$.user.lastName') as user_lastname FROM test_database.test_table WHERE event_id='123' OR event_id='456'"
+    })
+  })
+
+  test('returns an error message if there are no dataPaths', () => {
+    expect(createQuerySql(testDataRequest)).toEqual({
+      sqlGenerated: false,
+      error: 'No dataPaths in request'
     })
   })
 
