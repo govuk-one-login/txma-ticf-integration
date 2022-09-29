@@ -2,6 +2,8 @@ import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
 import { checkS3BucketData } from './checkS3BucketData'
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { testDataRequest } from '../utils/tests/testDataRequest'
+import { updateZendeskTicketById } from './updateZendeskTicket'
+import { ZENDESK_TICKET_ID } from '../utils/tests/testConstants'
 
 jest.mock('./checkS3BucketData', () => ({
   checkS3BucketData: jest.fn()
@@ -9,6 +11,12 @@ jest.mock('./checkS3BucketData', () => ({
 const mockCheckS3BucketData = checkS3BucketData as jest.Mock<
   Promise<S3BucketDataLocationResult>
 >
+
+jest.mock('./updateZendeskTicket', () => ({
+  updateZendeskTicketById: jest.fn()
+}))
+
+const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock
 
 describe('initiate data transfer', () => {
   const givenDataResult = (
@@ -31,21 +39,26 @@ describe('initiate data transfer', () => {
     givenDataResult(true)
   }
 
-  it('returns false if not data can be found for the requested parameters', async () => {
-    givenNoDataAvailable()
-    expect(await initiateDataTransfer(testDataRequest)).toEqual({
-      success: false,
-      errorMessage: 'No data found for request'
-    })
-    expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
+  beforeEach(() => {
+    mockUpdateZendeskTicketById.mockReset()
   })
 
-  it('returns true if data can be found for the requested parameters', async () => {
+  it('calls Zendesk to close ticket if no data can be found for the requested parameters', async () => {
+    givenNoDataAvailable()
+    await initiateDataTransfer(testDataRequest)
+    expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
+    expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID,
+      'Your ticket has been closed because no data was available for the requested dates',
+      'closed'
+    )
+  })
+
+  it('does not call Zendesk if data can be found for the requested parameters', async () => {
     givenDataAvailable()
     // TODO: when actual logic to kick off bucket copy is written, tests for this should go here
-    expect(await initiateDataTransfer(testDataRequest)).toEqual({
-      success: true
-    })
+    await initiateDataTransfer(testDataRequest)
     expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
+    expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
   })
 })

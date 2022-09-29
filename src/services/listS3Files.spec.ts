@@ -1,5 +1,5 @@
 import { mockClient } from 'aws-sdk-client-mock'
-import { listS3Objects } from './listS3Objects'
+import { listS3Files } from './listS3Files'
 import {
   S3Client,
   ListObjectsV2Command,
@@ -22,8 +22,20 @@ describe('list S3 objects', () => {
       Contents: [{ Key: 'example-object' }]
     })
 
-    const result = await listS3Objects(input)
-    expect(result).toEqual(['example-object'])
+    const result = await listS3Files(input)
+    expect(result).toEqual([{ Key: 'example-object' }])
+  })
+
+  test('folders in the output are ignored', async () => {
+    s3Mock.on(ListObjectsV2Command).resolves({
+      Contents: [
+        { Key: 'example-folder/' },
+        { Key: 'example-folder/example-file' }
+      ]
+    })
+
+    const result = await listS3Files(input)
+    expect(result).toEqual([{ Key: 'example-folder/example-file' }])
   })
 
   test('response has continuation token - return results for all pages', async () => {
@@ -43,11 +55,11 @@ describe('list S3 objects', () => {
         Contents: [{ Key: 'example-object-3' }],
         ContinuationToken: 'page3'
       })
-    const result = await listS3Objects(input)
+    const result = await listS3Files(input)
     expect(result).toEqual([
-      'example-object-1',
-      'example-object-2',
-      'example-object-3'
+      { Key: 'example-object-1' },
+      { Key: 'example-object-2' },
+      { Key: 'example-object-3' }
     ])
   })
 
@@ -57,14 +69,14 @@ describe('list S3 objects', () => {
       ContinuationToken: 'page2'
     })
 
-    const result = await listS3Objects(input)
-    expect(result).toEqual(['example-object'])
+    const result = await listS3Files(input)
+    expect(result).toEqual([{ Key: 'example-object' }])
   })
 
   test('response has no continuation token or contents', async () => {
     s3Mock.on(ListObjectsV2Command).resolves({})
 
-    const result = await listS3Objects(input)
+    const result = await listS3Files(input)
     expect(result).toEqual([])
   })
 })

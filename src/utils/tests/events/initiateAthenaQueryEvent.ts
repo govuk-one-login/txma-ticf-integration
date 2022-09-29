@@ -3,7 +3,7 @@ export const testAthenaQueryEvent = {
     {
       messageId: '',
       receiptHandle: '',
-      body: 'test body',
+      body: '{"zendeskId":"12"}',
       attributes: {
         ApproximateReceiveCount: '1',
         AWSTraceHeader: '',
