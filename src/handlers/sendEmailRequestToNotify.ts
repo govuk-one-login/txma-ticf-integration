@@ -13,20 +13,27 @@ export const handler = async (event: APIGatewayProxyEvent) => {
   if (!requestDetails.zendeskId) {
     throw Error('Zendesk ticket ID missing from event body')
   }
-
-  let zendeskTicketUpdateComment: string
-  try {
-    if (isEventBodyInvalid(requestDetails)) {
-      throw Error('Required details were not all present in event body')
-    }
-    await sendEmailToNotify(requestDetails)
-    zendeskTicketUpdateComment = 'A link to your results has been sent to you.'
-  } catch (error) {
-    console.error('Could not send a request to Notify: ', error)
-    zendeskTicketUpdateComment = 'Your results could not be emailed.'
+  if (isEventBodyInvalid(requestDetails)) {
+    await closeZendeskTicket(
+      requestDetails.zendeskId,
+      'Your results could not be emailed.'
+    )
+    throw Error('Required details were not all present in event body')
   }
 
-  await closeZendeskTicket(requestDetails.zendeskId, zendeskTicketUpdateComment)
+  try {
+    await sendEmailToNotify(requestDetails)
+    await closeZendeskTicket(
+      requestDetails.zendeskId,
+      'A link to your results has been sent to you.'
+    )
+  } catch (error) {
+    console.error('Could not send a request to Notify: ', error)
+    await closeZendeskTicket(
+      requestDetails.zendeskId,
+      'Your results could not be emailed.'
+    )
+  }
 }
 
 const isEventBodyInvalid = (requestDetails: PersonalisationOptions) => {
