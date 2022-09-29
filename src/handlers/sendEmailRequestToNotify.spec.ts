@@ -22,6 +22,11 @@ const givenUnsuccessfulSendEmailToNotify = () => {
     throw new Error('A Notify related error')
   })
 }
+const givenUnsuccessfulUpdateZendeskTicket = () => {
+  mockUpdateZendeskTicketById.mockImplementation(() => {
+    throw new Error('An updateZendeskTicket related error')
+  })
+}
 const validEventBody = `{
       "email": "${TEST_NOTIFY_EMAIL}",
       "firstName": "${TEST_NOTIFY_NAME}",
@@ -66,7 +71,7 @@ describe('initiate sendEmailRequest handler', () => {
     await callHandlerWithBody(validEventBody)
 
     expect(console.error).toHaveBeenCalledWith(
-      'There was an error sending a request to Notify: ',
+      'Could not send a request to Notify: ',
       Error('A Notify related error')
     )
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
@@ -96,7 +101,7 @@ describe('initiate sendEmailRequest handler', () => {
       await callHandlerWithBody(JSON.stringify(eventBodyParams))
 
       expect(console.error).toHaveBeenLastCalledWith(
-        'There was an error sending a request to Notify: ',
+        'Could not send a request to Notify: ',
         Error('Required details were not all present in event body')
       )
       expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
@@ -120,7 +125,7 @@ describe('initiate sendEmailRequest handler', () => {
       await callHandlerWithBody(JSON.stringify(eventBodyParams))
 
       expect(console.error).toHaveBeenLastCalledWith(
-        'There was an error sending a request to Notify: ',
+        'Could not send a request to Notify: ',
         Error('Required details were not all present in event body')
       )
       expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
@@ -130,6 +135,21 @@ describe('initiate sendEmailRequest handler', () => {
       )
     }
   )
+  it('logs an error when updateZendeskTicketById fails', async () => {
+    givenUnsuccessfulUpdateZendeskTicket()
+
+    await callHandlerWithBody(validEventBody)
+    expect(mockSendEmailToNotify).toHaveBeenCalledWith({
+      email: TEST_NOTIFY_EMAIL,
+      firstName: TEST_NOTIFY_NAME,
+      zendeskId: ZENDESK_TICKET_ID,
+      signedUrl: TEST_SIGNED_URL
+    })
+    expect(console.error).toHaveBeenCalledWith(
+      'Could not update Zendesk ticket: ',
+      Error('An updateZendeskTicket related error')
+    )
+  })
   it('throws an error when zendeskId is missing from the event body', async () => {
     const eventBodyParams = JSON.stringify({
       email: TEST_NOTIFY_EMAIL,

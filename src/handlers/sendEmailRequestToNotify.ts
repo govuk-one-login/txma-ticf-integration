@@ -22,7 +22,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     await sendEmailToNotify(requestDetails)
     zendeskTicketUpdateComment = 'A link to your results has been sent to you.'
   } catch (error) {
-    console.error('There was an error sending a request to Notify: ', error)
+    console.error('Could not send a request to Notify: ', error)
     zendeskTicketUpdateComment = 'Your results could not be emailed.'
   }
 
@@ -43,6 +43,6 @@ const closeZendeskTicket = async (ticketId: string, message: string) => {
     const ticketStatus = 'closed'
     await updateZendeskTicketById(ticketId, message, ticketStatus)
   } catch (error) {
-    console.error(error)
+    console.error('Could not update Zendesk ticket: ', error)
   }
 }
