@@ -1,44 +1,25 @@
-import { retrieveNotifySecrets } from '../secrets/retrieveNotifySecrets'
 import { defaultApiRequest } from '../utils/tests/events/defaultApiRequest'
 import {
-  ALL_NOTIFY_SECRETS,
   TEST_NOTIFY_EMAIL,
   TEST_NOTIFY_NAME,
   TEST_SIGNED_URL,
   ZENDESK_TICKET_ID
 } from '../utils/tests/testConstants'
 import { handler } from './sendEmailRequestToNotify'
-import { NotifyClient } from 'notifications-node-client'
-import { testSuccessfulNotifyResponse } from '../utils/tests/testNotifyResponses'
 import { updateZendeskTicketById } from '../services/updateZendeskTicket'
+import { sendEmailToNotify } from '../services/sendEmailRequestToNotify'
 
-jest.mock('../secrets/retrieveNotifySecrets', () => ({
-  retrieveNotifySecrets: jest.fn()
+jest.mock('../services/sendEmailRequestToNotify', () => ({
+  sendEmailToNotify: jest.fn()
 }))
-
-jest.mock('notifications-node-client', () => ({
-  NotifyClient: jest.fn().mockImplementation(() => {
-    return { sendEmail: mockSendEmail }
-  })
-}))
-
 jest.mock('../services/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
-
-const mockRetrieveNotifySecrets = retrieveNotifySecrets as jest.Mock
-const mockSendEmail = jest.fn()
 const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock
-
-const givenNotifySecretsAvailable = async () => {
-  mockRetrieveNotifySecrets.mockResolvedValue(ALL_NOTIFY_SECRETS)
-}
-const givenSuccessfulSendEmailRequest = async () => {
-  mockSendEmail.mockResolvedValue(testSuccessfulNotifyResponse)
-}
-const givenUnsuccessfulSendEmailRequest = async () => {
-  mockSendEmail.mockImplementation(() => {
-    throw new Error('There was an error sending request to Notify')
+const mockSendEmailToNotify = sendEmailToNotify as jest.Mock
+const givenUnsuccessfulSendEmailToNotify = () => {
+  mockSendEmailToNotify.mockImplementation(() => {
+    throw new Error('A Notify related error')
   })
 }
 const validEventBody = `{
@@ -48,7 +29,7 @@ const validEventBody = `{
       "signedUrl": "${TEST_SIGNED_URL}"
     }`
 const callHandlerWithBody = async (customBody: string) => {
-  return await handler({
+  await handler({
     ...defaultApiRequest,
     body: customBody
   })
@@ -64,28 +45,14 @@ describe('initiate sendEmailRequest handler', () => {
 
   it('creates a NotifyClient and calls sendEmail with correct parameters', async () => {
     jest.spyOn(global.console, 'log')
-    await givenNotifySecretsAvailable()
-    await givenSuccessfulSendEmailRequest()
 
     await callHandlerWithBody(validEventBody)
 
-    expect(NotifyClient).toHaveBeenCalledWith('myNotifyApiKey')
-    expect(mockSendEmail).toHaveBeenCalledTimes(1)
-    expect(mockSendEmail).toHaveBeenCalledWith(
-      ALL_NOTIFY_SECRETS.notifyTemplateId,
-      TEST_NOTIFY_EMAIL,
-      {
-        personalisation: {
-          firstName: TEST_NOTIFY_NAME,
-          zendeskId: ZENDESK_TICKET_ID,
-          signedUrl: TEST_SIGNED_URL
-        }
-      }
-    )
-    expect(console.log).toHaveBeenCalledWith({
-      status: 201,
-      emailSentTo: TEST_NOTIFY_EMAIL,
-      subjectLine: 'Your data query has completed'
+    expect(mockSendEmailToNotify).toHaveBeenCalledWith({
+      email: TEST_NOTIFY_EMAIL,
+      firstName: TEST_NOTIFY_NAME,
+      zendeskId: ZENDESK_TICKET_ID,
+      signedUrl: TEST_SIGNED_URL
     })
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
@@ -93,28 +60,14 @@ describe('initiate sendEmailRequest handler', () => {
       'closed'
     )
   })
-  it('returns a 400 status code with a message', async () => {
-    await givenNotifySecretsAvailable()
-    await givenUnsuccessfulSendEmailRequest()
+  it('given a valid event body, when sendEmailToNotify fails, logs an error and calls closeZendeskTicket', async () => {
+    givenUnsuccessfulSendEmailToNotify()
 
     await callHandlerWithBody(validEventBody)
 
-    expect(NotifyClient).toHaveBeenCalledWith('myNotifyApiKey')
-    expect(mockSendEmail).toThrowError()
-    expect(mockSendEmail).toHaveBeenCalledWith(
-      ALL_NOTIFY_SECRETS.notifyTemplateId,
-      TEST_NOTIFY_EMAIL,
-      {
-        personalisation: {
-          firstName: TEST_NOTIFY_NAME,
-          zendeskId: ZENDESK_TICKET_ID,
-          signedUrl: TEST_SIGNED_URL
-        }
-      }
-    )
     expect(console.error).toHaveBeenCalledWith(
       'There was an error sending a request to Notify: ',
-      Error('There was an error sending request to Notify')
+      Error('A Notify related error')
     )
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
@@ -125,16 +78,12 @@ describe('initiate sendEmailRequest handler', () => {
   it('returns from the function and logs an error when no event body is present', async () => {
     const invalidEventBody = ''
 
-    await callHandlerWithBody(invalidEventBody)
-
-    expect(console.error).toHaveBeenCalledWith(
+    await expect(callHandlerWithBody(invalidEventBody)).rejects.toThrow(
       'Could not find event body. An email has not been sent'
     )
-    expect(NotifyClient).not.toHaveBeenCalled()
-    expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
   })
   it.each(['firstName', 'email', 'signedUrl'])(
-    'returns from the function, updates Zendesk ticket, and logs an error when %p is missing from the event body',
+    'updates Zendesk ticket, and logs an error when %p is missing from the event body',
     async (missingPropertyName: string) => {
       const eventBodyParams = {
         email: TEST_NOTIFY_EMAIL,
@@ -143,7 +92,6 @@ describe('initiate sendEmailRequest handler', () => {
         zendeskId: ZENDESK_TICKET_ID
       } as { [key: string]: string }
       delete eventBodyParams[missingPropertyName]
-      await givenNotifySecretsAvailable()
 
       await callHandlerWithBody(JSON.stringify(eventBodyParams))
 
@@ -151,7 +99,6 @@ describe('initiate sendEmailRequest handler', () => {
         'There was an error sending a request to Notify: ',
         Error('Required details were not all present in event body')
       )
-      expect(NotifyClient).not.toHaveBeenCalled()
       expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
         ZENDESK_TICKET_ID,
         'Your results could not be emailed.',
@@ -169,7 +116,6 @@ describe('initiate sendEmailRequest handler', () => {
         zendeskId: ZENDESK_TICKET_ID
       } as { [key: string]: string }
       eventBodyParams[emptyStringPropertyName] = ''
-      await givenNotifySecretsAvailable()
 
       await callHandlerWithBody(JSON.stringify(eventBodyParams))
 
@@ -177,47 +123,34 @@ describe('initiate sendEmailRequest handler', () => {
         'There was an error sending a request to Notify: ',
         Error('Required details were not all present in event body')
       )
-      expect(NotifyClient).not.toHaveBeenCalled()
+      expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
+        ZENDESK_TICKET_ID,
+        'Your results could not be emailed.',
+        'closed'
+      )
     }
   )
-  it('returns from the function and logs an error when zendeskId is missing from the event body', async () => {
-    const eventBodyParams = {
+  it('throws an error when zendeskId is missing from the event body', async () => {
+    const eventBodyParams = JSON.stringify({
       email: TEST_NOTIFY_EMAIL,
       firstName: TEST_NOTIFY_NAME,
       signedUrl: TEST_SIGNED_URL
-    } as { [key: string]: string }
-    await givenNotifySecretsAvailable()
+    })
 
-    await callHandlerWithBody(JSON.stringify(eventBodyParams))
-
-    expect(console.error).toHaveBeenNthCalledWith(
-      1,
-      'There was an error sending a request to Notify: ',
-      Error('Required details were not all present in event body')
-    )
-    expect(NotifyClient).not.toHaveBeenCalled()
-    expect(console.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket update failed. No ticket ID present'
+    await expect(callHandlerWithBody(eventBodyParams)).rejects.toThrow(
+      'Zendesk ticket ID missing from event body'
     )
   })
-  it('returns from the function and logs an error when zendeskId is an empty string', async () => {
-    const eventBodyParams = {
+  it('throws an error when zendeskId is an empty string', async () => {
+    const eventBodyParams = JSON.stringify({
       email: TEST_NOTIFY_EMAIL,
       firstName: TEST_NOTIFY_NAME,
-      signedUrl: TEST_SIGNED_URL
-    } as { [key: string]: string }
-    await givenNotifySecretsAvailable()
+      signedUrl: TEST_SIGNED_URL,
+      zendeskId: ''
+    })
 
-    await callHandlerWithBody(JSON.stringify(eventBodyParams))
-
-    expect(console.error).toHaveBeenNthCalledWith(
-      1,
-      'There was an error sending a request to Notify: ',
-      Error('Required details were not all present in event body')
-    )
-    expect(NotifyClient).not.toHaveBeenCalled()
-    expect(console.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket update failed. No ticket ID present'
+    await expect(callHandlerWithBody(eventBodyParams)).rejects.toThrow(
+      'Zendesk ticket ID missing from event body'
     )
   })
 })
