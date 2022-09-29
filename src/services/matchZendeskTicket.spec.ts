@@ -4,6 +4,15 @@ import { ZendeskUser } from '../types/zendeskUser'
 import {
   TEST_DATE_FROM,
   TEST_DATE_TO,
+  TEST_ZENDESK_FIELD_DATA_PATHS,
+  TEST_ZENDESK_FIELD_DATE_FROM,
+  TEST_ZENDESK_FIELD_DATE_TO,
+  TEST_ZENDESK_FIELD_EVENT_IDS,
+  TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
+  TEST_ZENDESK_FIELD_JOURNEY_IDS,
+  TEST_ZENDESK_FIELD_PII_TYPES,
+  TEST_ZENDESK_FIELD_SESSION_IDS,
+  TEST_ZENDESK_FIELD_USER_IDS,
   ZENDESK_TICKET_ID
 } from '../utils/tests/testConstants'
 import {
@@ -51,39 +60,39 @@ describe('match zendesk ticket details', () => {
         requester_id: '123',
         custom_fields: [
           {
-            id: '1',
+            id: TEST_ZENDESK_FIELD_DATA_PATHS,
             value: null
           },
           {
-            id: '2',
+            id: TEST_ZENDESK_FIELD_DATE_FROM,
             value: TEST_DATE_FROM
           },
           {
-            id: '3',
+            id: TEST_ZENDESK_FIELD_DATE_TO,
             value: TEST_DATE_TO
           },
           {
-            id: '4',
+            id: TEST_ZENDESK_FIELD_EVENT_IDS,
             value: '123 456'
           },
           {
-            id: '5',
+            id: TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
             value: 'event_id'
           },
           {
-            id: '6',
+            id: TEST_ZENDESK_FIELD_JOURNEY_IDS,
             value: null
           },
           {
-            id: '7',
+            id: TEST_ZENDESK_FIELD_PII_TYPES,
             value: 'passport_number'
           },
           {
-            id: '8',
+            id: TEST_ZENDESK_FIELD_SESSION_IDS,
             value: null
           },
           {
-            id: '9',
+            id: TEST_ZENDESK_FIELD_USER_IDS,
             value: null
           }
         ]
@@ -107,39 +116,39 @@ describe('match zendesk ticket details', () => {
         requester_id: '123',
         custom_fields: [
           {
-            id: '1',
+            id: TEST_ZENDESK_FIELD_DATA_PATHS,
             value: 'path_to_data1 path_to_data2'
           },
           {
-            id: '2',
+            id: TEST_ZENDESK_FIELD_DATE_FROM,
             value: TEST_DATE_FROM
           },
           {
-            id: '3',
+            id: TEST_ZENDESK_FIELD_DATE_TO,
             value: TEST_DATE_TO
           },
           {
-            id: '4',
+            id: TEST_ZENDESK_FIELD_EVENT_IDS,
             value: '123 456'
           },
           {
-            id: '5',
+            id: TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
             value: 'event_id'
           },
           {
-            id: '6',
+            id: TEST_ZENDESK_FIELD_JOURNEY_IDS,
             value: '123 456'
           },
           {
-            id: '7',
+            id: TEST_ZENDESK_FIELD_PII_TYPES,
             value: 'passport_number'
           },
           {
-            id: '8',
+            id: TEST_ZENDESK_FIELD_SESSION_IDS,
             value: '123 456'
           },
           {
-            id: '9',
+            id: TEST_ZENDESK_FIELD_USER_IDS,
             value: '123 456'
           }
         ]
@@ -176,39 +185,39 @@ describe('match zendesk ticket details', () => {
         requester_id: '123',
         custom_fields: [
           {
-            id: '1',
+            id: TEST_ZENDESK_FIELD_DATA_PATHS,
             value: null
           },
           {
-            id: '2',
+            id: TEST_ZENDESK_FIELD_DATE_FROM,
             value: TEST_DATE_FROM
           },
           {
-            id: '3',
+            id: TEST_ZENDESK_FIELD_DATE_TO,
             value: TEST_DATE_TO
           },
           {
-            id: '4',
+            id: TEST_ZENDESK_FIELD_EVENT_IDS,
             value: null
           },
           {
-            id: '5',
+            id: TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
             value: 'event_id'
           },
           {
-            id: '6',
+            id: TEST_ZENDESK_FIELD_JOURNEY_IDS,
             value: null
           },
           {
-            id: '7',
+            id: TEST_ZENDESK_FIELD_PII_TYPES,
             value: null
           },
           {
-            id: '8',
+            id: TEST_ZENDESK_FIELD_SESSION_IDS,
             value: null
           },
           {
-            id: '9',
+            id: TEST_ZENDESK_FIELD_USER_IDS,
             value: null
           }
         ]
@@ -243,35 +252,35 @@ describe('match zendesk ticket details', () => {
         requester_id: '123',
         custom_fields: [
           {
-            id: '2',
+            id: TEST_ZENDESK_FIELD_DATE_FROM,
             value: TEST_DATE_FROM
           },
           {
-            id: '3',
+            id: TEST_ZENDESK_FIELD_DATE_TO,
             value: TEST_DATE_TO
           },
           {
-            id: '4',
+            id: TEST_ZENDESK_FIELD_EVENT_IDS,
             value: '123 456'
           },
           {
-            id: '5',
+            id: TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
             value: 'event_id'
           },
           {
-            id: '6',
+            id: TEST_ZENDESK_FIELD_JOURNEY_IDS,
             value: null
           },
           {
-            id: '7',
+            id: TEST_ZENDESK_FIELD_PII_TYPES,
             value: 'passport_number'
           },
           {
-            id: '8',
+            id: TEST_ZENDESK_FIELD_SESSION_IDS,
             value: null
           },
           {
-            id: '9',
+            id: TEST_ZENDESK_FIELD_USER_IDS,
             value: null
           }
         ]
