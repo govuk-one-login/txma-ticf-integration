@@ -20,7 +20,7 @@ export const testDataRequest = {
   userIds: []
 } as DataRequestParams
 
-export const testDataRequestWithValues = {
+export const testDataRequestWithAllValuesSet = {
   zendeskId: ZENDESK_TICKET_ID,
   resultsEmail: 'myuser@test.gov.uk',
   resultsName: 'my name',
@@ -35,7 +35,7 @@ export const testDataRequestWithValues = {
   userIds: ['123', '456']
 } as DataRequestParams
 
-export const testDataRequestWithUndefinedValues = {
+export const testDataRequestWithEmptyValuesForIds = {
   zendeskId: ZENDESK_TICKET_ID,
   resultsEmail: 'myuser@test.gov.uk',
   resultsName: 'my name',

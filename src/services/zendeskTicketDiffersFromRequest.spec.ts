@@ -17,8 +17,8 @@ import {
 } from '../utils/tests/testConstants'
 import {
   testDataRequest,
-  testDataRequestWithUndefinedValues,
-  testDataRequestWithValues
+  testDataRequestWithEmptyValuesForIds,
+  testDataRequestWithAllValuesSet
 } from '../utils/tests/testDataRequest'
 import { getZendeskTicket } from './getZendeskTicket'
 import { getZendeskUser } from './getZendeskUser'
@@ -163,7 +163,7 @@ describe('match zendesk ticket details', () => {
     )
     const newRequest = Object.assign(
       {},
-      testDataRequestWithValues
+      testDataRequestWithAllValuesSet
     ) as DataRequestParams
 
     updateKey(
@@ -233,7 +233,7 @@ describe('match zendesk ticket details', () => {
 
     const newRequest = Object.assign(
       {},
-      testDataRequestWithUndefinedValues
+      testDataRequestWithEmptyValuesForIds
     ) as DataRequestParams
 
     updateKey(
