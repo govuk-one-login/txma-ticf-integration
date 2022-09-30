@@ -22,7 +22,7 @@ import {
 } from '../utils/tests/testDataRequest'
 import { getZendeskTicket } from './getZendeskTicket'
 import { getZendeskUser } from './getZendeskUser'
-import { matchZendeskTicket } from './matchZendeskTicket'
+import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 
 jest.mock('./getZendeskTicket', () => ({
   getZendeskTicket: jest.fn()
@@ -296,10 +296,9 @@ describe('match zendesk ticket details', () => {
 
   test('ticket and request match', async () => {
     givenZendeskTicketMatches()
-
-    const matchResult = await matchZendeskTicket(testDataRequest)
-
-    expect(matchResult).toEqual(true)
+    expect(await zendeskTicketDiffersFromRequest(testDataRequest)).toEqual(
+      false
+    )
   })
 
   test.each([
@@ -321,9 +320,7 @@ describe('match zendesk ticket details', () => {
         parameterValue
       )
 
-      const matchResult = await matchZendeskTicket(request)
-
-      expect(matchResult).toEqual(false)
+      expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(console.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
         [parameterName]
@@ -344,9 +341,7 @@ describe('match zendesk ticket details', () => {
         parameterValue
       )
 
-      const matchResult = await matchZendeskTicket(request)
-
-      expect(matchResult).toEqual(false)
+      expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(console.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
         [parameterName]
@@ -369,9 +364,7 @@ describe('match zendesk ticket details', () => {
         parameterValue
       )
 
-      const matchResult = await matchZendeskTicket(request)
-
-      expect(matchResult).toEqual(false)
+      expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(console.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
         [parameterName]
@@ -383,7 +376,7 @@ describe('match zendesk ticket details', () => {
     givenCustomFieldNotFound()
 
     const error = async () => {
-      await matchZendeskTicket(testDataRequest)
+      await zendeskTicketDiffersFromRequest(testDataRequest)
     }
     await expect(error()).rejects.toThrow('Custom field with id 1 not found')
   })

@@ -8,7 +8,7 @@ import { validateZendeskRequest } from '../services/validateZendeskRequest'
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
 import { sendInitiateDataTransferMessage } from '../services/queue/sendInitiateDataTransferMessage'
 import { DataRequestParams } from '../types/dataRequestParams'
-import { matchZendeskTicket } from '../services/matchZendeskTicket'
+import { zendeskTicketDiffersFromRequest } from '../services/zendeskTicketDiffersFromRequest'
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -29,7 +29,7 @@ export const handler = async (
     validatedZendeskRequest.dataRequestParams as DataRequestParams
 
   try {
-    if (!(await matchZendeskTicket(requestParams))) {
+    if (await zendeskTicketDiffersFromRequest(requestParams)) {
       return await handleUnmatchedRequest(requestParams.zendeskId)
     }
   } catch (error) {

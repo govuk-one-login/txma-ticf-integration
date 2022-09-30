@@ -10,7 +10,7 @@ import { DataRequestParams } from '../types/dataRequestParams'
 import { testDataRequest } from '../utils/tests/testDataRequest'
 import { isSignatureInvalid } from '../services/validateRequestSource'
 import { sendInitiateDataTransferMessage } from '../services/queue/sendInitiateDataTransferMessage'
-import { matchZendeskTicket } from '../services/matchZendeskTicket'
+import { zendeskTicketDiffersFromRequest } from '../services/zendeskTicketDiffersFromRequest'
 const mockValidateZendeskRequest =
   validateZendeskRequest as jest.Mock<ValidatedDataRequestParamsResult>
 
@@ -20,7 +20,8 @@ const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock
 
 const mockIsSignatureInvalid = isSignatureInvalid as jest.Mock<Promise<boolean>>
 
-const mockMatchZendeskTicket = matchZendeskTicket as jest.Mock<Promise<boolean>>
+const mockZendeskTicketDiffersFromRequest =
+  zendeskTicketDiffersFromRequest as jest.Mock<Promise<boolean>>
 
 const mockSendInitiateDataTransferMessage =
   sendInitiateDataTransferMessage as jest.Mock
@@ -38,8 +39,8 @@ jest.mock('../services/validateRequestSource', () => ({
   isSignatureInvalid: jest.fn()
 }))
 
-jest.mock('../services/matchZendeskTicket', () => ({
-  matchZendeskTicket: jest.fn()
+jest.mock('../services/zendeskTicketDiffersFromRequest', () => ({
+  zendeskTicketDiffersFromRequest: jest.fn()
 }))
 
 jest.mock('../services/queue/sendInitiateDataTransferMessage', () => ({
@@ -76,21 +77,23 @@ describe('initate data request handler', () => {
   }
 
   const givenMatchZendeskTicketResult = (matches: boolean) => {
-    mockMatchZendeskTicket.mockImplementation(() => Promise.resolve(matches))
+    mockZendeskTicketDiffersFromRequest.mockImplementation(() =>
+      Promise.resolve(matches)
+    )
   }
 
   const givenZendeskTicketDoesNotExist = () => {
-    mockMatchZendeskTicket.mockImplementation(() => {
+    mockZendeskTicketDiffersFromRequest.mockImplementation(() => {
       throw new Error()
     })
   }
 
-  const givenDoesNotMatchZendeskTicket = () => {
-    givenMatchZendeskTicketResult(false)
+  const givenZendeskTicketDiffersFromRequest = () => {
+    givenMatchZendeskTicketResult(true)
   }
 
-  const givenMatchesZendeskTicket = () => {
-    givenMatchZendeskTicketResult(true)
+  const givenZendeskTicketMatchesRequest = () => {
+    givenMatchZendeskTicketResult(false)
   }
 
   const requestBody = 'myBody'
@@ -108,7 +111,7 @@ describe('initate data request handler', () => {
   it('returns 200 response when request is valid and matches zendesk ticket', async () => {
     givenValidRequest()
     givenSignatureIsValid()
-    givenMatchesZendeskTicket()
+    givenZendeskTicketMatchesRequest()
 
     const handlerCallResult = await callHandlerWithBody()
 
@@ -168,7 +171,7 @@ describe('initate data request handler', () => {
     const newTicketStatus = 'closed'
     givenValidRequest()
     givenSignatureIsValid()
-    givenDoesNotMatchZendeskTicket()
+    givenZendeskTicketDiffersFromRequest()
 
     const handlerCallResult = await callHandlerWithBody()
 
@@ -178,7 +181,9 @@ describe('initate data request handler', () => {
         message: 'Request parameters do not match a Zendesk Ticket'
       })
     })
-    expect(matchZendeskTicket).toHaveBeenCalledWith(testDataRequest)
+    expect(zendeskTicketDiffersFromRequest).toHaveBeenCalledWith(
+      testDataRequest
+    )
     expect(mockUpdateZendeskTicketById).toBeCalledWith(
       testDataRequest.zendeskId,
       'Your ticket has been closed because a request was received for this ticket with details that do not match its current state.',

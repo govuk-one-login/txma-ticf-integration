@@ -5,7 +5,9 @@ import { getEnv } from '../utils/helpers'
 import { getZendeskTicket } from './getZendeskTicket'
 import { getZendeskUser } from './getZendeskUser'
 
-export const matchZendeskTicket = async (requestParams: DataRequestParams) => {
+export const zendeskTicketDiffersFromRequest = async (
+  requestParams: DataRequestParams
+) => {
   console.log('Matching received request with existing Zendesk Tickets')
   const ticketDetails = (await getZendeskTicket(
     requestParams.zendeskId
@@ -14,7 +16,7 @@ export const matchZendeskTicket = async (requestParams: DataRequestParams) => {
     ticketDetails.requester_id
   )) as ZendeskUser
 
-  return compareTicketAndRequestDetails(
+  return ticketAndRequestDetailsDiffer(
     ticketDetails,
     userDetails,
     requestParams
@@ -60,7 +62,7 @@ const getZendeskCustomSpaceSeparatedStringAsArray = (
   const fieldValue = getZendeskCustomFieldValue(ticketDetails, customFieldId)
   return fieldValue ? fieldValue.split(' ') : []
 }
-const compareTicketAndRequestDetails = (
+const ticketAndRequestDetailsDiffer = (
   ticketDetails: ZendeskTicket,
   userDetails: ZendeskUser,
   requestParams: DataRequestParams
@@ -137,8 +139,8 @@ const compareTicketAndRequestDetails = (
       'Request does not match values on Ticket, the following parameters do not match:',
       unmatchedParameters
     )
-    return false
-  } else {
     return true
+  } else {
+    return false
   }
 }
