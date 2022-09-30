@@ -3,29 +3,37 @@ import {
   generateZendeskRequestDate
 } from '../utils/helpers'
 
+const ZENDESK_PII_FORM_ID = 5603412248860
+const PII_FORM_IDENTIFIER_FIELD_ID = 5605352623260
+const PII_FORM_IDENTIFIER_LIST_FIELD_ID = 5605423021084
+const PII_FORM_REQUEST_DATE_FIELD_ID = 5605700069916
+const PII_FORM_REQUESTED_PII_TYPE_FIELD_ID = 5641719421852
+const PII_FORM_CUSTOM_DATA_PATH_FIELD_ID = 5698447116060
+const ZENDESK_SUPPORT_PII_REQUEST_STATUS_FIELD_ID = 5605885870748
+
 const validRequestData = {
   request: {
     subject: `Integration Test Request - ` + generateRandomNumber(),
-    ticket_form_id: 5603412248860,
+    ticket_form_id: ZENDESK_PII_FORM_ID,
     custom_fields: [
       {
-        id: 5605352623260,
+        id: PII_FORM_IDENTIFIER_FIELD_ID,
         value: 'event_id'
       },
       {
-        id: 5605423021084,
+        id: PII_FORM_IDENTIFIER_LIST_FIELD_ID,
         value: '637783 3256'
       },
       {
-        id: 5605700069916,
+        id: PII_FORM_REQUEST_DATE_FIELD_ID,
         value: generateZendeskRequestDate(-60)
       },
       {
-        id: 5641719421852,
+        id: PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
         value: ['drivers_license']
       },
       {
-        id: 5698447116060,
+        id: PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
         value: ''
       }
     ],
@@ -38,26 +46,26 @@ const validRequestData = {
 const invalidRequestData = {
   request: {
     subject: `Integration Test Request - ` + generateRandomNumber(),
-    ticket_form_id: 5603412248860,
+    ticket_form_id: ZENDESK_PII_FORM_ID,
     custom_fields: [
       {
-        id: 5605352623260,
+        id: PII_FORM_IDENTIFIER_FIELD_ID,
         value: 'event_id'
       },
       {
-        id: 5605423021084,
+        id: PII_FORM_IDENTIFIER_LIST_FIELD_ID,
         value: '637783 3256'
       },
       {
-        id: 5605700069916,
+        id: PII_FORM_REQUEST_DATE_FIELD_ID,
         value: generateZendeskRequestDate(50)
       },
       {
-        id: 5641719421852,
+        id: PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
         value: ['drivers_license']
       },
       {
-        id: 5698447116060,
+        id: PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
         value: ''
       }
     ],
@@ -70,9 +78,13 @@ const invalidRequestData = {
 const ticketApprovalData = {
   ticket: {
     tags: ['process_started', 'approved'],
-    custom_fields: [{ id: 5605885870748, value: 'approved' }],
+    custom_fields: [
+      { id: ZENDESK_SUPPORT_PII_REQUEST_STATUS_FIELD_ID, value: 'approved' }
+    ],
     status: 'open',
-    fields: [{ id: 5605885870748, value: 'approved' }],
+    fields: [
+      { id: ZENDESK_SUPPORT_PII_REQUEST_STATUS_FIELD_ID, value: 'approved' }
+    ],
     collaborator_ids: [],
     follower_ids: [],
     comment: {
