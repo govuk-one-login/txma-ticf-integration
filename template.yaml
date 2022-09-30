@@ -101,10 +101,16 @@ Resources:
       AliasName: !Sub alias/${AWS::StackName}/sandbox/logs-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/logs-kms-key
       TargetKeyId: !Ref LogsKmsKey
 
-  SecretsSet:
+  ZendeskSecretsSet:
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: !Sub ${AWS::StackName}-ZendeskApiSecrets
+      KmsKeyId: !Ref SecretsKmsKeyAlias
+
+  NotifySecretsSet:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub ${AWS::StackName}-NotifyApiSecrets
       KmsKeyId: !Ref SecretsKmsKeyAlias
 
   SecretsKmsKey:
@@ -350,6 +356,39 @@ Resources:
         Type: SQS
         TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
   
+  SendEmailRequestToNotify:
+    #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: sendEmailRequestToNotify.handler
+      Environment:
+        Variables:
+          NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifyApiSecrets
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets 
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies: 
+        - Statement:
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Sid: SecretManager
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-NotifyApiSecrets-??????
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskApiSecrets-??????
+          - Sid: KmsSecretsDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SecretsKmsKey.Arn
+      ReservedConcurrentExecutions: 10
+      Timeout: 900
   InitiateDataRequestQueue:
     Type: AWS::SQS::Queue
     Properties:

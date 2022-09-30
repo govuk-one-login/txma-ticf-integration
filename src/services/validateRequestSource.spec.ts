@@ -4,16 +4,16 @@ import { isSignatureInvalid } from './validateRequestSource'
 import * as crypto from 'crypto'
 import { exampleEventBody } from '../utils/tests/events/exampleEventBody'
 import { givenAllSecretsAvailable } from '../utils/tests/mocks/retrieveSecretKeys'
-import { ALL_SECRET_KEYS } from '../utils/tests/testConstants'
+import { ALL_ZENDESK_SECRETS } from '../utils/tests/testConstants'
 import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 
-jest.mock('./retrieveZendeskApiSecrets', () => ({
+jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
 }))
 const generateTestHeaders = (): APIGatewayProxyEventHeaders => {
   const timestamp = '2022-09-05T09:52:10Z'
   const signature: string = crypto
-    .createHmac('sha256', ALL_SECRET_KEYS.zendeskWebhookSecretKey)
+    .createHmac('sha256', ALL_ZENDESK_SECRETS.zendeskWebhookSecretKey)
     .update(timestamp + exampleEventBody)
     .digest('base64')
 
