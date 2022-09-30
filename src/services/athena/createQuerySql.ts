@@ -8,6 +8,7 @@ import { getEnv } from '../../utils/helpers'
 export const createQuerySql = (
   requestData: DataRequestParams
 ): CreateQuerySqlResult => {
+  console.info('Generating Athena SQL query string')
   const identifierType = requestData.identifierType
   const identifiers = getIdentifiers(identifierType, requestData)
 
