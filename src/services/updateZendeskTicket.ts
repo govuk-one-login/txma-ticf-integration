@@ -1,5 +1,5 @@
 import https from 'node:https'
-import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
+import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import { makeHttpsRequest, base64Encode } from './httpsRequestUtils'
 import { tryParseJSON } from '../utils/helpers'
 
@@ -53,8 +53,8 @@ export const updateZendeskTicketById = async (
   }
   try {
     const data = await makeHttpsRequest(options, postData)
-    console.log('Zendesk ticket validation update successful.', data)
+    console.log('Zendesk ticket update successful.', data)
   } catch (error) {
-    console.error('Zendesk ticket validation update failed.', error)
+    console.error('Zendesk ticket update failed.', error)
   }
 }

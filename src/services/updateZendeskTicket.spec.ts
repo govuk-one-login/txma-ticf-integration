@@ -6,7 +6,7 @@ import {
 // Dependencies
 import { exampleEventBody } from '../utils/tests/events/exampleEventBody'
 import {
-  ALL_SECRET_KEYS,
+  ALL_ZENDESK_SECRETS,
   ZENDESK_TICKET_ID,
   ENCODED_AUTH_VALUE
 } from '../utils/tests/testConstants'
@@ -16,7 +16,7 @@ import * as mockHttpsRequestUtils from '../utils/tests/mocks/httpsRequestUtils'
 const zendeskTicketMessage = 'Something was invalid.'
 const NEW_TICKET_STATUS = 'closed'
 
-jest.mock('./retrieveZendeskApiSecrets', () => ({
+jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
 }))
 
@@ -61,7 +61,7 @@ describe('updating a zendesk ticket', () => {
   const expectSuccessfulApiCallToBeMade = () => {
     expect(mockHttpsRequestUtils.mockBase64Encode.mock.calls.length).toBe(1)
     expect(mockHttpsRequestUtils.mockBase64Encode).toHaveBeenCalledWith(
-      `${ALL_SECRET_KEYS.zendeskApiUserEmail}/token:${ALL_SECRET_KEYS.zendeskApiKey}`
+      `${ALL_ZENDESK_SECRETS.zendeskApiUserEmail}/token:${ALL_ZENDESK_SECRETS.zendeskApiKey}`
     )
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest.mock.calls.length).toBe(1)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toHaveBeenCalledWith(
@@ -79,13 +79,13 @@ describe('updating a zendesk ticket', () => {
           status: NEW_TICKET_STATUS,
           comment: {
             body: zendeskTicketMessage,
-            author_id: ALL_SECRET_KEYS.zendeskApiUserId
+            author_id: ALL_ZENDESK_SECRETS.zendeskApiUserId
           }
         }
       }
     )
     expect(console.log).toHaveBeenLastCalledWith(
-      'Zendesk ticket validation update successful.',
+      'Zendesk ticket update successful.',
       { theReturnData: '123' }
     )
   }
@@ -95,7 +95,7 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicket(exampleEventBody, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(console.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket validation update failed.',
+      'Zendesk ticket update failed.',
       Error('There was an error.')
     )
   })
@@ -106,7 +106,7 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicketById(ZENDESK_TICKET_ID, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(console.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket validation update failed.',
+      'Zendesk ticket update failed.',
       Error('There was an error.')
     )
   })

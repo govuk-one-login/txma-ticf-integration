@@ -8,4 +8,5 @@ export interface EnvironmentVar {
     | 'DYNAMODB_TABLE_NAME'
     | 'INITIATE_DATA_REQUEST_QUEUE_URL'
     | 'ZENDESK_API_SECRETS_NAME'
+    | 'NOTIFY_API_SECRETS_NAME'
 }
