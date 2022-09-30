@@ -36,5 +36,9 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     throw new Error(querySqlGenerated.error)
   }
 
+  if (querySqlGenerated.sql) {
+    console.log(`Athena SQL generated: ${querySqlGenerated.sql}`)
+  }
+
   return
 }
