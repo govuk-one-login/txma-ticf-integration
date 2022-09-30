@@ -1,5 +1,6 @@
 import { handler } from './initiateAthenaQuery'
 import { confirmAthenaTable } from '../services/athena/confirmAthenaTable'
+import { createQuerySql } from '../services/athena/createQuerySql'
 import { ConfirmAthenaTableResult } from '../types/confirmAthenaTableResult'
 import { testAthenaQueryEvent } from '../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../services/updateZendeskTicket'
@@ -14,26 +15,36 @@ jest.mock('../services/updateZendeskTicket', () => ({
 jest.mock('../services/dynamoDB/dynamoDBGet', () => ({
   getQueryByZendeskId: jest.fn()
 }))
+jest.mock('../services/athena/createQuerySql', () => ({
+  createQuerySql: jest.fn()
+}))
 
 const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
 >
 const mockUpdateZendeskTicket = updateZendeskTicketById as jest.Mock
 const mockGetQueryByZendeskId = getQueryByZendeskId as jest.Mock
+const mockCreateQuerySql = createQuerySql as jest.Mock
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
     mockConfirmAthenaTable.mockReset()
+    mockCreateQuerySql.mockReset()
   })
 
-  it('confirms whether the athena data source exists', async () => {
+  it('confirms whether the athena data source exists and whether query sql has been generated', async () => {
     mockConfirmAthenaTable.mockResolvedValue({
       tableAvailable: true,
       message: 'test message'
     })
+    mockCreateQuerySql.mockReturnValue({
+      sqlGenerated: true,
+      sql: 'test sql string'
+    })
 
     await handler(testAthenaQueryEvent)
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
+    expect(mockCreateQuerySql).toHaveBeenCalled()
   })
 
   it('updates zendesk and throws an error if there is no athena data source', async () => {
@@ -54,5 +65,24 @@ describe('initiate athena query handler', () => {
       'No data in Athena Query event'
     )
     expect(mockConfirmAthenaTable).not.toHaveBeenCalled()
+  })
+
+  it('updates zendesk and throws an error if no query sql is generated', async () => {
+    mockConfirmAthenaTable.mockResolvedValue({
+      tableAvailable: true,
+      message: 'test message'
+    })
+    mockCreateQuerySql.mockReturnValue({
+      sqlGenerated: false,
+      error: 'sql error message'
+    })
+
+    await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
+      'sql error message'
+    )
+    expect(mockGetQueryByZendeskId).toHaveBeenCalled()
+    expect(mockConfirmAthenaTable).toHaveBeenCalled()
+    expect(mockUpdateZendeskTicket).toHaveBeenCalled()
+    expect(mockCreateQuerySql).toHaveBeenCalled()
   })
 })

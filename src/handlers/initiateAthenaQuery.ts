@@ -28,7 +28,6 @@ export const handler = async (event: SQSEvent): Promise<void> => {
   }
 
   const requestData = await getQueryByZendeskId(zendeskId)
-  console.log(requestData)
 
   const querySqlGenerated = createQuerySql(requestData)
 
