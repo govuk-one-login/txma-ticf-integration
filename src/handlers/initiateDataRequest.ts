@@ -30,7 +30,7 @@ export const handler = async (
 
   try {
     if (!(await matchZendeskTicket(requestParams))) {
-      return await handleUnmatchedRequest(requestParams)
+      return await handleUnmatchedRequest(requestParams.zendeskId)
     }
   } catch (error) {
     console.error(error)
@@ -85,11 +85,11 @@ const handleInvalidSignature = async () => {
   }
 }
 
-const handleUnmatchedRequest = async (requestDetails: DataRequestParams) => {
+const handleUnmatchedRequest = async (zendeskId: string) => {
   const newTicketStatus = 'closed'
 
   await updateZendeskTicketById(
-    requestDetails.zendeskId,
+    zendeskId,
     'Your ticket has been closed because a request was received for this ticket with details that do not match its current state.',
     newTicketStatus
   )
