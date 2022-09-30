@@ -13,7 +13,11 @@ export const testDataRequest = {
   dateTo: TEST_DATE_TO,
   identifierType: 'event_id',
   eventIds: ['123', '456'],
-  piiTypes: ['passport_number']
+  piiTypes: ['passport_number'],
+  dataPaths: [],
+  journeyIds: [],
+  sessionIds: [],
+  userIds: []
 } as DataRequestParams
 
 export const testDataRequestWithValues = {
@@ -37,5 +41,11 @@ export const testDataRequestWithUndefinedValues = {
   resultsName: 'my name',
   dateFrom: TEST_DATE_FROM,
   dateTo: TEST_DATE_TO,
-  identifierType: 'event_id'
+  identifierType: 'event_id',
+  eventIds: [],
+  journeyIds: [],
+  piiTypes: [],
+  sessionIds: [],
+  userIds: [],
+  dataPaths: []
 } as DataRequestParams

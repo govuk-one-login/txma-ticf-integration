@@ -108,7 +108,7 @@ describe('match zendesk ticket details', () => {
 
   const givenZendeskTicketDoesNotMatchValues = (
     parameterName: string,
-    parameterValue: string | string[] | undefined
+    parameterValue: string | string[]
   ) => {
     mockGetZendeskTicket.mockImplementation(() =>
       Promise.resolve({
@@ -177,7 +177,7 @@ describe('match zendesk ticket details', () => {
 
   const givenZendeskTicketDoesNotMatchWhenMissingValues = (
     parameterName: string,
-    parameterValue: string | string[] | undefined
+    parameterValue: string | string[]
   ) => {
     mockGetZendeskTicket.mockImplementation(() =>
       Promise.resolve({
@@ -315,10 +315,7 @@ describe('match zendesk ticket details', () => {
     ['piiTypes', ['123456789']]
   ])(
     '%p does not match given values',
-    async (
-      parameterName: string,
-      parameterValue: string | string[] | undefined
-    ) => {
+    async (parameterName: string, parameterValue: string | string[]) => {
       const request = givenZendeskTicketDoesNotMatchValues(
         parameterName,
         parameterValue
@@ -335,22 +332,13 @@ describe('match zendesk ticket details', () => {
   )
 
   test.each([
-    ['zendeskId', undefined],
-    ['resultsEmail', undefined],
-    ['resultsName', undefined],
-    ['identifierType', undefined],
-    ['dataPaths', undefined],
-    ['dateFrom', undefined],
-    ['dateTo', undefined],
-    ['eventIds', undefined],
-    ['journeyIds', undefined],
-    ['piiTypes', undefined]
+    ['dataPaths', []],
+    ['eventIds', []],
+    ['journeyIds', []],
+    ['piiTypes', []]
   ])(
-    '%p does not match with missing request value',
-    async (
-      parameterName: string,
-      parameterValue: string | string[] | undefined
-    ) => {
+    '%p does not match with empty array request value',
+    async (parameterName: string, parameterValue: string[]) => {
       const request = givenZendeskTicketDoesNotMatchValues(
         parameterName,
         parameterValue
@@ -375,10 +363,7 @@ describe('match zendesk ticket details', () => {
     ['piiTypes', ['123456789']]
   ])(
     'does not match when ticket missing value %p',
-    async (
-      parameterName: string,
-      parameterValue: string | string[] | undefined
-    ) => {
+    async (parameterName: string, parameterValue: string | string[]) => {
       const request = givenZendeskTicketDoesNotMatchWhenMissingValues(
         parameterName,
         parameterValue
