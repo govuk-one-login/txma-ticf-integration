@@ -13,7 +13,7 @@ export interface CustomField {
   value: string | null
 }
 
-export const isZendesktTicketResult = (
+export const isZendeskTicketResult = (
   arg: unknown
 ): arg is ZendeskTicketResult => {
   const test = arg as ZendeskTicketResult

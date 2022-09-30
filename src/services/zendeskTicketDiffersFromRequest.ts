@@ -9,12 +9,8 @@ export const zendeskTicketDiffersFromRequest = async (
   requestParams: DataRequestParams
 ) => {
   console.log('Matching received request with existing Zendesk Tickets')
-  const ticketDetails = (await getZendeskTicket(
-    requestParams.zendeskId
-  )) as ZendeskTicket
-  const userDetails = (await getZendeskUser(
-    ticketDetails.requester_id
-  )) as ZendeskUser
+  const ticketDetails = await getZendeskTicket(requestParams.zendeskId)
+  const userDetails = await getZendeskUser(ticketDetails.requester_id)
 
   return ticketAndRequestDetailsDiffer(
     ticketDetails,

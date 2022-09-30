@@ -1,14 +1,12 @@
 import {
-  isZendesktTicketResult,
+  isZendeskTicketResult,
   ZendeskTicket
 } from '../types/zendeskTicketResult'
 import { base64Encode, makeHttpsRequest } from './httpsRequestUtils'
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
 import https from 'node:https'
 
-export const getZendeskTicket = async (
-  id: string
-): Promise<ZendeskTicket | undefined> => {
+export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
   const secrets = await retrieveZendeskApiSecrets()
   const options: https.RequestOptions = {
     method: 'GET',
@@ -23,10 +21,12 @@ export const getZendeskTicket = async (
 
   const data = await makeHttpsRequest(options)
 
-  if (isZendesktTicketResult(data)) {
-    const ticketInfo = data.ticket
-    console.log('Zendesk ticket with matching id found', ticketInfo)
-
-    return ticketInfo
+  if (!isZendeskTicketResult(data)) {
+    throw Error('The returned data was not a Zendesk ticket')
   }
+
+  const ticketInfo = data.ticket
+  console.log('Zendesk ticket with matching id found', ticketInfo)
+
+  return ticketInfo
 }

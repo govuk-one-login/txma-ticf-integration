@@ -29,6 +29,13 @@ const successResponse = {
   }
 }
 
+const invalidResponse = {
+  ticket: {
+    id: ZENDESK_TICKET_ID,
+    requester_id: '123'
+  }
+}
+
 describe('get zendesk ticket information', () => {
   beforeEach(() => {
     givenAllSecretsAvailable()
@@ -49,6 +56,18 @@ describe('get zendesk ticket information', () => {
     expect(console.log).toHaveBeenLastCalledWith(
       'Zendesk ticket with matching id found',
       successResponse.ticket
+    )
+  })
+
+  test('throws error if response is not a zendesk ticket', async () => {
+    mockHttpsRequestUtils.givenSuccessfulApiCall(invalidResponse)
+
+    const error = async () => {
+      await getZendeskTicket(ZENDESK_TICKET_ID)
+    }
+
+    await expect(error()).rejects.toThrow(
+      'The returned data was not a Zendesk ticket'
     )
   })
 
