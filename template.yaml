@@ -101,16 +101,16 @@ Resources:
       AliasName: !Sub alias/${AWS::StackName}/sandbox/logs-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/logs-kms-key
       TargetKeyId: !Ref LogsKmsKey
 
-  ZendeskSecretsSet:
+  ZendeskSecretSet:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub ${AWS::StackName}-ZendeskApiSecrets
+      Name: !Sub ${AWS::StackName}-ZendeskSecrets
       KmsKeyId: !Ref SecretsKmsKeyAlias
 
-  NotifySecretsSet:
+  NotifySecretSet:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub ${AWS::StackName}-NotifyApiSecrets
+      Name: !Sub ${AWS::StackName}-NotifySecrets
       KmsKeyId: !Ref SecretsKmsKeyAlias
 
   SecretsKmsKey:
@@ -232,7 +232,7 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
-          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
       Events:
         Api:
@@ -261,8 +261,7 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskApiSecrets-??????
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
@@ -299,7 +298,7 @@ Resources:
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
-          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -364,8 +363,8 @@ Resources:
       Handler: sendEmailRequestToNotify.handler
       Environment:
         Variables:
-          NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifyApiSecrets
-          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskApiSecrets 
+          NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifySecrets
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets 
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies: 
         - Statement:
@@ -379,8 +378,8 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-NotifyApiSecrets-??????
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskApiSecrets-??????
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-NotifySecrets-??????
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
@@ -490,7 +489,7 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource: 
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:zendesk-api-secrets-??????
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
