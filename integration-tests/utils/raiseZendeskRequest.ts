@@ -6,8 +6,8 @@ import { authoriseAs } from './helpers'
 import { validRequestData, invalidRequestData } from '../lib/requestData'
 
 const createRequestEndpoint = '/api/v2/requests.json'
-const zendeskBaseURL: string = getEnvVariable('ZENDESK_BASE_URL') //getZendeskBaseURL()
-const endUsername: string = getEnvVariable('ZENDESK_END_USERNAME') //getEndUsername()
+const zendeskBaseURL: string = getEnvVariable('ZENDESK_BASE_URL')
+const endUsername: string = getEnvVariable('ZENDESK_END_USERNAME')
 
 const createZendeskRequest = async (valid = true): Promise<string> => {
   const requestData = valid ? validRequestData : invalidRequestData
