@@ -40,7 +40,7 @@ describe('initiate athena query handler', () => {
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
-      identifiers: ['123']
+      idParameters: ['123']
     })
 
     await handler(testAthenaQueryEvent)

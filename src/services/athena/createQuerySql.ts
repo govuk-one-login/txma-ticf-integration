@@ -46,7 +46,7 @@ export const createQuerySql = (
   return {
     sqlGenerated: true,
     sql: queryString,
-    identifiers: identifiers
+    idParameters: identifiers
   }
 }
 

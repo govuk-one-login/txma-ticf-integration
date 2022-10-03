@@ -10,7 +10,7 @@ describe('create Query SQL', () => {
     expect(createQuerySql(dataPathsTestDataRequest)).toEqual({
       sqlGenerated: true,
       sql: "SELECT json_extract(restricted, '$.user.firstName') as user_firstname, json_extract(restricted, '$.user.lastName') as user_lastname FROM test_database.test_table WHERE event_id=? OR event_id=?",
-      identifiers: ['123', '456']
+      idParameters: ['123', '456']
     })
   })
 
