@@ -26,8 +26,12 @@ export const createQuerySql = (
     }
   }
 
+  // The SELECT statement relies upon user inputs - dataPaths, piiTypes - which are validated to
+  // minimise SQL injection risk
   const sqlSelectStatement = formatSelectStatement(requestData.dataPaths)
 
+  // formatWhereStatement ensures that the WHERE statement is parameterised to
+  // protect against SQL injection
   const sqlWhereStatement = formatWhereStatment(
     identifierType,
     identifiers.length
