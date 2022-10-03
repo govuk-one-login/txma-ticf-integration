@@ -28,7 +28,10 @@ export const createQuerySql = (
 
   const sqlSelectStatement = formatSelectStatement(requestData.dataPaths)
 
-  const sqlWhereStatement = formatWhereStatment(identifierType, identifiers)
+  const sqlWhereStatement = formatWhereStatment(
+    identifierType,
+    identifiers.length
+  )
 
   const dataSource = `${getEnv('ATHENA_DATABASE_NAME')}.${getEnv(
     'ATHENA_TABLE_NAME'
@@ -38,7 +41,8 @@ export const createQuerySql = (
 
   return {
     sqlGenerated: true,
-    sql: queryString
+    sql: queryString,
+    identifiers: identifiers
   }
 }
 
@@ -83,11 +87,13 @@ const formatDataPath = (dataPath: string): string => {
 
 const formatWhereStatment = (
   identifierType: IdentifierTypes,
-  identifiers: string[]
+  numberOfIdentifiers: number
 ): string => {
-  const whereStatementsArray = identifiers.map(
-    (identifier) => `${identifierType}='${identifier}'`
-  )
+  const whereStatementsArray = []
+
+  for (let i = 0; i < numberOfIdentifiers; i++) {
+    whereStatementsArray.push(`${identifierType}=?`)
+  }
 
   return whereStatementsArray.join(' OR ')
 }
