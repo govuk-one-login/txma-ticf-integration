@@ -1,4 +1,4 @@
-import { getZendeskAPIToken } from '../lib/zendeskParameters'
+import { getEnvVariable } from '../lib/zendeskParameters'
 import { initiateDataRequestLambdalogGroupName } from '../lib/cloudWatchParameters'
 import { cloudWatchLogsClient } from './cloudWatchLogsClient'
 import {
@@ -17,9 +17,9 @@ const generateRandomNumber = () => {
 }
 
 const authoriseAs = (username: string) => {
-  return Buffer.from(`${username}/token:${getZendeskAPIToken()}`).toString(
-    'base64'
-  )
+  return Buffer.from(
+    `${username}/token:${getEnvVariable('ZENDESK_TEST_API_TOKEN')}`
+  ).toString('base64')
 }
 
 const generateZendeskRequestDate = (offset: number): string => {
@@ -61,6 +61,65 @@ const getLatestLogStreamName = async (): Promise<string> => {
   return latestLogStreams[0].logStreamName as string
 }
 
+interface EventLogStream {
+  logStreamName: string
+  eventMessage: string
+}
+
+const waitForLogStreamContainingEvent = async (
+  eventFilterPattern: string,
+  ...eventMessagePatterns: string[]
+): Promise<EventLogStream> => {
+  if (eventMessagePatterns.length == 0) {
+    throw Error('No message patterns provided for event')
+  }
+
+  let latestLogStreamName = await getLatestLogStreamName()
+  console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
+  let eventMatched = false
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  let eventMessage: string = ''
+
+  while (!eventMatched) {
+    const logEvents = await getMatchingLogEvents(
+      `${eventFilterPattern}`,
+      latestLogStreamName
+    )
+    if (logEvents.length == 0) {
+      latestLogStreamName = await getLatestLogStreamName()
+      continue
+    }
+    const matchingEvent = logEvents.filter((event) => {
+      // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+      let containsAllPatterns: boolean = false
+      for (const element of eventMessagePatterns) {
+        if (!event.message?.includes(element)) {
+          containsAllPatterns = false
+          break
+        } else {
+          containsAllPatterns = true
+        }
+      }
+      return containsAllPatterns
+    })
+    if (matchingEvent.length == 1) {
+      console.log(`Event found in log stream: ${latestLogStreamName}`)
+      eventMessage = matchingEvent[0].message as string
+      console.log(`MATCHED EVENT: ${eventMessage}`)
+      eventMatched = true
+      break
+    } else {
+      latestLogStreamName = await getLatestLogStreamName()
+    }
+  }
+  const result: EventLogStream = {
+    logStreamName: latestLogStreamName,
+    eventMessage: eventMessage
+  }
+
+  return result
+}
+
 const getMatchingLogEvents = async (
   filterPattern: string,
   streamName: string
@@ -80,10 +139,12 @@ const getMatchingLogEvents = async (
   const filterLogEvents: FilteredLogEvent[] =
     filterLogEventsResponse.events ?? []
 
+  console.log(`FILTERED LOG EVENTS: ${filterLogEvents}`)
+
   return filterLogEvents
 }
 
-const extractRequestID = (message: string) => {
+const extractRequestIDFromEventMessage = (message: string) => {
   let requestId = ''
   const firstLine = message.slice(0, message.indexOf('{'))
   console.log(`FIRST LINE: ${firstLine}`)
@@ -99,6 +160,7 @@ export {
   getLogStreamPrefix,
   getLatestLogStreamName,
   getMatchingLogEvents,
-  extractRequestID,
-  generateZendeskRequestDate
+  extractRequestIDFromEventMessage,
+  generateZendeskRequestDate,
+  waitForLogStreamContainingEvent
 }

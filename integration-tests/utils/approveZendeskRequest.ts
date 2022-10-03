@@ -3,11 +3,11 @@ import { ticketApprovalData } from '../lib/requestData'
 
 import { authoriseAs } from './helpers'
 
-import { getAgentUsername, getZendeskBaseURL } from '../lib/zendeskParameters'
+import { getEnvVariable } from '../lib/zendeskParameters'
 
 const ticketsEndpoint = '/api/v2/tickets'
-const zendeskBaseURL: string = getZendeskBaseURL()
-const agentUsername: string = getAgentUsername()
+const zendeskBaseURL: string = getEnvVariable('ZENDESK_BASE_URL')
+const agentUsername: string = getEnvVariable('ZENDESK_AGENT_USERNAME')
 
 const approveZendeskRequest = async (ticketId: string) => {
   // approve and submit ticket (fires webhook)
