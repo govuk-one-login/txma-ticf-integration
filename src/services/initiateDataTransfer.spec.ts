@@ -1,7 +1,7 @@
 import { S3BucketDataLocationResult } from '../types/s3BucketDataLocationResult'
 import { checkS3BucketData } from './checkS3BucketData'
 import { initiateDataTransfer } from './initiateDataTransfer'
-import { startGlacierDefrost } from './bulkJobs/startGlacierDefrost'
+import { startGlacierRestore } from './bulkJobs/startGlacierRestore'
 import { testDataRequest } from '../utils/tests/testDataRequest'
 import { updateZendeskTicketById } from './updateZendeskTicket'
 import { ZENDESK_TICKET_ID } from '../utils/tests/testConstants'
@@ -19,11 +19,11 @@ jest.mock('./updateZendeskTicket', () => ({
 
 const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock
 
-jest.mock('./bulkJobs/startGlacierDefrost', () => ({
-  startGlacierDefrost: jest.fn()
+jest.mock('./bulkJobs/startGlacierRestore', () => ({
+  startGlacierRestore: jest.fn()
 }))
 
-const mockStartGlacierDefrost = startGlacierDefrost as jest.Mock
+const mockStartGlacierRestore = startGlacierRestore as jest.Mock
 
 describe('initiate data transfer', () => {
   const givenDataResult = (
@@ -48,7 +48,7 @@ describe('initiate data transfer', () => {
 
   beforeEach(() => {
     mockUpdateZendeskTicketById.mockReset()
-    mockStartGlacierDefrost.mockReset()
+    mockStartGlacierRestore.mockReset()
   })
 
   it('calls Zendesk to close ticket if no data can be found for the requested parameters', async () => {
@@ -68,14 +68,14 @@ describe('initiate data transfer', () => {
     await initiateDataTransfer(testDataRequest)
     expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
     expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
-    expect(startGlacierDefrost).not.toHaveBeenCalled()
+    expect(startGlacierRestore).not.toHaveBeenCalled()
   })
 
-  it('initiates a glacier defrost if necessary', async () => {
+  it('initiates a glacier restore if necessary', async () => {
     const glacierTierLocationsToCopy = ['glacier-file1', 'glacier-file-2']
     givenDataResult(true, [], glacierTierLocationsToCopy)
     await initiateDataTransfer(testDataRequest)
-    expect(startGlacierDefrost).toHaveBeenCalledWith(
+    expect(startGlacierRestore).toHaveBeenCalledWith(
       glacierTierLocationsToCopy,
       ZENDESK_TICKET_ID
     )

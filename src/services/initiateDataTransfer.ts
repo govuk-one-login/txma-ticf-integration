@@ -1,6 +1,6 @@
 import { DataRequestParams } from '../types/dataRequestParams'
 import { checkS3BucketData } from './checkS3BucketData'
-import { startGlacierDefrost } from './bulkJobs/startGlacierDefrost'
+import { startGlacierRestore } from './bulkJobs/startGlacierRestore'
 import { updateZendeskTicketById } from './updateZendeskTicket'
 
 export const initiateDataTransfer = async (
@@ -18,8 +18,8 @@ export const initiateDataTransfer = async (
   }
 
   if (bucketData.glacierTierLocationsToCopy?.length) {
-    console.log('Found glacier tier locations to defrost')
-    await startGlacierDefrost(
+    console.log('Found glacier tier locations to restore')
+    await startGlacierRestore(
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId
     )

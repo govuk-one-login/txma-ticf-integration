@@ -5,37 +5,37 @@ import {
 } from '@aws-sdk/client-s3-control'
 import { getEnv } from '../../utils/helpers'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
-export const startGlacierDefrost = async (
-  filesToDefrost: string[],
+export const startGlacierRestore = async (
+  filesToRestore: string[],
   zendeskTicketId: string
 ) => {
-  if (filesToDefrost?.length < 1) {
+  if (filesToRestore?.length < 1) {
     console.warn(
-      'startGlacierDefrost called with no files. Not performing any action'
+      'startGlacierRestore called with no files. Not performing any action'
     )
     return
   }
 
-  const manifestFileName = `glacier-defrost-for-ticket-id-${zendeskTicketId}.csv`
+  const manifestFileName = `glacier-restore-for-ticket-id-${zendeskTicketId}.csv`
   const manifestFileEtag = await writeJobManifestFileToJobBucket(
     getEnv('AUDIT_BUCKET_NAME'),
-    filesToDefrost,
+    filesToRestore,
     manifestFileName
   )
   console.log(
-    `Starting Glacier defrost for zendesk ticket with id '${zendeskTicketId}'`
+    `Starting Glacier restore for zendesk ticket with id '${zendeskTicketId}'`
   )
-  const jobId = await createBulkDefrostJob(
+  const jobId = await createBulkGlacierRestoreJob(
     manifestFileName,
     manifestFileEtag,
     zendeskTicketId
   )
   console.log(
-    `Started Glacier defrost for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
+    `Started Glacier restore for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
   )
 }
 
-const createBulkDefrostJob = async (
+const createBulkGlacierRestoreJob = async (
   manifestFileName: string,
   manifestFileEtag: string,
   zendeskTicketId: string
@@ -43,7 +43,7 @@ const createBulkDefrostJob = async (
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     ConfirmationRequired: false,
-    ClientRequestToken: `glacier-defrost-for-ticket-id-${zendeskTicketId}`,
+    ClientRequestToken: `glacier-restore-for-ticket-id-${zendeskTicketId}`,
     AccountId: getEnv('ACCOUNT_ID'),
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,

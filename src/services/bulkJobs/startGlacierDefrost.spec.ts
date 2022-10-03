@@ -1,5 +1,5 @@
 import { mockClient } from 'aws-sdk-client-mock'
-import { startGlacierDefrost } from './startGlacierDefrost'
+import { startGlacierRestore } from '././startGlacierRestore'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
 import {
@@ -14,17 +14,17 @@ jest.mock('./writeJobManifestFileToJobBucket', () => ({
 }))
 
 const s3ControlClientMock = mockClient(S3ControlClient)
-const testJobId = 'myDefrostJobId'
+const testJobId = 'myGlacierRestoreJobId'
 const testEtag = 'myTestEtag'
-describe('startGlacierDefrost', () => {
+describe('startGlacierRestore', () => {
   it('should write the manifest and start the glacier restore if a file list is supplied', async () => {
     s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
     when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
     const fileList = ['myFile1', 'myFile2']
-    await startGlacierDefrost(fileList, ZENDESK_TICKET_ID)
+    await startGlacierRestore(fileList, ZENDESK_TICKET_ID)
     expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
       ConfirmationRequired: false,
-      ClientRequestToken: `glacier-defrost-for-ticket-id-${ZENDESK_TICKET_ID}`,
+      ClientRequestToken: `glacier-restore-for-ticket-id-${ZENDESK_TICKET_ID}`,
       AccountId: TEST_AWS_ACCOUNT_ID,
       RoleArn: TEST_BATCH_JOB_ROLE_ARN,
       Priority: 1,
@@ -43,7 +43,7 @@ describe('startGlacierDefrost', () => {
           Fields: ['Bucket', 'Key']
         },
         Location: {
-          ObjectArn: `${TEST_BATCH_JOB_MANIFEST_BUCKET_ARN}/${`glacier-defrost-for-ticket-id-${ZENDESK_TICKET_ID}.csv`}`,
+          ObjectArn: `${TEST_BATCH_JOB_MANIFEST_BUCKET_ARN}/${`glacier-restore-for-ticket-id-${ZENDESK_TICKET_ID}.csv`}`,
           ETag: testEtag
         }
       }
