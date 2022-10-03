@@ -51,6 +51,7 @@ const getLatestLogStreamName = async (): Promise<string> => {
     describeLogStreamsParams
   )
 
+  pause(500)
   const describeLogStreamsResponse: DescribeLogStreamsCommandOutput =
     await cloudWatchLogsClient.send(describeLogStreamsCommand)
 
@@ -120,6 +121,10 @@ const waitForLogStreamContainingEvent = async (
   return result
 }
 
+const pause = (delay: number) => {
+  new Promise((r) => setTimeout(r, delay))
+}
+
 const getMatchingLogEvents = async (
   filterPattern: string,
   streamName: string
@@ -133,13 +138,15 @@ const getMatchingLogEvents = async (
   const filterLogEventsCommand = new FilterLogEventsCommand(
     filterLogEventsParams
   )
+
+  pause(500)
   const filterLogEventsResponse: FilterLogEventsCommandOutput =
     await cloudWatchLogsClient.send(filterLogEventsCommand)
 
   const filterLogEvents: FilteredLogEvent[] =
     filterLogEventsResponse.events ?? []
 
-  console.log(`FILTERED LOG EVENTS: ${filterLogEvents}`)
+  console.log(`FILTERED LOG EVENTS: ${filterLogEvents.length}`)
 
   return filterLogEvents
 }

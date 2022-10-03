@@ -8,7 +8,7 @@ import { createZendeskRequest } from './utils/raiseZendeskRequest'
 import { approveZendeskRequest } from './utils/approveZendeskRequest'
 
 describe('Submit a PII request with approved ticket data', () => {
-  jest.setTimeout(45000)
+  jest.setTimeout(60000)
 
   it('Should log a success in cloud watch if Zendesk request is valid', async () => {
     const ticketID = await createZendeskRequest(true)
