@@ -1,5 +1,5 @@
 import { mockClient } from 'aws-sdk-client-mock'
-import { startGlacierRestore } from '././startGlacierRestore'
+import { startGlacierRestore } from './startGlacierRestore'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
 import {
