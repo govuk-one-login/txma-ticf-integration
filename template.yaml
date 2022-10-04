@@ -544,6 +544,7 @@ Resources:
           ATHENA_DATABASE_NAME: !Ref AuditAnalysisDatabase
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
           DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
       Events:
         InitiateAthenaQueryEvent:
           Type: SQS
