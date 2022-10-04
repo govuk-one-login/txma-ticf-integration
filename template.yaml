@@ -861,6 +861,7 @@ Resources:
 
   EmptyS3BucketsLogs:
     Type: AWS::Logs::LogGroup
+    Condition: DeployS3Cleanup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
       LogGroupName: !Join ['', ['/aws/lambda/', !Ref EmptyS3BucketsFunction]]
