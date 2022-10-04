@@ -766,45 +766,12 @@ Resources:
       AttributeDefinitions: 
         - AttributeName: "zendeskId"
           AttributeType: "S"
-        - AttributeName: "s3MoveId"
-          AttributeType: "S"
-        - AttributeName: "glacierRetrieveId"
-          AttributeType: "S"
-        - AttributeName: "glacierMoveId"
-          AttributeType: "S"
         - AttributeName: "athenaQueryId"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "zendeskId"
           KeyType: "HASH"
       GlobalSecondaryIndexes:
-        - IndexName: s3MoveIdIndex
-          KeySchema:
-            - AttributeName: "s3MoveId"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "KEYS_ONLY"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
-        - IndexName: glacierRetrieveIdIndex
-          KeySchema:
-            - AttributeName: "glacierRetrieveId"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "KEYS_ONLY"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
-        - IndexName: glacierMoveIdIndex
-          KeySchema:
-            - AttributeName: "glacierMoveId"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "KEYS_ONLY"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
         - IndexName: athenaQueryIdIndex
           KeySchema:
             - AttributeName: "athenaQueryId"
