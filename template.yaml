@@ -37,6 +37,8 @@ Globals:
     PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     Runtime: nodejs16.x
     Timeout: 15
+  Api:
+    OpenApiVersion: 3.0.1
 
 Resources:
   LambdaKmsKey:
