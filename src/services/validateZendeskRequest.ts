@@ -151,9 +151,9 @@ const getTodayUtc = (): number => {
   return Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
 }
 
-const mapSpaceSeparatedStringToList = (input: string) => {
+const mapSpaceSeparatedStringToList = (input: string): string[] => {
   if (!input) {
-    return undefined
+    return []
   }
   return input.replace(/,/g, '').trim().split(' ')
 }
