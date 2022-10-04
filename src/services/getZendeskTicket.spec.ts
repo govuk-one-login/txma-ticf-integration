@@ -2,12 +2,12 @@ import { givenAllSecretsAvailable } from '../utils/tests/mocks/retrieveSecretKey
 import * as mockHttpsRequestUtils from '../utils/tests/mocks/httpsRequestUtils'
 import { getZendeskTicket } from './getZendeskTicket'
 import {
-  ALL_SECRET_KEYS,
+  ALL_ZENDESK_SECRETS,
   ENCODED_AUTH_VALUE,
   ZENDESK_TICKET_ID
 } from '../utils/tests/testConstants'
 
-jest.mock('./retrieveZendeskApiSecrets', () => ({
+jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
 }))
 
@@ -84,7 +84,7 @@ describe('get zendesk ticket information', () => {
 const expectSuccessfulApiCallToBeMade = () => {
   expect(mockHttpsRequestUtils.mockBase64Encode.mock.calls.length).toBe(1)
   expect(mockHttpsRequestUtils.mockBase64Encode).toHaveBeenCalledWith(
-    `${ALL_SECRET_KEYS.zendeskApiUserEmail}/token:${ALL_SECRET_KEYS.zendeskApiKey}`
+    `${ALL_ZENDESK_SECRETS.zendeskApiUserEmail}/token:${ALL_ZENDESK_SECRETS.zendeskApiKey}`
   )
   expect(mockHttpsRequestUtils.mockMakeHttpsRequest.mock.calls.length).toBe(1)
   expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toHaveBeenCalledWith({

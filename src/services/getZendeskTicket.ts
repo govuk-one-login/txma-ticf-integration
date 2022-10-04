@@ -3,7 +3,7 @@ import {
   ZendeskTicket
 } from '../types/zendeskTicketResult'
 import { base64Encode, makeHttpsRequest } from './httpsRequestUtils'
-import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
+import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import https from 'node:https'
 
 export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
