@@ -52,7 +52,7 @@ const createS3CopyJob = async (
       }
     },
     Report: {
-      Enabled: false
+      Enabled: true
     },
     Manifest: {
       Spec: {
