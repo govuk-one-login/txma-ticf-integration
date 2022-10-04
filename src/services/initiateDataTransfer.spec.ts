@@ -5,6 +5,7 @@ import { startGlacierRestore } from './bulkJobs/startGlacierRestore'
 import { testDataRequest } from '../utils/tests/testDataRequest'
 import { updateZendeskTicketById } from './updateZendeskTicket'
 import { ZENDESK_TICKET_ID } from '../utils/tests/testConstants'
+import { addNewDataRequestRecord } from './dynamoDB/dynamoDBPut'
 jest.mock('./checkS3BucketData', () => ({
   checkS3BucketData: jest.fn()
 }))
@@ -24,6 +25,12 @@ jest.mock('./bulkJobs/startGlacierRestore', () => ({
 }))
 
 const mockStartGlacierRestore = startGlacierRestore as jest.Mock
+
+jest.mock('./dynamoDB/dynamoDBPut', () => ({
+  addNewDataRequestRecord: jest.fn()
+}))
+
+const mockAddNewDataRequestRecord = addNewDataRequestRecord as jest.Mock
 
 describe('initiate data transfer', () => {
   const givenDataResult = (
@@ -62,12 +69,17 @@ describe('initiate data transfer', () => {
     )
   })
 
-  it('does not call Zendesk if data can be found for the requested parameters', async () => {
+  it('stores a record to the data request database can be found for the requested parameters', async () => {
     givenDataAvailable()
     // TODO: when actual logic to kick off bucket copy is written, tests for this should go here
     await initiateDataTransfer(testDataRequest)
     expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
     expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
+    expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
+      testDataRequest,
+      false,
+      false
+    )
     expect(startGlacierRestore).not.toHaveBeenCalled()
   })
 
@@ -75,6 +87,11 @@ describe('initiate data transfer', () => {
     const glacierTierLocationsToCopy = ['glacier-file1', 'glacier-file-2']
     givenDataResult(true, [], glacierTierLocationsToCopy)
     await initiateDataTransfer(testDataRequest)
+    expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
+      testDataRequest,
+      true,
+      false
+    )
     expect(startGlacierRestore).toHaveBeenCalledWith(
       glacierTierLocationsToCopy,
       ZENDESK_TICKET_ID

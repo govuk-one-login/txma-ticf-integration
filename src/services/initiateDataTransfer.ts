@@ -2,6 +2,7 @@ import { DataRequestParams } from '../types/dataRequestParams'
 import { checkS3BucketData } from './checkS3BucketData'
 import { startGlacierRestore } from './bulkJobs/startGlacierRestore'
 import { updateZendeskTicketById } from './updateZendeskTicket'
+import { addNewDataRequestRecord } from './dynamoDB/dynamoDBPut'
 
 export const initiateDataTransfer = async (
   dataRequestParams: DataRequestParams
@@ -17,7 +18,17 @@ export const initiateDataTransfer = async (
     return
   }
 
-  if (bucketData.glacierTierLocationsToCopy?.length) {
+  const glacierRestoreRequired =
+    !!bucketData.glacierTierLocationsToCopy &&
+    bucketData.glacierTierLocationsToCopy.length > 0
+  console.log('storing new data request record')
+  await addNewDataRequestRecord(
+    dataRequestParams,
+    glacierRestoreRequired,
+    false
+  )
+
+  if (glacierRestoreRequired && bucketData.glacierTierLocationsToCopy) {
     console.log('Found glacier tier locations to restore')
     await startGlacierRestore(
       bucketData.glacierTierLocationsToCopy,
