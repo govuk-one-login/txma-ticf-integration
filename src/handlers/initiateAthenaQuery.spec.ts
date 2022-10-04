@@ -1,7 +1,7 @@
 import { handler } from './initiateAthenaQuery'
 import { confirmAthenaTable } from '../services/athena/confirmAthenaTable'
 import { createQuerySql } from '../services/athena/createQuerySql'
-import { ConfirmAthenaTableResult } from '../types/confirmAthenaTableResult'
+import { ConfirmAthenaTableResult } from '../types/athena/confirmAthenaTableResult'
 import { testAthenaQueryEvent } from '../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../services/updateZendeskTicket'
 import { getQueryByZendeskId } from '../services/dynamoDB/dynamoDBGet'
