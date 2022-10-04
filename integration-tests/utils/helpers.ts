@@ -138,7 +138,7 @@ const getMatchingLogEvents = async (
     filterLogEventsParams
   )
 
-  pause(500)
+  await pause(500)
   const filterLogEventsResponse: FilterLogEventsCommandOutput =
     await cloudWatchLogsClient.send(filterLogEventsCommand)
 
