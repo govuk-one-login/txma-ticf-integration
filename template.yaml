@@ -326,12 +326,12 @@ Resources:
                 - s3:PutObject
               Resource:
                 - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
-            - Sid: S3AllowAnalysisBucketWrite
-              Effect: Allow
-              Action:
-                - s3:PutObject
-              Resource:
-                - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+            # - Sid: S3AllowAnalysisBucketWrite
+            #   Effect: Allow
+            #   Action:
+            #     - s3:PutObject
+            #   Resource:
+                # - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
             - Sid: Logs
               Effect: Allow
               Action:
@@ -539,6 +539,26 @@ Resources:
                 -  "s3:GetObjectVersion"
               Resource:
                 - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
+      - PolicyName: AllowS3Copy
+        PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource: 
+                - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+            - Effect: Allow
+              Action: 
+                - s3:GetObject
+              Resource:
+                - arn:aws:s3:::audit-sandbox-message-batch/*
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource:
+                - !Join ['/', [!GetAtt BatchJobBucketLogsBucket.Arn, '*']]
+            
   # Data Analysis
 
   InitiateAthenaQueryFunction:
