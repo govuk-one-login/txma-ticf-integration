@@ -37,7 +37,7 @@ describe('startCopyJob', () => {
         }
       },
       Report: {
-        Enabled: false
+        Enabled: true
       },
       Manifest: {
         Spec: {
