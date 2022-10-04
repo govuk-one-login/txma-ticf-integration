@@ -37,6 +37,18 @@ Zero installs works because the dependencies are committed via the `.yarn` folde
 
 In order to ensure that dependencies cannot be altered by anything other than Yarn itself, we run `yarn install --check-cache` in the pipeline. This avoids the possibility of malicous users altering any dependency code.
 
+### Test setup
+
+To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test.env` and have the following entries (the values should be retrieved as indicated in the placeholders):
+
+```
+process.env.ZENDESK_TEST_API_TOKEN='(check with Test team/Tech lead)'
+process.env.AWS_BASE_URL = '(check on Zendesk)'
+process.env.ZENDESK_END_USERNAME = '(value in Team Test Confluence)'
+process.env.ZENDESK_AGENT_USERNAME = '(value in Team Test Confluence)'
+
+```
+
 ## Running Zendesk webhook locally
 
 1. `yarn build` - This will make a build of the code which the SAM template refers to
