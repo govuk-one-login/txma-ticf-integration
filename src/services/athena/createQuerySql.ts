@@ -1,4 +1,4 @@
-import { CreateQuerySqlResult } from '../../types/createQuerySqlResult'
+import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import {
   DataRequestParams,
   IdentifierTypes
