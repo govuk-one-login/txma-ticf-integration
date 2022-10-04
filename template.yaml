@@ -293,6 +293,7 @@ Resources:
   InitiateDataRequestLogs:
     Type: AWS::Logs::LogGroup
     Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
       LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateDataRequestFunction]]
       RetentionInDays: 30
 
@@ -389,6 +390,7 @@ Resources:
   ProcessDataRequestLogs:
     Type: AWS::Logs::LogGroup
     Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
       LogGroupName: !Join ['', ['/aws/lambda/', !Ref ProcessDataRequestFunction]]
       RetentionInDays: 30
   
@@ -427,9 +429,10 @@ Resources:
       ReservedConcurrentExecutions: 10
       Timeout: 900
 
-SendEmailRequestToNotifyLogs:
+  SendEmailRequestToNotifyLogs:
     Type: AWS::Logs::LogGroup
     Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
       LogGroupName: !Join ['', ['/aws/lambda/', !Ref SendEmailRequestToNotifyFunction]]
       RetentionInDays: 30
 
@@ -635,6 +638,7 @@ SendEmailRequestToNotifyLogs:
   InitiateAthenaQueryLogs:
     Type: AWS::Logs::LogGroup
     Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
       LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateAthenaQueryFunction]]
       RetentionInDays: 30
 
@@ -857,6 +861,7 @@ SendEmailRequestToNotifyLogs:
   EmptyS3BucketsLogs:
     Type: AWS::Logs::LogGroup
     Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
       LogGroupName: !Join ['', ['/aws/lambda/', !Ref EmptyS3BucketsFunction]]
       RetentionInDays: 30
 
