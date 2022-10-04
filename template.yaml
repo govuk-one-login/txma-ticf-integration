@@ -326,6 +326,12 @@ Resources:
                 - s3:PutObject
               Resource:
                 - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
+            - Sid: S3AllowAnalysisBucketWrite
+              Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource:
+                - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
             - Sid: Logs
               Effect: Allow
               Action:
