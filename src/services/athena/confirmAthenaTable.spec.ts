@@ -2,15 +2,15 @@ import { mockClient } from 'aws-sdk-client-mock'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import { GlueClient, GetTableCommand } from '@aws-sdk/client-glue'
 
-const athenaMock = mockClient(GlueClient)
+const glueMock = mockClient(GlueClient)
 
 describe('confirm Athena Table', () => {
   beforeEach(() => {
-    athenaMock.reset()
+    glueMock.reset()
   })
 
   test('athena table exists', async () => {
-    athenaMock.on(GetTableCommand).resolves({
+    glueMock.on(GetTableCommand).resolves({
       Table: {
         Name: 'test_table'
       }
@@ -24,7 +24,7 @@ describe('confirm Athena Table', () => {
   })
 
   test('athena table does not exist', async () => {
-    athenaMock.on(GetTableCommand).resolves({})
+    glueMock.on(GetTableCommand).resolves({})
 
     const result = await confirmAthenaTable()
     expect(result).toEqual({
