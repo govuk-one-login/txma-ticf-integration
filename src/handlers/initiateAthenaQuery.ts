@@ -42,5 +42,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
 
   // try startQueryExecution(querySqlGenerated)
 
+  // UPDATE Template.yaml to give athena permissions
+
   return
 }
