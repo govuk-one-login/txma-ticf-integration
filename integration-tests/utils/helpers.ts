@@ -78,8 +78,7 @@ const waitForLogStreamContainingEvent = async (
   let latestLogStreamName = await getLatestLogStreamName()
   console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
   let eventMatched = false
-  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  let eventMessage: string = ''
+  let eventMessage = ''
 
   while (!eventMatched) {
     const logEvents = await getMatchingLogEvents(
@@ -91,8 +90,7 @@ const waitForLogStreamContainingEvent = async (
       continue
     }
     const matchingEvent = logEvents.filter((event) => {
-      // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-      let containsAllPatterns: boolean = false
+      let containsAllPatterns = false
       for (const element of eventMessagePatterns) {
         if (!event.message?.includes(element)) {
           containsAllPatterns = false
