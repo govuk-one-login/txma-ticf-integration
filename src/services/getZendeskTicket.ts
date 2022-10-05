@@ -23,6 +23,8 @@ export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
 
   const data = await makeHttpsRequest(options)
 
+  console.log(`Ticket Data: ${JSON.stringify(data)}`)
+
   if (!isZendeskTicketResult(data)) {
     throw Error('The returned data was not a Zendesk ticket')
   }
