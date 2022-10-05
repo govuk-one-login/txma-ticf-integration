@@ -3,7 +3,7 @@ import crypto from 'crypto'
 
 //TODO: test setup and teardown for creating and deleting a ticket to use
 
-const awsBaseUrl = process.env.AWS_BASE_URL as string
+const baseUrl = process.env.ZENDESK_WEBHOOK_API_BASE_URL as string
 
 const invalidRequestError = async (
   customHeaders: {
@@ -14,7 +14,7 @@ const invalidRequestError = async (
   }
 ) => {
   return axios({
-    url: `${awsBaseUrl}/zendesk-webhook`,
+    url: `${baseUrl}/zendesk-webhook`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

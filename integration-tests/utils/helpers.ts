@@ -18,7 +18,7 @@ const generateRandomNumber = () => {
 
 const authoriseAs = (username: string) => {
   return Buffer.from(
-    `${username}/token:${getEnvVariable('ZENDESK_TEST_API_TOKEN')}`
+    `${username}/token:${getEnvVariable('ZENDESK_API_KEY')}`
   ).toString('base64')
 }
 
