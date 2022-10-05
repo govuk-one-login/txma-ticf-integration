@@ -37,6 +37,8 @@ Globals:
     PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     Runtime: nodejs16.x
     Timeout: 15
+  Api:
+    OpenApiVersion: 3.0.1
 
 Resources:
   LambdaKmsKey:
@@ -241,6 +243,7 @@ Resources:
             Path: /zendesk-webhook
             Method: POST
             RestApiId: !Ref ZendeskWebhookApi
+      FunctionName: !Sub ${AWS::StackName}-initiate-data-request
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
@@ -286,6 +289,13 @@ Resources:
               - !GetAtt QueueKmsKey.Arn
       ReservedConcurrentExecutions: 10
       Timeout: 900
+  
+  InitiateDataRequestLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateDataRequestFunction]]
+      RetentionInDays: 30
 
   ProcessDataRequestFunction:
     #checkov:skip=CKV_AWS_117:VPC not required
@@ -310,6 +320,7 @@ Resources:
           Properties:
             Queue: !GetAtt InitiateDataRequestQueue.Arn
             BatchSize: 1
+      FunctionName: !Sub ${AWS::StackName}-process-data
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
@@ -376,8 +387,15 @@ Resources:
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
+
+  ProcessDataRequestLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref ProcessDataRequestFunction]]
+      RetentionInDays: 30
   
-  SendEmailRequestToNotify:
+  SendEmailRequestToNotifyFunction:
     #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
@@ -387,6 +405,7 @@ Resources:
         Variables:
           NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifySecrets
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets 
+      FunctionName: !Sub ${AWS::StackName}-send-email-request-to-notify
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies: 
         - Statement:
@@ -410,6 +429,14 @@ Resources:
               - !GetAtt SecretsKmsKey.Arn
       ReservedConcurrentExecutions: 10
       Timeout: 900
+
+  SendEmailRequestToNotifyLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref SendEmailRequestToNotifyFunction]]
+      RetentionInDays: 30
+
   InitiateDataRequestQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -509,6 +536,10 @@ Resources:
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -576,6 +607,7 @@ Resources:
           Properties:
             Queue: !GetAtt InitiateAthenaQueryQueue.Arn
             BatchSize: 1
+      FunctionName: !Sub ${AWS::StackName}-initiate-athena-query
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
@@ -627,7 +659,14 @@ Resources:
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         Type: SQS
-        TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn 
+        TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
+
+  InitiateAthenaQueryLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateAthenaQueryFunction]]
+      RetentionInDays: 30
 
   #NOTE - This is a placeholder SQS queue which will be replaced - it is here to enable the Athena lambda to be created 
   InitiateAthenaQueryQueue:
@@ -819,6 +858,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: emptyS3Buckets.handler
+      FunctionName: !Sub ${AWS::StackName}-empty-s3-buckets
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
@@ -843,6 +883,14 @@ Resources:
             Resource: '*'
       ReservedConcurrentExecutions: 10
       Timeout: 900
+
+  EmptyS3BucketsLogs:
+    Type: AWS::Logs::LogGroup
+    Condition: DeployS3Cleanup
+    Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref EmptyS3BucketsFunction]]
+      RetentionInDays: 30
 
   EmptyS3Buckets:
     Type: AWS::CloudFormation::CustomResource
