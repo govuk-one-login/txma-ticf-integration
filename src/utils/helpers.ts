@@ -9,6 +9,10 @@ export const getEnv = (name: EnvironmentVar['name']) => {
   return env
 }
 
+export const getEnvAsNumber = (name: EnvironmentVar['name']) => {
+  return Number(getEnv(name))
+}
+
 export const getEpochDate = (dateString: string) => {
   const dateParts = dateString.split('-')
 

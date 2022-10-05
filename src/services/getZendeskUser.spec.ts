@@ -19,7 +19,7 @@ const successResponse = {
   email: 'example@example.com',
   name: 'test'
 }
-const userId = '123'
+const userId = 123
 
 describe('get zendesk ticket information', () => {
   beforeEach(() => {

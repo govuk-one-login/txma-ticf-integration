@@ -3,13 +3,13 @@ export interface ZendeskTicketResult {
 }
 
 export interface ZendeskTicket {
-  id: string
-  requester_id: string
+  id: number
+  requester_id: number
   custom_fields: CustomField[]
 }
 
 export interface CustomField {
-  id: string
+  id: number
   value: string | null
 }
 
@@ -18,8 +18,8 @@ export const isZendeskTicketResult = (
 ): arg is ZendeskTicketResult => {
   const test = arg as ZendeskTicketResult
   return (
-    typeof test?.ticket.id === 'string' &&
-    typeof test?.ticket.requester_id === 'string' &&
+    typeof test?.ticket.id === 'number' &&
+    typeof test?.ticket.requester_id === 'number' &&
     Array.isArray(test.ticket.custom_fields)
   )
 }

@@ -3,7 +3,7 @@ import { base64Encode, makeHttpsRequest } from './httpsRequestUtils'
 import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import https from 'node:https'
 
-export const getZendeskUser = async (userId: string): Promise<ZendeskUser> => {
+export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   const secrets = await retrieveZendeskApiSecrets()
   const options: https.RequestOptions = {
     method: 'GET',

@@ -4,16 +4,16 @@ import { ZendeskUser } from '../types/zendeskUser'
 import {
   TEST_DATE_FROM,
   TEST_DATE_TO,
-  TEST_ZENDESK_FIELD_DATA_PATHS,
-  TEST_ZENDESK_FIELD_DATE_FROM,
-  TEST_ZENDESK_FIELD_DATE_TO,
-  TEST_ZENDESK_FIELD_EVENT_IDS,
-  TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
-  TEST_ZENDESK_FIELD_JOURNEY_IDS,
-  TEST_ZENDESK_FIELD_PII_TYPES,
-  TEST_ZENDESK_FIELD_SESSION_IDS,
-  TEST_ZENDESK_FIELD_USER_IDS,
-  ZENDESK_TICKET_ID
+  TEST_ZENDESK_FIELD_ID_DATA_PATHS,
+  TEST_ZENDESK_FIELD_ID_DATE_FROM,
+  TEST_ZENDESK_FIELD_ID_DATE_TO,
+  TEST_ZENDESK_FIELD_ID_EVENT_IDS,
+  TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
+  TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
+  TEST_ZENDESK_FIELD_ID_PII_TYPES,
+  TEST_ZENDESK_FIELD_ID_SESSION_IDS,
+  TEST_ZENDESK_FIELD_ID_USER_IDS,
+  ZENDESK_TICKET_ID_AS_NUMBER
 } from '../utils/tests/testConstants'
 import {
   testDataRequest,
@@ -56,43 +56,43 @@ describe('match zendesk ticket details', () => {
   const givenZendeskTicketMatches = () => {
     mockGetZendeskTicket.mockImplementation(() =>
       Promise.resolve({
-        id: ZENDESK_TICKET_ID,
-        requester_id: '123',
+        id: ZENDESK_TICKET_ID_AS_NUMBER,
+        requester_id: 123,
         custom_fields: [
           {
-            id: TEST_ZENDESK_FIELD_DATA_PATHS,
+            id: TEST_ZENDESK_FIELD_ID_DATA_PATHS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_DATE_FROM,
+            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
             value: TEST_DATE_FROM
           },
           {
-            id: TEST_ZENDESK_FIELD_DATE_TO,
+            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
             value: TEST_DATE_TO
           },
           {
-            id: TEST_ZENDESK_FIELD_EVENT_IDS,
+            id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
             value: '123 456'
           },
           {
-            id: TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
+            id: TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
             value: 'event_id'
           },
           {
-            id: TEST_ZENDESK_FIELD_JOURNEY_IDS,
+            id: TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_PII_TYPES,
+            id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
             value: 'passport_number'
           },
           {
-            id: TEST_ZENDESK_FIELD_SESSION_IDS,
+            id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_USER_IDS,
+            id: TEST_ZENDESK_FIELD_ID_USER_IDS,
             value: null
           }
         ]
@@ -112,43 +112,43 @@ describe('match zendesk ticket details', () => {
   ) => {
     mockGetZendeskTicket.mockImplementation(() =>
       Promise.resolve({
-        id: ZENDESK_TICKET_ID,
-        requester_id: '123',
+        id: ZENDESK_TICKET_ID_AS_NUMBER,
+        requester_id: 123,
         custom_fields: [
           {
-            id: TEST_ZENDESK_FIELD_DATA_PATHS,
+            id: TEST_ZENDESK_FIELD_ID_DATA_PATHS,
             value: 'path_to_data1 path_to_data2'
           },
           {
-            id: TEST_ZENDESK_FIELD_DATE_FROM,
+            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
             value: TEST_DATE_FROM
           },
           {
-            id: TEST_ZENDESK_FIELD_DATE_TO,
+            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
             value: TEST_DATE_TO
           },
           {
-            id: TEST_ZENDESK_FIELD_EVENT_IDS,
+            id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
             value: '123 456'
           },
           {
-            id: TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
+            id: TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
             value: 'event_id'
           },
           {
-            id: TEST_ZENDESK_FIELD_JOURNEY_IDS,
+            id: TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
             value: '123 456'
           },
           {
-            id: TEST_ZENDESK_FIELD_PII_TYPES,
+            id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
             value: 'passport_number'
           },
           {
-            id: TEST_ZENDESK_FIELD_SESSION_IDS,
+            id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
             value: '123 456'
           },
           {
-            id: TEST_ZENDESK_FIELD_USER_IDS,
+            id: TEST_ZENDESK_FIELD_ID_USER_IDS,
             value: '123 456'
           }
         ]
@@ -181,43 +181,43 @@ describe('match zendesk ticket details', () => {
   ) => {
     mockGetZendeskTicket.mockImplementation(() =>
       Promise.resolve({
-        id: ZENDESK_TICKET_ID,
-        requester_id: '123',
+        id: ZENDESK_TICKET_ID_AS_NUMBER,
+        requester_id: 123,
         custom_fields: [
           {
-            id: TEST_ZENDESK_FIELD_DATA_PATHS,
+            id: TEST_ZENDESK_FIELD_ID_DATA_PATHS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_DATE_FROM,
+            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
             value: TEST_DATE_FROM
           },
           {
-            id: TEST_ZENDESK_FIELD_DATE_TO,
+            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
             value: TEST_DATE_TO
           },
           {
-            id: TEST_ZENDESK_FIELD_EVENT_IDS,
+            id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
+            id: TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
             value: 'event_id'
           },
           {
-            id: TEST_ZENDESK_FIELD_JOURNEY_IDS,
+            id: TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_PII_TYPES,
+            id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_SESSION_IDS,
+            id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_USER_IDS,
+            id: TEST_ZENDESK_FIELD_ID_USER_IDS,
             value: null
           }
         ]
@@ -248,39 +248,39 @@ describe('match zendesk ticket details', () => {
   const givenCustomFieldNotFound = () => {
     mockGetZendeskTicket.mockImplementation(() =>
       Promise.resolve({
-        id: ZENDESK_TICKET_ID,
-        requester_id: '123',
+        id: ZENDESK_TICKET_ID_AS_NUMBER,
+        requester_id: 123,
         custom_fields: [
           {
-            id: TEST_ZENDESK_FIELD_DATE_FROM,
+            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
             value: TEST_DATE_FROM
           },
           {
-            id: TEST_ZENDESK_FIELD_DATE_TO,
+            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
             value: TEST_DATE_TO
           },
           {
-            id: TEST_ZENDESK_FIELD_EVENT_IDS,
+            id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
             value: '123 456'
           },
           {
-            id: TEST_ZENDESK_FIELD_IDENTIFIER_TYPE,
+            id: TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
             value: 'event_id'
           },
           {
-            id: TEST_ZENDESK_FIELD_JOURNEY_IDS,
+            id: TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_PII_TYPES,
+            id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
             value: 'passport_number'
           },
           {
-            id: TEST_ZENDESK_FIELD_SESSION_IDS,
+            id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_USER_IDS,
+            id: TEST_ZENDESK_FIELD_ID_USER_IDS,
             value: null
           }
         ]

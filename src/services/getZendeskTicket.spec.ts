@@ -4,7 +4,8 @@ import { getZendeskTicket } from './getZendeskTicket'
 import {
   ALL_ZENDESK_SECRETS,
   ENCODED_AUTH_VALUE,
-  ZENDESK_TICKET_ID
+  ZENDESK_TICKET_ID,
+  ZENDESK_TICKET_ID_AS_NUMBER
 } from '../utils/tests/testConstants'
 
 jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
@@ -18,11 +19,11 @@ jest.mock('./httpsRequestUtils', () => ({
 
 const successResponse = {
   ticket: {
-    id: ZENDESK_TICKET_ID,
-    requester_id: '123',
+    id: ZENDESK_TICKET_ID_AS_NUMBER,
+    requester_id: 123,
     custom_fields: [
       {
-        id: '123',
+        id: 123,
         value: 'test'
       }
     ]
@@ -31,8 +32,8 @@ const successResponse = {
 
 const invalidResponse = {
   ticket: {
-    id: ZENDESK_TICKET_ID,
-    requester_id: '123'
+    id: ZENDESK_TICKET_ID_AS_NUMBER,
+    requester_id: 123
   }
 }
 
