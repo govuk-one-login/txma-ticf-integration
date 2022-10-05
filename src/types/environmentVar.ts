@@ -2,6 +2,7 @@ export interface EnvironmentVar {
   name:
     | 'AWS_REGION'
     | 'ANALYSIS_BUCKET_NAME'
+    | 'ANALYSIS_BUCKET_ARN'
     | 'AUDIT_BUCKET_NAME'
     | 'ATHENA_DATABASE_NAME'
     | 'ATHENA_TABLE_NAME'

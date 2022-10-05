@@ -307,6 +307,7 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
           DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
           BATCH_JOB_MANIFEST_BUCKET_ARN: !GetAtt BatchJobManifestBucket.Arn
@@ -563,6 +564,31 @@ Resources:
                 -  "s3:GetObjectVersion"
               Resource:
                 - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
+      - PolicyName: AllowS3Copy
+        PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:PutObjectAcl
+                - s3:PutObjectTagging
+              Resource: 
+                - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+            - Effect: Allow
+              Action: 
+                - s3:GetObject
+                - s3:GetObjectAcl
+                - s3:GetObjectTagging
+                - s3:ListBucket
+              Resource:
+                - arn:aws:s3:::audit-sandbox-message-batch/*
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource:
+                - !Join ['/', [!GetAtt BatchJobBucketLogsBucket.Arn, '*']]
+            
   # Data Analysis
 
   InitiateAthenaQueryFunction:
