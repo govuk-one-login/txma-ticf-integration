@@ -5,6 +5,8 @@ export const makeHttpsRequest = async (
   postData: Record<string, unknown> | undefined = undefined
 ) => {
   return new Promise((resolve, reject) => {
+    console.log(`options: ${JSON.stringify(options)}`)
+    console.log(`postData: ${JSON.stringify(postData)}`)
     const req = https.request(options, (response) => {
       console.log('STATUS: ' + response.statusCode)
       if (!response || !response.statusCode)

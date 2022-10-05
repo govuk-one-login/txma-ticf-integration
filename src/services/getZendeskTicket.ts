@@ -19,6 +19,8 @@ export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
     }
   }
 
+  console.log('fetching ticket details')
+
   const data = await makeHttpsRequest(options)
 
   if (!isZendeskTicketResult(data)) {
