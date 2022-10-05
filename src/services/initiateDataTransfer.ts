@@ -19,7 +19,6 @@ export const initiateDataTransfer = async (
   }
 
   const glacierRestoreRequired =
-    !!bucketData.glacierTierLocationsToCopy &&
     bucketData.glacierTierLocationsToCopy.length > 0
   console.log('storing new data request record')
   await addNewDataRequestRecord(
@@ -28,7 +27,7 @@ export const initiateDataTransfer = async (
     false
   )
 
-  if (glacierRestoreRequired && bucketData.glacierTierLocationsToCopy) {
+  if (glacierRestoreRequired) {
     console.log('Found glacier tier locations to restore')
     await startGlacierRestore(
       bucketData.glacierTierLocationsToCopy,

@@ -35,8 +35,8 @@ const mockAddNewDataRequestRecord = addNewDataRequestRecord as jest.Mock
 describe('initiate data transfer', () => {
   const givenDataResult = (
     dataAvailable: boolean,
-    standardTierLocationsToCopy?: string[],
-    glacierTierLocationsToCopy?: string[]
+    standardTierLocationsToCopy: string[],
+    glacierTierLocationsToCopy: string[]
   ) => {
     mockCheckS3BucketData.mockResolvedValue({
       standardTierLocationsToCopy: standardTierLocationsToCopy,
@@ -46,11 +46,11 @@ describe('initiate data transfer', () => {
   }
 
   const givenNoDataAvailable = () => {
-    givenDataResult(false)
+    givenDataResult(false, [], [])
   }
 
   const givenDataAvailable = () => {
-    givenDataResult(true)
+    givenDataResult(true, [], [])
   }
 
   beforeEach(() => {
