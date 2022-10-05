@@ -13,7 +13,7 @@ interface ILambdaFunction extends IAwsResource {
   }
 }
 
-const handlerPath = 'src/handlers'
+const handlerPath = 'src/lambdas'
 
 const { Resources } = yamlParse(
   readFileSync(join(__dirname, 'template.yaml'), 'utf-8')
