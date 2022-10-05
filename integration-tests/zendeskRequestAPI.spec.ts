@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { apiGatewayUrl } from './lib/cloudWatchParameters'
+import { apiGatewayUrl } from './lib/awsParameters'
 import { getEnvVariable } from './lib/zendeskParameters'
 
 describe('Zendesk request integrity', () => {
