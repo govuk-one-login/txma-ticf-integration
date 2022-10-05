@@ -1,5 +1,10 @@
 import { ValidatedDataRequestParamsResult } from '../types/validatedDataRequestParamsResult'
-import { getEpochDate, tryParseJSON, isEmpty } from '../utils/helpers'
+import {
+  getEpochDate,
+  tryParseJSON,
+  isEmpty,
+  mapSpaceSeparatedStringToList
+} from '../utils/helpers'
 
 const IDENTIFIERS = ['event_id', 'session_id', 'journey_id', 'user_id']
 
@@ -149,11 +154,4 @@ const dateIsOnOrBeforeToday = (dateString: string) => {
 const getTodayUtc = (): number => {
   const today = new Date()
   return Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
-}
-
-const mapSpaceSeparatedStringToList = (input: string): string[] => {
-  if (!input) {
-    return []
-  }
-  return input.replace(/,/g, '').trim().split(' ')
 }

@@ -85,7 +85,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
-            value: 'passport_number'
+            value: ['passport_number']
           },
           {
             id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
@@ -141,7 +141,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
-            value: 'passport_number'
+            value: ['passport_number']
           },
           {
             id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
@@ -273,7 +273,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
-            value: 'passport_number'
+            value: ['passport_number']
           },
           {
             id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,

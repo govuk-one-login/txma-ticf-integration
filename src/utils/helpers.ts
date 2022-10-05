@@ -40,3 +40,10 @@ export const tryParseJSON = (jsonString: string) => {
 export const isEmpty = (obj: object): boolean => {
   return obj && Object.keys(obj).length === 0
 }
+
+export const mapSpaceSeparatedStringToList = (input: string): string[] => {
+  if (!input) {
+    return []
+  }
+  return input.replace(/,/g, '').trim().split(' ')
+}

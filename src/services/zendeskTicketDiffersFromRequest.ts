@@ -1,7 +1,7 @@
 import { DataRequestParams } from '../types/dataRequestParams'
 import { ZendeskTicket } from '../types/zendeskTicketResult'
 import { ZendeskUser } from '../types/zendeskUser'
-import { getEnvAsNumber } from '../utils/helpers'
+import { getEnvAsNumber, mapSpaceSeparatedStringToList } from '../utils/helpers'
 import { getZendeskTicket } from './getZendeskTicket'
 import { getZendeskUser } from './getZendeskUser'
 
@@ -32,7 +32,7 @@ const getZendeskCustomFieldValue = (
   }
 
   return assert(ticketDetails.custom_fields.find((field) => field.id === id))
-    .value as string
+    .value
 }
 
 const matchArrayParams = (ticketParam: string[], requestParam: string[]) => {
@@ -55,9 +55,13 @@ const getZendeskCustomSpaceSeparatedStringAsArray = (
   ticketDetails: ZendeskTicket,
   customFieldId: number
 ): string[] => {
-  const fieldValue = getZendeskCustomFieldValue(ticketDetails, customFieldId)
-  return fieldValue ? fieldValue.split(' ') : []
+  const fieldValue = getZendeskCustomFieldValue(
+    ticketDetails,
+    customFieldId
+  ) as string
+  return mapSpaceSeparatedStringToList(fieldValue)
 }
+
 const ticketAndRequestDetailsDiffer = (
   ticketDetails: ZendeskTicket,
   userDetails: ZendeskUser,
@@ -65,45 +69,43 @@ const ticketAndRequestDetailsDiffer = (
 ) => {
   const unmatchedParameters: string[] = []
 
-  const ticketDataPaths: string[] = getZendeskCustomSpaceSeparatedStringAsArray(
+  const ticketDataPaths = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATA_PATHS')
-  )
-  const ticketDateFrom: string = getZendeskCustomFieldValue(
+  ) as string[]
+  const ticketDateFrom = getZendeskCustomFieldValue(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATE_FROM')
-  )
-  const ticketDateTo: string = getZendeskCustomFieldValue(
+  ) as string | null
+  const ticketDateTo = getZendeskCustomFieldValue(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATE_TO')
-  )
-  const ticketEventIds: string[] = getZendeskCustomSpaceSeparatedStringAsArray(
+  ) as string | null
+  const ticketEventIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_EVENT_IDS')
-  )
-
-  const ticketIdentifierType: string = getZendeskCustomFieldValue(
+  ) as string[]
+  const ticketIdentifierType = getZendeskCustomFieldValue(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_IDENTIFIER_TYPE')
-  )
-  const ticketJourneyIds: string[] =
-    getZendeskCustomSpaceSeparatedStringAsArray(
-      ticketDetails,
-      getEnvAsNumber('ZENDESK_FIELD_ID_JOURNEY_IDS')
-    )
-  const ticketPiiTypes: string[] = getZendeskCustomSpaceSeparatedStringAsArray(
+  ) as string | null
+  const ticketJourneyIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
-    getEnvAsNumber('ZENDESK_FIELD_ID_PII_TYPES')
-  )
-  const ticketSessionIds: string[] =
-    getZendeskCustomSpaceSeparatedStringAsArray(
+    getEnvAsNumber('ZENDESK_FIELD_ID_JOURNEY_IDS')
+  ) as string[]
+  const ticketPiiTypes =
+    (getZendeskCustomFieldValue(
       ticketDetails,
-      getEnvAsNumber('ZENDESK_FIELD_ID_SESSION_IDS')
-    )
-  const ticketUserIds: string[] = getZendeskCustomSpaceSeparatedStringAsArray(
+      getEnvAsNumber('ZENDESK_FIELD_ID_PII_TYPES')
+    ) as string[]) ?? []
+  const ticketSessionIds = getZendeskCustomSpaceSeparatedStringAsArray(
+    ticketDetails,
+    getEnvAsNumber('ZENDESK_FIELD_ID_SESSION_IDS')
+  ) as string[]
+  const ticketUserIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_USER_IDS')
-  )
+  ) as string[]
 
   if (!matchStringParams(ticketDetails.id.toString(), requestParams.zendeskId))
     unmatchedParameters.push('zendeskId')
