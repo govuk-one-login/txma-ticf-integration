@@ -15,7 +15,7 @@ jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByZendeskId: jest.fn()
 }))
-jest.mock('../services/athena/createQuerySql', () => ({
+jest.mock('../../sharedServices/athena/createQuerySql', () => ({
   createQuerySql: jest.fn()
 }))
 
