@@ -90,7 +90,7 @@ const expectSuccessfulApiCallToBeMade = () => {
   expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toHaveBeenCalledWith({
     method: 'GET',
     hostname: 'example-host.zendesk.com',
-    path: `/api/v2/tickets/${ZENDESK_TICKET_ID}`,
+    path: `/api/v2/tickets/${ZENDESK_TICKET_ID}.json`,
     headers: {
       Authorization: ENCODED_AUTH_VALUE
     }
