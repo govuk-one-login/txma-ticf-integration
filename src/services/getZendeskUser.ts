@@ -8,7 +8,7 @@ export const getZendeskUser = async (userId: string): Promise<ZendeskUser> => {
   const options: https.RequestOptions = {
     method: 'GET',
     hostname: secrets.zendeskHostName,
-    path: `/api/v2/users/${userId}`,
+    path: `/api/v2/users/${userId}.json`,
     headers: {
       Authorization: base64Encode(
         `${secrets.zendeskApiUserEmail}/token:${secrets.zendeskApiKey}`
