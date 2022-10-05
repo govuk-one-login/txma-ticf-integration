@@ -26,10 +26,10 @@ const lambdas = awsResources.filter(
 ) as ILambdaFunction[]
 
 const entries = lambdas.reduce((entries, lambda) => {
-  const filename = lambda.Properties.Handler.split('.')[0]
-  const filepath = `./${handlerPath}/${filename}.ts`
+  const handlerName = lambda.Properties.Handler.split('.')[0]
+  const filepath = `./${handlerPath}/${handlerName}/index.ts`
 
-  entries[filename] = filepath
+  entries[handlerName] = filepath
   return entries
 }, {} as { [key: string]: string })
 
