@@ -6,6 +6,7 @@ import { testDataRequest } from '../utils/tests/testDataRequest'
 import { updateZendeskTicketById } from './updateZendeskTicket'
 import { ZENDESK_TICKET_ID } from '../utils/tests/testConstants'
 import { addNewDataRequestRecord } from './dynamoDB/dynamoDBPut'
+import { startCopyJob } from './bulkJobs/startCopyJob'
 jest.mock('./checkS3BucketData', () => ({
   checkS3BucketData: jest.fn()
 }))
@@ -32,6 +33,12 @@ jest.mock('./dynamoDB/dynamoDBPut', () => ({
 
 const mockAddNewDataRequestRecord = addNewDataRequestRecord as jest.Mock
 
+jest.mock('./bulkJobs/startCopyJob', () => ({
+  startCopyJob: jest.fn()
+}))
+
+const mockStartCopyJob = startCopyJob as jest.Mock
+
 describe('initiate data transfer', () => {
   const givenDataResult = (
     dataAvailable: boolean,
@@ -56,6 +63,7 @@ describe('initiate data transfer', () => {
   beforeEach(() => {
     mockUpdateZendeskTicketById.mockReset()
     mockStartGlacierRestore.mockReset()
+    mockStartCopyJob.mockReset()
   })
 
   it('calls Zendesk to close ticket if no data can be found for the requested parameters', async () => {
@@ -69,9 +77,8 @@ describe('initiate data transfer', () => {
     )
   })
 
-  it('stores a record to the data request database can be found for the requested parameters', async () => {
+  it('stores a record to the data request database when data can be found for the requested parameters', async () => {
     givenDataAvailable()
-    // TODO: when actual logic to kick off bucket copy is written, tests for this should go here
     await initiateDataTransfer(testDataRequest)
     expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
     expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
@@ -81,6 +88,24 @@ describe('initiate data transfer', () => {
       false
     )
     expect(startGlacierRestore).not.toHaveBeenCalled()
+  })
+
+  it('initiates a copy when we require a copy and no glacier restore', async () => {
+    const filesToCopy = ['myFile1', 'myFile2']
+    givenDataResult(true, filesToCopy, [])
+    await initiateDataTransfer(testDataRequest)
+    expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
+    expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
+    expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
+      testDataRequest,
+      false,
+      true
+    )
+    expect(mockStartCopyJob).toHaveBeenCalledWith(
+      filesToCopy,
+      ZENDESK_TICKET_ID
+    )
+    expect(mockStartGlacierRestore).not.toHaveBeenCalled()
   })
 
   it('initiates a glacier restore if necessary', async () => {
@@ -96,5 +121,7 @@ describe('initiate data transfer', () => {
       glacierTierLocationsToCopy,
       ZENDESK_TICKET_ID
     )
+
+    expect(mockStartCopyJob).not.toHaveBeenCalled()
   })
 })
