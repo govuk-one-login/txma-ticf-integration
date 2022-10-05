@@ -1,7 +1,7 @@
 import {
   base64Encode,
   makeHttpsRequest
-} from '../../../services/httpsRequestUtils'
+} from '../../../sharedServices/http/httpsRequestUtils'
 import { ENCODED_AUTH_VALUE } from '../testConstants'
 
 export const mockMakeHttpsRequest =
