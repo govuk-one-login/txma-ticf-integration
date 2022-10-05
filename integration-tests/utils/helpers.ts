@@ -1,5 +1,5 @@
 import { getEnvVariable } from '../lib/zendeskParameters'
-import { initiateDataRequestLambdalogGroupName } from '../lib/cloudWatchParameters'
+import { initiateDataRequestLambdalogGroupName } from '../lib/awsParameters'
 import { cloudWatchLogsClient } from './cloudWatchLogsClient'
 import {
   DescribeLogStreamsCommandInput,

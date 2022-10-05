@@ -43,7 +43,7 @@ To be able to run the integration tests, an environment file is needed at the ro
 
 ```
 process.env.ZENDESK_TEST_API_TOKEN='(check with Test team/Tech lead)'
-process.env.AWS_BASE_URL = '(check on Zendesk)'
+process.env.AWS_WEBHOOK_URL = '(check on Zendesk)'
 process.env.ZENDESK_END_USERNAME = '(value in Team Test Confluence)'
 process.env.ZENDESK_AGENT_USERNAME = '(value in Team Test Confluence)'
 
