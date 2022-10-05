@@ -2,6 +2,8 @@ import { DataRequestParams } from '../types/dataRequestParams'
 import { checkS3BucketData } from './checkS3BucketData'
 import { startGlacierRestore } from './bulkJobs/startGlacierRestore'
 import { updateZendeskTicketById } from './updateZendeskTicket'
+// import { sendInitiateAthenaQueryMessage } from './queue/sendInitiateAthenaQueryMessage'
+// import { sendInitiateDataTransferMessage } from './queue/sendInitiateDataTransferMessage'
 
 export const initiateDataTransfer = async (
   dataRequestParams: DataRequestParams
@@ -24,6 +26,13 @@ export const initiateDataTransfer = async (
       dataRequestParams.zendeskId
     )
   }
+
+  // await sendInitiateDataTransferMessage({
+  //   zendeskId: dataRequestParams.zendeskId
+  // })
+  // await sendInitiateAthenaQueryMessage({
+  //   zendeskId: dataRequestParams.zendeskId
+  // })
 
   // TODO: add code here to initiate batch copy jobs
   // 1. If there is data available but nothing to copy - trigger the athena job immediately
