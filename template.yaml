@@ -586,7 +586,7 @@ Resources:
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
-          - Sid: AthenaPermissions
+          - Sid: GluePermissions
             Effect: Allow
             Action: 
               - glue:GetTable
@@ -595,6 +595,12 @@ Resources:
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:userDefinedFunction/*
+          # - Sid: AthenaPermissions
+          #   Effect: Allow
+          #   Action: 
+          #     - athena:StartQueryExecution
+          #   Resource:
+          #     - !Sub arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/*
           - Sid: KmsQueueAllowDecrypt
             Effect: Allow
             Action:
@@ -611,7 +617,7 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource: 
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
+              - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
@@ -629,6 +635,7 @@ Resources:
             Action:
               - dynamodb:PutItem
               - dynamodb:GetItem
+              - dynamodb:UpdateItem
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10

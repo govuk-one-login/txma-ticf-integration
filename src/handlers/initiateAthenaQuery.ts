@@ -2,6 +2,7 @@ import { SQSEvent } from 'aws-lambda'
 import { confirmAthenaTable } from '../services/athena/confirmAthenaTable'
 import { createQuerySql } from '../services/athena/createQuerySql'
 import { getQueryByZendeskId } from '../services/dynamoDB/dynamoDBGet'
+import { updateQueryByZendeskId } from '../services/dynamoDB/dynamoDBUpdate'
 import { updateZendeskTicketById } from '../services/updateZendeskTicket'
 
 export const handler = async (event: SQSEvent): Promise<void> => {
@@ -40,6 +41,13 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     console.log(`Athena SQL generated: ${querySqlGenerated.sql}`)
   }
 
+  const update = await updateQueryByZendeskId(
+    zendeskId,
+    'queryExecutionId',
+    '123'
+  )
+
+  console.log(update)
   // try startQueryExecution(querySqlGenerated)
 
   // UPDATE Template.yaml to give athena permissions
