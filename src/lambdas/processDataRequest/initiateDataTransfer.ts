@@ -1,7 +1,7 @@
-import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierRestore'
-import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { DataRequestParams } from '../../types/dataRequestParams'
+import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
+import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierRestore'
+import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { addNewDataRequestRecord } from '../../sharedServices/dynamoDB/dynamoDBPut'
 import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
 

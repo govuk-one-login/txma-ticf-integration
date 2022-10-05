@@ -5,7 +5,6 @@ import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierR
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
-
 import { addNewDataRequestRecord } from '../../sharedServices/dynamoDB/dynamoDBPut'
 import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
 jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({
