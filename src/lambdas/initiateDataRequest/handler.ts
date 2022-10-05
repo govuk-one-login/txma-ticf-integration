@@ -3,10 +3,10 @@ import {
   updateZendeskTicket,
   updateZendeskTicketById
 } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { isSignatureInvalid } from '../../sharedServices/zendesk/validateRequestSource'
-import { validateZendeskRequest } from '../../sharedServices/zendesk/validateZendeskRequest'
+import { isSignatureInvalid } from './validateRequestSource'
+import { validateZendeskRequest } from './validateZendeskRequest'
 import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
-import { sendInitiateDataTransferMessage } from '../../sharedServices/queue/sendInitiateDataTransferMessage'
+import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { DataRequestParams } from '../../types/dataRequestParams'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 

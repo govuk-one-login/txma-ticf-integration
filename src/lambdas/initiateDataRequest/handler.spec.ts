@@ -1,6 +1,6 @@
 import { handler } from './handler'
 import { defaultApiRequest } from '../../utils/tests/events/defaultApiRequest'
-import { validateZendeskRequest } from '../../sharedServices/zendesk/validateZendeskRequest'
+import { validateZendeskRequest } from './validateZendeskRequest'
 import {
   updateZendeskTicket,
   updateZendeskTicketById
@@ -8,8 +8,8 @@ import {
 import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
 import { DataRequestParams } from '../../types/dataRequestParams'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
-import { isSignatureInvalid } from '../../sharedServices/zendesk/validateRequestSource'
-import { sendInitiateDataTransferMessage } from '../../sharedServices/queue/sendInitiateDataTransferMessage'
+import { isSignatureInvalid } from './validateRequestSource'
+import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 
 const mockValidateZendeskRequest =
@@ -27,7 +27,7 @@ const mockZendeskTicketDiffersFromRequest =
 const mockSendInitiateDataTransferMessage =
   sendInitiateDataTransferMessage as jest.Mock
 
-jest.mock('../../sharedServices/zendesk/validateZendeskRequest', () => ({
+jest.mock('./validateZendeskRequest', () => ({
   validateZendeskRequest: jest.fn()
 }))
 
@@ -36,7 +36,7 @@ jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 
-jest.mock('../../sharedServices/zendesk/validateRequestSource', () => ({
+jest.mock('./validateRequestSource', () => ({
   isSignatureInvalid: jest.fn()
 }))
 
@@ -44,7 +44,7 @@ jest.mock('./zendeskTicketDiffersFromRequest', () => ({
   zendeskTicketDiffersFromRequest: jest.fn()
 }))
 
-jest.mock('../../sharedServices/queue/sendInitiateDataTransferMessage', () => ({
+jest.mock('./sendInitiateDataTransferMessage', () => ({
   sendInitiateDataTransferMessage: jest.fn()
 }))
 
