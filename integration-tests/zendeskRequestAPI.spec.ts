@@ -4,6 +4,7 @@ describe('Zendesk request integrity', () => {
   it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
     const awsBaseUrl = process.env.AWS_BASE_URL as string
     const invalidSignature = 'cCxJHacr678ZZigFZZlYq4qz2XLWPEOeS+PPDuTivwQ='
+    const apiGatewayEndpoint = '/default/zendesk-webhook'
 
     const data = {
       zendeskId: '408',
@@ -27,7 +28,7 @@ describe('Zendesk request integrity', () => {
 
     const invalidRequestError = async () => {
       return axios({
-        url: `https://${awsBaseUrl}/Stage/zendesk-webhook`,
+        url: `https://${awsBaseUrl}${apiGatewayEndpoint}`,
         method: 'POST',
         headers,
         data
