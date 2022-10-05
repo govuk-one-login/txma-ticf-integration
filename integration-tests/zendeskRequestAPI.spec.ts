@@ -1,10 +1,8 @@
 import axios from 'axios'
-import { apiGatewayUrl } from './lib/awsParameters'
 import { getEnvVariable } from './lib/zendeskParameters'
 
 describe('Zendesk request integrity', () => {
   it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
-    const awsBaseUrl = getEnvVariable('AWS_BASE_URL')
     const invalidSignature = 'cCxJHacr678ZZigFZZlYq4qz2XLWPEOeS+PPDuTivwQ='
 
     const data = {
@@ -23,13 +21,12 @@ describe('Zendesk request integrity', () => {
     }
 
     const headers = {
-      Host: awsBaseUrl,
       'X-Zendesk-Webhook-Signature': invalidSignature
     }
 
     const invalidRequestError = async () => {
       return axios({
-        url: apiGatewayUrl,
+        url: getEnvVariable('AWS_WEBHOOK_URL'),
         method: 'POST',
         headers,
         data
