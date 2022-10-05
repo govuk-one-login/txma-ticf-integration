@@ -5,7 +5,7 @@ import {
   TEST_SIGNED_URL,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
-import { handler } from '.'
+import { handler } from './handler'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { sendEmailToNotify } from './sendEmailToNotify'
 

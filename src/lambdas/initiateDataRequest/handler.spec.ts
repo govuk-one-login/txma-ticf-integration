@@ -1,4 +1,4 @@
-import { handler } from '.'
+import { handler } from './handler'
 import { defaultApiRequest } from '../../utils/tests/events/defaultApiRequest'
 import { validateZendeskRequest } from '../../sharedServices/zendesk/validateZendeskRequest'
 import { updateZendeskTicket } from '../../sharedServices/zendesk/updateZendeskTicket'

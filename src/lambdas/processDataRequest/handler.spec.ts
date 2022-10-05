@@ -1,5 +1,5 @@
 import { initiateDataTransfer } from './initiateDataTransfer'
-import { handler } from '.'
+import { handler } from './handler'
 import { constructInitiateDataRequestEvent } from '../../utils/tests/events/initiateDataRequestEvent'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 jest.mock('./initiateDataTransfer', () => ({

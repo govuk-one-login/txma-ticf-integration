@@ -1,4 +1,4 @@
-import { handler } from '.'
+import { handler } from './handler'
 import { confirmAthenaTable } from '../../sharedServices/athena/confirmAthenaTable'
 import { ConfirmAthenaTableResult } from '../../types/confirmAthenaTableResult'
 import { testAthenaQueryEvent } from '../../utils/tests/events/initiateAthenaQueryEvent'

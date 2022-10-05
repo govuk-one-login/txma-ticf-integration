@@ -27,7 +27,7 @@ const lambdas = awsResources.filter(
 
 const entries = lambdas.reduce((entries, lambda) => {
   const handlerName = lambda.Properties.Handler.split('.')[0]
-  const filepath = `./${handlerPath}/${handlerName}/index.ts`
+  const filepath = `./${handlerPath}/${handlerName}/handler.ts`
 
   entries[handlerName] = filepath
   return entries

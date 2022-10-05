@@ -2,7 +2,7 @@ import { CloudFormationCustomResourceUpdateEvent } from 'aws-lambda'
 import { emptyS3Bucket } from './emptyS3Bucket'
 import { listS3Buckets } from './listS3Buckets'
 import { defaultCustomResourceDeleteEvent } from '../../utils/tests/events/defaultCustomResourceDeleteEvent'
-import { handler } from './index'
+import { handler } from './handler'
 import * as httpsRequestUtils from '../../sharedServices/http/httpsRequestUtils'
 
 jest.mock('./listS3Buckets', () => ({
