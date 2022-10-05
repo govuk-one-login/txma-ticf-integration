@@ -5,6 +5,7 @@ import { ConfirmAthenaTableResult } from '../types/athena/confirmAthenaTableResu
 import { testAthenaQueryEvent } from '../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../services/updateZendeskTicket'
 import { getQueryByZendeskId } from '../services/dynamoDB/dynamoDBGet'
+import { updateQueryByZendeskId } from '../services/dynamoDB/dynamoDBUpdate'
 
 jest.mock('../services/athena/confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
@@ -18,6 +19,9 @@ jest.mock('../services/dynamoDB/dynamoDBGet', () => ({
 jest.mock('../services/athena/createQuerySql', () => ({
   createQuerySql: jest.fn()
 }))
+jest.mock('../services/dynamoDB/dynamoDBUpdate', () => ({
+  updateQueryByZendeskId: jest.fn()
+}))
 
 const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
@@ -25,11 +29,13 @@ const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
 const mockUpdateZendeskTicket = updateZendeskTicketById as jest.Mock
 const mockGetQueryByZendeskId = getQueryByZendeskId as jest.Mock
 const mockCreateQuerySql = createQuerySql as jest.Mock
+const mockUpdateQueryByZendeskId = updateQueryByZendeskId as jest.Mock
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
     mockConfirmAthenaTable.mockReset()
     mockCreateQuerySql.mockReset()
+    mockUpdateQueryByZendeskId.mockReset()
   })
 
   it('confirms whether the athena data source exists and whether query sql has been generated', async () => {
@@ -42,10 +48,12 @@ describe('initiate athena query handler', () => {
       sql: 'test sql string',
       idParameters: ['123']
     })
+    mockUpdateQueryByZendeskId.mockResolvedValue('test')
 
     await handler(testAthenaQueryEvent)
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockCreateQuerySql).toHaveBeenCalled()
+    expect(mockUpdateQueryByZendeskId).toHaveBeenCalled()
   })
 
   it('updates zendesk and throws an error if there is no athena data source', async () => {
@@ -85,5 +93,6 @@ describe('initiate athena query handler', () => {
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockUpdateZendeskTicket).toHaveBeenCalled()
     expect(mockCreateQuerySql).toHaveBeenCalled()
+    expect(mockUpdateQueryByZendeskId).not.toHaveBeenCalled()
   })
 })
