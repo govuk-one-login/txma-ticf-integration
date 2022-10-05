@@ -2,7 +2,6 @@ import { DataRequestParams } from '../types/dataRequestParams'
 import { checkS3BucketData } from './checkS3BucketData'
 import { startGlacierRestore } from './bulkJobs/startGlacierRestore'
 import { updateZendeskTicketById } from './updateZendeskTicket'
-import { startCopyJob } from './bulkJobs/startCopyJob'
 
 export const initiateDataTransfer = async (
   dataRequestParams: DataRequestParams
@@ -26,13 +25,6 @@ export const initiateDataTransfer = async (
     )
   }
 
-  if (bucketData.standardTierLocationsToCopy?.length) {
-    console.log('Found standard tier locations to copy')
-    await startCopyJob(
-      bucketData.standardTierLocationsToCopy,
-      dataRequestParams.zendeskId
-    )
-  }
   // TODO: add code here to initiate batch copy jobs
   // 1. If there is data available but nothing to copy - trigger the athena job immediately
   // 2. If there is data available and standard tier data to copy - trigger batch copy job

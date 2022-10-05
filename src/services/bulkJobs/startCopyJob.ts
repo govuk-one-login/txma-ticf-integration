@@ -6,6 +6,7 @@ import {
 import { getEnv } from '../../utils/helpers'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 
+// currently no trigger for this function
 export const startCopyJob = async (
   filesToCopy: string[],
   zendeskTicketId: string
