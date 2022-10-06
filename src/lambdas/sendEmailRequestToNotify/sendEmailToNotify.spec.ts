@@ -1,6 +1,6 @@
 import { sendEmailToNotify } from './sendEmailToNotify'
 import { NotifyClient } from 'notifications-node-client'
-import { retrieveNotifySecrets } from '../../secrets/retrieveNotifyApiSecrets'
+import { retrieveNotifySecrets } from '../../sharedServices/secrets/retrieveNotifyApiSecrets'
 import {
   ALL_NOTIFY_SECRETS,
   TEST_NOTIFY_EMAIL,
