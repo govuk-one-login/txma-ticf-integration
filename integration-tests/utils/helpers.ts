@@ -23,6 +23,11 @@ const authoriseAs = (username: string) => {
 }
 
 const generateZendeskRequestDate = (offset: number): string => {
+  const fixedRequestDate = process.env.FIXED_DATA_REQUEST_DATE
+  if (fixedRequestDate) {
+    return fixedRequestDate
+  }
+
   const today: Date = new Date()
   today.setDate(today.getDate() + offset)
 

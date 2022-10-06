@@ -51,6 +51,8 @@ process.env.ZENDESK_AGENT_EMAIL = '(value in Team Test Confluence)'
 
 ```
 
+If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
+
 ## Running Zendesk webhook locally
 
 1. `yarn build` - This will make a build of the code which the SAM template refers to
