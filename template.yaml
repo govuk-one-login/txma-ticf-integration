@@ -613,9 +613,11 @@ Resources:
           - Sid: S3ResultsPermissions
             Effect: Allow
             Action:
+              - s3:ListBucket
               - s3:PutObject
               - s3:GetObject
             Resource:
+              - !GetAtt QueryResultsBucket.Arn
               - !Join ['/', [!GetAtt QueryResultsBucket.Arn, '*']]
           - Sid: KmsQueueAllowDecrypt
             Effect: Allow
