@@ -1,6 +1,7 @@
 import { SQSEvent } from 'aws-lambda'
 import { confirmAthenaTable } from '../../sharedServices/athena/confirmAthenaTable'
 import { createQuerySql } from '../../sharedServices/athena/createQuerySql'
+// import { startQueryExecution } from '../../sharedServices/athena/startQueryExecution'
 import { getQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { updateQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBUpdate'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
@@ -43,16 +44,20 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     )
   }
 
-  const update = await updateQueryByZendeskId(
-    zendeskId,
-    'queryExecutionId',
-    '123'
-  )
+  const update = await updateQueryByZendeskId(zendeskId, 'athenaQueryId', '123')
 
   console.log(update)
-  // try startQueryExecution(querySqlGenerated)
 
-  // UPDATE Template.yaml to give athena permissions
+  // const queryStarted = await startQueryExecution(querySqlGenerated)
+
+  // if (!queryStarted.queryExecuted && queryStarted.error) {
+  //   await updateZendeskTicketById(zendeskId, queryStarted.error, 'closed')
+  //   throw new Error(queryStarted.error)
+  // }
+
+  // if (queryStarted.queryExecutionId) {
+  //   console.log(`Athena query execution initiated with QueryExecutionId: ${queryStarted.queryExecutionId}`)
+  // }
 
   return
 }
