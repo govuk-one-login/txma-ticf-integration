@@ -1,5 +1,6 @@
 import { handler } from './handler'
 import { confirmAthenaTable } from '../../sharedServices/athena/confirmAthenaTable'
+import { startQueryExecution } from '../../sharedServices/athena/startQueryExecution'
 import { testAthenaQueryEvent } from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { getQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
@@ -22,6 +23,9 @@ jest.mock('../../sharedServices/athena/createQuerySql', () => ({
 jest.mock('../../sharedServices/dynamoDB/dynamoDBUpdate', () => ({
   updateQueryByZendeskId: jest.fn()
 }))
+jest.mock('../../sharedServices/athena/startQueryExecution', () => ({
+  startQueryExecution: jest.fn()
+}))
 
 const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
@@ -30,6 +34,7 @@ const mockUpdateZendeskTicket = updateZendeskTicketById as jest.Mock
 const mockGetQueryByZendeskId = getQueryByZendeskId as jest.Mock
 const mockCreateQuerySql = createQuerySql as jest.Mock
 const mockUpdateQueryByZendeskId = updateQueryByZendeskId as jest.Mock
+const mockStartQueryExecution = startQueryExecution as jest.Mock
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
@@ -49,11 +54,16 @@ describe('initiate athena query handler', () => {
       idParameters: ['123']
     })
     mockUpdateQueryByZendeskId.mockResolvedValue('test')
+    mockStartQueryExecution.mockResolvedValue({
+      queryExecuted: true,
+      queryExecutionId: 'test id'
+    })
 
     await handler(testAthenaQueryEvent)
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockCreateQuerySql).toHaveBeenCalled()
     expect(mockUpdateQueryByZendeskId).toHaveBeenCalled()
+    expect(mockStartQueryExecution).toHaveBeenCalled()
   })
 
   it('updates zendesk and throws an error if there is no athena data source', async () => {
