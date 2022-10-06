@@ -314,6 +314,8 @@ Resources:
           BATCH_JOB_MANIFEST_BUCKET_NAME: !Ref BatchJobManifestBucket
           BATCH_JOB_ROLE_ARN: !GetAtt BatchJobsRole.Arn
           ACCOUNT_ID: !Sub ${AWS::AccountId}
+          INITIATE_ATHENA_QUERY_QUEUE_URL: !Ref InitiateAthenaQueryQueue
+          INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
       Events:
         InitiateDataRequestEvent:
           Type: SQS
