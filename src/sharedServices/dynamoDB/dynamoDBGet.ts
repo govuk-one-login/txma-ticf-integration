@@ -9,13 +9,7 @@ import { ddbClient } from './dynamoDBClient'
 export const getQueryByZendeskId = async (
   zendeskId: string
 ): Promise<DataRequestParams> => {
-  const params = {
-    TableName: getEnv('DYNAMODB_TABLE_NAME'),
-    Key: { zendeskId: { S: zendeskId } }
-  }
-
-  const data = await ddbClient.send(new GetItemCommand(params))
-  console.log(data)
+  const data = await getDbEntryByZendeskId(zendeskId)
   const responseObject = data?.Item?.requestInfo?.M
   if (!responseObject) {
     throw new Error(
@@ -45,4 +39,15 @@ export const getQueryByZendeskId = async (
   }
 
   return dataRequestParams
+}
+
+export const getDbEntryByZendeskId = async (zendeskId: string) => {
+  const params = {
+    TableName: getEnv('DYNAMODB_TABLE_NAME'),
+    Key: { zendeskId: { S: zendeskId } }
+  }
+
+  const data = await ddbClient.send(new GetItemCommand(params))
+  console.log(data)
+  return data
 }
