@@ -56,10 +56,4 @@ export const initiateDataTransfer = async (
     console.log('Data copy job started, queuing message for long poll')
     await sendContinuePollingDataTransferMessage(dataRequestParams.zendeskId)
   }
-
-  // TODO: add code here to initiate batch copy jobs
-  // 1. If there is data available but nothing to copy - trigger the athena job immediately
-  // 2. If there is data available and standard tier data to copy - trigger batch copy job
-  // 3. If there is data available and glacier tier data to restore - trigger glacier restore job
-  // 4. If both points 2 and 3, add logic around partial copy - Both S3 jobs need to finish before triggering next lambda
 }
