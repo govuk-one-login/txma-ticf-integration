@@ -14,8 +14,10 @@ const givenApiCallResult = (result: Record<string, unknown> | Error) => {
     return result
   })
 }
-export const givenSuccessfulApiCall = () => {
-  givenApiCallResult({ theReturnData: '123' })
+export const givenSuccessfulApiCall = (
+  response: Record<string, unknown> = { theReturnData: '123' }
+) => {
+  givenApiCallResult(response)
 }
 export const givenUnsuccessfulApiCall = () => {
   givenApiCallResult(new Error('There was an error.'))

@@ -2,6 +2,7 @@ import { NotifyApiSecrets } from '../../types/notifyApiSecrets'
 import { ZendeskApiSecrets } from '../../types/zendeskApiSecrets'
 
 export const ZENDESK_TICKET_ID = '123'
+export const ZENDESK_TICKET_ID_AS_NUMBER = 123
 export const ALL_ZENDESK_SECRETS: ZendeskApiSecrets = {
   zendeskApiKey: 'myZendeskApiKey',
   zendeskApiUserId: 'myZendeskApiUserId',
@@ -29,3 +30,13 @@ export const TEST_BATCH_JOB_MANIFEST_BUCKET_ARN = 'myManifestBucketArn'
 export const TEST_BATCH_JOB_MANIFEST_BUCKET_NAME = 'myManifestBucketName'
 export const TEST_AWS_ACCOUNT_ID = '1234567890'
 export const TEST_BATCH_JOB_ROLE_ARN = 'myBatchJobRoleArn'
+
+export const TEST_ZENDESK_FIELD_ID_DATA_PATHS = 1
+export const TEST_ZENDESK_FIELD_ID_DATE_FROM = 2
+export const TEST_ZENDESK_FIELD_ID_DATE_TO = 3
+export const TEST_ZENDESK_FIELD_ID_EVENT_IDS = 4
+export const TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE = 5
+export const TEST_ZENDESK_FIELD_ID_JOURNEY_IDS = 6
+export const TEST_ZENDESK_FIELD_ID_PII_TYPES = 7
+export const TEST_ZENDESK_FIELD_ID_SESSION_IDS = 8
+export const TEST_ZENDESK_FIELD_ID_USER_IDS = 9

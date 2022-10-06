@@ -24,7 +24,12 @@ describe('validateZendeskRequest', () => {
     resultsEmail: testValidResultsEmail,
     resultsName: testResultsName,
     dateFrom: '2021-08-01',
-    dateTo: '2021-08-01'
+    dateTo: '2021-08-01',
+    journeyIds: '',
+    eventIds: '',
+    sessionIds: '',
+    piiTypes: '',
+    dataPaths: ''
   }
 
   const fieldKeys = [
@@ -61,7 +66,6 @@ describe('validateZendeskRequest', () => {
       user_id: 'userIds'
     }
     const identifierObjectKey = identifierTypeToObjectKeyMapping[identifierType]
-
     return {
       ...objectToReturn,
       [identifierObjectKey]: spaceSeparatedIds
@@ -132,26 +136,12 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should parse data into response if request data is valid', () => {
-    console.log(
-      'here is the request',
-      JSON.stringify(
-        buildValidRequestBodyWithIds(
-          'session_id',
-          'sessionId1 sessionId2 sessionId3',
-          'dob name passport_number'
-        )
-      )
+    const request = buildValidRequestBodyWithIds(
+      'session_id',
+      'sessionId1 sessionId2 sessionId3',
+      'dob name passport_number'
     )
-
-    const validationResult = validateZendeskRequest(
-      JSON.stringify(
-        buildValidRequestBodyWithIds(
-          'session_id',
-          'sessionId1 sessionId2 sessionId3',
-          'dob name passport_number'
-        )
-      )
-    )
+    const validationResult = validateZendeskRequest(JSON.stringify(request))
 
     const fields = Object.keys(validationResult.dataRequestParams ?? {})
     fields.map((field) => expect(fieldKeys).toContain(field))
@@ -197,8 +187,8 @@ describe('validateZendeskRequest', () => {
       'sessionId2',
       'sessionId3'
     ])
-    expect(validationResult.dataRequestParams?.journeyIds).toBeUndefined()
-    expect(validationResult.dataRequestParams?.eventIds).toBeUndefined()
+    expect(validationResult.dataRequestParams?.journeyIds).toEqual([])
+    expect(validationResult.dataRequestParams?.eventIds).toEqual([])
   })
 
   it('should return an invalid response if request does not contain sessionIds when required', () => {
@@ -260,9 +250,9 @@ describe('validateZendeskRequest', () => {
       'journeyId2',
       'journeyId3'
     ])
-    expect(validationResult.dataRequestParams?.eventIds).toBeUndefined()
-    expect(validationResult.dataRequestParams?.sessionIds).toBeUndefined()
-    expect(validationResult.dataRequestParams?.userIds).toBeUndefined()
+    expect(validationResult.dataRequestParams?.eventIds).toEqual([])
+    expect(validationResult.dataRequestParams?.sessionIds).toEqual([])
+    expect(validationResult.dataRequestParams?.userIds).toEqual([])
   })
 
   it('should parse data into response if request contains eventIds', () => {
