@@ -15,7 +15,7 @@ jest.mock('notifications-node-client', () => ({
     return { sendEmail: mockSendEmail }
   })
 }))
-jest.mock('../../secrets/retrieveNotifyApiSecrets', () => ({
+jest.mock('../../sharedServices/secrets/retrieveNotifyApiSecrets', () => ({
   retrieveNotifySecrets: jest.fn()
 }))
 
