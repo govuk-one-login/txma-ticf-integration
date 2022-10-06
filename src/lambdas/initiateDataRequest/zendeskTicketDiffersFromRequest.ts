@@ -142,6 +142,7 @@ const ticketAndRequestDetailsDiffer = (
     )
     return true
   } else {
+    console.log('Request details match existing Zendesk ticket')
     return false
   }
 }
