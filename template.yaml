@@ -574,6 +574,7 @@ Resources:
         Variables:
           ATHENA_DATABASE_NAME: !Ref AuditAnalysisDatabase
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
+          ATHENA_WORKGROUP_NAME: !Ref AthenaAnalysisWorkgroup
           DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
       Events:
@@ -595,12 +596,12 @@ Resources:
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:userDefinedFunction/*
-          # - Sid: AthenaPermissions
-          #   Effect: Allow
-          #   Action: 
-          #     - athena:StartQueryExecution
-          #   Resource:
-          #     - !Sub arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/*
+          - Sid: AthenaPermissions
+            Effect: Allow
+            Action: 
+              - athena:StartQueryExecution
+            Resource:
+              - !Sub arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/*
           - Sid: KmsQueueAllowDecrypt
             Effect: Allow
             Action:

@@ -16,6 +16,7 @@ export const startQueryExecution = async (
   const client = new AthenaClient({ region: getEnv('AWS_REGION') })
 
   const input = generateQueryExecutionCommandInput(queryParams)
+  console.log(input)
 
   const command = new StartQueryExecutionCommand(input)
 
@@ -43,6 +44,7 @@ const generateQueryExecutionCommandInput = (
     QueryExecutionContext: {
       Database: getEnv('ATHENA_DATABASE_NAME')
     },
-    QueryString: sql
+    QueryString: sql,
+    WorkGroup: getEnv('ATHENA_WORKGROUP_NAME')
   }
 }

@@ -17,6 +17,7 @@ process.env.AWS_REGION = 'eu-west-2'
 process.env.ATHENA_DATABASE_NAME = 'test_database'
 process.env.ATHENA_TABLE_NAME = 'test_table'
 process.env.DYNAMODB_TABLE_NAME = 'test_query_table'
+process.env.ATHENA_WORKGROUP_NAME = 'test_query_workgroup'
 process.env.ZENDESK_API_SECRETS_NAME = TEST_ZENDESK_SECRET_NAME
 process.env.NOTIFY_API_SECRETS_NAME = TEST_NOTIFY_SECRET_NAME
 process.env.INITIATE_DATA_REQUEST_QUEUE_URL =
