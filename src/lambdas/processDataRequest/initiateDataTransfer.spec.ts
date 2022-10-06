@@ -7,6 +7,9 @@ import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZend
 import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
 import { addNewDataRequestRecord } from '../../sharedServices/dynamoDB/dynamoDBPut'
 import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
+import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
+import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
+
 jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({
   checkS3BucketData: jest.fn()
 }))
@@ -39,6 +42,20 @@ jest.mock('../../sharedServices/bulkJobs/startCopyJob', () => ({
 
 const mockStartCopyJob = startCopyJob as jest.Mock
 
+jest.mock(
+  '../../sharedServices/queue/sendContinuePollingDataTransferMessage',
+  () => ({
+    sendContinuePollingDataTransferMessage: jest.fn()
+  })
+)
+
+jest.mock('../../sharedServices/queue/sendInitiateAthenaQueryMessage', () => ({
+  sendInitiateAthenaQueryMessage: jest.fn()
+}))
+
+const mockSendContinuePollingDataTransferMessage =
+  sendContinuePollingDataTransferMessage as jest.Mock
+
 describe('initiate data transfer', () => {
   const givenDataResult = (
     dataAvailable: boolean,
@@ -61,9 +78,7 @@ describe('initiate data transfer', () => {
   }
 
   beforeEach(() => {
-    mockUpdateZendeskTicketById.mockReset()
-    mockStartGlacierRestore.mockReset()
-    mockStartCopyJob.mockReset()
+    jest.clearAllMocks()
   })
 
   it('calls Zendesk to close ticket if no data can be found for the requested parameters', async () => {
@@ -77,7 +92,7 @@ describe('initiate data transfer', () => {
     )
   })
 
-  it('stores a record to the data request database when data can be found for the requested parameters', async () => {
+  it('stores a record to the data request database and sends a message to the Athena queue when data is ready to go', async () => {
     givenDataAvailable()
     await initiateDataTransfer(testDataRequest)
     expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
@@ -88,6 +103,10 @@ describe('initiate data transfer', () => {
       false
     )
     expect(startGlacierRestore).not.toHaveBeenCalled()
+    expect(sendContinuePollingDataTransferMessage).not.toHaveBeenCalled()
+    expect(sendInitiateAthenaQueryMessage).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
   })
 
   it('initiates a copy when we require a copy and no glacier restore', async () => {
@@ -106,6 +125,10 @@ describe('initiate data transfer', () => {
       ZENDESK_TICKET_ID
     )
     expect(mockStartGlacierRestore).not.toHaveBeenCalled()
+    expect(mockSendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
+    expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
 
   it('initiates a glacier restore if necessary', async () => {
@@ -122,6 +145,10 @@ describe('initiate data transfer', () => {
       ZENDESK_TICKET_ID
     )
 
-    expect(mockStartCopyJob).not.toHaveBeenCalled()
+    expect(startCopyJob).not.toHaveBeenCalled()
+    expect(sendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
+    expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
 })

@@ -4,6 +4,8 @@ import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierR
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { addNewDataRequestRecord } from '../../sharedServices/dynamoDB/dynamoDBPut'
 import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
+import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
+import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 
 export const initiateDataTransfer = async (
   dataRequestParams: DataRequestParams
@@ -47,6 +49,14 @@ export const initiateDataTransfer = async (
       bucketData.standardTierLocationsToCopy,
       dataRequestParams.zendeskId
     )
+  }
+
+  if (!glacierRestoreRequired && !shouldStartCopyFromAuditBucket) {
+    console.log('All data available, queuing Athena query')
+    await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
+  } else {
+    console.log('Data copy job started, queuing message for long poll')
+    await sendContinuePollingDataTransferMessage(dataRequestParams.zendeskId)
   }
 
   // TODO: add code here to initiate batch copy jobs
