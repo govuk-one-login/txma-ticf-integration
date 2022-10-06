@@ -357,6 +357,16 @@ Resources:
               Resource:
               - !GetAtt InitiateDataRequestQueue.Arn
               - !GetAtt InitiateAthenaQueryQueue.Arn
+            - Sid: AllowQueueKmsAccess
+              Effect: Allow
+              Action:
+                - kms:GenerateDataKey
+                - kms:Encrypt
+              # For some reason, Decrypt is needed to add items to the queue.
+              # See here for some discussion of this: https://github.com/aws/aws-cdk/issues/6609
+                - kms:Decrypt
+              Resource:
+              - !GetAtt QueueKmsKey.Arn
             - Sid: SecretsManager
               Effect: Allow
               Action:
