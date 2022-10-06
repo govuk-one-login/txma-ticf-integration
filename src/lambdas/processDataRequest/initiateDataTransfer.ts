@@ -42,9 +42,7 @@ export const initiateDataTransfer = async (
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId
     )
-  }
-
-  if (shouldStartCopyFromAuditBucket) {
+  } else if (shouldStartCopyFromAuditBucket) {
     await startCopyJob(
       bucketData.standardTierLocationsToCopy,
       dataRequestParams.zendeskId

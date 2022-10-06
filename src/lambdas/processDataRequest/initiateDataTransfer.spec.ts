@@ -151,4 +151,25 @@ describe('initiate data transfer', () => {
     )
     expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
+
+  it('does not start a copy if glacier restore required', async () => {
+    const glacierTierLocationsToCopy = ['glacier-file1', 'glacier-file-2']
+    givenDataResult(true, ['some-file-to-copy'], glacierTierLocationsToCopy)
+    await initiateDataTransfer(testDataRequest)
+    expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
+      testDataRequest,
+      true,
+      false
+    )
+    expect(startGlacierRestore).toHaveBeenCalledWith(
+      glacierTierLocationsToCopy,
+      ZENDESK_TICKET_ID
+    )
+
+    expect(startCopyJob).not.toHaveBeenCalled()
+    expect(sendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
+    expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
+  })
 })
