@@ -1,4 +1,4 @@
-import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
+import { CreateQuerySqlResult } from '../../types/createQuerySqlResult'
 import {
   DataRequestParams,
   IdentifierTypes
@@ -93,11 +93,15 @@ const formatWhereStatment = (
   identifierType: IdentifierTypes,
   numberOfIdentifiers: number
 ): string => {
+  if (numberOfIdentifiers == 1) {
+    return `${identifierType}=?`
+  }
+
   const whereStatementsArray = []
 
   for (let i = 0; i < numberOfIdentifiers; i++) {
-    whereStatementsArray.push(`${identifierType}=?`)
+    whereStatementsArray.push('?')
   }
 
-  return whereStatementsArray.join(' OR ')
+  return `${identifierType} IN (${whereStatementsArray.join(', ')})`
 }

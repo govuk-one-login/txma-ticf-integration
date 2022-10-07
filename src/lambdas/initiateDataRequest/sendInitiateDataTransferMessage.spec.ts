@@ -1,8 +1,9 @@
 import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
-import { sendSqsMessage } from './sendSqsMessage'
+import { sendSqsMessage } from '../../sharedServices/queue/sendSqsMessage'
 import { MOCK_INITIATE_DATA_REQUEST_QUEUE_URL } from '../../utils/tests/testConstants'
-jest.mock('./sendSqsMessage', () => ({
+
+jest.mock('../../sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessage: jest.fn()
 }))
 

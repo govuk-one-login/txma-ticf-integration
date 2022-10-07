@@ -11,12 +11,12 @@ export interface DataRequestParams {
   dateFrom: string
   dateTo: string
   identifierType: IdentifierTypes
-  sessionIds?: string[]
-  journeyIds?: string[]
-  eventIds?: string[]
-  userIds?: string[]
-  piiTypes?: string[]
-  dataPaths?: string[]
+  sessionIds: string[]
+  journeyIds: string[]
+  eventIds: string[]
+  userIds: string[]
+  piiTypes: string[]
+  dataPaths: string[]
 }
 
 export const isDataRequestParams = (arg: unknown): arg is DataRequestParams => {
