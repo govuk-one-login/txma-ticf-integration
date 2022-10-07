@@ -78,13 +78,17 @@ describe('checkDataTransferStatus', () => {
     dateFrom: '2022-09-06',
     identifierType: 'event_id',
     eventIds: ['234gh24', '98h98bc'],
-    piiTypes: ['passport_number']
+    piiTypes: ['passport_number'],
+    sessionIds: [],
+    journeyIds: [],
+    userIds: [],
+    dataPaths: []
   }
 
   const givenDatabaseEntryResult = (
     statusCountObject:
       | { checkGlacierStatusCount?: number; checkCopyStatusCount?: number }
-      | undefined
+      | undefined = undefined
   ) => {
     when(getDatabaseEntryByZendeskId).mockResolvedValue({
       requestInfo,

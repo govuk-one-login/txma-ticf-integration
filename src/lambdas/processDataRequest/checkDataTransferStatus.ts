@@ -1,3 +1,4 @@
+// import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
@@ -25,8 +26,19 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     s3BucketDataLocationResult.glacierTierLocationsToCopy.length > 0
 
   // TODO: start copy if glacier restore finished and this is required
+  const copyJobStarted = !!dbEntry.checkCopyStatusCount
+
   const copyJobStillInProgress =
+    copyJobStarted &&
     s3BucketDataLocationResult.standardTierLocationsToCopy.length > 0
+
+  // starting copy job if necessary - needs tests:
+  // if (!glacierRestoreStillInProgress && !copyJobStarted) {
+  //   await startCopyJob(
+  //     s3BucketDataLocationResult.standardTierLocationsToCopy,
+  //     zendeskId
+  //   )
+  // }
 
   if (glacierRestoreStillInProgress || copyJobStillInProgress) {
     const waitTimeInSeconds = glacierRestoreStillInProgress ? 900 : 30
