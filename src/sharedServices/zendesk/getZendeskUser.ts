@@ -1,5 +1,5 @@
 import https from 'node:https'
-import { retrieveZendeskApiSecrets } from '../../secrets/retrieveZendeskApiSecrets'
+import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import { ZendeskUser } from '../../types/zendeskUser'
 import { base64Encode, makeHttpsRequest } from '../http/httpsRequestUtils'
 

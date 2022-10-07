@@ -6,7 +6,7 @@ import {
 } from '../../utils/tests/testConstants'
 import { getZendeskUser } from './getZendeskUser'
 
-jest.mock('../../secrets/retrieveZendeskApiSecrets', () => ({
+jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
 }))
 
