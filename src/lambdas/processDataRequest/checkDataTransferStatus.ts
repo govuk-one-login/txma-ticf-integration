@@ -1,16 +1,13 @@
-import {
-  getDbEntryByZendeskId,
-  parseDbEntryToDataRequestParamsObj
-} from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 
 export const checkDataTransferStatus = async (zendeskId: string) => {
-  const dbEntry = await getDbEntryByZendeskId(zendeskId)
+  const dbEntry = await getDatabaseEntryByZendeskId(zendeskId)
 
   const s3BucketDataLocationResult = await checkS3BucketData(
-    parseDbEntryToDataRequestParamsObj(dbEntry?.requestInfo?.M, zendeskId)
+    dbEntry.requestInfo
   )
 
   const glacierRestoreStillInProgress =

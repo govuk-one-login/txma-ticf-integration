@@ -4,7 +4,7 @@ import {
   GetItemOutput
 } from '@aws-sdk/client-dynamodb'
 import { mockClient } from 'aws-sdk-client-mock'
-import { getQueryByZendeskId } from './dynamoDBGet'
+import { getDatabaseEntryByZendeskId } from './dynamoDBGet'
 
 const dynamoMock = mockClient(DynamoDBClient)
 
@@ -33,8 +33,8 @@ describe('dynamoDBGet', () => {
     }
     dynamoMock.on(GetItemCommand).resolves(mockDbContents as GetItemOutput)
 
-    const result = await getQueryByZendeskId('12')
-    expect(result).toEqual({
+    const result = await getDatabaseEntryByZendeskId('12')
+    expect(result.requestInfo).toEqual({
       resultsName: 'test',
       dateTo: '2022-09-06',
       identifierType: 'eventId',
@@ -49,16 +49,16 @@ describe('dynamoDBGet', () => {
   test('Does not find request query in database - empty object response', async () => {
     dynamoMock.on(GetItemCommand).resolves({} as GetItemOutput)
 
-    await expect(getQueryByZendeskId('12')).rejects.toThrow(
-      'Request info not returned from db for zendesk ticket: 12'
+    await expect(getDatabaseEntryByZendeskId('12')).rejects.toThrow(
+      `Cannot find database entry for zendesk ticket '12'`
     )
   })
 
   test('Does not find request query in database - undefined response', async () => {
     dynamoMock.on(GetItemCommand).resolves(undefined)
 
-    await expect(getQueryByZendeskId('12')).rejects.toThrow(
-      'Request info not returned from db for zendesk ticket: 12'
+    await expect(getDatabaseEntryByZendeskId('12')).rejects.toThrow(
+      `Cannot find database entry for zendesk ticket '12'`
     )
   })
 
@@ -76,8 +76,8 @@ describe('dynamoDBGet', () => {
 
     dynamoMock.on(GetItemCommand).resolves(mockDbContents)
 
-    await expect(getQueryByZendeskId('12')).rejects.toThrow(
-      'Event data returned from db was not of correct type for zendesk ticket: 12'
+    await expect(getDatabaseEntryByZendeskId('12')).rejects.toThrow(
+      `Event data returned from db was not of correct type for zendesk ticket: '12'`
     )
   })
 })

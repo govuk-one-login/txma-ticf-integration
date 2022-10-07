@@ -1,6 +1,6 @@
 import { SQSEvent } from 'aws-lambda'
 import { confirmAthenaTable } from '../../sharedServices/athena/confirmAthenaTable'
-import { getQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 
 export const handler = async (event: SQSEvent): Promise<void> => {
@@ -26,8 +26,8 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     throw new Error(doesAthenaTableExist.message)
   }
 
-  const requestData = await getQueryByZendeskId(zendeskId)
-  console.log(requestData)
+  const requestData = await getDatabaseEntryByZendeskId(zendeskId)
+  console.log(requestData.requestInfo)
 
   return
 }

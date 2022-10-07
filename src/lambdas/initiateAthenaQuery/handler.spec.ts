@@ -3,7 +3,8 @@ import { confirmAthenaTable } from '../../sharedServices/athena/confirmAthenaTab
 import { ConfirmAthenaTableResult } from '../../types/confirmAthenaTableResult'
 import { testAthenaQueryEvent } from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { getQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { testDataRequest } from '../../utils/tests/testDataRequest'
 
 jest.mock('../../sharedServices/athena/confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
@@ -12,18 +13,21 @@ jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
-  getQueryByZendeskId: jest.fn()
+  getDatabaseEntryByZendeskId: jest.fn()
 }))
 
 const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
 >
 const mockUpdateZendeskTicket = updateZendeskTicketById as jest.Mock
-const mockGetQueryByZendeskId = getQueryByZendeskId as jest.Mock
+const mockGetDatabaseEntryByZendeskId = getDatabaseEntryByZendeskId as jest.Mock
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
     mockConfirmAthenaTable.mockReset()
+    mockGetDatabaseEntryByZendeskId.mockResolvedValue({
+      requestInfo: testDataRequest
+    })
   })
 
   it('confirms whether the athena data source exists', async () => {
@@ -44,7 +48,7 @@ describe('initiate athena query handler', () => {
     await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
       'test error message'
     )
-    expect(mockGetQueryByZendeskId).toHaveBeenCalled()
+    expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalled()
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockUpdateZendeskTicket).toHaveBeenCalled()
   })
