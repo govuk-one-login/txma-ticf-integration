@@ -2,7 +2,7 @@ import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynam
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
-
+import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 export const checkDataTransferStatus = async (zendeskId: string) => {
   const dbEntry = await getDatabaseEntryByZendeskId(zendeskId)
 
@@ -17,9 +17,12 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
   const copyJobStillInProgress =
     s3BucketDataLocationResult.standardTierLocationsToCopy.length > 0
 
-  // TODO: increment retry counts
   if (glacierRestoreStillInProgress || copyJobStillInProgress) {
     await sendContinuePollingDataTransferMessage(zendeskId)
+    await incrementPollingRetryCount({
+      glacierRestoreStillInProgress,
+      copyJobStillInProgress
+    })
   } else if (!glacierRestoreStillInProgress && !copyJobStillInProgress) {
     await sendInitiateAthenaQueryMessage(zendeskId)
   }

@@ -1,10 +1,8 @@
-import // getDbEntryByZendeskId,
-// getQueryByZendeskId
-'../../sharedServices/dynamoDB/dynamoDBGet'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
+import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import { when } from 'jest-when'
 import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
@@ -63,16 +61,23 @@ describe('checkDataTransferStatus', () => {
     expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
       ZENDESK_TICKET_ID
     )
-    // TODO: add expectation for checkGlacierStatusCount to be incremented
+    expect(incrementPollingRetryCount).toBeCalledWith({
+      glacierRestoreStillInProgress: true,
+      copyJobStillInProgress: false
+    })
   })
 
-  xit('should start copy from audit to analysis bucket if no glacier defrost is pending and there are files to copy', async () => {
+  xit('should start copy from audit to analysis bucket if no glacier defrost is pending, there are files to copy and no copy is in progress', async () => {
     givenCopyRequired()
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
     expect(startCopyJob).toBeCalledWith(filesToCopy, ZENDESK_TICKET_ID)
     expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
       ZENDESK_TICKET_ID
     )
+    expect(incrementPollingRetryCount).toBeCalledWith({
+      glacierRestoreStillInProgress: false,
+      copyJobStillInProgress: true
+    })
   })
 
   xit('should continue to wait if there are pending files to copy from audit bucket and a copy has already started', async () => {
@@ -83,7 +88,10 @@ describe('checkDataTransferStatus', () => {
     expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
       ZENDESK_TICKET_ID
     )
-    // TODO: add expectation for checkCopyStatusCount to be incremented
+    expect(incrementPollingRetryCount).toBeCalledWith({
+      glacierRestoreStillInProgress: false,
+      copyJobStillInProgress: true
+    })
   })
 
   xit('should queue athena query if all data is now ready', async () => {
