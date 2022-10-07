@@ -6,8 +6,10 @@ export type IdentifierTypes =
 
 export interface DataRequestParams {
   zendeskId: string
-  resultsEmail: string
-  resultsName: string
+  requesterEmail: string
+  requesterName: string
+  recipientEmail: string
+  recipientName: string
   dateFrom: string
   dateTo: string
   identifierType: IdentifierTypes
@@ -23,8 +25,10 @@ export const isDataRequestParams = (arg: unknown): arg is DataRequestParams => {
   const test = arg as DataRequestParams
   return (
     typeof test?.zendeskId === 'string' &&
-    typeof test?.resultsEmail === 'string' &&
-    typeof test?.resultsName === 'string' &&
+    typeof test?.recipientEmail === 'string' &&
+    typeof test?.recipientName === 'string' &&
+    typeof test?.requesterEmail === 'string' &&
+    typeof test?.requesterName === 'string' &&
     typeof test?.dateFrom === 'string' &&
     typeof test?.dateTo === 'string' &&
     typeof test?.identifierType === 'string'

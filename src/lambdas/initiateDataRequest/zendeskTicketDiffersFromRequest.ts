@@ -13,11 +13,11 @@ export const zendeskTicketDiffersFromRequest = async (
 ) => {
   console.log('Matching received request with existing Zendesk Tickets')
   const ticketDetails = await getZendeskTicket(requestParams.zendeskId)
-  const userDetails = await getZendeskUser(ticketDetails.requester_id)
+  const requesterDetails = await getZendeskUser(ticketDetails.requester_id)
 
   return ticketAndRequestDetailsDiffer(
     ticketDetails,
-    userDetails,
+    requesterDetails,
     requestParams
   )
 }
@@ -67,7 +67,7 @@ const getZendeskCustomSpaceSeparatedStringAsArray = (
 
 const ticketAndRequestDetailsDiffer = (
   ticketDetails: ZendeskTicket,
-  userDetails: ZendeskUser,
+  requesterDetails: ZendeskUser,
   requestParams: DataRequestParams
 ) => {
   const unmatchedParameters: string[] = []
@@ -109,13 +109,25 @@ const ticketAndRequestDetailsDiffer = (
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_USER_IDS')
   ) as string[]
+  const ticketRecipientEmail = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnvAsNumber('ZENDESK_FIELD_ID_RECIPIENT_EMAIL')
+  ) as string | null
+  const ticketRecipientName = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnvAsNumber('ZENDESK_FIELD_ID_RECIPIENT_NAME')
+  ) as string | null
 
   if (!matchStringParams(ticketDetails.id.toString(), requestParams.zendeskId))
     unmatchedParameters.push('zendeskId')
-  if (!matchStringParams(userDetails.email, requestParams.resultsEmail))
-    unmatchedParameters.push('resultsEmail')
-  if (!matchStringParams(userDetails.name, requestParams.resultsName))
-    unmatchedParameters.push('resultsName')
+  if (!matchStringParams(ticketRecipientEmail, requestParams.recipientEmail))
+    unmatchedParameters.push('recipientEmail')
+  if (!matchStringParams(ticketRecipientName, requestParams.recipientName))
+    unmatchedParameters.push('recipientName')
+  if (!matchStringParams(requesterDetails.email, requestParams.requesterEmail))
+    unmatchedParameters.push('requesterEmail')
+  if (!matchStringParams(requesterDetails.name, requestParams.requesterName))
+    unmatchedParameters.push('requesterName')
   if (!matchArrayParams(ticketDataPaths, requestParams.dataPaths))
     unmatchedParameters.push('dataPaths')
   if (!matchStringParams(ticketDateFrom, requestParams.dateFrom))
