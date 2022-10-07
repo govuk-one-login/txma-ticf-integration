@@ -22,12 +22,17 @@ describe('sendContinuePollingDataTransferMessage', () => {
 
   it('sends a message with the correct data', async () => {
     givenSqsMessageIdReturned()
-    await sendContinuePollingDataTransferMessage(ZENDESK_TICKET_ID)
+    const delaySendInSeconds = 30
+    await sendContinuePollingDataTransferMessage(
+      ZENDESK_TICKET_ID,
+      delaySendInSeconds
+    )
     expect(mockSendSqsMessage).toHaveBeenCalledWith(
       {
         zendeskId: ZENDESK_TICKET_ID
       },
-      MOCK_INITIATE_DATA_REQUEST_QUEUE_URL
+      MOCK_INITIATE_DATA_REQUEST_QUEUE_URL,
+      delaySendInSeconds
     )
   })
 })

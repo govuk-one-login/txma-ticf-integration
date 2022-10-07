@@ -7,19 +7,28 @@ import { getEnv } from '../../utils/helpers'
 
 export const sendSqsMessage = async (
   messageBody: object,
-  queueUrl: string
+  queueUrl: string,
+  delaySendInSeconds: number | undefined = undefined
 ): Promise<string | undefined> => {
-  return sendSqsMessageWithStringBody(JSON.stringify(messageBody), queueUrl)
+  return sendSqsMessageWithStringBody(
+    JSON.stringify(messageBody),
+    queueUrl,
+    delaySendInSeconds
+  )
 }
 
 export const sendSqsMessageWithStringBody = async (
   messageBody: string,
-  queueUrl: string
+  queueUrl: string,
+  delaySendInSeconds: number | undefined = undefined
 ): Promise<string | undefined> => {
   const client = new SQSClient({ region: getEnv('AWS_REGION') })
   const message: SendMessageRequest = {
     QueueUrl: queueUrl,
     MessageBody: messageBody
+  }
+  if (delaySendInSeconds) {
+    message.DelaySeconds = delaySendInSeconds
   }
   const result = await client.send(new SendMessageCommand(message))
   return result.MessageId

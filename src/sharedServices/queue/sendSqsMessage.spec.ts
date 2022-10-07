@@ -21,6 +21,22 @@ describe('sendSqsMessage', () => {
       MessageBody: JSON.stringify(testDataRequest)
     })
   })
+
+  it('sets delaySend when set in parameters', async () => {
+    sqsMock.on(SendMessageCommand).resolves({ MessageId: MOCK_MESSAGE_ID })
+    const delaySendInSeconds = 60
+    const messageId = await sendSqsMessage(
+      testDataRequest,
+      MOCK_QUEUE_URL,
+      delaySendInSeconds
+    )
+    expect(messageId).toEqual(MOCK_MESSAGE_ID)
+    expect(sqsMock).toHaveReceivedCommandWith(SendMessageCommand, {
+      QueueUrl: MOCK_QUEUE_URL,
+      MessageBody: JSON.stringify(testDataRequest),
+      DelaySeconds: delaySendInSeconds
+    })
+  })
 })
 
 describe('sendSqsMessageWithStringBody', () => {
