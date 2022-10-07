@@ -581,12 +581,14 @@ Resources:
         PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
+            - Sid: AllowRestoreOnAuditBucket
+              Effect: Allow
               Action:
                 - s3:RestoreObject
               Resource:
                 - arn:aws:s3:::audit-sandbox-message-batch/* #TODO: Update with parameter when merging with TxMA 1
-            - Effect: Allow
+            - Sid: AllowReadFromManifestBucket
+              Effect: Allow
               Action:
                 -  "s3:GetObject"
                 -  "s3:GetObjectVersion"
@@ -596,14 +598,16 @@ Resources:
         PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
+            - Sid: AllowWriteToAnalysisBucket
+              Effect: Allow
               Action:
                 - s3:PutObject
                 - s3:PutObjectAcl
                 - s3:PutObjectTagging
               Resource: 
                 - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
-            - Effect: Allow
+            - Sid: AllowReadFromAuditBucket
+              Effect: Allow
               Action: 
                 - s3:GetObject
                 - s3:GetObjectAcl
@@ -611,11 +615,6 @@ Resources:
                 - s3:ListBucket
               Resource:
                 - arn:aws:s3:::audit-sandbox-message-batch/*
-            - Effect: Allow
-              Action:
-                - s3:PutObject
-              Resource:
-                - !Join ['/', [!GetAtt BatchJobBucketLogsBucket.Arn, '*']]
             
   # Data Analysis
 
