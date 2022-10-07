@@ -1,4 +1,4 @@
-import { GetItemCommand } from '@aws-sdk/client-dynamodb'
+import { AttributeValue, GetItemCommand } from '@aws-sdk/client-dynamodb'
 import { isDataRequestParams } from '../../types/dataRequestParams'
 import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { getEnv } from '../../utils/helpers'
@@ -39,7 +39,19 @@ export const getDatabaseEntryByZendeskId = async (
     )
   }
 
+  data?.Item
   return {
-    requestInfo: dataRequestParams
+    requestInfo: dataRequestParams,
+    checkGlacierStatusCount: retrieveNumericValue(
+      data?.Item?.checkGlacierStatusCount
+    ),
+    checkCopyStatusCount: retrieveNumericValue(data?.Item?.checkCopyStatusCount)
   }
+}
+
+const retrieveNumericValue = (
+  attributeValue: AttributeValue
+): number | undefined => {
+  const numericValueAsString = attributeValue?.N
+  return numericValueAsString ? parseInt(numericValueAsString) : undefined
 }

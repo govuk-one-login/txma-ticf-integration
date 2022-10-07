@@ -1,4 +1,5 @@
 import {
+  AttributeValue,
   DynamoDBClient,
   GetItemCommand,
   GetItemOutput
@@ -13,25 +14,42 @@ describe('dynamoDBGet', () => {
     dynamoMock.reset()
   })
 
-  test('Finds valid request query in database', async () => {
-    const mockDbContents = {
-      Item: {
-        requestInfo: {
-          M: {
-            resultsName: { S: 'test' },
-            dateTo: { S: '2022-09-06' },
-            identifierType: { S: 'eventId' },
-            dateFrom: { S: '2022-09-06' },
-            zendeskId: { S: '12' },
-            eventIds: { L: [{ S: '234gh24' }, { S: '98h98bc' }] },
-            piiTypes: { L: [{ S: 'passport_number' }] },
-            resultsEmail: { S: 'test@test.gov.uk' }
-          }
-        },
-        zendeskId: { S: '12' }
+  const givenDatabaseReturnsData = (
+    checkGlacierStatusCount?: number,
+    checkCopyStatusCount?: number
+  ) => {
+    const mockItem: Record<string, AttributeValue> = {
+      requestInfo: {
+        M: {
+          resultsName: { S: 'test' },
+          dateTo: { S: '2022-09-06' },
+          identifierType: { S: 'eventId' },
+          dateFrom: { S: '2022-09-06' },
+          zendeskId: { S: '12' },
+          eventIds: { L: [{ S: '234gh24' }, { S: '98h98bc' }] },
+          piiTypes: { L: [{ S: 'passport_number' }] },
+          resultsEmail: { S: 'test@test.gov.uk' }
+        }
+      },
+      zendeskId: { S: '12' }
+    }
+    if (checkCopyStatusCount !== undefined) {
+      mockItem.checkCopyStatusCount = { N: checkCopyStatusCount.toString() }
+    }
+
+    if (checkGlacierStatusCount !== undefined) {
+      mockItem.checkGlacierStatusCount = {
+        N: checkGlacierStatusCount.toString()
       }
     }
+    const mockDbContents = {
+      Item: mockItem
+    }
     dynamoMock.on(GetItemCommand).resolves(mockDbContents as GetItemOutput)
+  }
+
+  test('Finds valid request query in database', async () => {
+    givenDatabaseReturnsData()
 
     const result = await getDatabaseEntryByZendeskId('12')
     expect(result.requestInfo).toEqual({
@@ -44,6 +62,27 @@ describe('dynamoDBGet', () => {
       piiTypes: ['passport_number'],
       resultsEmail: 'test@test.gov.uk'
     })
+
+    expect(result.checkGlacierStatusCount).toBeUndefined()
+    expect(result.checkCopyStatusCount).toBeUndefined()
+  })
+
+  test('parses checkGlacierStatusCount if set', async () => {
+    const checkGlacierStatusCount = 1
+    givenDatabaseReturnsData(checkGlacierStatusCount)
+
+    const result = await getDatabaseEntryByZendeskId('12')
+    expect(result.checkGlacierStatusCount).toEqual(checkGlacierStatusCount)
+    expect(result.checkCopyStatusCount).toBeUndefined()
+  })
+
+  test('parses checkGlacierStatusCount if set', async () => {
+    const checkCopyStatusCount = 1
+    givenDatabaseReturnsData(undefined, checkCopyStatusCount)
+
+    const result = await getDatabaseEntryByZendeskId('12')
+    expect(result.checkCopyStatusCount).toEqual(checkCopyStatusCount)
+    expect(result.checkGlacierStatusCount).toBeUndefined()
   })
 
   test('Does not find request query in database - empty object response', async () => {
