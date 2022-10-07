@@ -28,8 +28,7 @@ const mockCreateQuerySql = createQuerySql as jest.Mock
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
-    mockConfirmAthenaTable.mockReset()
-    mockCreateQuerySql.mockReset()
+    jest.resetAllMocks()
   })
 
   it('confirms whether the athena data source exists and whether query sql has been generated', async () => {
@@ -53,12 +52,16 @@ describe('initiate athena query handler', () => {
       tableAvailable: false,
       message: 'test error message'
     })
+    const testId = testAthenaQueryEvent.Records[0].body
     await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
       'test error message'
     )
-    expect(mockGetQueryByZendeskId).toHaveBeenCalled()
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
-    expect(mockUpdateZendeskTicket).toHaveBeenCalled()
+    expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
+      testId,
+      'test error message',
+      'closed'
+    )
   })
 
   it('throws an error if there is no data in the SQS Event', async () => {
@@ -78,12 +81,19 @@ describe('initiate athena query handler', () => {
       error: 'sql error message'
     })
 
+    const testId = testAthenaQueryEvent.Records[0].body
+
     await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
       'sql error message'
     )
-    expect(mockGetQueryByZendeskId).toHaveBeenCalled()
+
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
-    expect(mockUpdateZendeskTicket).toHaveBeenCalled()
+    expect(mockGetQueryByZendeskId).toHaveBeenCalledWith(testId)
     expect(mockCreateQuerySql).toHaveBeenCalled()
+    expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
+      testId,
+      'sql error message',
+      'closed'
+    )
   })
 })
