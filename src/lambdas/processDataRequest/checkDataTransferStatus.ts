@@ -18,7 +18,8 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     s3BucketDataLocationResult.standardTierLocationsToCopy.length > 0
 
   if (glacierRestoreStillInProgress || copyJobStillInProgress) {
-    await sendContinuePollingDataTransferMessage(zendeskId)
+    const waitTimeInSeconds = glacierRestoreStillInProgress ? 900 : 30
+    await sendContinuePollingDataTransferMessage(zendeskId, waitTimeInSeconds)
     await incrementPollingRetryCount({
       glacierRestoreStillInProgress,
       copyJobStillInProgress
