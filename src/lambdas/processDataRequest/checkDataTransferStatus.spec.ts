@@ -5,10 +5,25 @@ import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendI
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import { when } from 'jest-when'
-import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
+import {
+  TEST_MAXIMUM_STATUS_CHECK_COUNT,
+  ZENDESK_TICKET_ID
+} from '../../utils/tests/testConstants'
+import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
+import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { DataRequestParams } from '../../types/dataRequestParams'
+import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
-  getQueryByZendeskId: jest.fn()
+  getDatabaseEntryByZendeskId: jest.fn()
+}))
+
+jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({
+  checkS3BucketData: jest.fn()
+}))
+
+jest.mock('./terminateStatusCheckProcess', () => ({
+  terminateStatusCheckProcess: jest.fn()
 }))
 
 jest.mock(
@@ -17,10 +32,6 @@ jest.mock(
     sendContinuePollingDataTransferMessage: jest.fn()
   })
 )
-
-jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({
-  checkS3BucketData: jest.fn()
-}))
 
 describe('checkDataTransferStatus', () => {
   beforeAll(() => {
@@ -37,6 +48,8 @@ describe('checkDataTransferStatus', () => {
       dataAvailable: true
     })
   }
+  const mockTerminateStatusCheckProcess =
+    terminateStatusCheckProcess as jest.Mock
   const filesToCopy = ['file-to-copy1', 'file-to-copy-2']
   const givenGlacierDefrostPending = () => {
     givenDataResult(filesToCopy, [
@@ -54,6 +67,33 @@ describe('checkDataTransferStatus', () => {
   }
 
   // TODO: all these tests need to access the database
+
+  const requestInfo: DataRequestParams = {
+    zendeskId: ZENDESK_TICKET_ID,
+    resultsEmail: 'test@test.gov.uk',
+    resultsName: 'Test Name',
+    dateTo: '2022-09-06',
+    dateFrom: '2022-09-06',
+    identifierType: 'event_id',
+    eventIds: ['234gh24', '98h98bc'],
+    piiTypes: ['passport_number']
+  }
+
+  const givenDatabaseEntryResult = (
+    statusCountObject:
+      | { checkGlacierStatusCount?: number; checkCopyStatusCount?: number }
+      | undefined
+  ) => {
+    when(getDatabaseEntryByZendeskId).mockResolvedValue({
+      requestInfo,
+      ...(statusCountObject?.checkGlacierStatusCount && {
+        checkGlacierStatusCount: statusCountObject.checkGlacierStatusCount
+      }),
+      ...(statusCountObject?.checkCopyStatusCount && {
+        checkCopyStatusCount: statusCountObject.checkCopyStatusCount
+      })
+    } as DataRequestDatabaseEntry)
+  }
 
   xit('should continue polling if a glacier defrost is pending', async () => {
     givenGlacierDefrostPending()
@@ -98,5 +138,36 @@ describe('checkDataTransferStatus', () => {
     givenDataReadyForQuery()
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
     expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
+  })
+
+  it('should stop checking the data transfer status if checkCopyStatusCount exceeds maximum amount', async () => {
+    jest.spyOn(global.console, 'error')
+    givenDatabaseEntryResult({
+      checkCopyStatusCount: TEST_MAXIMUM_STATUS_CHECK_COUNT
+    })
+
+    await checkDataTransferStatus(ZENDESK_TICKET_ID)
+
+    expect(console.error).toHaveBeenLastCalledWith(
+      'Status check count exceeded. Process terminated'
+    )
+    expect(mockTerminateStatusCheckProcess).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
+  })
+  it('should stop checking the data transfer status if checkGlacierStatusCount exceeds maximum amount', async () => {
+    jest.spyOn(global.console, 'error')
+    givenDatabaseEntryResult({
+      checkGlacierStatusCount: TEST_MAXIMUM_STATUS_CHECK_COUNT
+    })
+
+    await checkDataTransferStatus(ZENDESK_TICKET_ID)
+
+    expect(console.error).toHaveBeenLastCalledWith(
+      'Status check count exceeded. Process terminated'
+    )
+    expect(mockTerminateStatusCheckProcess).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
   })
 })

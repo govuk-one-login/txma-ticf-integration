@@ -35,3 +35,4 @@ export const TEST_BATCH_JOB_ROLE_ARN = 'myBatchJobRoleArn'
 export const TEST_QUERY_DATABASE_TABLE_NAME = 'test_query_table'
 export const TEST_RECIPIENT_EMAIL = 'myuser@test.gov.uk'
 export const TEST_RECIPIENT_NAME = 'my name'
+export const TEST_MAXIMUM_STATUS_CHECK_COUNT = 484
