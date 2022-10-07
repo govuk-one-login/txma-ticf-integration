@@ -57,6 +57,8 @@ const mockSendContinuePollingDataTransferMessage =
   sendContinuePollingDataTransferMessage as jest.Mock
 
 describe('initiate data transfer', () => {
+  const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
+  const EXPECTED_COPY_WAIT_TIME_IN_SECONDS = 30
   const givenDataResult = (
     dataAvailable: boolean,
     standardTierLocationsToCopy: string[],
@@ -126,7 +128,8 @@ describe('initiate data transfer', () => {
     )
     expect(mockStartGlacierRestore).not.toHaveBeenCalled()
     expect(mockSendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
-      ZENDESK_TICKET_ID
+      ZENDESK_TICKET_ID,
+      EXPECTED_COPY_WAIT_TIME_IN_SECONDS
     )
     expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
@@ -147,7 +150,8 @@ describe('initiate data transfer', () => {
 
     expect(startCopyJob).not.toHaveBeenCalled()
     expect(sendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
-      ZENDESK_TICKET_ID
+      ZENDESK_TICKET_ID,
+      EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS
     )
     expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
@@ -168,7 +172,8 @@ describe('initiate data transfer', () => {
 
     expect(startCopyJob).not.toHaveBeenCalled()
     expect(sendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
-      ZENDESK_TICKET_ID
+      ZENDESK_TICKET_ID,
+      EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS
     )
     expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })

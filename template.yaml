@@ -234,8 +234,17 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
-          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
+          ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZENDESK_FIELD_ID_DATA_PATHS}}'
+          ZENDESK_FIELD_ID_DATE_FROM: '{{resolve:ssm:ZENDESK_FIELD_ID_DATE_FROM}}'
+          ZENDESK_FIELD_ID_DATE_TO: '{{resolve:ssm:ZENDESK_FIELD_ID_DATE_TO}}'
+          ZENDESK_FIELD_ID_EVENT_IDS: '{{resolve:ssm:ZENDESK_FIELD_ID_EVENT_IDS}}'
+          ZENDESK_FIELD_ID_IDENTIFIER_TYPE: '{{resolve:ssm:ZENDESK_FIELD_ID_IDENTIFIER_TYPE}}'
+          ZENDESK_FIELD_ID_JOURNEY_IDS: '{{resolve:ssm:ZENDESK_FIELD_ID_JOURNEY_IDS}}'
+          ZENDESK_FIELD_ID_PII_TYPES: '{{resolve:ssm:ZENDESK_FIELD_ID_PII_TYPES}}'
+          ZENDESK_FIELD_ID_SESSION_IDS: '{{resolve:ssm:ZENDESK_FIELD_ID_SESSION_IDS}}'
+          ZENDESK_FIELD_ID_USER_IDS: '{{resolve:ssm:ZENDESK_FIELD_ID_USER_IDS}}'
       Events:
         Api:
           Type: Api
@@ -357,6 +366,16 @@ Resources:
               Resource:
               - !GetAtt InitiateDataRequestQueue.Arn
               - !GetAtt InitiateAthenaQueryQueue.Arn
+            - Sid: AllowQueueKmsAccess
+              Effect: Allow
+              Action:
+                - kms:GenerateDataKey
+                - kms:Encrypt
+              # For some reason, Decrypt is needed to add items to the queue.
+              # See here for some discussion of this: https://github.com/aws/aws-cdk/issues/6609
+                - kms:Decrypt
+              Resource:
+              - !GetAtt QueueKmsKey.Arn
             - Sid: SecretsManager
               Effect: Allow
               Action:
@@ -562,12 +581,14 @@ Resources:
         PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
+            - Sid: AllowRestoreOnAuditBucket
+              Effect: Allow
               Action:
                 - s3:RestoreObject
               Resource:
                 - arn:aws:s3:::audit-sandbox-message-batch/* #TODO: Update with parameter when merging with TxMA 1
-            - Effect: Allow
+            - Sid: AllowReadFromManifestBucket
+              Effect: Allow
               Action:
                 -  "s3:GetObject"
                 -  "s3:GetObjectVersion"
@@ -577,14 +598,16 @@ Resources:
         PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
+            - Sid: AllowWriteToAnalysisBucket
+              Effect: Allow
               Action:
                 - s3:PutObject
                 - s3:PutObjectAcl
                 - s3:PutObjectTagging
               Resource: 
                 - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
-            - Effect: Allow
+            - Sid: AllowReadFromAuditBucket
+              Effect: Allow
               Action: 
                 - s3:GetObject
                 - s3:GetObjectAcl
@@ -592,11 +615,6 @@ Resources:
                 - s3:ListBucket
               Resource:
                 - arn:aws:s3:::audit-sandbox-message-batch/*
-            - Effect: Allow
-              Action:
-                - s3:PutObject
-              Resource:
-                - !Join ['/', [!GetAtt BatchJobBucketLogsBucket.Arn, '*']]
             
   # Data Analysis
 

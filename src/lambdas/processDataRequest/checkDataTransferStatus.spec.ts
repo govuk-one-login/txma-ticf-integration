@@ -34,6 +34,8 @@ jest.mock(
 )
 
 describe('checkDataTransferStatus', () => {
+  const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
+  const EXPECTED_COPY_WAIT_TIME_IN_SECONDS = 30
   beforeAll(() => {
     jest.resetAllMocks()
   })
@@ -99,7 +101,8 @@ describe('checkDataTransferStatus', () => {
     givenGlacierDefrostPending()
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
     expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
-      ZENDESK_TICKET_ID
+      ZENDESK_TICKET_ID,
+      EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS
     )
     expect(incrementPollingRetryCount).toBeCalledWith({
       glacierRestoreStillInProgress: true,
@@ -112,7 +115,8 @@ describe('checkDataTransferStatus', () => {
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
     expect(startCopyJob).toBeCalledWith(filesToCopy, ZENDESK_TICKET_ID)
     expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
-      ZENDESK_TICKET_ID
+      ZENDESK_TICKET_ID,
+      EXPECTED_COPY_WAIT_TIME_IN_SECONDS
     )
     expect(incrementPollingRetryCount).toBeCalledWith({
       glacierRestoreStillInProgress: false,
@@ -126,7 +130,8 @@ describe('checkDataTransferStatus', () => {
     givenCopyRequired()
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
     expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
-      ZENDESK_TICKET_ID
+      ZENDESK_TICKET_ID,
+      EXPECTED_COPY_WAIT_TIME_IN_SECONDS
     )
     expect(incrementPollingRetryCount).toBeCalledWith({
       glacierRestoreStillInProgress: false,

@@ -18,11 +18,16 @@ const generateRandomNumber = () => {
 
 const authoriseAs = (username: string) => {
   return Buffer.from(
-    `${username}/token:${getEnvVariable('ZENDESK_TEST_API_TOKEN')}`
+    `${username}/token:${getEnvVariable('ZENDESK_API_KEY')}`
   ).toString('base64')
 }
 
 const generateZendeskRequestDate = (offset: number): string => {
+  const fixedRequestDate = process.env.FIXED_DATA_REQUEST_DATE
+  if (fixedRequestDate) {
+    return fixedRequestDate
+  }
+
   const today: Date = new Date()
   today.setDate(today.getDate() + offset)
 

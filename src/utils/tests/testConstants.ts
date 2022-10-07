@@ -2,6 +2,7 @@ import { NotifyApiSecrets } from '../../types/notifyApiSecrets'
 import { ZendeskApiSecrets } from '../../types/zendeskApiSecrets'
 
 export const ZENDESK_TICKET_ID = '123'
+export const ZENDESK_TICKET_ID_AS_NUMBER = 123
 export const ALL_ZENDESK_SECRETS: ZendeskApiSecrets = {
   zendeskApiKey: 'myZendeskApiKey',
   zendeskApiUserId: 'myZendeskApiUserId',
@@ -36,3 +37,13 @@ export const TEST_QUERY_DATABASE_TABLE_NAME = 'test_query_table'
 export const TEST_RECIPIENT_EMAIL = 'myuser@test.gov.uk'
 export const TEST_RECIPIENT_NAME = 'my name'
 export const TEST_MAXIMUM_STATUS_CHECK_COUNT = 484
+
+export const TEST_ZENDESK_FIELD_ID_DATA_PATHS = 1
+export const TEST_ZENDESK_FIELD_ID_DATE_FROM = 2
+export const TEST_ZENDESK_FIELD_ID_DATE_TO = 3
+export const TEST_ZENDESK_FIELD_ID_EVENT_IDS = 4
+export const TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE = 5
+export const TEST_ZENDESK_FIELD_ID_JOURNEY_IDS = 6
+export const TEST_ZENDESK_FIELD_ID_PII_TYPES = 7
+export const TEST_ZENDESK_FIELD_ID_SESSION_IDS = 8
+export const TEST_ZENDESK_FIELD_ID_USER_IDS = 9
