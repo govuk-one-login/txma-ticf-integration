@@ -11,6 +11,8 @@ import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { isSignatureInvalid } from './validateRequestSource'
 import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { zendeskCopy } from '../../i18n/zendeskCopy'
 
 const mockValidateZendeskRequest =
   validateZendeskRequest as jest.Mock<ValidatedDataRequestParamsResult>
@@ -119,7 +121,7 @@ describe('initate data request handler', () => {
     expect(handlerCallResult).toEqual({
       statusCode: 200,
       body: JSON.stringify({
-        message: 'data transfer initiated'
+        message: interpolateTemplate('transferInitiated', zendeskCopy)
       })
     })
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
@@ -137,7 +139,7 @@ describe('initate data request handler', () => {
     expect(handlerCallResult).toEqual({
       statusCode: 400,
       body: JSON.stringify({
-        message: 'Invalid request source'
+        message: interpolateTemplate('invalidSignature', zendeskCopy)
       })
     })
     expect(console.warn).toHaveBeenLastCalledWith(
@@ -163,7 +165,10 @@ describe('initate data request handler', () => {
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       requestBody,
-      `TEST: Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: ${validationMessage}`,
+      interpolateTemplate('ticketClosed', zendeskCopy, {
+        validationMessage
+      }),
+
       newTicketStatus
     )
   })
@@ -179,7 +184,10 @@ describe('initate data request handler', () => {
     expect(handlerCallResult).toEqual({
       statusCode: 400,
       body: JSON.stringify({
-        message: 'Request parameters do not match a Zendesk Ticket'
+        message: interpolateTemplate(
+          'responseMessageWhenParamsMismatch',
+          zendeskCopy
+        )
       })
     })
     expect(zendeskTicketDiffersFromRequest).toHaveBeenCalledWith(
@@ -187,7 +195,7 @@ describe('initate data request handler', () => {
     )
     expect(mockUpdateZendeskTicketById).toBeCalledWith(
       testDataRequest.zendeskId,
-      'Your ticket has been closed because a request was received for this ticket with details that do not match its current state.',
+      interpolateTemplate('ticketClosedMismatchWithState', zendeskCopy),
       newTicketStatus
     )
   })
@@ -202,7 +210,7 @@ describe('initate data request handler', () => {
     expect(handlerCallResult).toEqual({
       statusCode: 404,
       body: JSON.stringify({
-        message: 'Zendesk ticket not found'
+        message: interpolateTemplate('ticketNotFound', zendeskCopy)
       })
     })
   })

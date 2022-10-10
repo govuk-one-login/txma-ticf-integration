@@ -3,35 +3,41 @@ import { sendEmailToNotify } from './sendEmailToNotify'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { PersonalisationOptions } from '../../types/notify/personalisationOptions'
 import { tryParseJSON } from '../../utils/helpers'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { notifyCopy } from '../../i18n/notifyCopy'
+import { loggingCopy } from '../../i18n/loggingCopy'
 
 // event type is a placeholder
 export const handler = async (event: APIGatewayProxyEvent) => {
   if (!event.body) {
-    throw Error('Could not find event body. An email has not been sent')
+    throw Error(interpolateTemplate('missingEventBody', notifyCopy))
   }
   const requestDetails: PersonalisationOptions = tryParseJSON(event.body)
   if (!requestDetails.zendeskId) {
-    throw Error('Zendesk ticket ID missing from event body')
+    throw Error(interpolateTemplate('zendeskTicketIdMissing', notifyCopy))
   }
   if (isEventBodyInvalid(requestDetails)) {
     await closeZendeskTicket(
       requestDetails.zendeskId,
-      'Your results could not be emailed.'
+      interpolateTemplate('resultNotEmailed', notifyCopy)
     )
-    throw Error('Required details were not all present in event body')
+    throw Error(interpolateTemplate('requiredDetailsMissing', notifyCopy))
   }
 
   try {
     await sendEmailToNotify(requestDetails)
     await closeZendeskTicket(
       requestDetails.zendeskId,
-      'A link to your results has been sent to you.'
+      interpolateTemplate('linkToResults', notifyCopy)
     )
   } catch (error) {
-    console.error('Could not send a request to Notify: ', error)
+    console.error(
+      interpolateTemplate('requestNotSentToNotify', loggingCopy),
+      error
+    )
     await closeZendeskTicket(
       requestDetails.zendeskId,
-      'Your results could not be emailed.'
+      interpolateTemplate('resultNotEmailed', notifyCopy)
     )
   }
 }
@@ -50,6 +56,6 @@ const closeZendeskTicket = async (ticketId: string, message: string) => {
     const ticketStatus = 'closed'
     await updateZendeskTicketById(ticketId, message, ticketStatus)
   } catch (error) {
-    console.error('Could not update Zendesk ticket: ', error)
+    console.error(interpolateTemplate('ticketNotUpdated', loggingCopy), error)
   }
 }

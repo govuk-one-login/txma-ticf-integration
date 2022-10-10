@@ -23,6 +23,8 @@ import {
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../utils/tests/testConstants'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { loggingCopy } from '../../i18n/loggingCopy'
 
 jest.mock('../../sharedServices/zendesk/getZendeskTicket', () => ({
   getZendeskTicket: jest.fn()
@@ -322,7 +324,7 @@ describe('match zendesk ticket details', () => {
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(console.warn).toHaveBeenCalledWith(
-        'Request does not match values on Ticket, the following parameters do not match:',
+        interpolateTemplate('requestDoesntMatcheZendeskTickets', loggingCopy),
         [parameterName]
       )
     }
@@ -343,7 +345,7 @@ describe('match zendesk ticket details', () => {
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(console.warn).toHaveBeenCalledWith(
-        'Request does not match values on Ticket, the following parameters do not match:',
+        interpolateTemplate('requestDoesntMatcheZendeskTickets', loggingCopy),
         [parameterName]
       )
     }
@@ -366,7 +368,7 @@ describe('match zendesk ticket details', () => {
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(console.warn).toHaveBeenCalledWith(
-        'Request does not match values on Ticket, the following parameters do not match:',
+        interpolateTemplate('requestDoesntMatcheZendeskTickets', loggingCopy),
         [parameterName]
       )
     }

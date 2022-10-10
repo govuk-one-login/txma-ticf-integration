@@ -12,6 +12,8 @@ import {
 } from '../../utils/tests/testConstants'
 import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
 import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
+import { loggingCopy } from '../../i18n/loggingCopy'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 const zendeskTicketMessage = 'Something was invalid.'
 const NEW_TICKET_STATUS = 'closed'
@@ -85,7 +87,7 @@ describe('updating a zendesk ticket', () => {
       }
     )
     expect(console.log).toHaveBeenLastCalledWith(
-      'Zendesk ticket update successful.',
+      interpolateTemplate('zendeskSuccessful', loggingCopy),
       { theReturnData: '123' }
     )
   }
@@ -95,7 +97,7 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicket(exampleEventBody, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(console.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket update failed.',
+      interpolateTemplate('zendeskFailed', loggingCopy),
       Error('There was an error.')
     )
   })
@@ -106,7 +108,7 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicketById(ZENDESK_TICKET_ID, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(console.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket update failed.',
+      interpolateTemplate('zendeskFailed', loggingCopy),
       Error('There was an error.')
     )
   })
@@ -114,21 +116,21 @@ describe('updating a zendesk ticket', () => {
   it('returns from the function if eventBody is null', async () => {
     await updateZendeskTicket(null, zendeskTicketMessage)
     expect(console.error).toHaveBeenLastCalledWith(
-      'No Zendesk info available. Cannot update ticket.'
+      interpolateTemplate('zendeskNoInfo', loggingCopy)
     )
   })
 
   it('returns from the function if Zendesk Ticket ID is not set', async () => {
     await updateZendeskTicket("{zendeskId: ''}", zendeskTicketMessage)
     expect(console.error).toHaveBeenLastCalledWith(
-      'No Zendesk ticket ID present. Cannot update ticket.'
+      interpolateTemplate('zendeskNoTicketId', loggingCopy)
     )
   })
 
   it('returns from the function if Zendesk Ticket ID key is not present', async () => {
     await updateZendeskTicket("{someOtherKey: ''}", zendeskTicketMessage)
     expect(console.error).toHaveBeenLastCalledWith(
-      'No Zendesk ticket ID present. Cannot update ticket.'
+      interpolateTemplate('zendeskNoTicketId', loggingCopy)
     )
   })
 
@@ -139,7 +141,7 @@ describe('updating a zendesk ticket', () => {
       new SyntaxError('Unexpected token h in JSON at position 0')
     )
     expect(console.error).toHaveBeenLastCalledWith(
-      'No Zendesk ticket ID present. Cannot update ticket.'
+      interpolateTemplate('zendeskNoTicketId', loggingCopy)
     )
   })
 })

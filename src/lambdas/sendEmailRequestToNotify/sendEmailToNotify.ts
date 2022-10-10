@@ -1,6 +1,8 @@
 import { NotifyClient } from 'notifications-node-client'
+import { notifyCopy } from '../../i18n/notifyCopy'
 import { retrieveNotifySecrets } from '../../sharedServices/secrets/retrieveNotifyApiSecrets'
 import { PersonalisationOptions } from '../../types/notify/personalisationOptions'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const sendEmailToNotify = async (
   requestDetails: PersonalisationOptions
@@ -8,7 +10,7 @@ export const sendEmailToNotify = async (
   const secrets = await retrieveNotifySecrets()
   const notifyClient = new NotifyClient(secrets.notifyApiKey)
 
-  console.log('Sending request to Notify')
+  console.log(interpolateTemplate('requestToNotify', notifyCopy))
   const response = await Promise.resolve(
     notifyClient.sendEmail(secrets.notifyTemplateId, requestDetails.email, {
       personalisation: {

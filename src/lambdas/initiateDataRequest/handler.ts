@@ -1,13 +1,16 @@
-import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { loggingCopy } from '../../i18n/loggingCopy'
+import { zendeskCopy } from '../../i18n/zendeskCopy'
 import {
   updateZendeskTicket,
   updateZendeskTicketById
 } from '../../sharedServices/zendesk/updateZendeskTicket'
+import { DataRequestParams } from '../../types/dataRequestParams'
+import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { isSignatureInvalid } from './validateRequestSource'
 import { validateZendeskRequest } from './validateZendeskRequest'
-import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
-import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
-import { DataRequestParams } from '../../types/dataRequestParams'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 
 export const handler = async (
@@ -37,19 +40,23 @@ export const handler = async (
     return {
       statusCode: 404,
       body: JSON.stringify({
-        message: 'Zendesk ticket not found'
+        message: interpolateTemplate('ticketNotFound', zendeskCopy)
       })
     }
   }
 
-  const messageId = await sendInitiateDataTransferMessage(requestParams)
+  const messageId = (await sendInitiateDataTransferMessage(requestParams)) ?? ''
 
-  console.log(`Sent data transfer queue message with id '${messageId}'`)
+  console.log(
+    interpolateTemplate('transferQueueMessageWithId', loggingCopy, {
+      messageId
+    })
+  )
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: 'data transfer initiated'
+      message: interpolateTemplate('transferInitiated', zendeskCopy)
     })
   }
 }
@@ -58,13 +65,15 @@ const handleInvalidRequest = async (
   requestBody: string | null,
   validatedZendeskRequest: ValidatedDataRequestParamsResult
 ) => {
-  console.log('Zendesk request was invalid')
+  console.log(interpolateTemplate('requestInvalid', loggingCopy))
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
   const newTicketStatus = 'closed'
   await updateZendeskTicket(
     requestBody,
-    `TEST: Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: ${validationMessage}`,
+    interpolateTemplate('ticketClosed', zendeskCopy, {
+      validationMessage
+    }),
     newTicketStatus
   )
   return {
@@ -76,11 +85,11 @@ const handleInvalidRequest = async (
 }
 
 const handleInvalidSignature = async () => {
-  console.warn('Request received with invalid webhook signature')
+  console.warn(interpolateTemplate('invalidWebhookSignature', loggingCopy))
   return {
     statusCode: 400,
     body: JSON.stringify({
-      message: 'Invalid request source'
+      message: interpolateTemplate('invalidSignature', zendeskCopy)
     })
   }
 }
@@ -90,14 +99,17 @@ const handleUnmatchedRequest = async (zendeskId: string) => {
 
   await updateZendeskTicketById(
     zendeskId,
-    'Your ticket has been closed because a request was received for this ticket with details that do not match its current state.',
+    interpolateTemplate('ticketClosedMismatchWithState', zendeskCopy),
     newTicketStatus
   )
 
   return {
     statusCode: 400,
     body: JSON.stringify({
-      message: 'Request parameters do not match a Zendesk Ticket'
+      message: interpolateTemplate(
+        'responseMessageWhenParamsMismatch',
+        zendeskCopy
+      )
     })
   }
 }

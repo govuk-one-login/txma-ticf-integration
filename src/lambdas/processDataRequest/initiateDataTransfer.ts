@@ -1,24 +1,27 @@
+import { loggingCopy } from '../../i18n/loggingCopy'
+import { zendeskCopy } from '../../i18n/zendeskCopy'
 import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierRestore'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { DataRequestParams } from '../../types/dataRequestParams'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const initiateDataTransfer = async (
   dataRequestParams: DataRequestParams
 ) => {
   const bucketData = await checkS3BucketData(dataRequestParams)
   if (!bucketData.dataAvailable) {
-    console.log('No data found for period, closing Zendesk ticket')
+    console.log(interpolateTemplate('noDataFound', loggingCopy))
     await updateZendeskTicketById(
       dataRequestParams.zendeskId,
-      'Your ticket has been closed because no data was available for the requested dates',
+      interpolateTemplate('bucketDataUnavailable', zendeskCopy),
       'closed'
     )
     return
   }
 
   if (bucketData.glacierTierLocationsToCopy?.length) {
-    console.log('Found glacier tier locations to restore')
+    console.log(interpolateTemplate('foundGlacierLocations', loggingCopy))
     await startGlacierRestore(
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId

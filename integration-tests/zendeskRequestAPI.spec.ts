@@ -1,5 +1,7 @@
 import axios from 'axios'
 import crypto from 'crypto'
+import { zendeskCopy } from '../src/i18n/zendeskCopy'
+import { interpolateTemplate } from '../src/utils/interpolateTemplate'
 
 //TODO: test setup and teardown for creating and deleting a ticket to use
 
@@ -59,7 +61,9 @@ describe('Zendesk request integrity', () => {
 
     const errorResponse = await invalidRequestError(headers, webhookRequestData)
     expect(errorResponse.status).toEqual(400)
-    expect(errorResponse.data.message).toEqual('Invalid request source')
+    expect(errorResponse.data.message).toEqual(
+      interpolateTemplate('invalidSignature', zendeskCopy)
+    )
   })
 })
 
@@ -99,7 +103,9 @@ describe('Zendesk ticket check', () => {
 
     const errorResponse = await invalidRequestError(headers, webhookRequestData)
     expect(errorResponse.status).toEqual(404)
-    expect(errorResponse.data.message).toEqual('Zendesk ticket not found')
+    expect(errorResponse.data.message).toEqual(
+      interpolateTemplate('ticketNotFound', zendeskCopy)
+    )
   })
 
   test('API Gateway returns a 400 response if the request does not match info in corresponding Zendesk ticket', async () => {
@@ -126,7 +132,7 @@ describe('Zendesk ticket check', () => {
     const errorResponse = await invalidRequestError(headers, webhookRequestData)
     expect(errorResponse.status).toEqual(400)
     expect(errorResponse.data.message).toEqual(
-      'Request parameters do not match a Zendesk Ticket'
+      interpolateTemplate('responseMessageWhenParamsMismatch', zendeskCopy)
     )
   })
 })

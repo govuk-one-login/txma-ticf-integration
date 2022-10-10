@@ -8,6 +8,9 @@ import {
 import { handler } from './handler'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { sendEmailToNotify } from './sendEmailToNotify'
+import { notifyCopy } from '../../i18n/notifyCopy'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { loggingCopy } from '../../i18n/loggingCopy'
 
 jest.mock('./sendEmailToNotify', () => ({
   sendEmailToNotify: jest.fn()
@@ -60,7 +63,7 @@ describe('initiate sendEmailRequest handler', () => {
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      'A link to your results has been sent to you.',
+      interpolateTemplate('linkToResults', notifyCopy),
       'closed'
     )
   })
@@ -68,7 +71,7 @@ describe('initiate sendEmailRequest handler', () => {
     const invalidEventBody = ''
 
     await expect(callHandlerWithBody(invalidEventBody)).rejects.toThrow(
-      'Could not find event body. An email has not been sent'
+      interpolateTemplate('missingEventBody', notifyCopy)
     )
   })
   it('throws an error when zendeskId is missing from the event body', async () => {
@@ -79,7 +82,7 @@ describe('initiate sendEmailRequest handler', () => {
     })
 
     await expect(callHandlerWithBody(eventBodyParams)).rejects.toThrow(
-      'Zendesk ticket ID missing from event body'
+      interpolateTemplate('zendeskTicketIdMissing', notifyCopy)
     )
   })
   it('throws an error when zendeskId is an empty string', async () => {
@@ -91,7 +94,7 @@ describe('initiate sendEmailRequest handler', () => {
     })
 
     await expect(callHandlerWithBody(eventBodyParams)).rejects.toThrow(
-      'Zendesk ticket ID missing from event body'
+      interpolateTemplate('zendeskTicketIdMissing', notifyCopy)
     )
   })
   it.each(['firstName', 'email', 'signedUrl'])(
@@ -107,11 +110,13 @@ describe('initiate sendEmailRequest handler', () => {
 
       await expect(
         callHandlerWithBody(JSON.stringify(eventBodyParams))
-      ).rejects.toThrow('Required details were not all present in event body')
+      ).rejects.toThrow(
+        interpolateTemplate('requiredDetailsMissing', notifyCopy)
+      )
       expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
       expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
         ZENDESK_TICKET_ID,
-        'Your results could not be emailed.',
+        interpolateTemplate('resultNotEmailed', notifyCopy),
         'closed'
       )
     }
@@ -129,11 +134,13 @@ describe('initiate sendEmailRequest handler', () => {
 
       await expect(
         callHandlerWithBody(JSON.stringify(eventBodyParams))
-      ).rejects.toThrow('Required details were not all present in event body')
+      ).rejects.toThrow(
+        interpolateTemplate('requiredDetailsMissing', notifyCopy)
+      )
       expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
       expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
         ZENDESK_TICKET_ID,
-        'Your results could not be emailed.',
+        interpolateTemplate('resultNotEmailed', notifyCopy),
         'closed'
       )
     }
@@ -144,13 +151,13 @@ describe('initiate sendEmailRequest handler', () => {
     await callHandlerWithBody(validEventBody)
 
     expect(console.error).toHaveBeenCalledWith(
-      'Could not send a request to Notify: ',
+      interpolateTemplate('requestNotSentToNotify', loggingCopy),
       Error('A Notify related error')
     )
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      'Your results could not be emailed.',
+      interpolateTemplate('resultNotEmailed', notifyCopy),
       'closed'
     )
   })
@@ -167,11 +174,11 @@ describe('initiate sendEmailRequest handler', () => {
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      'Your results could not be emailed.',
+      interpolateTemplate('resultNotEmailed', notifyCopy),
       'closed'
     )
     expect(console.error).toHaveBeenCalledWith(
-      'Could not update Zendesk ticket: ',
+      interpolateTemplate('ticketNotUpdated', loggingCopy),
       Error('An updateZendeskTicket related error')
     )
   })
@@ -184,11 +191,11 @@ describe('initiate sendEmailRequest handler', () => {
     expect(console.error).toHaveBeenCalledTimes(2)
     expect(console.error).toHaveBeenNthCalledWith(
       1,
-      'Could not send a request to Notify: ',
+      interpolateTemplate('requestNotSentToNotify', loggingCopy),
       Error('A Notify related error')
     )
     expect(console.error).toHaveBeenLastCalledWith(
-      'Could not update Zendesk ticket: ',
+      interpolateTemplate('ticketNotUpdated', loggingCopy),
       Error('An updateZendeskTicket related error')
     )
   })
