@@ -15,24 +15,23 @@ export const updateQueryByZendeskId = async (
   const params: UpdateItemCommandInput = {
     TableName: getEnv('DYNAMODB_TABLE_NAME'),
     Key: { zendeskId: { S: zendeskId } },
-    ReturnValues: '_NEW',
+    ReturnValues: 'ALL_NEW',
     ExpressionAttributeValues: { ':value': { S: `${attributeValue}` } },
     UpdateExpression: `SET ${attributeKey}=:value`
   }
 
   const updatedData = await ddbClient.send(new UpdateItemCommand(params))
-
-  const responseObject = updatedData.Attributes
-
-  console.log(responseObject)
-
-  const zendeskTicket = responseObject?.requestInfo?.M
+  const responseObject = updatedData?.Attributes
 
   if (!responseObject) {
     throw new Error(
       `Failed to update item in db for zendesk ticket: ${zendeskId}`
     )
   }
+
+  console.log(responseObject)
+
+  const zendeskTicket = responseObject?.requestInfo?.M
 
   const dynamoDBParams = {
     zendeskId: zendeskTicket?.zendeskId?.S,
@@ -52,7 +51,7 @@ export const updateQueryByZendeskId = async (
 
   if (!isDataRequestParams(dynamoDBParams)) {
     throw new Error(
-      `Event data returned form db following update was not of correct type for zendesk ticket: ${zendeskId}`
+      `Event data returned from db following update was not of correct type for zendesk ticket: ${zendeskId}`
     )
   }
 
