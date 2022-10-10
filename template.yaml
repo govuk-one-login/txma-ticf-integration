@@ -400,6 +400,12 @@ Resources:
                 - dynamodb:PutItem
               Resource:
                 - !GetAtt QueryRequestDynamoDBTable.Arn
+            - Sid: DynamoDBGet
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource:
+                - !GetAtt QueryRequestDynamoDBTable.Arn
             - Sid: AllowS3JobCreate
               Effect: Allow
               Action:
