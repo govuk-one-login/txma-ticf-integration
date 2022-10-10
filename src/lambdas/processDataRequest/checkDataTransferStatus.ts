@@ -43,9 +43,9 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     console.log(
       `${
         glacierRestoreStillInProgress ? 'Glacier restore' : 'Copy job'
-      } still in progress. 
-      Placing zendeskId back on InitiateDataRequestQueue.
-      Retry count: ${
+      } still in progress.`,
+      'Placing zendeskId back on InitiateDataRequestQueue.',
+      `Retry count: ${
         copyJobStillInProgress
           ? dbEntry.checkCopyStatusCount
           : dbEntry.checkGlacierStatusCount
