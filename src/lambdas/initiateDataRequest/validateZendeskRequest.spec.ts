@@ -148,9 +148,7 @@ describe('validateZendeskRequest', () => {
       'dob name passport_number'
     )
 
-    console.log(request)
     const validationResult = validateZendeskRequest(JSON.stringify(request))
-    console.log(validationResult)
 
     const fields = Object.keys(validationResult.dataRequestParams ?? {})
     fields.map((field) => expect(fieldKeys).toContain(field))
