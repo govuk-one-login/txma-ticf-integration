@@ -17,7 +17,7 @@ export const updateQueryByZendeskId = async (
   const params: UpdateItemCommandInput = {
     TableName: getEnv('DYNAMODB_TABLE_NAME'),
     Key: { zendeskId: { S: zendeskId } },
-    ReturnValues: 'UPDATED_NEW',
+    ReturnValues: 'ALL_NEW',
     ExpressionAttributeValues: { ':value': { S: `${attributeValue}` } },
     UpdateExpression: `SET ${attributeKey}=:value`
   }

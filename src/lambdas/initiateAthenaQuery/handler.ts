@@ -44,10 +44,6 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     )
   }
 
-  // const update = await updateQueryByZendeskId(zendeskId, 'athenaQueryId', '123')
-
-  // console.log(update)
-
   const queryStarted = await startQueryExecution(querySqlGenerated)
 
   console.log(queryStarted)
