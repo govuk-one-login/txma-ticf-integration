@@ -76,8 +76,9 @@ const maintainRetryState = async (
   const waitTimeInSeconds = glacierRestoreStillInProgress ? 900 : 30
 
   await sendContinuePollingDataTransferMessage(zendeskId, waitTimeInSeconds)
-  await incrementPollingRetryCount({
+  await incrementPollingRetryCount(
+    zendeskId,
     glacierRestoreStillInProgress,
     copyJobStillInProgress
-  })
+  )
 }
