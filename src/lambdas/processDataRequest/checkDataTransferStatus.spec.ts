@@ -48,6 +48,7 @@ jest.mock('../../sharedServices/queue/sendInitiateAthenaQueryMessage', () => ({
 describe('checkDataTransferStatus', () => {
   const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
   const EXPECTED_COPY_WAIT_TIME_IN_SECONDS = 30
+
   beforeAll(() => {
     jest.resetAllMocks()
   })
@@ -64,6 +65,7 @@ describe('checkDataTransferStatus', () => {
   }
 
   const filesToCopy = ['file-to-copy1', 'file-to-copy-2']
+
   const givenGlacierDefrostPending = () => {
     givenDataResult(filesToCopy, [
       'glacier-to-restore-1',
@@ -78,8 +80,6 @@ describe('checkDataTransferStatus', () => {
   const givenDataReadyForQuery = () => {
     givenDataResult([], [])
   }
-
-  // TODO: all these tests need to access the database
 
   const requestInfo: DataRequestParams = {
     zendeskId: ZENDESK_TICKET_ID,
@@ -150,8 +150,6 @@ describe('checkDataTransferStatus', () => {
   })
 
   it('should continue to wait if there are pending files to copy from audit bucket and a copy has already started', async () => {
-    // TODO: this will depend on us looking at the database record and checking for the presence of the checkCopyStatusCount flag,
-    // which will tell us a copy has already started
     givenDatabaseEntryResult({
       checkCopyStatusCount: 1
     })

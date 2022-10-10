@@ -29,6 +29,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     s3BucketDataLocationResult.standardTierLocationsToCopy.length > 0
 
   if (!glacierRestoreStillInProgress && !copyJobStarted) {
+    console.log('Glacier restore complete. Starting copy job')
     await startCopyJob(
       s3BucketDataLocationResult.standardTierLocationsToCopy,
       zendeskId
@@ -39,6 +40,17 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
       copyJobStillInProgress
     )
   } else if (glacierRestoreStillInProgress || copyJobStillInProgress) {
+    console.log(
+      `${
+        glacierRestoreStillInProgress ? 'Glacier restore' : 'Copy job'
+      } still in progress. 
+      Placing zendeskId back on InitiateDataRequestQueue.
+      Retry count: ${
+        copyJobStillInProgress
+          ? dbEntry.checkCopyStatusCount
+          : dbEntry.checkGlacierStatusCount
+      }`
+    )
     await maintainRetryState(
       zendeskId,
       glacierRestoreStillInProgress,
@@ -49,6 +61,9 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     !copyJobStillInProgress &&
     !glacierRestoreStillInProgress
   ) {
+    console.log(
+      'Restore/copy process complete. Placing zendeskId on InitiateAthenaQueryQueue'
+    )
     await sendInitiateAthenaQueryMessage(zendeskId)
   }
 }
