@@ -1,10 +1,15 @@
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda'
-import { updateZendeskTicket } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { isSignatureInvalid } from '../../sharedServices/zendesk/validateRequestSource'
-import { validateZendeskRequest } from '../../sharedServices/zendesk/validateZendeskRequest'
+import {
+  updateZendeskTicket,
+  updateZendeskTicketById
+} from '../../sharedServices/zendesk/updateZendeskTicket'
+import { isSignatureInvalid } from './validateRequestSource'
+import { validateZendeskRequest } from './validateZendeskRequest'
 import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
-import { sendInitiateDataTransferMessage } from '../../sharedServices/queue/sendInitiateDataTransferMessage'
+import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { DataRequestParams } from '../../types/dataRequestParams'
+import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
+
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -15,13 +20,29 @@ export const handler = async (
   }
 
   const validatedZendeskRequest = validateZendeskRequest(event.body)
+
   if (!validatedZendeskRequest.isValid) {
     return await handleInvalidRequest(event.body, validatedZendeskRequest)
   }
 
-  const messageId = await sendInitiateDataTransferMessage(
+  const requestParams =
     validatedZendeskRequest.dataRequestParams as DataRequestParams
-  )
+
+  try {
+    if (await zendeskTicketDiffersFromRequest(requestParams)) {
+      return await handleUnmatchedRequest(requestParams.zendeskId)
+    }
+  } catch (error) {
+    console.error(error)
+    return {
+      statusCode: 404,
+      body: JSON.stringify({
+        message: 'Zendesk ticket not found'
+      })
+    }
+  }
+
+  const messageId = await sendInitiateDataTransferMessage(requestParams)
 
   console.log(`Sent data transfer queue message with id '${messageId}'`)
 
@@ -60,6 +81,23 @@ const handleInvalidSignature = async () => {
     statusCode: 400,
     body: JSON.stringify({
       message: 'Invalid request source'
+    })
+  }
+}
+
+const handleUnmatchedRequest = async (zendeskId: string) => {
+  const newTicketStatus = 'closed'
+
+  await updateZendeskTicketById(
+    zendeskId,
+    'Your ticket has been closed because a request was received for this ticket with details that do not match its current state.',
+    newTicketStatus
+  )
+
+  return {
+    statusCode: 400,
+    body: JSON.stringify({
+      message: 'Request parameters do not match a Zendesk Ticket'
     })
   }
 }

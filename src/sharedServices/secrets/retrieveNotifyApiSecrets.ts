@@ -1,6 +1,6 @@
-import { NotifyApiSecrets } from '../types/notifyApiSecrets'
+import { NotifyApiSecrets } from '../../types/notifyApiSecrets'
 import { checkSecretsSet } from './checkSecrets'
-import { getEnv } from '../utils/helpers'
+import { getEnv } from '../../utils/helpers'
 import { retrieveSecrets } from './retrieveSecrets'
 
 export const retrieveNotifySecrets = async (): Promise<NotifyApiSecrets> => {

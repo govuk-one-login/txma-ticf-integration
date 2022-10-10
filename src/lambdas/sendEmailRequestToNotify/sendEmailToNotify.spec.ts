@@ -1,6 +1,6 @@
 import { sendEmailToNotify } from './sendEmailToNotify'
 import { NotifyClient } from 'notifications-node-client'
-import { retrieveNotifySecrets } from '../../secrets/retrieveNotifyApiSecrets'
+import { retrieveNotifySecrets } from '../../sharedServices/secrets/retrieveNotifyApiSecrets'
 import {
   ALL_NOTIFY_SECRETS,
   TEST_NOTIFY_EMAIL,
@@ -15,7 +15,7 @@ jest.mock('notifications-node-client', () => ({
     return { sendEmail: mockSendEmail }
   })
 }))
-jest.mock('../../secrets/retrieveNotifyApiSecrets', () => ({
+jest.mock('../../sharedServices/secrets/retrieveNotifyApiSecrets', () => ({
   retrieveNotifySecrets: jest.fn()
 }))
 

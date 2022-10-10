@@ -9,6 +9,10 @@ export const getEnv = (name: EnvironmentVar['name']) => {
   return env
 }
 
+export const getEnvAsNumber = (name: EnvironmentVar['name']) => {
+  return Number(getEnv(name))
+}
+
 export const getEpochDate = (dateString: string) => {
   const dateParts = dateString.split('-')
 
@@ -35,4 +39,11 @@ export const tryParseJSON = (jsonString: string) => {
 
 export const isEmpty = (obj: object): boolean => {
   return obj && Object.keys(obj).length === 0
+}
+
+export const mapSpaceSeparatedStringToList = (input: string): string[] => {
+  if (!input) {
+    return []
+  }
+  return input.replace(/,/g, '').trim().split(' ')
 }
