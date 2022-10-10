@@ -16,16 +16,17 @@ export const interpolateTemplate = (
   additions: AdditionsInterface = {}
 ) => {
   if (!messages) {
-    return `Message object is missing`
+    throw new Error(`Messages data is not included`)
   }
 
   const messageObj = messages.find((element) => element.name === key)
 
   if (!messageObj) {
-    return `No messages for '${key}'`
+    throw new Error(`No message object returned for '${key}'`)
   }
 
   let { message } = messageObj
+
   const allReplacements = (messageObj.replacements = {
     ...messageObj.replacements,
     ...additions
