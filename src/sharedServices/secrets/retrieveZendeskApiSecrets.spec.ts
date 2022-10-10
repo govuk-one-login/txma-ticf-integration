@@ -2,7 +2,7 @@
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
 // Dependencies
 import { retrieveSecrets } from './retrieveSecrets'
-import { TEST_ZENDESK_SECRET_NAME } from '../utils/tests/testConstants'
+import { TEST_ZENDESK_SECRET_NAME } from '../../utils/tests/testConstants'
 
 jest.mock('./retrieveSecrets', () => ({
   retrieveSecrets: jest.fn()

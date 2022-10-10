@@ -8,7 +8,7 @@ import {
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../utils/tests/testConstants'
 
-jest.mock('../../secrets/retrieveZendeskApiSecrets', () => ({
+jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
 }))
 

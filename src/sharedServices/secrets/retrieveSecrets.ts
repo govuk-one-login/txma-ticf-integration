@@ -3,7 +3,7 @@ import {
   GetSecretValueCommand,
   GetSecretValueCommandInput
 } from '@aws-sdk/client-secrets-manager'
-import { getEnv } from '../utils/helpers'
+import { getEnv } from '../../utils/helpers'
 
 export const retrieveSecrets = async (
   secretName: string
