@@ -56,7 +56,7 @@ describe('initiate athena query handler', () => {
       sql: 'test sql string',
       idParameters: ['123']
     })
-    mockUpdateQueryByZendeskId.mockResolvedValue('test')
+    mockUpdateQueryByZendeskId.mockResolvedValue('test db return object')
     mockStartQueryExecution.mockResolvedValue({
       queryExecuted: true,
       queryExecutionId: 'test id'
