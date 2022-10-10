@@ -2,7 +2,7 @@ import { getZendeskTicket } from '../../sharedServices/zendesk/getZendeskTicket'
 import { getZendeskUser } from '../../sharedServices/zendesk/getZendeskUser'
 import { DataRequestParams } from '../../types/dataRequestParams'
 import { ZendeskTicket } from '../../types/zendeskTicketResult'
-import { ZendeskUser } from '../../types/zendeskUser'
+import { ZendeskUser } from '../../types/zendeskUserResult'
 import {
   getEnvAsNumber,
   mapSpaceSeparatedStringToList

@@ -7,7 +7,7 @@ import {
   testDataRequestWithEmptyValuesForIds
 } from '../../utils/tests/testDataRequest'
 import { ZendeskTicket } from '../../types/zendeskTicketResult'
-import { ZendeskUser } from '../../types/zendeskUser'
+import { ZendeskUser } from '../../types/zendeskUserResult'
 import {
   TEST_DATE_FROM,
   TEST_DATE_TO,
