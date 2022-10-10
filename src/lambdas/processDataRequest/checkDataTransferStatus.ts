@@ -23,7 +23,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
 
   const glacierRestoreStillInProgress =
     s3BucketDataLocationResult.glacierTierLocationsToCopy.length > 0
-  const copyJobStarted = !!dbEntry.checkCopyStatusCount
+  const copyJobStarted = dbEntry.checkCopyStatusCount !== undefined
   const copyJobStillInProgress =
     copyJobStarted &&
     s3BucketDataLocationResult.standardTierLocationsToCopy.length > 0
