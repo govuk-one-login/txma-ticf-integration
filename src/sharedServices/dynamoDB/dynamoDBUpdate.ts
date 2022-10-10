@@ -2,10 +2,8 @@ import {
   UpdateItemCommand,
   UpdateItemCommandInput
 } from '@aws-sdk/client-dynamodb'
-// import {
-//   DataRequestParams,
-//   isDataRequestParams
-// } from '../../types/dataRequestParams'
+import { DynamoDBParams } from '../../types/dynamoDBParams'
+import { isDataRequestParams } from '../../types/dataRequestParams'
 import { getEnv } from '../../utils/helpers'
 import { ddbClient } from './dynamoDBClient'
 
@@ -13,44 +11,50 @@ export const updateQueryByZendeskId = async (
   zendeskId: string,
   attributeKey: string,
   attributeValue: string
-): Promise<string> => {
+): Promise<DynamoDBParams> => {
   const params: UpdateItemCommandInput = {
     TableName: getEnv('DYNAMODB_TABLE_NAME'),
     Key: { zendeskId: { S: zendeskId } },
-    ReturnValues: 'ALL_NEW',
+    ReturnValues: '_NEW',
     ExpressionAttributeValues: { ':value': { S: `${attributeValue}` } },
     UpdateExpression: `SET ${attributeKey}=:value`
   }
 
   const updatedData = await ddbClient.send(new UpdateItemCommand(params))
-  console.log(updatedData)
-  // const responseObject = data?.Item?.requestInfo?.M
-  // if (!responseObject) {
-  //   throw new Error(
-  //     `Request info not returned from db for zendesk ticket: ${zendeskId}`
-  //   )
-  // }
 
-  // const dataRequestParams = {
-  //   zendeskId: responseObject?.zendeskId?.S,
-  //   resultsEmail: responseObject?.resultsEmail?.S,
-  //   resultsName: responseObject?.resultsName?.S,
-  //   dateFrom: responseObject?.dateFrom?.S,
-  //   dateTo: responseObject?.dateTo?.S,
-  //   identifierType: responseObject?.identifierType?.S,
-  //   sessionIds: responseObject?.sessionIds?.L?.map((id) => id.S),
-  //   journeyIds: responseObject?.journeyIds?.L?.map((id) => id.S),
-  //   eventIds: responseObject?.eventIds?.L?.map((id) => id.S),
-  //   userIds: responseObject?.userIds?.L?.map((id) => id.S),
-  //   piiTypes: responseObject?.piiTypes?.L?.map((piiType) => piiType.S),
-  //   dataPaths: responseObject?.dataPaths?.L?.map((path) => path.S)
-  // }
+  const responseObject = updatedData.Attributes
 
-  // if (!isDataRequestParams(dataRequestParams)) {
-  //   throw new Error(
-  //     `Event data returned from db was not of correct type for zendesk ticket: ${zendeskId}`
-  //   )
-  // }
+  console.log(responseObject)
 
-  return `Updated ${attributeKey}, with value: ${attributeValue}`
+  const zendeskTicket = responseObject?.requestInfo?.M
+
+  if (!responseObject) {
+    throw new Error(
+      `Failed to update item in db for zendesk ticket: ${zendeskId}`
+    )
+  }
+
+  const dynamoDBParams = {
+    zendeskId: zendeskTicket?.zendeskId?.S,
+    resultsEmail: zendeskTicket?.resultsEmail?.S,
+    resultsName: zendeskTicket?.resultsName?.S,
+    dateFrom: zendeskTicket?.dateFrom?.S,
+    dateTo: zendeskTicket?.dateTo?.S,
+    identifierType: zendeskTicket?.identifierType?.S,
+    sessionIds: zendeskTicket?.sessionIds?.L?.map((id) => id.S),
+    journeyIds: zendeskTicket?.journeyIds?.L?.map((id) => id.S),
+    eventIds: zendeskTicket?.eventIds?.L?.map((id) => id.S),
+    userIds: zendeskTicket?.userIds?.L?.map((id) => id.S),
+    piiTypes: zendeskTicket?.piiTypes?.L?.map((piiType) => piiType.S),
+    dataPaths: zendeskTicket?.dataPaths?.L?.map((path) => path.S),
+    athenaQueryId: responseObject?.athenaQueryId?.S
+  }
+
+  if (!isDataRequestParams(dynamoDBParams)) {
+    throw new Error(
+      `Event data returned form db following update was not of correct type for zendesk ticket: ${zendeskId}`
+    )
+  }
+
+  return dynamoDBParams
 }
