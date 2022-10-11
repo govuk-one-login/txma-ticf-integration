@@ -46,6 +46,10 @@ jest.mock('../../sharedServices/queue/sendInitiateAthenaQueryMessage', () => ({
   sendInitiateAthenaQueryMessage: jest.fn()
 }))
 
+const mockIncrementPollingRetryCount = incrementPollingRetryCount as jest.Mock
+const mockSendContinuePollingDataTransferMessage =
+  sendContinuePollingDataTransferMessage as jest.Mock
+
 describe('checkDataTransferStatus', () => {
   const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
   const EXPECTED_COPY_WAIT_TIME_IN_SECONDS = 30
@@ -120,6 +124,8 @@ describe('checkDataTransferStatus', () => {
   }
 
   it('should continue polling if a glacier defrost is pending', async () => {
+    const glacierRestoreIsInProgress = true
+    const copyJobIsNotInProgress = false
     givenDatabaseEntryResult({
       checkGlacierStatusCount: 1
     })
@@ -132,18 +138,23 @@ describe('checkDataTransferStatus', () => {
       'Placing zendeskId back on InitiateDataRequestQueue.',
       'Retry count: 1'
     )
-    expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
+    expect(mockIncrementPollingRetryCount).toBeCalledWith(
+      ZENDESK_TICKET_ID,
+      glacierRestoreIsInProgress,
+      copyJobIsNotInProgress
+    )
+    expect(mockSendContinuePollingDataTransferMessage).toBeCalledWith(
       ZENDESK_TICKET_ID,
       EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS
     )
-    expect(incrementPollingRetryCount).toBeCalledWith(
-      ZENDESK_TICKET_ID,
-      true,
-      false
+    expect(mockIncrementPollingRetryCount).toHaveBeenCalledBefore(
+      mockSendContinuePollingDataTransferMessage
     )
   })
 
   it('should start copy from audit to analysis bucket if no glacier defrost is pending, there are files to copy and no copy is in progress', async () => {
+    const glacierRestoreIsNotInProgress = false
+    const copyJobIsNotInProgress = false
     givenDatabaseEntryResult({
       checkGlacierStatusCount: 1
     })
@@ -155,18 +166,23 @@ describe('checkDataTransferStatus', () => {
       'Glacier restore complete. Starting copy job'
     )
     expect(startCopyJob).toBeCalledWith(filesToCopy, ZENDESK_TICKET_ID)
-    expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
+    expect(mockIncrementPollingRetryCount).toBeCalledWith(
+      ZENDESK_TICKET_ID,
+      glacierRestoreIsNotInProgress,
+      copyJobIsNotInProgress
+    )
+    expect(mockSendContinuePollingDataTransferMessage).toBeCalledWith(
       ZENDESK_TICKET_ID,
       EXPECTED_COPY_WAIT_TIME_IN_SECONDS
     )
-    expect(incrementPollingRetryCount).toBeCalledWith(
-      ZENDESK_TICKET_ID,
-      false,
-      false
+    expect(mockIncrementPollingRetryCount).toHaveBeenCalledBefore(
+      mockSendContinuePollingDataTransferMessage
     )
   })
 
   it('should continue to wait if there are pending files to copy from audit bucket and a copy has already started', async () => {
+    const glacierRestoreIsNotInProgress = false
+    const copyJobIsInProgress = true
     givenDatabaseEntryResult({
       checkCopyStatusCount: 1
     })
@@ -179,14 +195,17 @@ describe('checkDataTransferStatus', () => {
       'Placing zendeskId back on InitiateDataRequestQueue.',
       'Retry count: 1'
     )
-    expect(sendContinuePollingDataTransferMessage).toBeCalledWith(
+    expect(mockIncrementPollingRetryCount).toBeCalledWith(
+      ZENDESK_TICKET_ID,
+      glacierRestoreIsNotInProgress,
+      copyJobIsInProgress
+    )
+    expect(mockSendContinuePollingDataTransferMessage).toBeCalledWith(
       ZENDESK_TICKET_ID,
       EXPECTED_COPY_WAIT_TIME_IN_SECONDS
     )
-    expect(incrementPollingRetryCount).toBeCalledWith(
-      ZENDESK_TICKET_ID,
-      false,
-      true
+    expect(mockIncrementPollingRetryCount).toHaveBeenCalledBefore(
+      mockSendContinuePollingDataTransferMessage
     )
   })
 
