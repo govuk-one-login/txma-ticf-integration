@@ -16,8 +16,10 @@ jest.mock('../http/httpsRequestUtils', () => ({
 }))
 
 const successResponse = {
-  email: 'example@example.com',
-  name: 'test'
+  user: {
+    email: 'example@example.com',
+    name: 'test'
+  }
 }
 const userId = 123
 
@@ -38,7 +40,10 @@ describe('get zendesk ticket information', () => {
 
     expectSuccessfulApiCallToBeMade()
 
-    expect(console.log).toHaveBeenLastCalledWith('Found user:', successResponse)
+    expect(console.log).toHaveBeenLastCalledWith(
+      'Zendesk user with matching id found',
+      successResponse.user
+    )
   })
 
   test('show user call fails', async () => {
