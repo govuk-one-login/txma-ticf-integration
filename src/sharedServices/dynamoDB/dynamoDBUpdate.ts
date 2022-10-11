@@ -35,8 +35,10 @@ export const updateQueryByZendeskId = async (
 
   const dynamoDBParams = {
     zendeskId: zendeskTicket?.zendeskId?.S,
-    resultsEmail: zendeskTicket?.resultsEmail?.S,
-    resultsName: zendeskTicket?.resultsName?.S,
+    requesterEmail: zendeskTicket?.requesterEmail?.S,
+    requesterName: zendeskTicket?.requesterName?.S,
+    recipientEmail: zendeskTicket?.recipientEmail?.S,
+    recipientName: zendeskTicket?.recipientName?.S,
     dateFrom: zendeskTicket?.dateFrom?.S,
     dateTo: zendeskTicket?.dateTo?.S,
     identifierType: zendeskTicket?.identifierType?.S,
