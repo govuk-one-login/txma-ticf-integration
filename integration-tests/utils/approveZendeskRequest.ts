@@ -7,7 +7,7 @@ import { getEnvVariable } from '../lib/zendeskParameters'
 
 const ticketsEndpoint = '/api/v2/tickets'
 const zendeskBaseURL: string = getEnvVariable('ZENDESK_BASE_URL')
-const agentUsername: string = getEnvVariable('ZENDESK_AGENT_USERNAME')
+const agentUsername: string = getEnvVariable('ZENDESK_AGENT_EMAIL')
 
 const approveZendeskRequest = async (ticketId: string) => {
   // approve and submit ticket (fires webhook)

@@ -1,11 +1,13 @@
 import axios from 'axios'
 import crypto from 'crypto'
-
-//TODO: test setup and teardown for creating and deleting a ticket to use
+import { deleteZendeskTicket } from './utils/deleteZendeskTicket'
+import { generateZendeskRequestDate } from './utils/helpers'
+import { createZendeskRequest } from './utils/createZendeskTicket'
 
 const baseUrl = process.env.ZENDESK_WEBHOOK_API_BASE_URL as string
+const webhookUrl = `${baseUrl}/zendesk-webhook`
 
-const invalidRequestError = async (
+const sendWebhook = async (
   customHeaders: {
     [key: string]: string
   },
@@ -14,7 +16,7 @@ const invalidRequestError = async (
   }
 ) => {
   return axios({
-    url: `${baseUrl}/zendesk-webhook`,
+    url: webhookUrl,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -22,8 +24,11 @@ const invalidRequestError = async (
     },
     data: webhookRequestData
   })
-    .then(() => {
-      throw 'Gateway did not return an error'
+    .then((res) => {
+      return {
+        data: res.data,
+        status: res.status
+      }
     })
     .catch((error) => {
       if (error.response) {
@@ -59,7 +64,7 @@ describe('Zendesk request integrity', () => {
       dataPaths: ''
     }
 
-    const errorResponse = await invalidRequestError(headers, webhookRequestData)
+    const errorResponse = await sendWebhook(headers, webhookRequestData)
     expect(errorResponse.status).toEqual(400)
     expect(errorResponse.data.message).toEqual('Invalid request source')
   })
@@ -78,9 +83,41 @@ describe('Zendesk ticket check', () => {
       'X-Zendesk-Webhook-Signature': signature
     }
   }
+
+  let ticketId: string
+
+  beforeAll(async () => {
+    ticketId = await createZendeskRequest()
+    return ticketId
+  })
+
+  afterAll(async () => {
+    return deleteZendeskTicket(ticketId)
+  })
+
+  test('API Gateway returns 200 for valid zendesk ticket', async () => {
+    const webhookRequestData = {
+      zendeskId: ticketId,
+      resultsEmail: 'txma-team2-ticf-analyst-dev@test.gov.uk',
+      resultsName: 'Txma-team2-ticf-analyst-dev',
+      dateFrom: generateZendeskRequestDate(-60),
+      dateTo: generateZendeskRequestDate(-60),
+      identifierType: 'event_id',
+      eventIds: '637783 3256',
+      piiTypes: 'drivers_license'
+    }
+
+    const headers = {
+      ...generateSignatureHeaders(webhookRequestData)
+    }
+    const response = await sendWebhook(headers, webhookRequestData)
+
+    expect(response.status).toEqual(200)
+    expect(response.data.message).toEqual('data tranfer initiated')
+  })
+
   test('API Gateway returns a 404 response if the request refers to a non-existent Zendesk ticket', async () => {
     const webhookRequestData = {
-      //no ticket with id 1 exists
       zendeskId: '1',
       recipientEmail: 'user@test.gov.uk',
       recipientName: 'test user',
@@ -101,15 +138,14 @@ describe('Zendesk ticket check', () => {
       ...generateSignatureHeaders(webhookRequestData)
     }
 
-    const errorResponse = await invalidRequestError(headers, webhookRequestData)
+    const errorResponse = await sendWebhook(headers, webhookRequestData)
     expect(errorResponse.status).toEqual(404)
     expect(errorResponse.data.message).toEqual('Zendesk ticket not found')
   })
 
   test('API Gateway returns a 400 response if the request does not match info in corresponding Zendesk ticket', async () => {
     const webhookRequestData = {
-      //ticket with ID 881 exists with different info
-      zendeskId: '881',
+      zendeskId: ticketId,
       recipientEmail: 'user@test.gov.uk',
       recipientName: 'test user',
       requesterEmail: 'user@test.gov.uk',
@@ -129,7 +165,7 @@ describe('Zendesk ticket check', () => {
       ...generateSignatureHeaders(webhookRequestData)
     }
 
-    const errorResponse = await invalidRequestError(headers, webhookRequestData)
+    const errorResponse = await sendWebhook(headers, webhookRequestData)
     expect(errorResponse.status).toEqual(400)
     expect(errorResponse.data.message).toEqual(
       'Request parameters do not match a Zendesk Ticket'
