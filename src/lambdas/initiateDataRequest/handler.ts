@@ -1,17 +1,17 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { loggingCopy } from '../../i18n/loggingCopy'
-import { zendeskCopy } from '../../i18n/zendeskCopy'
 import {
   updateZendeskTicket,
   updateZendeskTicketById
 } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { DataRequestParams } from '../../types/dataRequestParams'
-import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
-import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { isSignatureInvalid } from './validateRequestSource'
 import { validateZendeskRequest } from './validateZendeskRequest'
+import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
+import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
+import { DataRequestParams } from '../../types/dataRequestParams'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
+import { zendeskCopy } from '../../i18n/zendeskCopy'
+import { loggingCopy } from '../../i18n/loggingCopy'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const handler = async (
   event: APIGatewayProxyEvent
