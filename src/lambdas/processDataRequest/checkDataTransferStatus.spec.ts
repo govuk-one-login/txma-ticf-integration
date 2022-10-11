@@ -88,8 +88,10 @@ describe('checkDataTransferStatus', () => {
 
   const requestInfo: DataRequestParams = {
     zendeskId: ZENDESK_TICKET_ID,
-    resultsEmail: 'test@test.gov.uk',
-    resultsName: 'Test Name',
+    requesterEmail: 'test@test.gov.uk',
+    requesterName: 'Test Name',
+    recipientEmail: 'test@test.gov.uk',
+    recipientName: 'Test Name',
     dateTo: '2022-09-06',
     dateFrom: '2022-09-06',
     identifierType: 'event_id',
