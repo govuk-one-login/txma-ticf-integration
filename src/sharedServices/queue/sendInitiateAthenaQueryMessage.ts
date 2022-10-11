@@ -1,5 +1,5 @@
+import { sendSqsMessageWithStringBody } from '../../sharedServices/queue/sendSqsMessage'
 import { getEnv } from '../../utils/helpers'
-import { sendSqsMessageWithStringBody } from './sendSqsMessage'
 
 export const sendInitiateAthenaQueryMessage = (
   zendeskId: string

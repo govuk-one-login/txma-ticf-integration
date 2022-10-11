@@ -15,7 +15,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
   if (
     (dbEntry.checkGlacierStatusCount &&
       dbEntry.checkGlacierStatusCount >= 484) ||
-    (dbEntry.checkCopyStatusCount && dbEntry.checkCopyStatusCount >= 484)
+    (dbEntry.checkCopyStatusCount && dbEntry.checkCopyStatusCount >= 60)
   ) {
     console.error('Status check count exceeded. Process terminated')
     return await terminateStatusCheckProcess(zendeskId)

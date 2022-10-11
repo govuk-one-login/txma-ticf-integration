@@ -19,6 +19,7 @@ export const MOCK_INITIATE_DATA_REQUEST_QUEUE_URL =
   'https://initiate_data_request_queue_'
 export const MOCK_INITIATE_ATHENA_QUERY_QUEUE_URL =
   'https://initiate_athena_query_queue_'
+export const MOCK_TERMINATE_JOB_QUEUE_URL = 'https://terminate_job_queue_'
 export const TEST_ZENDESK_SECRET_NAME = 'myZendeskSecretName'
 export const TEST_NOTIFY_SECRET_NAME = 'myNotifySecretName'
 export const TEST_NOTIFY_EMAIL = 'test@email.com'
@@ -36,7 +37,8 @@ export const TEST_BATCH_JOB_ROLE_ARN = 'myBatchJobRoleArn'
 export const TEST_QUERY_DATABASE_TABLE_NAME = 'test_query_table'
 export const TEST_RECIPIENT_EMAIL = 'myuser@test.gov.uk'
 export const TEST_RECIPIENT_NAME = 'my name'
-export const TEST_MAXIMUM_STATUS_CHECK_COUNT = 484
+export const TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT = 484
+export const TEST_MAXIMUM_COPY_STATUS_CHECK_COUNT = 60
 
 export const TEST_ZENDESK_FIELD_ID_DATA_PATHS = 1
 export const TEST_ZENDESK_FIELD_ID_DATE_FROM = 2

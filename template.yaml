@@ -325,6 +325,7 @@ Resources:
           ACCOUNT_ID: !Sub ${AWS::AccountId}
           INITIATE_ATHENA_QUERY_QUEUE_URL: !Ref InitiateAthenaQueryQueue
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
+          TERMINATED_JOB_QUEUE_URL: !Ref TerminatedJobQueue
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -366,6 +367,7 @@ Resources:
               Resource:
               - !GetAtt InitiateDataRequestQueue.Arn
               - !GetAtt InitiateAthenaQueryQueue.Arn
+              - !GetAtt TerminatedJobQueue.Arn
             - Sid: AllowQueueKmsAccess
               Effect: Allow
               Action:
@@ -486,6 +488,11 @@ Resources:
         maxReceiveCount: 5
 
   InitiateDataRequestDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+
+  TerminatedJobQueue:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn

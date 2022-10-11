@@ -6,7 +6,8 @@ import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import { when } from 'jest-when'
 import {
-  TEST_MAXIMUM_STATUS_CHECK_COUNT,
+  TEST_MAXIMUM_COPY_STATUS_CHECK_COUNT,
+  TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
@@ -204,7 +205,7 @@ describe('checkDataTransferStatus', () => {
 
   it('should stop checking the data transfer status if checkCopyStatusCount exceeds maximum amount', async () => {
     givenDatabaseEntryResult({
-      checkCopyStatusCount: TEST_MAXIMUM_STATUS_CHECK_COUNT
+      checkCopyStatusCount: TEST_MAXIMUM_COPY_STATUS_CHECK_COUNT
     })
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
@@ -216,7 +217,7 @@ describe('checkDataTransferStatus', () => {
   })
   it('should stop checking the data transfer status if checkGlacierStatusCount exceeds maximum amount', async () => {
     givenDatabaseEntryResult({
-      checkGlacierStatusCount: TEST_MAXIMUM_STATUS_CHECK_COUNT
+      checkGlacierStatusCount: TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT
     })
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
