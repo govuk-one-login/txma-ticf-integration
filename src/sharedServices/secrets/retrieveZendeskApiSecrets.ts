@@ -1,6 +1,6 @@
-import { ZendeskApiSecrets } from '../types/zendeskApiSecrets'
+import { ZendeskApiSecrets } from '../../types/zendeskApiSecrets'
 import { checkSecretsSet } from './checkSecrets'
-import { getEnv } from '../utils/helpers'
+import { getEnv } from '../../utils/helpers'
 import { retrieveSecrets } from './retrieveSecrets'
 
 export const retrieveZendeskApiSecrets =

@@ -1,6 +1,7 @@
 import { SQSEvent } from 'aws-lambda'
 import { confirmAthenaTable } from '../../sharedServices/athena/confirmAthenaTable'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { createQuerySql } from '../../sharedServices/athena/createQuerySql'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 
 export const handler = async (event: SQSEvent): Promise<void> => {
@@ -27,7 +28,19 @@ export const handler = async (event: SQSEvent): Promise<void> => {
   }
 
   const requestData = await getDatabaseEntryByZendeskId(zendeskId)
-  console.log(requestData.requestInfo)
+
+  const querySqlGenerated = createQuerySql(requestData.requestInfo)
+
+  if (!querySqlGenerated.sqlGenerated && querySqlGenerated.error) {
+    await updateZendeskTicketById(zendeskId, querySqlGenerated.error, 'closed')
+    throw new Error(querySqlGenerated.error)
+  }
+
+  if (querySqlGenerated.sql) {
+    console.log(
+      `Athena SQL generated: ${querySqlGenerated.sql}, parameters: ${querySqlGenerated.idParameters}`
+    )
+  }
 
   return
 }

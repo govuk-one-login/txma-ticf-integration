@@ -21,14 +21,16 @@ describe('dynamoDBGet', () => {
     const mockItem: Record<string, AttributeValue> = {
       requestInfo: {
         M: {
-          resultsName: { S: 'test' },
+          recipientEmail: { S: 'test@test.gov.uk' },
+          recipientName: { S: 'test' },
+          requesterEmail: { S: 'test@test.gov.uk' },
+          requesterName: { S: 'test' },
           dateTo: { S: '2022-09-06' },
           identifierType: { S: 'eventId' },
           dateFrom: { S: '2022-09-06' },
           zendeskId: { S: '12' },
           eventIds: { L: [{ S: '234gh24' }, { S: '98h98bc' }] },
-          piiTypes: { L: [{ S: 'passport_number' }] },
-          resultsEmail: { S: 'test@test.gov.uk' }
+          piiTypes: { L: [{ S: 'passport_number' }] }
         }
       },
       zendeskId: { S: '12' }
@@ -53,14 +55,16 @@ describe('dynamoDBGet', () => {
 
     const result = await getDatabaseEntryByZendeskId('12')
     expect(result.requestInfo).toEqual({
-      resultsName: 'test',
+      recipientEmail: 'test@test.gov.uk',
+      recipientName: 'test',
+      requesterEmail: 'test@test.gov.uk',
+      requesterName: 'test',
       dateTo: '2022-09-06',
       identifierType: 'eventId',
       dateFrom: '2022-09-06',
       zendeskId: '12',
       eventIds: ['234gh24', '98h98bc'],
-      piiTypes: ['passport_number'],
-      resultsEmail: 'test@test.gov.uk'
+      piiTypes: ['passport_number']
     })
 
     expect(result.checkGlacierStatusCount).toBeUndefined()

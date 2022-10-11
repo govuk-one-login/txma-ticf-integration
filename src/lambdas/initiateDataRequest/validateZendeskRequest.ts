@@ -28,9 +28,8 @@ export const validateZendeskRequest = (
       isValid: false
     }
   }
-  const isEmailValid = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(
-    data.resultsEmail ?? ''
-  )
+  const isEmailValid = (email: string) =>
+    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(email ?? '')
 
   const piiTypes = data.piiTypes.replace(/,/g, '')
   const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
@@ -40,8 +39,12 @@ export const validateZendeskRequest = (
     : true
   const fieldValidation = [
     {
-      message: 'Email format invalid',
-      isValid: isEmailValid
+      message: 'Recipient email format invalid',
+      isValid: isEmailValid(data.recipientEmail)
+    },
+    {
+      message: 'Requester email format invalid',
+      isValid: isEmailValid(data.requesterEmail)
     },
     {
       message: 'At least one session id should be provided',
@@ -62,8 +65,12 @@ export const validateZendeskRequest = (
       isValid: data.identifierType != 'user_id' || data.userIds?.length > 0
     },
     {
-      message: 'Results Name is missing',
-      isValid: data.resultsName?.length > 0
+      message: 'Recipient name is missing',
+      isValid: data.recipientName?.length > 0
+    },
+    {
+      message: 'Requester name is missing',
+      isValid: data.requesterName?.length > 0
     },
     {
       message: 'From date is invalid',
@@ -132,8 +139,10 @@ export const validateZendeskRequest = (
       piiTypes: mapSpaceSeparatedStringToList(data.piiTypes),
       dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
       identifierType: data.identifierType,
-      resultsEmail: data.resultsEmail,
-      resultsName: data.resultsName
+      recipientEmail: data.recipientEmail,
+      recipientName: data.recipientName,
+      requesterEmail: data.requesterEmail,
+      requesterName: data.requesterName
     },
     isValid
   }

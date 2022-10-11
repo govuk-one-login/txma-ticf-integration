@@ -16,21 +16,23 @@ export const getDatabaseEntryByZendeskId = async (
   if (!data?.Item) {
     throw Error(`Cannot find database entry for zendesk ticket '${zendeskId}'`)
   }
-  const objToParse = data?.Item?.requestInfo?.M
+  const responseObject = data?.Item?.requestInfo?.M
 
   const dataRequestParams = {
-    zendeskId: objToParse?.zendeskId?.S,
-    resultsEmail: objToParse?.resultsEmail?.S,
-    resultsName: objToParse?.resultsName?.S,
-    dateFrom: objToParse?.dateFrom?.S,
-    dateTo: objToParse?.dateTo?.S,
-    identifierType: objToParse?.identifierType?.S,
-    sessionIds: objToParse?.sessionIds?.L?.map((id) => id.S),
-    journeyIds: objToParse?.journeyIds?.L?.map((id) => id.S),
-    eventIds: objToParse?.eventIds?.L?.map((id) => id.S),
-    userIds: objToParse?.userIds?.L?.map((id) => id.S),
-    piiTypes: objToParse?.piiTypes?.L?.map((piiType) => piiType.S),
-    dataPaths: objToParse?.dataPaths?.L?.map((path) => path.S)
+    zendeskId: responseObject?.zendeskId?.S,
+    recipientEmail: responseObject?.recipientEmail?.S,
+    recipientName: responseObject?.recipientName?.S,
+    requesterEmail: responseObject?.requesterEmail?.S,
+    requesterName: responseObject?.requesterName?.S,
+    dateFrom: responseObject?.dateFrom?.S,
+    dateTo: responseObject?.dateTo?.S,
+    identifierType: responseObject?.identifierType?.S,
+    sessionIds: responseObject?.sessionIds?.L?.map((id) => id.S),
+    journeyIds: responseObject?.journeyIds?.L?.map((id) => id.S),
+    eventIds: responseObject?.eventIds?.L?.map((id) => id.S),
+    userIds: responseObject?.userIds?.L?.map((id) => id.S),
+    piiTypes: responseObject?.piiTypes?.L?.map((piiType) => piiType.S),
+    dataPaths: responseObject?.dataPaths?.L?.map((path) => path.S)
   }
 
   if (!isDataRequestParams(dataRequestParams)) {

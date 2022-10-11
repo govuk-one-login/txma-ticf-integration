@@ -28,8 +28,8 @@ describe('dynamoDbPut', () => {
         requestInfo: {
           M: {
             zendeskId: { S: ZENDESK_TICKET_ID },
-            resultsEmail: { S: TEST_RECIPIENT_EMAIL },
-            resultsName: { S: TEST_RECIPIENT_NAME },
+            recipientEmail: { S: TEST_RECIPIENT_EMAIL },
+            recipientName: { S: TEST_RECIPIENT_NAME },
             dateFrom: { S: TEST_DATE_FROM },
             dateTo: { S: TEST_DATE_TO },
             eventIds: { L: [{ S: '123' }, { S: '456' }] },
