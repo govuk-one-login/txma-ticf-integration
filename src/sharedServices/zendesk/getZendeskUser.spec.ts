@@ -1,5 +1,3 @@
-import { loggingCopy } from '../../i18n/loggingCopy'
-import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
 import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
 import {
@@ -43,7 +41,7 @@ describe('get zendesk ticket information', () => {
     expectSuccessfulApiCallToBeMade()
 
     expect(console.log).toHaveBeenLastCalledWith(
-      interpolateTemplate('zendeskUserFound', loggingCopy),
+      'Zendesk user with matching id found',
       successResponse.user
     )
   })
