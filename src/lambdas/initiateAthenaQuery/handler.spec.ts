@@ -1,10 +1,10 @@
 import { handler } from './handler'
-import { confirmAthenaTable } from '../../sharedServices/athena/confirmAthenaTable'
-import { startQueryExecution } from '../../sharedServices/athena/startQueryExecution'
+import { confirmAthenaTable } from './confirmAthenaTable'
+import { startQueryExecution } from './startQueryExecution'
 import { testAthenaQueryEvent } from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { getQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
-import { createQuerySql } from '../../sharedServices/athena/createQuerySql'
+import { createQuerySql } from './createQuerySql'
 import { updateQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBUpdate'
 import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
 import {
@@ -12,7 +12,7 @@ import {
   noIdTestDataRequest
 } from '../../utils/tests/testDataRequest'
 
-jest.mock('../../sharedServices/athena/confirmAthenaTable', () => ({
+jest.mock('./confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
 }))
 jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
@@ -21,13 +21,13 @@ jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByZendeskId: jest.fn()
 }))
-jest.mock('../../sharedServices/athena/createQuerySql', () => ({
+jest.mock('./createQuerySql', () => ({
   createQuerySql: jest.fn()
 }))
 jest.mock('../../sharedServices/dynamoDB/dynamoDBUpdate', () => ({
   updateQueryByZendeskId: jest.fn()
 }))
-jest.mock('../../sharedServices/athena/startQueryExecution', () => ({
+jest.mock('./startQueryExecution', () => ({
   startQueryExecution: jest.fn()
 }))
 
