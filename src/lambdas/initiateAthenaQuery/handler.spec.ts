@@ -59,14 +59,23 @@ describe('initiate athena query handler', () => {
     mockUpdateQueryByZendeskId.mockResolvedValue('test db return object')
     mockStartQueryExecution.mockResolvedValue({
       queryExecuted: true,
-      queryExecutionId: 'test id'
+      queryExecutionId: 'test_id'
     })
 
+    const testZendeskId = testAthenaQueryEvent.Records[0].body
     await handler(testAthenaQueryEvent)
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockCreateQuerySql).toHaveBeenCalledWith(dataPathsTestDataRequest)
-    expect(mockUpdateQueryByZendeskId).toHaveBeenCalled()
-    expect(mockStartQueryExecution).toHaveBeenCalled()
+    expect(mockStartQueryExecution).toHaveBeenCalledWith({
+      sqlGenerated: true,
+      sql: 'test sql string',
+      idParameters: ['123']
+    })
+    expect(mockUpdateQueryByZendeskId).toHaveBeenCalledWith(
+      testZendeskId,
+      'athenaQueryId',
+      'test_id'
+    )
   })
 
   it('updates zendesk and throws an error if there is no athena data source', async () => {
@@ -74,13 +83,13 @@ describe('initiate athena query handler', () => {
       tableAvailable: false,
       message: 'test error message'
     })
-    const testId = testAthenaQueryEvent.Records[0].body
+    const testZendeskId = testAthenaQueryEvent.Records[0].body
     await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
       'test error message'
     )
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
-      testId,
+      testZendeskId,
       'test error message',
       'closed'
     )
@@ -103,17 +112,54 @@ describe('initiate athena query handler', () => {
       sqlGenerated: false,
       error: 'sql error message'
     })
-    const testId = testAthenaQueryEvent.Records[0].body
+    const testZendeskId = testAthenaQueryEvent.Records[0].body
 
     await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
       'sql error message'
     )
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
-    expect(mockGetQueryByZendeskId).toHaveBeenCalledWith(testId)
+    expect(mockGetQueryByZendeskId).toHaveBeenCalledWith(testZendeskId)
     expect(mockCreateQuerySql).toHaveBeenCalledWith(noIdTestDataRequest)
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
-      testId,
+      testZendeskId,
       'sql error message',
+      'closed'
+    )
+    expect(mockUpdateQueryByZendeskId).not.toHaveBeenCalled()
+  })
+
+  it('updates zendesk and throws an error if it is unable to initiate an athena query', async () => {
+    mockConfirmAthenaTable.mockResolvedValue({
+      tableAvailable: true,
+      message: 'test message'
+    })
+    mockGetQueryByZendeskId.mockResolvedValue(dataPathsTestDataRequest)
+    mockCreateQuerySql.mockReturnValue({
+      sqlGenerated: true,
+      sql: 'test sql string',
+      idParameters: ['123']
+    })
+    mockStartQueryExecution.mockResolvedValue({
+      queryExecuted: false,
+      error: 'test athena error'
+    })
+
+    const testZendeskId = testAthenaQueryEvent.Records[0].body
+
+    await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
+      'test athena error'
+    )
+    expect(mockConfirmAthenaTable).toHaveBeenCalled()
+    expect(mockGetQueryByZendeskId).toHaveBeenCalledWith(testZendeskId)
+    expect(mockCreateQuerySql).toHaveBeenCalledWith(dataPathsTestDataRequest)
+    expect(mockStartQueryExecution).toHaveBeenCalledWith({
+      sqlGenerated: true,
+      sql: 'test sql string',
+      idParameters: ['123']
+    })
+    expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
+      testZendeskId,
+      'test athena error',
       'closed'
     )
     expect(mockUpdateQueryByZendeskId).not.toHaveBeenCalled()

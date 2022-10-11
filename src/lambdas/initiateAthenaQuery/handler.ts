@@ -46,19 +46,26 @@ export const handler = async (event: SQSEvent): Promise<void> => {
 
   const queryStarted = await startQueryExecution(querySqlGenerated)
 
-  console.log(queryStarted)
-
   if (!queryStarted.queryExecuted && queryStarted.error) {
     await updateZendeskTicketById(zendeskId, queryStarted.error, 'closed')
     throw new Error(queryStarted.error)
   }
 
   if (queryStarted.queryExecutionId) {
-    await updateQueryByZendeskId(
-      zendeskId,
-      'athenaQueryId',
-      queryStarted.queryExecutionId
-    )
+    try {
+      await updateQueryByZendeskId(
+        zendeskId,
+        'athenaQueryId',
+        queryStarted.queryExecutionId
+      )
+    } catch (error) {
+      await updateZendeskTicketById(
+        zendeskId,
+        `Error updating db for zendesk ticket: ${zendeskId}`,
+        'closed'
+      )
+      throw new Error(`Error updating db for zendesk ticket: ${zendeskId}`)
+    }
     console.log(
       `Athena query execution initiated with QueryExecutionId: ${queryStarted.queryExecutionId}`
     )

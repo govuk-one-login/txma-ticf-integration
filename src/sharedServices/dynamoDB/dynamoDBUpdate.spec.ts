@@ -75,7 +75,7 @@ describe('dynamoDBUpdate', () => {
     ).rejects.toThrow('Failed to update item in db for zendesk ticket: 12')
   })
 
-  test('Finds Request query but cant utrn updated info into valid updated query', async () => {
+  test('Finds Request query but cant turn updated info into valid updated query', async () => {
     const mockDbContents = {
       Attributes: {
         requestInfo: {
