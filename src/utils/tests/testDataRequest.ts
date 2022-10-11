@@ -9,8 +9,10 @@ import {
 
 export const testDataRequest = {
   zendeskId: ZENDESK_TICKET_ID,
-  resultsEmail: TEST_RECIPIENT_EMAIL,
-  resultsName: TEST_RECIPIENT_NAME,
+  recipientEmail: TEST_RECIPIENT_EMAIL,
+  recipientName: TEST_RECIPIENT_NAME,
+  requesterEmail: 'myuser@test.gov.uk',
+  requesterName: 'my name',
   dateFrom: TEST_DATE_FROM,
   dateTo: TEST_DATE_TO,
   identifierType: 'event_id',
@@ -24,8 +26,10 @@ export const testDataRequest = {
 
 export const testDataRequestWithAllValuesSet = {
   zendeskId: ZENDESK_TICKET_ID,
-  resultsEmail: 'myuser@test.gov.uk',
-  resultsName: 'my name',
+  recipientEmail: 'myuser@test.gov.uk',
+  recipientName: 'my name',
+  requesterEmail: 'myuser@test.gov.uk',
+  requesterName: 'my name',
   dateFrom: TEST_DATE_FROM,
   dateTo: TEST_DATE_TO,
   dataPaths: ['path_to_data1', 'path_to_data2'],
@@ -39,8 +43,10 @@ export const testDataRequestWithAllValuesSet = {
 
 export const testDataRequestWithEmptyValuesForIds = {
   zendeskId: ZENDESK_TICKET_ID,
-  resultsEmail: 'myuser@test.gov.uk',
-  resultsName: 'my name',
+  recipientEmail: 'myuser@test.gov.uk',
+  recipientName: 'my name',
+  requesterEmail: 'myuser@test.gov.uk',
+  requesterName: 'my name',
   dateFrom: TEST_DATE_FROM,
   dateTo: TEST_DATE_TO,
   identifierType: 'event_id',
@@ -50,4 +56,32 @@ export const testDataRequestWithEmptyValuesForIds = {
   sessionIds: [],
   userIds: [],
   dataPaths: []
+} as DataRequestParams
+
+export const noIdTestDataRequest = {
+  zendeskId: ZENDESK_TICKET_ID,
+  recipientEmail: 'myuser@test.gov.uk',
+  recipientName: 'my name',
+  requesterEmail: 'myuser@test.gov.uk',
+  requesterName: 'my name',
+  dateFrom: TEST_DATE_FROM,
+  dateTo: TEST_DATE_TO,
+  identifierType: 'event_id',
+  piiTypes: ['passport_number']
+} as DataRequestParams
+
+export const dataPathsTestDataRequest = {
+  zendeskId: ZENDESK_TICKET_ID,
+  recipientEmail: 'myuser@test.gov.uk',
+  recipientName: 'my name',
+  requesterEmail: 'myuser@test.gov.uk',
+  requesterName: 'my name',
+  dateFrom: TEST_DATE_FROM,
+  dateTo: TEST_DATE_TO,
+  identifierType: 'event_id',
+  eventIds: ['123e', '456e'],
+  sessionIds: ['123s', '456s'],
+  userIds: ['123u', '456u'],
+  journeyIds: ['123j', '456j'],
+  dataPaths: ['restricted.user.firstName', 'restricted.user.lastName']
 } as DataRequestParams

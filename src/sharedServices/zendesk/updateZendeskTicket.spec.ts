@@ -16,11 +16,11 @@ import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtil
 const zendeskTicketMessage = 'Something was invalid.'
 const NEW_TICKET_STATUS = 'closed'
 
-jest.mock('../../secrets/retrieveZendeskApiSecrets', () => ({
+jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
 }))
 
-jest.mock('../../sharedServices/http/httpsRequestUtils', () => ({
+jest.mock('../http/httpsRequestUtils', () => ({
   base64Encode: jest.fn(),
   makeHttpsRequest: jest.fn()
 }))

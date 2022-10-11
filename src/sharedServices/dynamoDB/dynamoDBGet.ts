@@ -25,8 +25,10 @@ export const getQueryByZendeskId = async (
 
   const dataRequestParams = {
     zendeskId: responseObject?.zendeskId?.S,
-    resultsEmail: responseObject?.resultsEmail?.S,
-    resultsName: responseObject?.resultsName?.S,
+    recipientEmail: responseObject?.recipientEmail?.S,
+    recipientName: responseObject?.recipientName?.S,
+    requesterEmail: responseObject?.requesterEmail?.S,
+    requesterName: responseObject?.requesterName?.S,
     dateFrom: responseObject?.dateFrom?.S,
     dateTo: responseObject?.dateTo?.S,
     identifierType: responseObject?.identifierType?.S,

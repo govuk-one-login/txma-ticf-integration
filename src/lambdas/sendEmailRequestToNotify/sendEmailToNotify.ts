@@ -1,5 +1,5 @@
 import { NotifyClient } from 'notifications-node-client'
-import { retrieveNotifySecrets } from '../../secrets/retrieveNotifyApiSecrets'
+import { retrieveNotifySecrets } from '../../sharedServices/secrets/retrieveNotifyApiSecrets'
 import { PersonalisationOptions } from '../../types/notify/personalisationOptions'
 
 export const sendEmailToNotify = async (

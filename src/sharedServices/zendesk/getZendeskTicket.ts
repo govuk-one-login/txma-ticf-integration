@@ -1,5 +1,5 @@
 import https from 'node:https'
-import { retrieveZendeskApiSecrets } from '../../secrets/retrieveZendeskApiSecrets'
+import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import {
   isZendeskTicketResult,
   ZendeskTicket
