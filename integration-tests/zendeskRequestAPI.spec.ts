@@ -46,8 +46,10 @@ describe('Zendesk request integrity', () => {
 
     const webhookRequestData = {
       zendeskId: '123',
-      resultsEmail: 'user@test.gov.uk',
-      resultsName: 'test user',
+      recipientEmail: 'user@test.gov.uk',
+      recipientName: 'test user',
+      requesterEmail: 'user@test.gov.uk',
+      requesterName: 'test user',
       dateFrom: '2022-09-06',
       dateTo: '2022-09-06',
       identifierType: 'journey_id',
@@ -84,8 +86,10 @@ describe('Zendesk ticket check', () => {
     const webhookRequestData = {
       //no ticket with id 1 exists
       zendeskId: '1',
-      resultsEmail: 'user@test.gov.uk',
-      resultsName: 'test user',
+      recipientEmail: 'user@test.gov.uk',
+      recipientName: 'test user',
+      requesterEmail: 'user@test.gov.uk',
+      requesterName: 'test user',
       dateFrom: '2022-09-06',
       dateTo: '2022-09-06',
       identifierType: 'journey_id',
@@ -112,8 +116,10 @@ describe('Zendesk ticket check', () => {
     const webhookRequestData = {
       //ticket with ID 881 exists with different info
       zendeskId: '881',
-      resultsEmail: 'user@test.gov.uk',
-      resultsName: 'test user',
+      recipientEmail: 'user@test.gov.uk',
+      recipientName: 'test user',
+      requesterEmail: 'user@test.gov.uk',
+      requesterName: 'test user',
       dateFrom: '2022-09-06',
       dateTo: '2022-09-06',
       identifierType: 'journey_id',

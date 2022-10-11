@@ -7,7 +7,7 @@ import {
   testDataRequestWithEmptyValuesForIds
 } from '../../utils/tests/testDataRequest'
 import { ZendeskTicket } from '../../types/zendeskTicketResult'
-import { ZendeskUser } from '../../types/zendeskUser'
+import { ZendeskUser } from '../../types/zendeskUserResult'
 import {
   TEST_DATE_FROM,
   TEST_DATE_TO,
@@ -18,6 +18,8 @@ import {
   TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
   TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
   TEST_ZENDESK_FIELD_ID_PII_TYPES,
+  TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
+  TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
   TEST_ZENDESK_FIELD_ID_SESSION_IDS,
   TEST_ZENDESK_FIELD_ID_USER_IDS,
   ZENDESK_TICKET_ID_AS_NUMBER
@@ -96,6 +98,14 @@ describe('match zendesk ticket details', () => {
           {
             id: TEST_ZENDESK_FIELD_ID_USER_IDS,
             value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
+            value: 'myuser@test.gov.uk'
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
+            value: 'my name'
           }
         ]
       })
@@ -152,6 +162,14 @@ describe('match zendesk ticket details', () => {
           {
             id: TEST_ZENDESK_FIELD_ID_USER_IDS,
             value: '123 456'
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
+            value: 'myuser@test.gov.uk'
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
+            value: 'my name'
           }
         ]
       })
@@ -221,6 +239,14 @@ describe('match zendesk ticket details', () => {
           {
             id: TEST_ZENDESK_FIELD_ID_USER_IDS,
             value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
+            value: 'myuser@test.gov.uk'
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
+            value: 'my name'
           }
         ]
       })
@@ -284,6 +310,14 @@ describe('match zendesk ticket details', () => {
           {
             id: TEST_ZENDESK_FIELD_ID_USER_IDS,
             value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
+            value: null
           }
         ]
       })
@@ -305,8 +339,10 @@ describe('match zendesk ticket details', () => {
 
   test.each([
     ['zendeskId', '123456789'],
-    ['resultsEmail', 'notmyemail@example.gov.uk'],
-    ['resultsName', 'not my name'],
+    ['recipientEmail', 'notmyemail@example.gov.uk'],
+    ['recipientName', 'not my name'],
+    ['requesterEmail', 'notmyemail@example.gov.uk'],
+    ['requesterName', 'not my name'],
     ['identifierType', '123456789'],
     ['dataPaths', ['123456789']],
     ['dateFrom', '123456789'],
@@ -352,8 +388,6 @@ describe('match zendesk ticket details', () => {
   )
 
   test.each([
-    ['resultsEmail', 'notmyemail@example.gov.uk'],
-    ['resultsName', 'not my name'],
     ['dataPaths', ['123456789']],
     ['eventIds', ['123456789']],
     ['journeyIds', ['123456789']],

@@ -40,8 +40,12 @@ export const loggingCopy = [
     message: 'Zendesk ticket update failed.'
   },
   {
-    name: 'foundUser',
-    message: 'Found user:'
+    name: 'zendeskUserFound',
+    message: 'Zendesk user with matching id found'
+  },
+  {
+    name: 'zendeskUserNotFound',
+    message: 'The returned data was not a Zendesk user'
   },
   {
     name: 'requestMatchesZendeskTickets',

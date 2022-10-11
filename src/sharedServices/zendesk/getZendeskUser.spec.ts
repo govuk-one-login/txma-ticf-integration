@@ -1,3 +1,5 @@
+import { loggingCopy } from '../../i18n/loggingCopy'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
 import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
 import {
@@ -16,8 +18,10 @@ jest.mock('../http/httpsRequestUtils', () => ({
 }))
 
 const successResponse = {
-  email: 'example@example.com',
-  name: 'test'
+  user: {
+    email: 'example@example.com',
+    name: 'test'
+  }
 }
 const userId = 123
 
@@ -38,7 +42,10 @@ describe('get zendesk ticket information', () => {
 
     expectSuccessfulApiCallToBeMade()
 
-    expect(console.log).toHaveBeenLastCalledWith('Found user:', successResponse)
+    expect(console.log).toHaveBeenLastCalledWith(
+      interpolateTemplate('zendeskUserFound', loggingCopy),
+      successResponse.user
+    )
   })
 
   test('show user call fails', async () => {
