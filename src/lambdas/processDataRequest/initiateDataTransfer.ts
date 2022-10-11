@@ -1,5 +1,5 @@
-import { loggingCopy } from '../../i18n/loggingCopy'
-import { zendeskCopy } from '../../i18n/zendeskCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
+import { zendeskCopy } from '../../constants/zendeskCopy'
 import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierRestore'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'

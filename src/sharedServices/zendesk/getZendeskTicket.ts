@@ -6,8 +6,8 @@ import {
 } from '../../types/zendeskTicketResult'
 import { base64Encode, makeHttpsRequest } from '../http/httpsRequestUtils'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { zendeskCopy } from '../../i18n/zendeskCopy'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { zendeskCopy } from '../../constants/zendeskCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 
 export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
   const secrets = await retrieveZendeskApiSecrets()

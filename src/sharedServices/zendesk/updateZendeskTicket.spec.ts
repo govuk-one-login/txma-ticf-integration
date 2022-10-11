@@ -12,7 +12,7 @@ import {
 } from '../../utils/tests/testConstants'
 import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
 import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 const zendeskTicketMessage = 'Something was invalid.'

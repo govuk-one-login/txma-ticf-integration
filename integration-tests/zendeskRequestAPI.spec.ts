@@ -1,6 +1,6 @@
 import axios from 'axios'
 import crypto from 'crypto'
-import { zendeskCopy } from '../src/i18n/zendeskCopy'
+import { zendeskCopy } from '../src/constants/zendeskCopy'
 import { interpolateTemplate } from '../src/utils/interpolateTemplate'
 
 //TODO: test setup and teardown for creating and deleting a ticket to use

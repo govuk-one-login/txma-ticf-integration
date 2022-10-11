@@ -1,4 +1,4 @@
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 import { getZendeskTicket } from '../../sharedServices/zendesk/getZendeskTicket'
 import { getZendeskUser } from '../../sharedServices/zendesk/getZendeskUser'
 import { DataRequestParams } from '../../types/dataRequestParams'

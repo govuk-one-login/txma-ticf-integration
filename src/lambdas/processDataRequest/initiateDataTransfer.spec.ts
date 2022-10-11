@@ -5,7 +5,7 @@ import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierR
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
-import { zendeskCopy } from '../../i18n/zendeskCopy'
+import { zendeskCopy } from '../../constants/zendeskCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({

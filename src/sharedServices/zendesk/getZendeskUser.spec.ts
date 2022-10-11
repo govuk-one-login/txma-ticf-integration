@@ -1,4 +1,4 @@
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
 import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'

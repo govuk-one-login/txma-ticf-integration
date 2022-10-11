@@ -3,7 +3,7 @@ import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import { makeHttpsRequest, base64Encode } from './../http/httpsRequestUtils'
 import { tryParseJSON } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 
 export const updateZendeskTicket = async (
   eventBody: string | null,

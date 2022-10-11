@@ -4,8 +4,8 @@ import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZend
 import { PersonalisationOptions } from '../../types/notify/personalisationOptions'
 import { tryParseJSON } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { notifyCopy } from '../../i18n/notifyCopy'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { notifyCopy } from '../../constants/notifyCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 
 // event type is a placeholder
 export const handler = async (event: APIGatewayProxyEvent) => {

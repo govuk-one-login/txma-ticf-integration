@@ -12,7 +12,7 @@ import { isSignatureInvalid } from './validateRequestSource'
 import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { zendeskCopy } from '../../i18n/zendeskCopy'
+import { zendeskCopy } from '../../constants/zendeskCopy'
 
 const mockValidateZendeskRequest =
   validateZendeskRequest as jest.Mock<ValidatedDataRequestParamsResult>

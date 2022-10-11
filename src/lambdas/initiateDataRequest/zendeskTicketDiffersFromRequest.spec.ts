@@ -26,7 +26,7 @@ import {
 } from '../../utils/tests/testConstants'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 
 jest.mock('../../sharedServices/zendesk/getZendeskTicket', () => ({
   getZendeskTicket: jest.fn()

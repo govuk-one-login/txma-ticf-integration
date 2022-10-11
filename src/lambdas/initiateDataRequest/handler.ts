@@ -9,8 +9,8 @@ import { ValidatedDataRequestParamsResult } from '../../types/validatedDataReque
 import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { DataRequestParams } from '../../types/dataRequestParams'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
-import { zendeskCopy } from '../../i18n/zendeskCopy'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { zendeskCopy } from '../../constants/zendeskCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const handler = async (

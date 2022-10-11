@@ -1,5 +1,5 @@
 import { NotifyClient } from 'notifications-node-client'
-import { notifyCopy } from '../../i18n/notifyCopy'
+import { notifyCopy } from '../../constants/notifyCopy'
 import { retrieveNotifySecrets } from '../../sharedServices/secrets/retrieveNotifyApiSecrets'
 import { PersonalisationOptions } from '../../types/notify/personalisationOptions'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'

@@ -2,7 +2,7 @@ import https from 'node:https'
 import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import { isZendeskUserResult, ZendeskUser } from '../../types/zendeskUserResult'
 import { base64Encode, makeHttpsRequest } from '../http/httpsRequestUtils'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {

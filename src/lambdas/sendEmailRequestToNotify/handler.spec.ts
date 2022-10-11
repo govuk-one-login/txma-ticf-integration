@@ -8,9 +8,9 @@ import {
 import { handler } from './handler'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { sendEmailToNotify } from './sendEmailToNotify'
-import { notifyCopy } from '../../i18n/notifyCopy'
+import { notifyCopy } from '../../constants/notifyCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 
 jest.mock('./sendEmailToNotify', () => ({
   sendEmailToNotify: jest.fn()

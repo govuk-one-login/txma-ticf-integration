@@ -8,8 +8,8 @@ import {
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../utils/tests/testConstants'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { zendeskCopy } from '../../i18n/zendeskCopy'
-import { loggingCopy } from '../../i18n/loggingCopy'
+import { zendeskCopy } from '../../constants/zendeskCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 
 jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
