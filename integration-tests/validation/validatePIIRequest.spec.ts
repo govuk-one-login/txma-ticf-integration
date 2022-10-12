@@ -2,10 +2,10 @@ import {
   getMatchingLogEvents,
   extractRequestIDFromEventMessage,
   waitForLogStreamContainingEvent
-} from './utils/helpers'
+} from '../utils/helpers'
 
-import { createZendeskRequest } from './utils/raiseZendeskRequest'
-import { approveZendeskRequest } from './utils/approveZendeskRequest'
+import { createZendeskRequest } from '../utils/raiseZendeskRequest'
+import { approveZendeskRequest } from '../utils/approveZendeskRequest'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
