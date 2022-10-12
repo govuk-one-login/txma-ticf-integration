@@ -865,6 +865,33 @@ Resources:
         SSEType: KMS
         KMSMasterKeyId: !GetAtt DatabaseKmsKey.Arn
 
+  # # Notification
+
+  # AthenaEBRule:
+  #   Type: AWS::Events::Rule
+  #   Properties:
+  #     Description: The Rule listening for Athena Status Change Events and triggering the noitfy lambda
+  #     Input: '{"Key": "Value"}'
+  #     Pattern:
+  #       detail:
+  #         state:
+  #           - terminated
+  #     RetryPolicy:
+  #       MaximumRetryAttempts: 5
+  #       MaximumEventAgeInSeconds: 900
+  #     DeadLetterConfig:
+  #       Type: SQS
+  #       QueueLogicalId: EBRuleDLQ
+  #     Target:
+  #       Id: MyTarget
+
+
+  # some name for some function (ie the target)
+
+  # dead letter queue
+
+
+
   # Dev Resources
   EmptyS3BucketsFunction:
     #checkov:skip=CKV_AWS_116:DLQ not required as failures will be reported to CloudFormation
