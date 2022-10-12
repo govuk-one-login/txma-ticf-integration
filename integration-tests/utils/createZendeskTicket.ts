@@ -29,7 +29,7 @@ const createZendeskRequest = async (valid = true): Promise<string> => {
 
   console.log(`TICKET ID: ${ticketID}`)
 
-  return ticketID
+  return ticketID.toString()
 }
 
 export { createZendeskRequest }

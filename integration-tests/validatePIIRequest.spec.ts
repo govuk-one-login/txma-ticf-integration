@@ -5,7 +5,7 @@ import {
 } from './utils/helpers'
 
 import { createZendeskRequest } from './utils/createZendeskTicket'
-import { approveZendeskRequest } from './utils/approveZendeskRequest'
+import { approveZendeskTicket } from './utils/approveZendeskTicket'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
@@ -13,7 +13,7 @@ describe('Submit a PII request with approved ticket data', () => {
   it('Should log a success in cloud watch if Zendesk request is valid', async () => {
     const ticketID = await createZendeskRequest(true)
 
-    await approveZendeskRequest(ticketID)
+    await approveZendeskTicket(ticketID)
 
     // Cloudwatch - Fetch latest log stream containing the ticket details
     const webhookReceivedMessage = 'INFO received Zendesk webhook'
@@ -41,7 +41,7 @@ describe('Submit a PII request with approved ticket data', () => {
 
   it('Should log an error in cloud watch if zendesk request is not valid', async () => {
     const ticketID = await createZendeskRequest(false)
-    await approveZendeskRequest(ticketID)
+    await approveZendeskTicket(ticketID)
 
     // Cloudwatch - Fetch latest log stream containing the ticket details
     const webhookReceivedMessage = 'INFO received Zendesk webhook'

@@ -9,7 +9,7 @@ const ticketsEndpoint = '/api/v2/tickets'
 const zendeskBaseURL: string = getEnvVariable('ZENDESK_BASE_URL')
 const agentUsername: string = getEnvVariable('ZENDESK_AGENT_EMAIL')
 
-const approveZendeskRequest = async (ticketId: string) => {
+export const approveZendeskTicket = async (ticketId: string) => {
   // approve and submit ticket (fires webhook)
   const approvalResponse = await axios({
     url: `${zendeskBaseURL}${ticketsEndpoint}/${ticketId}`,
@@ -27,5 +27,3 @@ const approveZendeskRequest = async (ticketId: string) => {
     expect.arrayContaining(['approved'])
   )
 }
-
-export { approveZendeskRequest }

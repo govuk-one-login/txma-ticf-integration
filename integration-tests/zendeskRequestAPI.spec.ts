@@ -110,23 +110,6 @@ describe('Zendesk ticket check', () => {
       piiTypes: 'drivers_license'
     }
 
-    //   const webhookRequestData = {
-    //      zendeskId: ticketId,
-    //     "recipientEmail": "txma-team2-ticf-analyst-dev@test.gov.uk",
-    //     "recipientName": "Txma-team2-ticf-analyst-dev",
-    //     "requesterEmail": "txma-team2-ticf-analyst-dev@test.gov.uk",
-    //     "requesterName": "Txma-team2-ticf-analyst-dev",
-    //     "dateFrom": "2022-08-13",
-    //     "dateTo": "2022-08-13",
-    //     "identifierType": "event_id",
-    //     "sessionIds": "",
-    //     "journeyIds": "",
-    //     "userIds": "",
-    //     "eventIds": "637783 3256",
-    //     "piiTypes": "drivers_license",
-    //     "dataPaths": ""
-    // }
-
     const headers = {
       ...generateSignatureHeaders(webhookRequestData)
     }
@@ -135,7 +118,7 @@ describe('Zendesk ticket check', () => {
     console.log(response.data)
     console.log(webhookRequestData)
     expect(response.status).toEqual(200)
-    expect(response.data.message).toEqual('data tranfer initiated')
+    expect(response.data.message).toEqual('data transfer initiated')
   })
 
   test('API Gateway returns a 404 response if the request refers to a non-existent Zendesk ticket', async () => {
