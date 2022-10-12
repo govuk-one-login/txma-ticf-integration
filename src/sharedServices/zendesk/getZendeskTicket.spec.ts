@@ -7,9 +7,6 @@ import {
   ZENDESK_TICKET_ID,
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../utils/tests/testConstants'
-import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { zendeskCopy } from '../../constants/zendeskCopy'
-import { loggingCopy } from '../../constants/loggingCopy'
 
 jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
@@ -58,7 +55,7 @@ describe('get zendesk ticket information', () => {
     expectSuccessfulApiCallToBeMade()
 
     expect(console.log).toHaveBeenLastCalledWith(
-      interpolateTemplate('zendeskTicketIdFound', loggingCopy),
+      'Zendesk ticket with matching id found',
       successResponse.ticket
     )
   })
@@ -71,7 +68,7 @@ describe('get zendesk ticket information', () => {
     }
 
     await expect(error()).rejects.toThrow(
-      interpolateTemplate('throwNotZendeskTicket', zendeskCopy)
+      'The returned data was not a Zendesk ticket'
     )
   })
 

@@ -5,8 +5,6 @@ import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierR
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
-import { zendeskCopy } from '../../constants/zendeskCopy'
-import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({
   checkS3BucketData: jest.fn()
@@ -60,7 +58,7 @@ describe('initiate data transfer', () => {
     expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      interpolateTemplate('bucketDataUnavailable', zendeskCopy),
+      'Your ticket has been closed because no data was available for the requested dates',
       'closed'
     )
   })
