@@ -14,6 +14,11 @@ const ZENDESK_SUPPORT_PII_REQUEST_STATUS_FIELD_ID = 5605885870748
 const PII_FORM_IDENTIFIER_RECIPIENT_EMAIL = 6202354485660
 const PII_FORM_IDENTIFIER_RECEIPIENT_NAME = 6202301182364
 
+export const VALID_RECIPIENT_EMAIL = getEnvVariable('ZENDESK_END_USER_EMAIL')
+export const VALID_REQUESTER_EMAIL = getEnvVariable('ZENDESK_END_USER_EMAIL')
+export const VALID_RECIPIENT_NAME = 'Txma-team2-ticf-analyst-dev'
+export const VALID_REQUESTER_NAME = 'Txma-team2-ticf-analyst-dev'
+
 const validRequestData = {
   request: {
     subject: `Integration Test Request - ` + generateRandomNumber(),
@@ -41,11 +46,11 @@ const validRequestData = {
       },
       {
         id: PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnvVariable('ZENDESK_END_USER_EMAIL')
+        value: VALID_RECIPIENT_EMAIL
       },
       {
         id: PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
-        value: 'Txma-team2-ticf-analyst-dev'
+        value: VALID_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -81,11 +86,11 @@ const invalidRequestData = {
       },
       {
         id: PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnvVariable('ZENDESK_END_USER_EMAIL')
+        value: VALID_RECIPIENT_EMAIL
       },
       {
         id: PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
-        value: 'Txma-team2-ticf-analyst-dev'
+        value: VALID_REQUESTER_NAME
       }
     ],
     comment: {

@@ -3,10 +3,32 @@ import crypto from 'crypto'
 import { deleteZendeskTicket } from './utils/deleteZendeskTicket'
 import { generateZendeskRequestDate } from './utils/helpers'
 import { createZendeskRequest } from './utils/createZendeskTicket'
-import { getEnvVariable } from './lib/zendeskParameters'
+import {
+  VALID_RECIPIENT_EMAIL,
+  VALID_RECIPIENT_NAME,
+  VALID_REQUESTER_EMAIL,
+  VALID_REQUESTER_NAME
+} from './lib/requestData'
 
 const baseUrl = process.env.ZENDESK_WEBHOOK_API_BASE_URL as string
 const webhookUrl = `${baseUrl}/zendesk-webhook`
+
+const defaultWebhookRequestData = {
+  zendeskId: '1',
+  recipientEmail: VALID_RECIPIENT_EMAIL,
+  recipientName: VALID_RECIPIENT_NAME,
+  requesterEmail: VALID_REQUESTER_EMAIL,
+  requesterName: VALID_REQUESTER_NAME,
+  dateFrom: generateZendeskRequestDate(-60),
+  dateTo: generateZendeskRequestDate(-60),
+  identifierType: 'event_id',
+  eventIds: '637783 3256',
+  piiTypes: 'drivers_license',
+  sessionIds: '',
+  journeyIds: '',
+  userIds: '',
+  dataPaths: ''
+}
 
 const sendWebhook = async (
   customHeaders: {
@@ -48,24 +70,7 @@ describe('Zendesk request integrity', () => {
       'X-Zendesk-Webhook-Signature': invalidSignature
     }
 
-    const webhookRequestData = {
-      zendeskId: '123',
-      recipientEmail: 'user@test.gov.uk',
-      recipientName: 'test user',
-      requesterEmail: 'user@test.gov.uk',
-      requesterName: 'test user',
-      dateFrom: '2022-09-06',
-      dateTo: '2022-09-06',
-      identifierType: 'journey_id',
-      sessionIds: '',
-      journeyIds: '098 565 2213',
-      userIds: '',
-      eventIds: '',
-      piiTypes: 'name',
-      dataPaths: ''
-    }
-
-    const errorResponse = await sendWebhook(headers, webhookRequestData)
+    const errorResponse = await sendWebhook(headers, defaultWebhookRequestData)
     expect(errorResponse.status).toEqual(400)
     expect(errorResponse.data.message).toEqual('Invalid request source')
   })
@@ -96,71 +101,36 @@ describe('Zendesk ticket check', () => {
   })
 
   test('API Gateway returns 200 for a matching zendesk ticket', async () => {
-    const webhookRequestData = {
-      zendeskId: ticketId,
-      recipientEmail: getEnvVariable('ZENDESK_END_USER_EMAIL'),
-      recipientName: 'Integration test person',
-      requesterEmail: getEnvVariable('ZENDESK_END_USER_EMAIL'),
-      requesterName: 'Txma-team2-ticf-analyst-dev',
-      dateFrom: generateZendeskRequestDate(-60),
-      dateTo: generateZendeskRequestDate(-60),
-      identifierType: 'event_id',
-      eventIds: '637783 3256',
-      piiTypes: 'drivers_license'
-    }
+    const webhookRequestData = defaultWebhookRequestData
+    webhookRequestData.zendeskId = ticketId
 
     const headers = {
       ...generateSignatureHeaders(webhookRequestData)
     }
+
     const response = await sendWebhook(headers, webhookRequestData)
     expect(response.status).toEqual(200)
     expect(response.data.message).toEqual('data transfer initiated')
   })
 
   test('API Gateway returns a 404 response if the request refers to a non-existent Zendesk ticket', async () => {
-    const webhookRequestData = {
-      zendeskId: '1',
-      recipientEmail: 'user@test.gov.uk',
-      recipientName: 'test user',
-      requesterEmail: 'user@test.gov.uk',
-      requesterName: 'test user',
-      dateFrom: '2022-09-06',
-      dateTo: '2022-09-06',
-      identifierType: 'journey_id',
-      sessionIds: '',
-      journeyIds: '098 565 2213',
-      userIds: '',
-      eventIds: '',
-      piiTypes: 'name',
-      dataPaths: ''
-    }
+    const webhookRequestData = defaultWebhookRequestData
+    webhookRequestData.zendeskId = '10000000000000000'
 
     const headers = {
-      ...generateSignatureHeaders(webhookRequestData)
+      ...generateSignatureHeaders(defaultWebhookRequestData)
     }
 
-    const errorResponse = await sendWebhook(headers, webhookRequestData)
+    const errorResponse = await sendWebhook(headers, defaultWebhookRequestData)
     expect(errorResponse.status).toEqual(404)
     expect(errorResponse.data.message).toEqual('Zendesk ticket not found')
   })
 
   test('API Gateway returns a 400 response if the request does not match info in corresponding Zendesk ticket', async () => {
-    const webhookRequestData = {
-      zendeskId: ticketId,
-      recipientEmail: 'user@test.gov.uk',
-      recipientName: 'test user',
-      requesterEmail: 'user@test.gov.uk',
-      requesterName: 'test user',
-      dateFrom: '2022-09-06',
-      dateTo: '2022-09-06',
-      identifierType: 'journey_id',
-      sessionIds: '',
-      journeyIds: '098 565 2213',
-      userIds: '',
-      eventIds: '',
-      piiTypes: 'name',
-      dataPaths: ''
-    }
+    const webhookRequestData = defaultWebhookRequestData
+    webhookRequestData.zendeskId = ticketId
+    webhookRequestData.identifierType = 'journey_id'
+    webhookRequestData.journeyIds = '3457879'
 
     const headers = {
       ...generateSignatureHeaders(webhookRequestData)
