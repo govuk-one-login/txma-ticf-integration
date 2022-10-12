@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { deleteZendeskTicket } from './utils/deleteZendeskTicket'
 import { generateZendeskRequestDate } from './utils/helpers'
 import { createZendeskRequest } from './utils/createZendeskTicket'
+import { getEnvVariable } from './lib/zendeskParameters'
 
 const baseUrl = process.env.ZENDESK_WEBHOOK_API_BASE_URL as string
 const webhookUrl = `${baseUrl}/zendesk-webhook`
@@ -95,11 +96,13 @@ describe('Zendesk ticket check', () => {
     return deleteZendeskTicket(ticketId)
   })
 
-  test('API Gateway returns 200 for valid zendesk ticket', async () => {
+  test('API Gateway returns 200 for a matching zendesk ticket', async () => {
     const webhookRequestData = {
       zendeskId: ticketId,
-      resultsEmail: 'txma-team2-ticf-analyst-dev@test.gov.uk',
-      resultsName: 'Txma-team2-ticf-analyst-dev',
+      recipientEmail: getEnvVariable('ZENDESK_END_USER_EMAIL'),
+      recipientName: 'Txma-team2-ticf-analyst-dev',
+      requesterEmail: getEnvVariable('ZENDESK_END_USER_EMAIL'),
+      requesterName: 'Txma-team2-ticf-analyst-dev',
       dateFrom: generateZendeskRequestDate(-60),
       dateTo: generateZendeskRequestDate(-60),
       identifierType: 'event_id',
@@ -107,11 +110,30 @@ describe('Zendesk ticket check', () => {
       piiTypes: 'drivers_license'
     }
 
+    //   const webhookRequestData = {
+    //      zendeskId: ticketId,
+    //     "recipientEmail": "txma-team2-ticf-analyst-dev@test.gov.uk",
+    //     "recipientName": "Txma-team2-ticf-analyst-dev",
+    //     "requesterEmail": "txma-team2-ticf-analyst-dev@test.gov.uk",
+    //     "requesterName": "Txma-team2-ticf-analyst-dev",
+    //     "dateFrom": "2022-08-13",
+    //     "dateTo": "2022-08-13",
+    //     "identifierType": "event_id",
+    //     "sessionIds": "",
+    //     "journeyIds": "",
+    //     "userIds": "",
+    //     "eventIds": "637783 3256",
+    //     "piiTypes": "drivers_license",
+    //     "dataPaths": ""
+    // }
+
     const headers = {
       ...generateSignatureHeaders(webhookRequestData)
     }
     const response = await sendWebhook(headers, webhookRequestData)
-
+    console.log(response.status)
+    console.log(response.data)
+    console.log(webhookRequestData)
     expect(response.status).toEqual(200)
     expect(response.data.message).toEqual('data tranfer initiated')
   })

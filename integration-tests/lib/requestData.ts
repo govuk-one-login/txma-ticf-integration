@@ -41,11 +41,11 @@ const validRequestData = {
       },
       {
         id: PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnvVariable('ZENDESK_END_USERNAME')
+        value: getEnvVariable('ZENDESK_END_USER_EMAIL')
       },
       {
         id: PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
-        value: 'Integration test person'
+        value: 'Txma-team2-ticf-analyst-dev'
       }
     ],
     comment: {
@@ -81,11 +81,11 @@ const invalidRequestData = {
       },
       {
         id: PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnvVariable('ZENDESK_END_USERNAME')
+        value: getEnvVariable('ZENDESK_END_USER_EMAIL')
       },
       {
         id: PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
-        value: 'Integration test person'
+        value: 'Txma-team2-ticf-analyst-dev'
       }
     ],
     comment: {
