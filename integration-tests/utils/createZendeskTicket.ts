@@ -7,7 +7,7 @@ import { validRequestData, invalidRequestData } from '../lib/requestData'
 
 const createRequestEndpoint = '/api/v2/requests.json'
 const zendeskBaseURL = getEnvVariable('ZENDESK_BASE_URL')
-const endUsername = getEnvVariable('ZENDESK_END_USER_EMAIL')
+const endUserEmail = getEnvVariable('ZENDESK_END_USER_EMAIL')
 
 const createZendeskRequest = async (valid = true): Promise<string> => {
   const requestData = valid ? validRequestData : invalidRequestData
@@ -16,7 +16,7 @@ const createZendeskRequest = async (valid = true): Promise<string> => {
     url: `${zendeskBaseURL}${createRequestEndpoint}`,
     method: 'POST',
     headers: {
-      Authorization: `Basic ${authoriseAs(endUsername)}`,
+      Authorization: `Basic ${authoriseAs(endUserEmail)}`,
       'Content-Type': 'application/json'
     },
     data: requestData
