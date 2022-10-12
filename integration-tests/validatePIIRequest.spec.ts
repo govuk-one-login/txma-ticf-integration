@@ -4,7 +4,7 @@ import {
   waitForLogStreamContainingEvent
 } from './utils/helpers'
 
-import { createZendeskRequest } from './utils/raiseZendeskRequest'
+import { createZendeskRequest } from './utils/createZendeskTicket'
 import { approveZendeskRequest } from './utils/approveZendeskRequest'
 
 describe('Submit a PII request with approved ticket data', () => {
