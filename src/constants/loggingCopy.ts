@@ -67,5 +67,13 @@ export const loggingCopy = [
   {
     name: 'ticketNotUpdated',
     message: 'Could not update Zendesk ticket: '
+  },
+  {
+    name: 'dataAvailableQueuingQuery',
+    message: 'All data available, queuing Athena query'
+  },
+  {
+    name: 'queuingMessageLongPoll',
+    message: 'Batch job started, queuing message for long poll'
   }
 ]

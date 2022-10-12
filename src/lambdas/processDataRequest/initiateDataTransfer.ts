@@ -40,7 +40,7 @@ export const initiateDataTransfer = async (
   )
 
   if (glacierRestoreRequired) {
-    console.log('Found glacier tier locations to restore')
+    console.log(interpolateTemplate('foundGlacierLocations', loggingCopy))
     await startGlacierRestore(
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId
@@ -53,10 +53,10 @@ export const initiateDataTransfer = async (
   }
 
   if (!glacierRestoreRequired && !shouldStartCopyFromAuditBucket) {
-    console.log('All data available, queuing Athena query')
+    console.log(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
     await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
   } else {
-    console.log('Batch job started, queuing message for long poll')
+    console.log(interpolateTemplate('queuingMessageLongPoll', loggingCopy))
     const waitTimeInSeconds = glacierRestoreRequired ? 900 : 30
     await sendContinuePollingDataTransferMessage(
       dataRequestParams.zendeskId,
