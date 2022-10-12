@@ -13,7 +13,6 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     dbEntry.requestInfo
   )
   // add magic numbers below to a constant file
-  console.log(dbEntry)
   if (
     (dbEntry.checkGlacierStatusCount &&
       dbEntry.checkGlacierStatusCount >= 484) ||
