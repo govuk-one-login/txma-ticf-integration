@@ -1,6 +1,6 @@
 import { sendSqsMessageWithStringBody } from '../../sharedServices/queue/sendSqsMessage'
 import {
-  MOCK_TERMINATE_JOB_QUEUE_URL,
+  MOCK_TERMINATED_JOB_QUEUE_URL,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
@@ -27,7 +27,7 @@ describe('terminateStatusCheckProcess', () => {
     expect(messageId).toEqual(MOCK_MESSAGE_ID)
     expect(mockSendSqsMessageWithStringBody).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      MOCK_TERMINATE_JOB_QUEUE_URL
+      MOCK_TERMINATED_JOB_QUEUE_URL
     )
   })
 })
