@@ -214,7 +214,18 @@ describe('checkDataTransferStatus', () => {
     )
   })
 
-  it('should queue athena query if all data is now ready', async () => {
+  it('should queue athena query if all data is now ready following a copy', async () => {
+    givenDatabaseEntryResult({
+      checkCopyStatusCount: 1
+    })
+    givenDataReadyForQuery()
+
+    await checkDataTransferStatus(ZENDESK_TICKET_ID)
+    expect(startCopyJob).not.toHaveBeenCalled()
+    expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
+  })
+
+  it('should queue athena query if all data is now ready following a glacier restore and copy', async () => {
     givenDatabaseEntryResult({
       checkGlacierStatusCount: 1,
       checkCopyStatusCount: 1
