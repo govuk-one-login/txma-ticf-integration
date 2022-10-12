@@ -78,6 +78,13 @@ describe('initiate athena query handler', () => {
     )
   })
 
+  it('throws an error if there is no data in the SQS Event', async () => {
+    expect(handler({ Records: [] })).rejects.toThrow(
+      'No data in Athena Query event'
+    )
+    expect(mockConfirmAthenaTable).not.toHaveBeenCalled()
+  })
+
   it('updates zendesk and throws an error if there is no athena data source', async () => {
     mockConfirmAthenaTable.mockResolvedValue({
       tableAvailable: false,
@@ -93,13 +100,6 @@ describe('initiate athena query handler', () => {
       'test error message',
       'closed'
     )
-  })
-
-  it('throws an error if there is no data in the SQS Event', async () => {
-    expect(handler({ Records: [] })).rejects.toThrow(
-      'No data in Athena Query event'
-    )
-    expect(mockConfirmAthenaTable).not.toHaveBeenCalled()
   })
 
   it('updates zendesk and throws an error if no query sql is generated', async () => {
