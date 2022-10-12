@@ -22,6 +22,14 @@ describe('start Query execution', () => {
       idParameters: ['test_parameter'],
       sql: 'test sql'
     })
+    expect(athenaMock).toHaveReceivedCommandWith(StartQueryExecutionCommand, {
+      ExecutionParameters: ['test_parameter'],
+      QueryExecutionContext: {
+        Database: 'test_database'
+      },
+      QueryString: 'test sql',
+      WorkGroup: 'test_query_workgroup'
+    })
     expect(result).toEqual({
       queryExecuted: true,
       queryExecutionId: '123'
