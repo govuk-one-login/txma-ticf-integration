@@ -13,6 +13,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     dbEntry.requestInfo
   )
   // add magic numbers below to a constant file
+  console.log(dbEntry)
   if (
     (dbEntry.checkGlacierStatusCount &&
       dbEntry.checkGlacierStatusCount >= 484) ||
@@ -51,7 +52,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
         glacierRestoreStillInProgress ? 'Glacier restore' : 'Copy job'
       } still in progress.`,
       'Placing zendeskId back on InitiateDataRequestQueue.',
-      `Retry count: ${
+      `Number of checks: ${
         copyJobStillInProgress
           ? dbEntry.checkCopyStatusCount
           : dbEntry.checkGlacierStatusCount
