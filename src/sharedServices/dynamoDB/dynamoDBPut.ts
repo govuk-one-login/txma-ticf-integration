@@ -15,6 +15,8 @@ export const addNewDataRequestRecord = (
         zendeskId: { S: dataRequestParams.zendeskId },
         recipientEmail: { S: dataRequestParams.recipientEmail },
         recipientName: { S: dataRequestParams.recipientName },
+        requesterEmail: { S: dataRequestParams.requesterEmail },
+        requesterName: { S: dataRequestParams.requesterName },
         dateFrom: { S: dataRequestParams.dateFrom },
         dateTo: { S: dataRequestParams.dateTo },
         identifierType: { S: dataRequestParams.identifierType },
