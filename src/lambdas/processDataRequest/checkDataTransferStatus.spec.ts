@@ -14,6 +14,7 @@ import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { DataRequestParams } from '../../types/dataRequestParams'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
+import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getDatabaseEntryByZendeskId: jest.fn()
@@ -21,6 +22,10 @@ jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
 
 jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({
   checkS3BucketData: jest.fn()
+}))
+
+jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicketById: jest.fn()
 }))
 
 jest.mock('./terminateStatusCheckProcess', () => ({
@@ -235,6 +240,11 @@ describe('checkDataTransferStatus', () => {
       'Status check count exceeded. Process terminated'
     )
     expect(terminateStatusCheckProcess).toHaveBeenCalledWith(ZENDESK_TICKET_ID)
+    expect(updateZendeskTicketById).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID,
+      'The data retrieval process timed out and could not be retrieved. Please try again by opening another ticket',
+      'closed'
+    )
   })
   it('should stop checking the data transfer status if checkGlacierStatusCount exceeds maximum amount', async () => {
     givenDatabaseEntryResult({
@@ -247,5 +257,10 @@ describe('checkDataTransferStatus', () => {
       'Status check count exceeded. Process terminated'
     )
     expect(terminateStatusCheckProcess).toHaveBeenCalledWith(ZENDESK_TICKET_ID)
+    expect(updateZendeskTicketById).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID,
+      'The data retrieval process timed out and could not be retrieved. Please try again by opening another ticket',
+      'closed'
+    )
   })
 })
