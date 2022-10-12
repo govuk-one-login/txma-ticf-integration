@@ -17,7 +17,7 @@ env:
 jobs:
   build-test-and-validate:
     name: Run tests and validation
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write
       contents: read
@@ -79,7 +79,7 @@ jobs:
 
   deploy-feature:
     name: Deploy feature branch
-    if: startsWith(github.ref, 'refs/heads/feature')
+    if: startsWith(github.ref, 'refs/heads/feature') || github.event_name == 'workflow_dispatch'
     needs: [build-test-and-validate]
     permissions:
       id-token: write

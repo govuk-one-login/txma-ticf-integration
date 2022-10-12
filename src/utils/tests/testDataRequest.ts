@@ -2,13 +2,15 @@ import { DataRequestParams } from '../../types/dataRequestParams'
 import {
   TEST_DATE_FROM,
   TEST_DATE_TO,
+  TEST_RECIPIENT_EMAIL,
+  TEST_RECIPIENT_NAME,
   ZENDESK_TICKET_ID
 } from './testConstants'
 
 export const testDataRequest = {
   zendeskId: ZENDESK_TICKET_ID,
-  recipientEmail: 'myuser@test.gov.uk',
-  recipientName: 'my name',
+  recipientEmail: TEST_RECIPIENT_EMAIL,
+  recipientName: TEST_RECIPIENT_NAME,
   requesterEmail: 'myuser@test.gov.uk',
   requesterName: 'my name',
   dateFrom: TEST_DATE_FROM,
