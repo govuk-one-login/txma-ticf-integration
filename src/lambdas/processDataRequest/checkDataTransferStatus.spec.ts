@@ -138,10 +138,10 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenLastCalledWith(
       'Glacier restore still in progress.',
       'Placing zendeskId back on InitiateDataRequestQueue.',
-      'Retry count: 1'
+      'Number of checks: 1'
     )
     expect(mockIncrementPollingRetryCount).toBeCalledWith(
       ZENDESK_TICKET_ID,
@@ -167,7 +167,7 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenLastCalledWith(
       'Glacier restore complete. Starting copy job'
     )
     expect(startCopyJob).toBeCalledWith(filesToCopy, ZENDESK_TICKET_ID)
@@ -195,10 +195,10 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenLastCalledWith(
       'Copy job still in progress.',
       'Placing zendeskId back on InitiateDataRequestQueue.',
-      'Retry count: 1'
+      'Number of checks: 1'
     )
     expect(mockIncrementPollingRetryCount).toBeCalledWith(
       ZENDESK_TICKET_ID,
@@ -223,7 +223,7 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.log).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenLastCalledWith(
       'Restore/copy process complete. Placing zendeskId on InitiateAthenaQueryQueue'
     )
     expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
@@ -246,6 +246,7 @@ describe('checkDataTransferStatus', () => {
       'closed'
     )
   })
+
   it('should stop checking the data transfer status if checkGlacierStatusCount exceeds maximum amount', async () => {
     givenDatabaseEntryResult({
       checkGlacierStatusCount: TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT
