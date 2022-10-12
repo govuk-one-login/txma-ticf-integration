@@ -6,6 +6,6 @@ export const terminateStatusCheckProcess = async (
 ): Promise<string | undefined> => {
   return sendSqsMessageWithStringBody(
     zendeskId,
-    getEnv('TERMINATE_JOB_QUEUE_URL')
+    getEnv('TERMINATED_JOB_QUEUE_URL')
   )
 }
