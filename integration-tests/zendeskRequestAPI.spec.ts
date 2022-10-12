@@ -89,18 +89,17 @@ describe('Zendesk ticket check', () => {
 
   beforeAll(async () => {
     ticketId = await createZendeskRequest()
-    return ticketId
   })
 
   afterAll(async () => {
-   await deleteZendeskTicket(ticketId)
+    await deleteZendeskTicket(ticketId)
   })
 
   test('API Gateway returns 200 for a matching zendesk ticket', async () => {
     const webhookRequestData = {
       zendeskId: ticketId,
       recipientEmail: getEnvVariable('ZENDESK_END_USER_EMAIL'),
-      recipientName: 'Txma-team2-ticf-analyst-dev',
+      recipientName: 'Integration test person',
       requesterEmail: getEnvVariable('ZENDESK_END_USER_EMAIL'),
       requesterName: 'Txma-team2-ticf-analyst-dev',
       dateFrom: generateZendeskRequestDate(-60),
@@ -114,9 +113,6 @@ describe('Zendesk ticket check', () => {
       ...generateSignatureHeaders(webhookRequestData)
     }
     const response = await sendWebhook(headers, webhookRequestData)
-    console.log(response.status)
-    console.log(response.data)
-    console.log(webhookRequestData)
     expect(response.status).toEqual(200)
     expect(response.data.message).toEqual('data transfer initiated')
   })

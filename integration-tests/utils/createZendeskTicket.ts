@@ -21,7 +21,6 @@ const createZendeskRequest = async (valid = true): Promise<string> => {
     },
     data: requestData
   })
-  console.log(JSON.stringify(axiosResponse.data))
   expect(axiosResponse.status).toBe(201)
   expect(axiosResponse.data.request.id).toBeDefined()
 
