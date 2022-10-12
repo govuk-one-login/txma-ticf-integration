@@ -911,5 +911,8 @@ Resources:
   EmptyS3Buckets:
     Type: AWS::CloudFormation::CustomResource
     Condition: DeployS3Cleanup
+    DependsOn:
+      - EmptyS3BucketsFunction
+      - EmptyS3BucketsLogs
     Properties:
       ServiceToken: !GetAtt EmptyS3BucketsFunction.Arn
