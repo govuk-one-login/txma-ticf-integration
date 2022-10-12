@@ -93,7 +93,7 @@ describe('Zendesk ticket check', () => {
   })
 
   afterAll(async () => {
-    return deleteZendeskTicket(ticketId)
+   await deleteZendeskTicket(ticketId)
   })
 
   test('API Gateway returns 200 for a matching zendesk ticket', async () => {
