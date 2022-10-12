@@ -53,7 +53,7 @@ export const initiateDataTransfer = async (
     console.log('All data available, queuing Athena query')
     await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
   } else {
-    console.log('Data copy job started, queuing message for long poll')
+    console.log('Batch job started, queuing message for long poll')
     const waitTimeInSeconds = glacierRestoreRequired ? 900 : 30
     await sendContinuePollingDataTransferMessage(
       dataRequestParams.zendeskId,
