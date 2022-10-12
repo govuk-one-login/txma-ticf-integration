@@ -1,4 +1,4 @@
-export const constructInitiateDataRequestEvent = (requestBody: string) => ({
+export const constructSqsEvent = (requestBody: string) => ({
   Records: [
     {
       messageId: '22b73f72-470b-4594-af38-72440d5f1e7d',
