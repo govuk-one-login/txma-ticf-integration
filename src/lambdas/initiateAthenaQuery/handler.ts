@@ -12,7 +12,7 @@ import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableR
 export const handler = async (event: SQSEvent): Promise<void> => {
   console.log('Handling Athena Query event', JSON.stringify(event, null, 2))
 
-  const zendeskId = confirmEvent(event)
+  const zendeskId = retrieveZendeskIdFromEvent(event)
 
   const athenaTable = await confirmAthenaTable()
 
@@ -31,7 +31,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
   return
 }
 
-const confirmEvent = (event: SQSEvent): string => {
+const retrieveZendeskIdFromEvent = (event: SQSEvent): string => {
   if (event.Records.length < 1) {
     throw new Error('No data in Athena Query event')
   }
