@@ -4,6 +4,10 @@ import { sendContinuePollingDataTransferMessage } from '../../sharedServices/que
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
+import {
+  MAX_AUDIT_TO_ANALYSIS_COPY_RETRIES,
+  MAX_GLACIER_RETRIES
+} from '../../utils/constants/configurationConstants'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
 
@@ -12,11 +16,11 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
   const s3BucketDataLocationResult = await checkS3BucketData(
     dbEntry.requestInfo
   )
-  // add magic numbers below to a constant file
   if (
     (dbEntry.checkGlacierStatusCount &&
-      dbEntry.checkGlacierStatusCount >= 484) ||
-    (dbEntry.checkCopyStatusCount && dbEntry.checkCopyStatusCount >= 60)
+      dbEntry.checkGlacierStatusCount >= MAX_GLACIER_RETRIES) ||
+    (dbEntry.checkCopyStatusCount &&
+      dbEntry.checkCopyStatusCount >= MAX_AUDIT_TO_ANALYSIS_COPY_RETRIES)
   ) {
     console.error('Status check count exceeded. Process terminated')
     await terminateStatusCheckProcess(zendeskId)
