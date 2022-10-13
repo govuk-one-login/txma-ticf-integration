@@ -1,24 +1,35 @@
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { handler } from './handler'
-import { constructInitiateDataRequestEvent } from '../../utils/tests/events/initiateDataRequestEvent'
+import { constructSqsEvent } from '../../utils/tests/events/sqsEvent'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
+import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
+import { checkDataTransferStatus } from './checkDataTransferStatus'
 jest.mock('./initiateDataTransfer', () => ({
   initiateDataTransfer: jest.fn()
 }))
 
 const initiateDataTransferMock = initiateDataTransfer as jest.Mock
 
+jest.mock('./checkDataTransferStatus', () => ({
+  checkDataTransferStatus: jest.fn()
+}))
+
 describe('processDataRequest', () => {
   beforeEach(() => {
-    initiateDataTransferMock.mockReset()
+    jest.resetAllMocks()
   })
 
-  it('should handle a valid data request event', async () => {
-    const initiateDataRequestEvent = constructInitiateDataRequestEvent(
-      JSON.stringify(testDataRequest)
-    )
-    await handler(initiateDataRequestEvent)
+  it('should handle a valid initiate data request event', async () => {
+    await handler(constructSqsEvent(JSON.stringify(testDataRequest)))
+
     expect(initiateDataTransferMock).toHaveBeenCalledWith(testDataRequest)
+  })
+
+  it('should handle a valid continue data transfer event', async () => {
+    await handler(
+      constructSqsEvent(JSON.stringify({ zendeskId: ZENDESK_TICKET_ID }))
+    )
+    expect(checkDataTransferStatus).toHaveBeenCalledWith(ZENDESK_TICKET_ID)
   })
 
   it('should throw an appropriate error if there is no data in the event', async () => {
@@ -27,7 +38,7 @@ describe('processDataRequest', () => {
   })
 
   it('should throw an appropriate error if the request includes data of the wrong shape', async () => {
-    const initiateDataRequestEvent = constructInitiateDataRequestEvent(
+    const initiateDataRequestEvent = constructSqsEvent(
       JSON.stringify({ someProperty: 'someValue' })
     )
     await expect(handler(initiateDataRequestEvent)).rejects.toThrow(
@@ -37,8 +48,7 @@ describe('processDataRequest', () => {
   })
 
   it('should throw an appropriate error if the request includes non-JSON data', async () => {
-    const initiateDataRequestEvent =
-      constructInitiateDataRequestEvent('some message')
+    const initiateDataRequestEvent = constructSqsEvent('some message')
     await expect(handler(initiateDataRequestEvent)).rejects.toThrow(
       'Event data did not include a valid JSON body'
     )

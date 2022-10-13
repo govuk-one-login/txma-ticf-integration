@@ -5,6 +5,11 @@ import {
   DataRequestParams,
   isDataRequestParams
 } from '../../types/dataRequestParams'
+import {
+  ContinueDataTransferParams,
+  isContinueDataTransferParams
+} from '../../types/continueDataTransferParams'
+import { checkDataTransferStatus } from './checkDataTransferStatus'
 export const handler = async (event: SQSEvent) => {
   console.log('Handling data request SQS event', JSON.stringify(event, null, 2))
   if (event.Records.length === 0) {
@@ -14,10 +19,14 @@ export const handler = async (event: SQSEvent) => {
   if (isEmpty(eventData)) {
     throw new Error('Event data did not include a valid JSON body')
   }
-  if (!isDataRequestParams(eventData)) {
+  if (isDataRequestParams(eventData)) {
+    await initiateDataTransfer(eventData as DataRequestParams)
+  } else if (isContinueDataTransferParams(eventData)) {
+    const params = eventData as ContinueDataTransferParams
+    await checkDataTransferStatus(params.zendeskId)
+  } else {
     throw new Error('Event data was not of the correct type')
   }
 
-  await initiateDataTransfer(eventData as DataRequestParams)
   return {}
 }
