@@ -1,24 +1,26 @@
 import { PutItemCommand } from '@aws-sdk/client-dynamodb'
+import { getEnvVariable } from '../lib/zendeskParameters'
 import { dynamoDBClient } from './awsClients'
+import { getTicketDetails } from './zendeskUtils'
 
-const populateTableWithRequestDetails = async () => {
-  const ticketID = ''
+const populateTableWithRequestDetails = async (ticketID: string) => {
+  await getTicketDetails(ticketID)
+
   const populateTableParams = {
-    TableName:
-      'tt2-17-integration-tests-QueryRequestDynamoDBTable-1J802O35H5X8X',
+    TableName: getEnvVariable('AUDIT_REQUEST_DYNAMODB_TABLE'),
     ReturnValues: 'ALL_OLD',
     Item: {
-      zendeskId: { S: '' },
+      zendeskId: { S: `${ticketID}` },
       requestInfo: {
         M: {
-          zendeskId: { S: '' },
-          dataPaths: { L: [{ S: '' }, { S: '' }] },
-          dateFrom: { S: '' },
-          dateTo: { S: '' },
-          eventIds: { L: [{ S: '' }, { S: '' }] },
-          identifierType: { S: '' },
-          resultsEmail: { S: '' },
-          resultsName: { S: '' }
+          zendeskId: { S: `${ticketID}` },
+          dataPaths: { L: [{ S: '' }, { S: '' }] }, // what are the valid values for this?
+          dateFrom: { S: '2022-08-13' },
+          dateTo: { S: '2022-08-13' },
+          eventIds: { L: [{ S: '637783' }, { S: '3256' }] },
+          identifierType: { S: 'event_id' },
+          resultsEmail: { S: 'txma-team2-ticf-analyst-dev@test.gov.uk' },
+          resultsName: { S: 'Txma-team2-ticf-analyst-dev' }
         }
       }
     }
@@ -27,7 +29,7 @@ const populateTableWithRequestDetails = async () => {
   const data = await dynamoDBClient.send(
     new PutItemCommand(populateTableParams)
   )
-  expect(data.$metadata.httpStatusCode).toEqual(201)
+  expect(data.$metadata.httpStatusCode).toEqual(200)
   expect(data.Attributes?.zendeskId).not.toEqual(ticketID)
 }
 
