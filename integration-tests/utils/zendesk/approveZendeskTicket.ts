@@ -1,11 +1,11 @@
 import axios from 'axios'
+import { authoriseAs } from './authoriseAs'
 import { ticketApprovalData } from '../../constants/requestData'
 import {
   ZENDESK_AGENT_EMAIL,
   ZENDESK_BASE_URL,
   ZENDESK_TICKETS_ENDPOINT
 } from '../../constants/zendeskParameters'
-import { authoriseAs } from '../helpers'
 
 export const approveZendeskTicket = async (ticketId: string) => {
   try {

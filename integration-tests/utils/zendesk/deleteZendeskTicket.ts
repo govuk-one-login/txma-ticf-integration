@@ -1,10 +1,10 @@
 import axios from 'axios'
+import { authoriseAs } from './authoriseAs'
 import {
   ZENDESK_ADMIN_EMAIL,
   ZENDESK_BASE_URL,
   ZENDESK_TICKETS_ENDPOINT
 } from '../../constants/zendeskParameters'
-import { authoriseAs } from '../helpers'
 
 export const deleteZendeskTicket = async (ticketId: string) => {
   try {

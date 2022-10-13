@@ -4,12 +4,6 @@ export const generateRandomNumber = () => {
   return Math.floor(Math.random() * 100).toString()
 }
 
-export const authoriseAs = (username: string) => {
-  return Buffer.from(`${username}/token:${getEnv('ZENDESK_API_KEY')}`).toString(
-    'base64'
-  )
-}
-
 export const generateZendeskRequestDate = (offset: number): string => {
   const fixedRequestDate = process.env.FIXED_DATA_REQUEST_DATE
   if (fixedRequestDate) {

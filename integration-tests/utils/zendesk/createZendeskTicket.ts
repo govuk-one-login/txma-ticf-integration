@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { authoriseAs } from '../helpers'
+import { authoriseAs } from './authoriseAs'
 import {
   ZENDESK_BASE_URL,
   ZENDESK_END_USER_EMAIL,
