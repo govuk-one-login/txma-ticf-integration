@@ -318,12 +318,15 @@ Resources:
           #TODO: Update with parameterised bucket name when merging with TxMA 1
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
           DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
           BATCH_JOB_MANIFEST_BUCKET_ARN: !GetAtt BatchJobManifestBucket.Arn
           BATCH_JOB_MANIFEST_BUCKET_NAME: !Ref BatchJobManifestBucket
           BATCH_JOB_ROLE_ARN: !GetAtt BatchJobsRole.Arn
           ACCOUNT_ID: !Sub ${AWS::AccountId}
+          INITIATE_ATHENA_QUERY_QUEUE_URL: !Ref InitiateAthenaQueryQueue
+          INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -358,6 +361,23 @@ Resources:
                 - kms:Decrypt
               Resource:
                 - !GetAtt QueueKmsKey.Arn
+            - Sid: AllowQueueSend
+              Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource:
+              - !GetAtt InitiateDataRequestQueue.Arn
+              - !GetAtt InitiateAthenaQueryQueue.Arn
+            - Sid: AllowQueueKmsAccess
+              Effect: Allow
+              Action:
+                - kms:GenerateDataKey
+                - kms:Encrypt
+              # For some reason, Decrypt is needed to add items to the queue.
+              # See here for some discussion of this: https://github.com/aws/aws-cdk/issues/6609
+                - kms:Decrypt
+              Resource:
+              - !GetAtt QueueKmsKey.Arn
             - Sid: SecretsManager
               Effect: Allow
               Action:
@@ -563,17 +583,41 @@ Resources:
         PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
+            - Sid: AllowRestoreOnAuditBucket
+              Effect: Allow
               Action:
                 - s3:RestoreObject
               Resource:
                 - arn:aws:s3:::audit-sandbox-message-batch/* #TODO: Update with parameter when merging with TxMA 1
-            - Effect: Allow
+            - Sid: AllowReadFromManifestBucket
+              Effect: Allow
               Action:
                 -  "s3:GetObject"
                 -  "s3:GetObjectVersion"
               Resource:
                 - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
+      - PolicyName: AllowS3Copy
+        PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Sid: AllowWriteToAnalysisBucket
+              Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:PutObjectAcl
+                - s3:PutObjectTagging
+              Resource: 
+                - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+            - Sid: AllowReadFromAuditBucket
+              Effect: Allow
+              Action: 
+                - s3:GetObject
+                - s3:GetObjectAcl
+                - s3:GetObjectTagging
+                - s3:ListBucket
+              Resource:
+                - arn:aws:s3:::audit-sandbox-message-batch/*
+            
   # Data Analysis
 
   InitiateAthenaQueryFunction:
@@ -807,45 +851,12 @@ Resources:
       AttributeDefinitions: 
         - AttributeName: "zendeskId"
           AttributeType: "S"
-        - AttributeName: "s3MoveId"
-          AttributeType: "S"
-        - AttributeName: "glacierRetrieveId"
-          AttributeType: "S"
-        - AttributeName: "glacierMoveId"
-          AttributeType: "S"
         - AttributeName: "athenaQueryId"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "zendeskId"
           KeyType: "HASH"
       GlobalSecondaryIndexes:
-        - IndexName: s3MoveIdIndex
-          KeySchema:
-            - AttributeName: "s3MoveId"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "KEYS_ONLY"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
-        - IndexName: glacierRetrieveIdIndex
-          KeySchema:
-            - AttributeName: "glacierRetrieveId"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "KEYS_ONLY"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
-        - IndexName: glacierMoveIdIndex
-          KeySchema:
-            - AttributeName: "glacierMoveId"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "KEYS_ONLY"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
         - IndexName: athenaQueryIdIndex
           KeySchema:
             - AttributeName: "athenaQueryId"
@@ -910,5 +921,8 @@ Resources:
   EmptyS3Buckets:
     Type: AWS::CloudFormation::CustomResource
     Condition: DeployS3Cleanup
+    DependsOn:
+      - EmptyS3BucketsFunction
+      - EmptyS3BucketsLogs
     Properties:
       ServiceToken: !GetAtt EmptyS3BucketsFunction.Arn
