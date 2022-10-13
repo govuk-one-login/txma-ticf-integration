@@ -837,6 +837,7 @@ Resources:
     Properties:
       Description: The workgroup for TxMA queries
       Name: !Sub ${AWS::StackName}-sandbox-analysis-queries-workgroup #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-queries-workgroup
+      RecursiveDeleteOption: true
       WorkGroupConfiguration:
         EnforceWorkGroupConfiguration: true
         PublishCloudWatchMetricsEnabled: false
