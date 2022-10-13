@@ -905,7 +905,6 @@ Resources:
           Arn: !GetAtt InitiateNotificationFunction.Arn
           Id: AthenaEventTarget
 
-  # some name for some function (ie the target)
   InitiateNotificationFunction:
     #checkov:skip=CKV_AWS_116:Not triggered by SQS
     #checkov:skip=CKV_AWS_117:VPC not required
@@ -913,15 +912,9 @@ Resources:
     Properties:
       Handler: initiateNotification.handler
       Environment:
-        # Variables:
-        #   QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
-        #   ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
-      # Events:
-      #   InitiateAthenaQueryEvent:
-      #     Type: SQS
-      #     Properties:
-      #       Queue: !GetAtt InitiateAthenaQueryQueue.Arn
-      #       BatchSize: 1
+        Variables:
+          QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
       FunctionName: !Sub ${AWS::StackName}-initiate-notification
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
