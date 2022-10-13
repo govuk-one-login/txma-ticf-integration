@@ -13,7 +13,7 @@ export const createZendeskTicket = async (requestData: ZendeskRequestData) => {
       url: `${ZENDESK_BASE_URL}${ZENDESK_REQUESTS_ENDPOINT}`,
       method: 'POST',
       headers: {
-        Authorization: `Basic ${authoriseAs(ZENDESK_END_USER_EMAIL)}`,
+        Authorization: authoriseAs(ZENDESK_END_USER_EMAIL),
         'Content-Type': 'application/json'
       },
       data: requestData

@@ -12,7 +12,7 @@ export const deleteZendeskTicket = async (ticketId: string) => {
       url: `${ZENDESK_BASE_URL}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}`,
       method: 'DELETE',
       headers: {
-        Authorization: `Basic ${authoriseAs(ZENDESK_ADMIN_EMAIL)}`
+        Authorization: authoriseAs(ZENDESK_ADMIN_EMAIL)
       }
     })
   } catch (error) {

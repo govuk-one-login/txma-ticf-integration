@@ -13,7 +13,7 @@ export const approveZendeskTicket = async (ticketId: string) => {
       url: `${ZENDESK_BASE_URL}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}`,
       method: 'PUT',
       headers: {
-        Authorization: `Basic ${authoriseAs(ZENDESK_AGENT_EMAIL)}`,
+        Authorization: authoriseAs(ZENDESK_AGENT_EMAIL),
         'Content-Type': 'application/json'
       },
       data: ticketApprovalData
