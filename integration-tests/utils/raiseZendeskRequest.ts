@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getEnvVariable } from '../lib/zendeskParameters'
 
-import { authoriseAs } from './helpers'
+import { authoriseAs } from './zendeskUtils'
 
 import { validRequestData, invalidRequestData } from '../lib/requestData'
 

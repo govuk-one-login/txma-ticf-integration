@@ -1,12 +1,12 @@
 import {
   generateRandomNumber,
   generateZendeskRequestDate
-} from '../utils/helpers'
+} from '../utils/zendeskUtils'
 import { getEnvVariable } from './zendeskParameters'
 
 const ZENDESK_PII_FORM_ID = 5603412248860
 const PII_FORM_IDENTIFIER_FIELD_ID = 5605352623260
-const PII_FORM_IDENTIFIER_LIST_FIELD_ID = 5605423021084
+const PII_FORM_EVENT_ID_LIST_FIELD_ID = 5605423021084
 const PII_FORM_REQUEST_DATE_FIELD_ID = 5605700069916
 const PII_FORM_REQUESTED_PII_TYPE_FIELD_ID = 5641719421852
 const PII_FORM_CUSTOM_DATA_PATH_FIELD_ID = 5698447116060
@@ -24,7 +24,7 @@ const validRequestData = {
         value: 'event_id'
       },
       {
-        id: PII_FORM_IDENTIFIER_LIST_FIELD_ID,
+        id: PII_FORM_EVENT_ID_LIST_FIELD_ID,
         value: '637783 3256'
       },
       {
@@ -64,7 +64,7 @@ const invalidRequestData = {
         value: 'event_id'
       },
       {
-        id: PII_FORM_IDENTIFIER_LIST_FIELD_ID,
+        id: PII_FORM_EVENT_ID_LIST_FIELD_ID,
         value: '637783 3256'
       },
       {

@@ -1,4 +1,3 @@
-import { getEnvVariable } from '../lib/zendeskParameters'
 import { initiateDataRequestLambdalogGroupName } from '../lib/awsParameters'
 import { cloudWatchLogsClient } from './awsClients'
 import {
@@ -11,30 +10,6 @@ import {
   FilterLogEventsCommandOutput,
   FilteredLogEvent
 } from '@aws-sdk/client-cloudwatch-logs'
-
-const generateRandomNumber = () => {
-  return Math.floor(Math.random() * 100).toString()
-}
-
-const authoriseAs = (username: string) => {
-  return Buffer.from(
-    `${username}/token:${getEnvVariable('ZENDESK_API_KEY')}`
-  ).toString('base64')
-}
-
-const generateZendeskRequestDate = (offset: number): string => {
-  const fixedRequestDate = process.env.FIXED_DATA_REQUEST_DATE
-  if (fixedRequestDate) {
-    return fixedRequestDate
-  }
-
-  const today: Date = new Date()
-  today.setDate(today.getDate() + offset)
-
-  const dateFormat: Intl.DateTimeFormat = new Intl.DateTimeFormat('en-GB')
-  const dateParts: string[] = dateFormat.format(today).split('/')
-  return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`
-}
 
 const getLogStreamPrefix = () => {
   const dateFormat = new Intl.DateTimeFormat('en-GB')
@@ -166,12 +141,9 @@ const extractRequestIDFromEventMessage = (message: string) => {
 }
 
 export {
-  generateRandomNumber,
-  authoriseAs,
   getLogStreamPrefix,
   getLatestLogStreamName,
   getMatchingLogEvents,
   extractRequestIDFromEventMessage,
-  generateZendeskRequestDate,
   waitForLogStreamContainingEvent
 }

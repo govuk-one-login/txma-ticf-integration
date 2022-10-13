@@ -2,7 +2,7 @@ import {
   getMatchingLogEvents,
   extractRequestIDFromEventMessage,
   waitForLogStreamContainingEvent
-} from '../utils/helpers'
+} from '../utils/cloudwatchUtils'
 
 import { createZendeskRequest } from '../utils/raiseZendeskRequest'
 import { approveZendeskRequest } from '../utils/approveZendeskRequest'
