@@ -15,8 +15,13 @@ describe('dynamoDBGet', () => {
   })
 
   const givenDatabaseReturnsData = (
-    checkGlacierStatusCount?: number,
-    checkCopyStatusCount?: number
+    parameters:
+      | {
+          checkGlacierStatusCount?: number
+          checkCopyStatusCount?: number
+          athenaQueryId?: string
+        }
+      | undefined = undefined
   ) => {
     const mockItem: Record<string, AttributeValue> = {
       requestInfo: {
@@ -33,16 +38,18 @@ describe('dynamoDBGet', () => {
           piiTypes: { L: [{ S: 'passport_number' }] }
         }
       },
-      zendeskId: { S: '12' }
-    }
-    if (checkCopyStatusCount !== undefined) {
-      mockItem.checkCopyStatusCount = { N: checkCopyStatusCount.toString() }
-    }
-
-    if (checkGlacierStatusCount !== undefined) {
-      mockItem.checkGlacierStatusCount = {
-        N: checkGlacierStatusCount.toString()
-      }
+      zendeskId: { S: '12' },
+      ...(parameters?.athenaQueryId && {
+        athenaQueryId: { S: parameters?.athenaQueryId }
+      }),
+      ...(parameters?.checkGlacierStatusCount && {
+        checkGlacierStatusCount: {
+          N: parameters?.checkGlacierStatusCount.toString()
+        }
+      }),
+      ...(parameters?.checkCopyStatusCount && {
+        checkCopyStatusCount: { N: parameters?.checkCopyStatusCount.toString() }
+      })
     }
     const mockDbContents = {
       Item: mockItem
@@ -73,7 +80,7 @@ describe('dynamoDBGet', () => {
 
   test('parses checkGlacierStatusCount if set', async () => {
     const checkGlacierStatusCount = 1
-    givenDatabaseReturnsData(checkGlacierStatusCount)
+    givenDatabaseReturnsData({ checkGlacierStatusCount })
 
     const result = await getDatabaseEntryByZendeskId('12')
     expect(result.checkGlacierStatusCount).toEqual(checkGlacierStatusCount)
@@ -82,10 +89,19 @@ describe('dynamoDBGet', () => {
 
   test('parses checkGlacierStatusCount if set', async () => {
     const checkCopyStatusCount = 1
-    givenDatabaseReturnsData(undefined, checkCopyStatusCount)
+    givenDatabaseReturnsData({ checkCopyStatusCount })
 
     const result = await getDatabaseEntryByZendeskId('12')
     expect(result.checkCopyStatusCount).toEqual(checkCopyStatusCount)
+    expect(result.checkGlacierStatusCount).toBeUndefined()
+  })
+
+  test('parses athenaQueryId if set', async () => {
+    const athenaQueryId = 'abc123'
+    givenDatabaseReturnsData({ athenaQueryId })
+
+    const result = await getDatabaseEntryByZendeskId('12')
+    expect(result.athenaQueryId).toEqual(athenaQueryId)
     expect(result.checkGlacierStatusCount).toBeUndefined()
   })
 

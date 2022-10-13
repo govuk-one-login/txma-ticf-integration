@@ -7,20 +7,20 @@ import { validRequestData, invalidRequestData } from '../lib/requestData'
 
 const createRequestEndpoint = '/api/v2/requests.json'
 const zendeskBaseURL = getEnvVariable('ZENDESK_BASE_URL')
-const endUsername = getEnvVariable('ZENDESK_END_USERNAME')
+const endUserEmail = getEnvVariable('ZENDESK_END_USER_EMAIL')
 
 const createZendeskRequest = async (valid = true): Promise<string> => {
   const requestData = valid ? validRequestData : invalidRequestData
+
   const axiosResponse = await axios({
     url: `${zendeskBaseURL}${createRequestEndpoint}`,
     method: 'POST',
     headers: {
-      Authorization: `Basic ${authoriseAs(endUsername)}`,
+      Authorization: `Basic ${authoriseAs(endUserEmail)}`,
       'Content-Type': 'application/json'
     },
     data: requestData
   })
-
   expect(axiosResponse.status).toBe(201)
   expect(axiosResponse.data.request.id).toBeDefined()
 
@@ -28,7 +28,7 @@ const createZendeskRequest = async (valid = true): Promise<string> => {
 
   console.log(`TICKET ID: ${ticketID}`)
 
-  return ticketID
+  return ticketID.toString()
 }
 
 export { createZendeskRequest }

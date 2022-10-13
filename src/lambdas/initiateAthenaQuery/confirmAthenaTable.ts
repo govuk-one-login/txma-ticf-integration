@@ -1,6 +1,6 @@
 import { GlueClient, GetTableCommand } from '@aws-sdk/client-glue'
 import { getEnv } from '../../utils/helpers'
-import { ConfirmAthenaTableResult } from '../../types/confirmAthenaTableResult'
+import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
 
 export const confirmAthenaTable =
   async (): Promise<ConfirmAthenaTableResult> => {

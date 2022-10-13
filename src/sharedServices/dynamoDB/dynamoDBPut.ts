@@ -51,7 +51,7 @@ export const addNewDataRequestRecord = (
 
   return ddbClient.send(
     new PutItemCommand({
-      TableName: getEnv('DYNAMODB_TABLE_NAME'),
+      TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
       Item: newRecord
     })
   )

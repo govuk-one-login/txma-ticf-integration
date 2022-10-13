@@ -8,7 +8,7 @@ export const getDatabaseEntryByZendeskId = async (
   zendeskId: string
 ): Promise<DataRequestDatabaseEntry> => {
   const params = {
-    TableName: getEnv('DYNAMODB_TABLE_NAME'),
+    TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
     Key: { zendeskId: { S: zendeskId } }
   }
 
@@ -47,7 +47,10 @@ export const getDatabaseEntryByZendeskId = async (
     checkGlacierStatusCount: retrieveNumericValue(
       data?.Item?.checkGlacierStatusCount
     ),
-    checkCopyStatusCount: retrieveNumericValue(data?.Item?.checkCopyStatusCount)
+    checkCopyStatusCount: retrieveNumericValue(
+      data?.Item?.checkCopyStatusCount
+    ),
+    athenaQueryId: data?.Item?.athenaQueryId?.S
   }
 }
 

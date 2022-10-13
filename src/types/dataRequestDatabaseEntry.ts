@@ -3,4 +3,5 @@ export interface DataRequestDatabaseEntry {
   requestInfo: DataRequestParams
   checkGlacierStatusCount?: number
   checkCopyStatusCount?: number
+  athenaQueryId?: string
 }
