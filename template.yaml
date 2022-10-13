@@ -899,7 +899,7 @@ Resources:
             - 'SUCCEEDED'
             - 'FAILED'
             - 'CANCELLED'
-        State: 'ENABLED'
+      State: 'ENABLED'
       Targets:
         -
           Arn: !GetAtt InitiateNotificationFunction.Arn
