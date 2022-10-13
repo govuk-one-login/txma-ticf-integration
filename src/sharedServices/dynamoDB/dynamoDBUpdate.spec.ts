@@ -4,6 +4,7 @@ import {
   UpdateItemOutput
 } from '@aws-sdk/client-dynamodb'
 import { mockClient } from 'aws-sdk-client-mock'
+import { TEST_QUERY_DATABASE_TABLE_NAME } from '../../utils/tests/testConstants'
 import { updateQueryByZendeskId } from './dynamoDBUpdate'
 
 const dynamoMock = mockClient(DynamoDBClient)
@@ -43,7 +44,7 @@ describe('dynamoDBUpdate', () => {
       updateQueryByZendeskId('12', 'athenaQueryId', 'testAthenaId')
     ).resolves.not.toThrowError()
     expect(dynamoMock).toHaveReceivedCommandWith(UpdateItemCommand, {
-      TableName: 'test_query_db_table',
+      TableName: TEST_QUERY_DATABASE_TABLE_NAME,
       Key: { zendeskId: { S: '12' } },
       ReturnValues: 'ALL_NEW',
       ExpressionAttributeValues: { ':value': { S: 'testAthenaId' } },
