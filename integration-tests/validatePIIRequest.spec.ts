@@ -8,7 +8,6 @@ import { createZendeskRequest } from './utils/createZendeskTicket'
 import { approveZendeskTicket } from './utils/approveZendeskTicket'
 import { deleteZendeskTicket } from './utils/deleteZendeskTicket'
 
-
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
 

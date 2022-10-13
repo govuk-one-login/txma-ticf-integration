@@ -1,29 +1,24 @@
-import { GetItemCommand } from '@aws-sdk/client-dynamodb'
-import {
-  QueryRequestDBParams,
-  isQueryRequestDBParams
-} from '../../types/queryRequestDBParams'
+import { AttributeValue, GetItemCommand } from '@aws-sdk/client-dynamodb'
+import { isDataRequestParams } from '../../types/dataRequestParams'
+import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { getEnv } from '../../utils/helpers'
 import { ddbClient } from './dynamoDBClient'
 
-export const getQueryByZendeskId = async (
+export const getDatabaseEntryByZendeskId = async (
   zendeskId: string
-): Promise<QueryRequestDBParams> => {
+): Promise<DataRequestDatabaseEntry> => {
   const params = {
     TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
     Key: { zendeskId: { S: zendeskId } }
   }
 
   const data = await ddbClient.send(new GetItemCommand(params))
-  console.log(data)
-  const responseObject = data?.Item?.requestInfo?.M
-  if (!responseObject) {
-    throw new Error(
-      `Request info not returned from db for zendesk ticket: ${zendeskId}`
-    )
+  if (!data?.Item) {
+    throw Error(`Cannot find database entry for zendesk ticket '${zendeskId}'`)
   }
+  const responseObject = data?.Item?.requestInfo?.M
 
-  const queryRequestDBParams = {
+  const dataRequestParams = {
     zendeskId: responseObject?.zendeskId?.S,
     recipientEmail: responseObject?.recipientEmail?.S,
     recipientName: responseObject?.recipientName?.S,
@@ -37,15 +32,31 @@ export const getQueryByZendeskId = async (
     eventIds: responseObject?.eventIds?.L?.map((id) => id.S),
     userIds: responseObject?.userIds?.L?.map((id) => id.S),
     piiTypes: responseObject?.piiTypes?.L?.map((piiType) => piiType.S),
-    dataPaths: responseObject?.dataPaths?.L?.map((path) => path.S),
-    athenaQueryId: data?.Item?.athenaQueryId?.S
+    dataPaths: responseObject?.dataPaths?.L?.map((path) => path.S)
   }
 
-  if (!isQueryRequestDBParams(queryRequestDBParams)) {
+  if (!isDataRequestParams(dataRequestParams)) {
     throw new Error(
-      `Event data returned from db was not of correct type for zendesk ticket: ${zendeskId}`
+      `Event data returned from db was not of correct type for zendesk ticket: '${zendeskId}'`
     )
   }
 
-  return queryRequestDBParams
+  data?.Item
+  return {
+    requestInfo: dataRequestParams,
+    checkGlacierStatusCount: retrieveNumericValue(
+      data?.Item?.checkGlacierStatusCount
+    ),
+    checkCopyStatusCount: retrieveNumericValue(
+      data?.Item?.checkCopyStatusCount
+    ),
+    athenaQueryId: data?.Item?.athenaQueryId?.S
+  }
+}
+
+const retrieveNumericValue = (
+  attributeValue: AttributeValue
+): number | undefined => {
+  const numericValueAsString = attributeValue?.N
+  return numericValueAsString ? parseInt(numericValueAsString) : undefined
 }
