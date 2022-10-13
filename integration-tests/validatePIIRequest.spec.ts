@@ -6,64 +6,85 @@ import {
 
 import { createZendeskRequest } from './utils/createZendeskTicket'
 import { approveZendeskTicket } from './utils/approveZendeskTicket'
+import { deleteZendeskTicket } from './utils/deleteZendeskTicket'
+
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
 
-  it('Should log a success in cloud watch if Zendesk request is valid', async () => {
-    const ticketID = await createZendeskRequest(true)
+  describe('valid requests', () => {
+    let ticketId: string
 
-    await approveZendeskTicket(ticketID)
+    beforeEach(async () => {
+      ticketId = await createZendeskRequest(true)
+      await approveZendeskTicket(ticketId)
+    })
 
-    // Cloudwatch - Fetch latest log stream containing the ticket details
-    const webhookReceivedMessage = 'INFO received Zendesk webhook'
-    const eventLogStream = await waitForLogStreamContainingEvent(
-      webhookReceivedMessage,
-      `"zendeskId`,
-      `"${ticketID}`
-    )
-    const logStreamRequestID = extractRequestIDFromEventMessage(
-      eventLogStream.eventMessage
-    )
+    afterEach(async () => {
+      await deleteZendeskTicket(ticketId)
+    })
 
-    // filter for ticket's successful validation event in the same log stream
-    const validRequestFilterPattern = `"${logStreamRequestID}" Sent data transfer`
-    console.log(`VALIDATION FILTER PATTERN: ${validRequestFilterPattern}`)
-    const validationEvents = await getMatchingLogEvents(
-      validRequestFilterPattern,
-      eventLogStream.logStreamName
-    )
+    it('Should log a success in cloud watch if Zendesk request is valid', async () => {
+      // Cloudwatch - Fetch latest log stream containing the ticket details
+      const webhookReceivedMessage = 'INFO received Zendesk webhook'
+      const eventLogStream = await waitForLogStreamContainingEvent(
+        webhookReceivedMessage,
+        `"zendeskId`,
+        `"${ticketId}`
+      )
+      const logStreamRequestID = extractRequestIDFromEventMessage(
+        eventLogStream.eventMessage
+      )
 
-    expect(validationEvents.length).toEqual(1)
-    console.log(`VALIDATION EVENT: ${validationEvents[0].message}`)
-    expect.stringContaining('Sent data transfer queue message with id')
+      // filter for ticket's successful validation event in the same log stream
+      const validRequestFilterPattern = `"${logStreamRequestID}" Sent data transfer`
+      console.log(`VALIDATION FILTER PATTERN: ${validRequestFilterPattern}`)
+      const validationEvents = await getMatchingLogEvents(
+        validRequestFilterPattern,
+        eventLogStream.logStreamName
+      )
+
+      expect(validationEvents.length).toEqual(1)
+      console.log(`VALIDATION EVENT: ${validationEvents[0].message}`)
+      expect.stringContaining('Sent data transfer queue message with id')
+    })
   })
 
-  it('Should log an error in cloud watch if zendesk request is not valid', async () => {
-    const ticketID = await createZendeskRequest(false)
-    await approveZendeskTicket(ticketID)
+  describe('invalid requests', () => {
+    let ticketId: string
 
-    // Cloudwatch - Fetch latest log stream containing the ticket details
-    const webhookReceivedMessage = 'INFO received Zendesk webhook'
-    const eventLogStream = await waitForLogStreamContainingEvent(
-      webhookReceivedMessage,
-      `"zendeskId`,
-      `"${ticketID}`
-    )
-    const logStreamRequestID = extractRequestIDFromEventMessage(
-      eventLogStream.eventMessage
-    )
+    beforeEach(async () => {
+      ticketId = await createZendeskRequest(false)
+      await approveZendeskTicket(ticketId)
+    })
 
-    // filter for ticket's validation error event in the same log stream
-    const invalidRequestFilterPattern = `"${logStreamRequestID}" INFO Zendesk request was invalid`
-    console.log(`VALIDATION FILTER PATTERN: ${invalidRequestFilterPattern}`)
-    const validationEvents = await getMatchingLogEvents(
-      invalidRequestFilterPattern,
-      eventLogStream.logStreamName
-    )
+    afterEach(async () => {
+      await deleteZendeskTicket(ticketId)
+    })
 
-    expect(validationEvents.length).toEqual(1)
-    console.log(`VALIDATION EVENT: ${validationEvents[0].message}`)
-    expect.stringContaining('Zendesk request was invalid')
+    it('Should log an error in cloud watch if zendesk request is not valid', async () => {
+      // Cloudwatch - Fetch latest log stream containing the ticket details
+      const webhookReceivedMessage = 'INFO received Zendesk webhook'
+      const eventLogStream = await waitForLogStreamContainingEvent(
+        webhookReceivedMessage,
+        `"zendeskId`,
+        `"${ticketId}`
+      )
+      const logStreamRequestID = extractRequestIDFromEventMessage(
+        eventLogStream.eventMessage
+      )
+
+      // filter for ticket's validation error event in the same log stream
+      const invalidRequestFilterPattern = `"${logStreamRequestID}" INFO Zendesk request was invalid`
+      console.log(`VALIDATION FILTER PATTERN: ${invalidRequestFilterPattern}`)
+      const validationEvents = await getMatchingLogEvents(
+        invalidRequestFilterPattern,
+        eventLogStream.logStreamName
+      )
+
+      expect(validationEvents.length).toEqual(1)
+      console.log(`VALIDATION EVENT: ${validationEvents[0].message}`)
+      expect.stringContaining('Zendesk request was invalid')
+    })
   })
 })
