@@ -715,6 +715,12 @@ Resources:
               - dynamodb:UpdateItem
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
+          - Sid: Events
+            Effect: Allow
+            Action: 
+              - events:PutEvents
+            Resource:
+              - '*'
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         Type: SQS
@@ -877,33 +883,116 @@ Resources:
         SSEType: KMS
         KMSMasterKeyId: !GetAtt DatabaseKmsKey.Arn
 
-  # # Notification
+  # Notification
 
-  # AthenaEBRule:
-  #   Type: AWS::Events::Rule
-  #   Properties:
-  #     Description: The Rule listening for Athena Status Change Events and triggering the noitfy lambda
-  #     Input: '{"Key": "Value"}'
-  #     Pattern:
-  #       detail:
-  #         state:
-  #           - terminated
-  #     RetryPolicy:
-  #       MaximumRetryAttempts: 5
-  #       MaximumEventAgeInSeconds: 900
-  #     DeadLetterConfig:
-  #       Type: SQS
-  #       QueueLogicalId: EBRuleDLQ
-  #     Target:
-  #       Id: MyTarget
-
+  AthenaEBRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: The rule listening for Athena Status Change Events and triggering the noitfy lambda
+      EventPattern:
+        source:
+          - 'aws.athena'
+        detail-type:
+          - 'Athena Query State Change'
+        detail:
+          currentState:
+            - 'SUCCEEDED'
+            - 'FAILED'
+            - 'CANCELLED'
+        State: 'ENABLED'
+      Targets:
+        -
+          Arn: !GetAtt InitiateNotificationFunction.Arn
+          Id: AthenaEventTarget
 
   # some name for some function (ie the target)
+  InitiateNotificationFunction:
+    #checkov:skip=CKV_AWS_116:Not triggered by SQS
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: initiateNotification.handler
+      Environment:
+        # Variables:
+        #   QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
+        #   ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
+      # Events:
+      #   InitiateAthenaQueryEvent:
+      #     Type: SQS
+      #     Properties:
+      #       Queue: !GetAtt InitiateAthenaQueryQueue.Arn
+      #       BatchSize: 1
+      FunctionName: !Sub ${AWS::StackName}-initiate-notification
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+          - Sid: S3ResultsPermissions
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetBucketLocation
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:AbortMultipartUpload
+              - s3:PutObject
+              - s3:GetObject
+            Resource:
+              - !GetAtt QueryResultsBucket.Arn
+              - !Join ['/', [!GetAtt QueryResultsBucket.Arn, '*']]
+          - Sid: KmsQueueAllowDecrypt
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt QueueKmsKey.Arn
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Sid: SecretsManager
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: 
+              - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
+          - Sid: KmsSecretsDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SecretsKmsKey.Arn
+          - Sid: KmsDatabaseDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt DatabaseKmsKey.Arn
+          - Sid: DynamoDBPutQuery
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+            Resource:
+              - !GetAtt QueryRequestDynamoDBTable.Arn
+      ReservedConcurrentExecutions: 10
 
-  # dead letter queue
+  InitiateNotificationLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateNotificationFunction]]
+      RetentionInDays: 30
 
-
-
+  PermissionForAthenaEventToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref InitiateNotificationFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt AthenaEBRule.Arn
+      
   # Dev Resources
   EmptyS3BucketsFunction:
     #checkov:skip=CKV_AWS_116:DLQ not required as failures will be reported to CloudFormation
