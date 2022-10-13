@@ -17,7 +17,7 @@
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
     "test": "jest -c jest.config.ts",
     "test:cov": "jest -c jest.config.ts --coverage",
-    "test:integration": "jest -c jest.integration.config.ts --runInBand"
+    "test:integration": "jest -c jest.integration.config.ts"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "3.163.0",
