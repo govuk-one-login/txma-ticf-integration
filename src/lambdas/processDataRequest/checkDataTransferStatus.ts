@@ -7,7 +7,7 @@ import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZend
 import {
   MAX_AUDIT_TO_ANALYSIS_COPY_RETRIES,
   MAX_GLACIER_RETRIES
-} from '../../utils/constants/configurationConstants'
+} from '../../constants/configurationConstants'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
 

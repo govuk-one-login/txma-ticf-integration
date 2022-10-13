@@ -1,3 +1,5 @@
+import { loggingCopy } from '../../constants/loggingCopy'
+import { zendeskCopy } from '../../constants/zendeskCopy'
 import { DataRequestParams } from '../../types/dataRequestParams'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierRestore'
@@ -6,16 +8,17 @@ import { addNewDataRequestRecord } from '../../sharedServices/dynamoDB/dynamoDBP
 import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const initiateDataTransfer = async (
   dataRequestParams: DataRequestParams
 ) => {
   const bucketData = await checkS3BucketData(dataRequestParams)
   if (!bucketData.dataAvailable) {
-    console.log('No data found for period, closing Zendesk ticket')
+    console.log(interpolateTemplate('noDataFound', loggingCopy))
     await updateZendeskTicketById(
       dataRequestParams.zendeskId,
-      'Your ticket has been closed because no data was available for the requested dates',
+      interpolateTemplate('bucketDataUnavailable', zendeskCopy),
       'closed'
     )
     return
@@ -37,7 +40,7 @@ export const initiateDataTransfer = async (
   )
 
   if (glacierRestoreRequired) {
-    console.log('Found glacier tier locations to restore')
+    console.log(interpolateTemplate('foundGlacierLocations', loggingCopy))
     await startGlacierRestore(
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId
@@ -50,10 +53,10 @@ export const initiateDataTransfer = async (
   }
 
   if (!glacierRestoreRequired && !shouldStartCopyFromAuditBucket) {
-    console.log('All data available, queuing Athena query')
+    console.log(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
     await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
   } else {
-    console.log('Data copy job started, queuing message for long poll')
+    console.log(interpolateTemplate('queuingMessageLongPoll', loggingCopy))
     const waitTimeInSeconds = glacierRestoreRequired ? 900 : 30
     await sendContinuePollingDataTransferMessage(
       dataRequestParams.zendeskId,
