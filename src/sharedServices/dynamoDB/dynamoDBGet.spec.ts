@@ -30,7 +30,8 @@ describe('dynamoDBGet', () => {
             piiTypes: { L: [{ S: 'passport_number' }] }
           }
         },
-        zendeskId: { S: '12' }
+        zendeskId: { S: '12' },
+        athenaQueryId: { S: 'test_athena_id' }
       }
     }
     dynamoMock.on(GetItemCommand).resolves(mockDbContents as GetItemOutput)
@@ -46,7 +47,8 @@ describe('dynamoDBGet', () => {
       dateFrom: '2022-09-06',
       zendeskId: '12',
       eventIds: ['234gh24', '98h98bc'],
-      piiTypes: ['passport_number']
+      piiTypes: ['passport_number'],
+      athenaQueryId: 'test_athena_id'
     })
   })
 
