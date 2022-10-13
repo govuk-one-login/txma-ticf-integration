@@ -1,25 +1,23 @@
+import { ZendeskRequestData } from '../types/zendeskRequestData'
 import {
   generateRandomNumber,
   generateZendeskRequestDate
 } from '../utils/helpers'
-import { getEnvVariable } from './zendeskParameters'
+import {
+  PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
+  PII_FORM_IDENTIFIER_FIELD_ID,
+  PII_FORM_IDENTIFIER_LIST_FIELD_ID,
+  PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
+  PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+  PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
+  PII_FORM_REQUEST_DATE_FIELD_ID,
+  ZENDESK_END_USER_EMAIL,
+  ZENDESK_END_USER_NAME,
+  ZENDESK_PII_FORM_ID,
+  PII_FORM_REQUEST_STATUS_FIELD_ID
+} from './zendeskParameters'
 
-const ZENDESK_PII_FORM_ID = 5603412248860
-const PII_FORM_IDENTIFIER_FIELD_ID = 5605352623260
-const PII_FORM_IDENTIFIER_LIST_FIELD_ID = 5605423021084
-const PII_FORM_REQUEST_DATE_FIELD_ID = 5605700069916
-const PII_FORM_REQUESTED_PII_TYPE_FIELD_ID = 5641719421852
-const PII_FORM_CUSTOM_DATA_PATH_FIELD_ID = 5698447116060
-const ZENDESK_SUPPORT_PII_REQUEST_STATUS_FIELD_ID = 5605885870748
-const PII_FORM_IDENTIFIER_RECIPIENT_EMAIL = 6202354485660
-const PII_FORM_IDENTIFIER_RECEIPIENT_NAME = 6202301182364
-
-export const VALID_RECIPIENT_EMAIL = getEnvVariable('ZENDESK_END_USER_EMAIL')
-export const VALID_REQUESTER_EMAIL = getEnvVariable('ZENDESK_END_USER_EMAIL')
-export const VALID_RECIPIENT_NAME = 'Txma-team2-ticf-analyst-dev'
-export const VALID_REQUESTER_NAME = 'Txma-team2-ticf-analyst-dev'
-
-const validRequestData = {
+export const validRequestData: ZendeskRequestData = {
   request: {
     subject: `Integration Test Request - ` + generateRandomNumber(),
     ticket_form_id: ZENDESK_PII_FORM_ID,
@@ -46,11 +44,11 @@ const validRequestData = {
       },
       {
         id: PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: VALID_RECIPIENT_EMAIL
+        value: ZENDESK_END_USER_EMAIL
       },
       {
         id: PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
-        value: VALID_RECIPIENT_NAME
+        value: ZENDESK_END_USER_NAME
       }
     ],
     comment: {
@@ -59,7 +57,7 @@ const validRequestData = {
   }
 }
 
-const invalidRequestData = {
+export const invalidRequestData: ZendeskRequestData = {
   request: {
     subject: `Integration Test Request - ` + generateRandomNumber(),
     ticket_form_id: ZENDESK_PII_FORM_ID,
@@ -86,11 +84,11 @@ const invalidRequestData = {
       },
       {
         id: PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: VALID_RECIPIENT_EMAIL
+        value: ZENDESK_END_USER_EMAIL
       },
       {
         id: PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
-        value: VALID_REQUESTER_NAME
+        value: ZENDESK_END_USER_NAME
       }
     ],
     comment: {
@@ -99,16 +97,14 @@ const invalidRequestData = {
   }
 }
 
-const ticketApprovalData = {
+export const ticketApprovalData = {
   ticket: {
     tags: ['process_started', 'approved'],
     custom_fields: [
-      { id: ZENDESK_SUPPORT_PII_REQUEST_STATUS_FIELD_ID, value: 'approved' }
+      { id: PII_FORM_REQUEST_STATUS_FIELD_ID, value: 'approved' }
     ],
     status: 'open',
-    fields: [
-      { id: ZENDESK_SUPPORT_PII_REQUEST_STATUS_FIELD_ID, value: 'approved' }
-    ],
+    fields: [{ id: PII_FORM_REQUEST_STATUS_FIELD_ID, value: 'approved' }],
     collaborator_ids: [],
     follower_ids: [],
     comment: {
@@ -119,5 +115,3 @@ const ticketApprovalData = {
     }
   }
 }
-
-export { validRequestData, ticketApprovalData, invalidRequestData }

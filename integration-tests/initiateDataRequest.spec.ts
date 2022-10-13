@@ -2,12 +2,11 @@ import {
   getMatchingLogEvents,
   extractRequestIDFromEventMessage,
   waitForLogStreamContainingEvent
-} from './utils/helpers'
-
-import { createZendeskRequest } from './utils/createZendeskTicket'
-import { approveZendeskTicket } from './utils/approveZendeskTicket'
-import { deleteZendeskTicket } from './utils/deleteZendeskTicket'
-
+} from './utils/aws/cloudWatchGetLogs'
+import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
+import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
+import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
+import { invalidRequestData, validRequestData } from './constants/requestData'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
@@ -16,7 +15,7 @@ describe('Submit a PII request with approved ticket data', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      ticketId = await createZendeskRequest(true)
+      ticketId = await createZendeskTicket(validRequestData)
       await approveZendeskTicket(ticketId)
     })
 
@@ -54,7 +53,7 @@ describe('Submit a PII request with approved ticket data', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      ticketId = await createZendeskRequest(false)
+      ticketId = await createZendeskTicket(invalidRequestData)
       await approveZendeskTicket(ticketId)
     })
 
