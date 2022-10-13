@@ -141,7 +141,7 @@ describe('checkDataTransferStatus', () => {
     expect(console.log).toHaveBeenLastCalledWith(
       'Glacier restore still in progress.',
       'Placing zendeskId back on InitiateDataRequestQueue.',
-      'Number of checks: 1'
+      'Number of checks: 2'
     )
     expect(mockIncrementPollingRetryCount).toBeCalledWith(
       ZENDESK_TICKET_ID,
@@ -198,7 +198,7 @@ describe('checkDataTransferStatus', () => {
     expect(console.log).toHaveBeenLastCalledWith(
       'Copy job still in progress.',
       'Placing zendeskId back on InitiateDataRequestQueue.',
-      'Number of checks: 1'
+      'Number of checks: 2'
     )
     expect(mockIncrementPollingRetryCount).toBeCalledWith(
       ZENDESK_TICKET_ID,

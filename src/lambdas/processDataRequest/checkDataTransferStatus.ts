@@ -53,8 +53,8 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
       'Placing zendeskId back on InitiateDataRequestQueue.',
       `Number of checks: ${
         copyJobStillInProgress
-          ? dbEntry.checkCopyStatusCount
-          : dbEntry.checkGlacierStatusCount
+          ? addOneToRetryCountForLogs(dbEntry.checkCopyStatusCount)
+          : addOneToRetryCountForLogs(dbEntry.checkGlacierStatusCount)
       }`
     )
     await maintainRetryState(
@@ -87,4 +87,9 @@ const maintainRetryState = async (
     copyJobStillInProgress
   )
   await sendContinuePollingDataTransferMessage(zendeskId, waitTimeInSeconds)
+}
+
+const addOneToRetryCountForLogs = (checkCount: number | undefined) => {
+  if (!checkCount) return ''
+  return ++checkCount
 }
