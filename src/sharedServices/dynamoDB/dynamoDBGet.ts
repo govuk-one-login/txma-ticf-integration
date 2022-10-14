@@ -55,7 +55,6 @@ export const getQueryByAthenaQueryId = async (
 ): Promise<QueryRequestDBParams> => {
   const params = {
     TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
-    IndexName: 'athenaQueryIdIndex',
     KeyConditionExpression: '#attribute = :value',
     ExpressionAttributeNames: { '#attribute': 'athenaQueryId' },
     ExpressionAttributeValues: { ':value': { S: `${athenaQueryId}` } }
