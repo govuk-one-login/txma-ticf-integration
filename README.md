@@ -48,8 +48,9 @@ process.env.ZENDESK_WEBHOOK_API_BASE_URL = '(get from AWS console)'
 process.enc.ZENDESK_WEBHOOK_SECRET_KEY = '(check with Test team/Tech lead)'
 process.env.ZENDESK_END_USER_EMAIL = '(value in Team Test Confluence)'
 process.env.ZENDESK_AGENT_EMAIL = '(value in Team Test Confluence)'
-process.env.INITIATE_DATA_REQUEST_LAMBA_LOG_GROUP_NAME = '(get from AWS console)'
 process.env.ZENDESK_ADMIN_EMAIL = '(value in Team Test Confluence)'
+process.env.INITIATE_DATA_REQUEST_LAMBA_LOG_GROUP_NAME = '(get from AWS console)'
+process.env.PROCESS_DATA_REQUEST_LAMBA_LOG_GROUP_NAME = '(get from AWS console)'
 ```
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
