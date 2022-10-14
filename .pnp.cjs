@@ -33,6 +33,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.171.0"],\
             ["@aws-sdk/client-dynamodb", "npm:3.163.0"],\
@@ -57,6 +58,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:26.8.3"],\
             ["husky", "npm:8.0.1"],\
             ["jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.1.3"],\
+            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
             ["notifications-node-client", "npm:5.1.1"],\
@@ -239,6 +241,50 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/chunked-blob-reader-native", "npm:3.109.0"],\
             ["@aws-sdk/util-base64-browser", "npm:3.109.0"],\
             ["tslib", "npm:2.4.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-sdk/client-athena", [\
+        ["npm:3.163.0", {\
+          "packageLocation": "./.yarn/cache/@aws-sdk-client-athena-npm-3.163.0-0626383466-97e95f8abe.zip/node_modules/@aws-sdk/client-athena/",\
+          "packageDependencies": [\
+            ["@aws-sdk/client-athena", "npm:3.163.0"],\
+            ["@aws-crypto/sha256-browser", "npm:2.0.0"],\
+            ["@aws-crypto/sha256-js", "npm:2.0.0"],\
+            ["@aws-sdk/client-sts", "npm:3.163.0"],\
+            ["@aws-sdk/config-resolver", "npm:3.163.0"],\
+            ["@aws-sdk/credential-provider-node", "npm:3.163.0"],\
+            ["@aws-sdk/fetch-http-handler", "npm:3.162.0"],\
+            ["@aws-sdk/hash-node", "npm:3.162.0"],\
+            ["@aws-sdk/invalid-dependency", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-content-length", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-host-header", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-logger", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-recursion-detection", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-retry", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-serde", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-signing", "npm:3.163.0"],\
+            ["@aws-sdk/middleware-stack", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-user-agent", "npm:3.162.0"],\
+            ["@aws-sdk/node-config-provider", "npm:3.162.0"],\
+            ["@aws-sdk/node-http-handler", "npm:3.162.0"],\
+            ["@aws-sdk/protocol-http", "npm:3.162.0"],\
+            ["@aws-sdk/smithy-client", "npm:3.162.0"],\
+            ["@aws-sdk/types", "npm:3.162.0"],\
+            ["@aws-sdk/url-parser", "npm:3.162.0"],\
+            ["@aws-sdk/util-base64-browser", "npm:3.109.0"],\
+            ["@aws-sdk/util-base64-node", "npm:3.55.0"],\
+            ["@aws-sdk/util-body-length-browser", "npm:3.154.0"],\
+            ["@aws-sdk/util-body-length-node", "npm:3.55.0"],\
+            ["@aws-sdk/util-defaults-mode-browser", "npm:3.162.0"],\
+            ["@aws-sdk/util-defaults-mode-node", "npm:3.163.0"],\
+            ["@aws-sdk/util-user-agent-browser", "npm:3.162.0"],\
+            ["@aws-sdk/util-user-agent-node", "virtual:e8847fa6c93fa12574425aa2fe66729e460ae3df5ebbf6f8e33a7e324c20413213976ccdede71a000c324447e8c4b05c5037424166f87420d602a00b5b18ba3e#npm:3.162.0"],\
+            ["@aws-sdk/util-utf8-browser", "npm:3.109.0"],\
+            ["@aws-sdk/util-utf8-node", "npm:3.109.0"],\
+            ["tslib", "npm:2.4.0"],\
+            ["uuid", "npm:8.3.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -6000,6 +6046,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["di-txma-ticf-integration", "workspace:."],\
+            ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.171.0"],\
             ["@aws-sdk/client-dynamodb", "npm:3.163.0"],\
@@ -6024,6 +6071,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:26.8.3"],\
             ["husky", "npm:8.0.1"],\
             ["jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.1.3"],\
+            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
             ["notifications-node-client", "npm:5.1.1"],\
@@ -7899,6 +7947,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pretty-format", "npm:29.0.3"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:29.1.2", {\
+          "packageLocation": "./.yarn/cache/jest-diff-npm-29.1.2-e2d025d72e-0c97741559.zip/node_modules/jest-diff/",\
+          "packageDependencies": [\
+            ["jest-diff", "npm:29.1.2"],\
+            ["chalk", "npm:4.1.2"],\
+            ["diff-sequences", "npm:29.0.0"],\
+            ["jest-get-type", "npm:29.0.0"],\
+            ["pretty-format", "npm:29.1.2"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["jest-docblock", [\
@@ -7936,6 +7995,30 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.7.9"],\
             ["jest-mock", "npm:28.1.3"],\
             ["jest-util", "npm:28.1.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["jest-extended", [\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/jest-extended-npm-3.1.0-71230ee916-1656670f7c.zip/node_modules/jest-extended/",\
+          "packageDependencies": [\
+            ["jest-extended", "npm:3.1.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0", {\
+          "packageLocation": "./.yarn/__virtual__/jest-extended-virtual-cd653d0ae6/0/cache/jest-extended-npm-3.1.0-71230ee916-1656670f7c.zip/node_modules/jest-extended/",\
+          "packageDependencies": [\
+            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0"],\
+            ["@types/jest", "npm:28.1.7"],\
+            ["jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.1.3"],\
+            ["jest-diff", "npm:29.1.2"],\
+            ["jest-get-type", "npm:29.0.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/jest",\
+            "jest"\
           ],\
           "linkType": "HARD"\
         }]\
@@ -9390,6 +9473,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/pretty-format-npm-29.0.3-c339768dec-239aa73b09.zip/node_modules/pretty-format/",\
           "packageDependencies": [\
             ["pretty-format", "npm:29.0.3"],\
+            ["@jest/schemas", "npm:29.0.0"],\
+            ["ansi-styles", "npm:5.2.0"],\
+            ["react-is", "npm:18.2.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:29.1.2", {\
+          "packageLocation": "./.yarn/cache/pretty-format-npm-29.1.2-37c8a710ba-b2c6e77666.zip/node_modules/pretty-format/",\
+          "packageDependencies": [\
+            ["pretty-format", "npm:29.1.2"],\
             ["@jest/schemas", "npm:29.0.0"],\
             ["ansi-styles", "npm:5.2.0"],\
             ["react-is", "npm:18.2.0"]\

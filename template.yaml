@@ -319,7 +319,7 @@ Resources:
           AUDIT_BUCKET_NAME: audit-sandbox-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
-          DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
+          QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
           BATCH_JOB_MANIFEST_BUCKET_ARN: !GetAtt BatchJobManifestBucket.Arn
           BATCH_JOB_MANIFEST_BUCKET_NAME: !Ref BatchJobManifestBucket
@@ -327,6 +327,7 @@ Resources:
           ACCOUNT_ID: !Sub ${AWS::AccountId}
           INITIATE_ATHENA_QUERY_QUEUE_URL: !Ref InitiateAthenaQueryQueue
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
+          TERMINATED_JOB_QUEUE_URL: !Ref TerminatedJobQueue
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -368,6 +369,7 @@ Resources:
               Resource:
               - !GetAtt InitiateDataRequestQueue.Arn
               - !GetAtt InitiateAthenaQueryQueue.Arn
+              - !GetAtt TerminatedJobQueue.Arn
             - Sid: AllowQueueKmsAccess
               Effect: Allow
               Action:
@@ -400,6 +402,18 @@ Resources:
               Effect: Allow
               Action:
                 - dynamodb:PutItem
+              Resource:
+                - !GetAtt QueryRequestDynamoDBTable.Arn
+            - Sid: DynamoDBGet
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource:
+                - !GetAtt QueryRequestDynamoDBTable.Arn
+            - Sid: DynamoDBUpdate
+              Effect: Allow
+              Action:
+                - dynamodb:UpdateItem
               Resource:
                 - !GetAtt QueryRequestDynamoDBTable.Arn
             - Sid: AllowS3JobCreate
@@ -476,6 +490,11 @@ Resources:
         maxReceiveCount: 5
 
   InitiateDataRequestDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+
+  TerminatedJobQueue:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
@@ -629,7 +648,8 @@ Resources:
         Variables:
           ATHENA_DATABASE_NAME: !Ref AuditAnalysisDatabase
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
-          DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
+          ATHENA_WORKGROUP_NAME: !Ref AthenaAnalysisWorkgroup
+          QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
       Events:
         InitiateAthenaQueryEvent:
@@ -641,7 +661,7 @@ Resources:
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
-          - Sid: AthenaPermissions
+          - Sid: GluePermissions
             Effect: Allow
             Action: 
               - glue:GetTable
@@ -650,6 +670,33 @@ Resources:
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/*
               - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:userDefinedFunction/*
+          - Sid: AthenaPermissions
+            Effect: Allow
+            Action: 
+              - athena:StartQueryExecution
+            Resource:
+              - !Sub arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:workgroup/*
+          - Sid: S3AnalysisPermissions
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+            Resource:
+              - !GetAtt AnalysisBucket.Arn
+              - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+          - Sid: S3ResultsPermissions
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetBucketLocation
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:AbortMultipartUpload
+              - s3:PutObject
+              - s3:GetObject
+            Resource:
+              - !GetAtt QueryResultsBucket.Arn
+              - !Join ['/', [!GetAtt QueryResultsBucket.Arn, '*']]
           - Sid: KmsQueueAllowDecrypt
             Effect: Allow
             Action:
@@ -666,7 +713,7 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource: 
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
+              - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
@@ -684,6 +731,7 @@ Resources:
             Action:
               - dynamodb:PutItem
               - dynamodb:GetItem
+              - dynamodb:UpdateItem
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
@@ -808,6 +856,7 @@ Resources:
     Properties:
       Description: The workgroup for TxMA queries
       Name: !Sub ${AWS::StackName}-sandbox-analysis-queries-workgroup #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-queries-workgroup
+      RecursiveDeleteOption: true
       WorkGroupConfiguration:
         EnforceWorkGroupConfiguration: true
         PublishCloudWatchMetricsEnabled: false

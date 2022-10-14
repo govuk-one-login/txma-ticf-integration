@@ -5,6 +5,9 @@ import {
   ZendeskTicket
 } from '../../types/zendeskTicketResult'
 import { base64Encode, makeHttpsRequest } from '../http/httpsRequestUtils'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { zendeskCopy } from '../../constants/zendeskCopy'
+import { loggingCopy } from '../../constants/loggingCopy'
 
 export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
   const secrets = await retrieveZendeskApiSecrets()
@@ -22,11 +25,14 @@ export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
   const data = await makeHttpsRequest(options)
 
   if (!isZendeskTicketResult(data)) {
-    throw Error('The returned data was not a Zendesk ticket')
+    throw Error(interpolateTemplate('throwNotZendeskTicket', zendeskCopy))
   }
 
   const ticketInfo = data.ticket
-  console.log('Zendesk ticket with matching id found', ticketInfo)
+  console.log(
+    interpolateTemplate('zendeskTicketIdFound', loggingCopy),
+    ticketInfo
+  )
 
   return ticketInfo
 }

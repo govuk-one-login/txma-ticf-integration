@@ -11,6 +11,10 @@ import { ZendeskUser } from '../../types/zendeskUserResult'
 import {
   TEST_DATE_FROM,
   TEST_DATE_TO,
+  TEST_RECIPIENT_EMAIL,
+  TEST_RECIPIENT_NAME,
+  TEST_REQUESTER_EMAIL,
+  TEST_REQUESTER_NAME,
   TEST_ZENDESK_FIELD_ID_DATA_PATHS,
   TEST_ZENDESK_FIELD_ID_DATE_FROM,
   TEST_ZENDESK_FIELD_ID_DATE_TO,
@@ -99,19 +103,19 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
-            value: 'myuser@test.gov.uk'
+            value: TEST_RECIPIENT_EMAIL
           },
           {
             id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
-            value: 'my name'
+            value: TEST_RECIPIENT_NAME
           }
         ]
       })
     )
     mockGetZendeskUser.mockImplementation(() =>
       Promise.resolve({
-        email: 'myuser@test.gov.uk',
-        name: 'my name'
+        email: TEST_REQUESTER_EMAIL,
+        name: TEST_REQUESTER_NAME
       })
     )
   }
@@ -163,11 +167,11 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
-            value: 'myuser@test.gov.uk'
+            value: TEST_RECIPIENT_EMAIL
           },
           {
             id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
-            value: 'my name'
+            value: TEST_RECIPIENT_NAME
           }
         ]
       })
@@ -240,11 +244,11 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
-            value: 'myuser@test.gov.uk'
+            value: TEST_RECIPIENT_EMAIL
           },
           {
             id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
-            value: 'my name'
+            value: TEST_RECIPIENT_NAME
           }
         ]
       })

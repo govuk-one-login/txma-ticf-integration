@@ -4,6 +4,8 @@ import {
   TEST_DATE_TO,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
+  TEST_REQUESTER_EMAIL,
+  TEST_REQUESTER_NAME,
   ZENDESK_TICKET_ID
 } from './testConstants'
 
@@ -11,8 +13,8 @@ export const testDataRequest = {
   zendeskId: ZENDESK_TICKET_ID,
   recipientEmail: TEST_RECIPIENT_EMAIL,
   recipientName: TEST_RECIPIENT_NAME,
-  requesterEmail: 'myuser@test.gov.uk',
-  requesterName: 'my name',
+  requesterEmail: TEST_REQUESTER_EMAIL,
+  requesterName: TEST_REQUESTER_NAME,
   dateFrom: TEST_DATE_FROM,
   dateTo: TEST_DATE_TO,
   identifierType: 'event_id',
