@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-export enum CustomFieldIDs {
+
+export enum ZendeskFormFieldIDs {
   ZENDESK_PII_FORM_ID = 5603412248860,
   ZENDESK_SUPPORT_PII_REQUEST_STATUS_FIELD_ID = 5605885870748,
   PII_FORM_IDENTIFIER_FIELD_ID = 5605352623260,

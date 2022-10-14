@@ -1,6 +1,8 @@
-import { approveZendeskRequest } from '../utils/approveZendeskRequest'
-import { createZendeskRequest } from '../utils/raiseZendeskRequest'
-import { populateTableWithRequestDetails } from '../utils/dynamoDB'
+import { approveZendeskRequest } from './utils/approveZendeskRequest'
+import { createZendeskRequest } from './utils/raiseZendeskRequest'
+import { populateTableWithRequestDetails } from './utils/dynamoDB'
+// import { getEnvVariable } from './lib/zendeskParameters'
+// import { addMessageToQueue } from './utils/sqs'
 
 describe('Generate SQL for Athena after request is validated', () => {
   jest.setTimeout(30000)
@@ -16,13 +18,20 @@ describe('Generate SQL for Athena after request is validated', () => {
 
     // ACT:
     // Put message in queue
+    // await addMessageToQueue(
+    //   ticketID,
+    //   getEnvVariable('INITIATE_ATHENA_QUERY_QUEUE_URL')
+    // )
     // Validate DB is being queried or successfully queried
 
     // ASSERT:
     // Validate SQL is generated
     // Validate SQL contains relevant zendesk parameters
-    expect(1).toEqual(1)
   })
+
+  /*it('Valid SQL should be created if ticket has custom data paths', () => {
+    expect(1).toEqual(1)
+  })*/
 
   /*it('Athena SQL Lambda should error if ticket details are not in Dynamodb', () => {
     expect(1).toEqual(1)

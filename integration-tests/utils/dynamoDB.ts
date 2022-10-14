@@ -3,11 +3,10 @@ import { PutItemCommand } from '@aws-sdk/client-dynamodb'
 import { getEnvVariable } from '../lib/zendeskParameters'
 import { dynamoDBClient } from './awsClients'
 import { getTicketDetails } from './zendeskUtils'
-import { CustomFieldIDs } from '../lib/customFieldIDs'
+import { ZendeskFormFieldIDs } from '../lib/zendeskFormFieldIDs'
 
 const populateTableWithRequestDetails = async (ticketID: string) => {
   const ticketDetails = await getTicketDetails(ticketID)
-  getFieldValue(ticketDetails, CustomFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID)
 
   const populateTableParams = {
     TableName: getEnvVariable('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -17,53 +16,110 @@ const populateTableWithRequestDetails = async (ticketID: string) => {
       requestInfo: {
         M: {
           zendeskId: { S: `${ticketID}` },
-          dataPaths: { L: [{ S: '' }, { S: '' }] }, // what are the valid values for this?
           dateFrom: {
-            S: `'${getCustomFieldValue(
+            S: `${getCustomFieldValue(
               ticketDetails,
-              CustomFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
-            )}'`
+              ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
+            )}`
           },
-
           dateTo: {
-            S: `'${getCustomFieldValue(
+            S: `${getCustomFieldValue(
               ticketDetails,
-              CustomFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
-            )}'`
+              ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
+            )}`
           },
-          eventIds: { L: [{ S: '637783' }, { S: '3256' }] },
-          sessionIds: { L: [{ S: '637783' }, { S: '3256' }] },
-          journeyIds: { L: [{ S: '637783' }, { S: '3256' }] },
-          userIds: { L: [{ S: '637783' }, { S: '3256' }] },
-          identifierType: { S: 'event_id' },
-          recipientEmail: {
-            S: `'${getCustomFieldValue(
+          identifierType: {
+            S: `${getFieldValue(
               ticketDetails,
-              CustomFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL
-            )}'`
+              ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID
+            )}`
+          },
+          recipientEmail: {
+            S: `${getCustomFieldValue(
+              ticketDetails,
+              ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL
+            )}`
           },
           recipientName: {
-            S: `'${getCustomFieldValue(
+            S: `${getCustomFieldValue(
               ticketDetails,
-              CustomFieldIDs.PII_FORM_IDENTIFIER_RECEIPIENT_NAME
-            )}'`
+              ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECEIPIENT_NAME
+            )}`
           },
           resultsEmail: {
-            S: `'${getEnvVariable('ZENDESK_END_USER_EMAIL')}'`
+            S: `${getEnvVariable('ZENDESK_END_USER_EMAIL')}`
           },
           resultsName: {
-            S: `'${getEnvVariable('ZENDESK_END_USER_NAME')}'`
+            S: `${getEnvVariable('ZENDESK_END_USER_NAME')}`
+          },
+          dataPaths: {
+            L: getFieldListValues(
+              ticketDetails,
+              ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID
+            )
+          },
+          eventIds: {
+            L: getFieldListValues(
+              ticketDetails,
+              ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID
+            )
+          },
+          sessionIds: {
+            L: getFieldListValues(
+              ticketDetails,
+              ZendeskFormFieldIDs.PII_FORM_SESSION_ID_LIST_FIELD_ID
+            )
+          },
+          journeyIds: {
+            L: getFieldListValues(
+              ticketDetails,
+              ZendeskFormFieldIDs.PII_FORM_JOURNEY_ID_LIST_FIELD_ID
+            )
+          },
+          userIds: {
+            L: getFieldListValues(
+              ticketDetails,
+              ZendeskFormFieldIDs.PII_FORM_USER_ID_LIST_FIELD_ID
+            )
           }
         }
       }
     }
   }
 
-  const data = await dynamoDBClient.send(
-    new PutItemCommand(populateTableParams)
-  )
-  expect(data.$metadata.httpStatusCode).toEqual(200)
-  expect(data.Attributes?.zendeskId).not.toEqual(ticketID)
+  // const data = await dynamoDBClient.send(
+  //   new PutItemCommand(populateTableParams)
+  // )
+  let data = null
+  try {
+    data = await dynamoDBClient.send(new PutItemCommand(populateTableParams))
+  } catch (error) {
+    console.log(error)
+  }
+  expect(data?.$metadata.httpStatusCode).toEqual(200)
+  expect(data?.Attributes?.zendeskId).not.toEqual(ticketID)
+}
+
+function getFieldListValues(ticketDetails: { fields: any[] }, fieldID: number) {
+  const valueList =
+    getFieldValue(ticketDetails, fieldID) == null
+      ? []
+      : getFieldValue(ticketDetails, fieldID)
+          .split(' ')
+          .map((item: string) => ({ S: item }))
+
+  console.log(`LIST VALUE FIELD ${fieldID}: ${valueList}`)
+  return valueList
+
+  // const value = getFieldValue(ticketDetails, fieldID)
+  // if (value == null) {
+  //   return []
+  // } else {
+  //   // L: dataRequestParams.sessionIds.map((id) => ({ S: id }))
+  //   const it = value.split(' ').map((item: string) => ({ S: item }))
+  //   console.log(`LIST: ${it}`)
+  //   return it
+  // }
 }
 
 function getFieldValue(ticketDetails: { fields: any[] }, fieldID: number) {
@@ -72,7 +128,8 @@ function getFieldValue(ticketDetails: { fields: any[] }, fieldID: number) {
       return field.id === fieldID
     })
     .pop().value
-  console.log(`FIELD VALUE: ${value}`)
+  console.log(`FIELD VALUE ${fieldID}: ${value}`)
+  return value
 }
 
 function getCustomFieldValue(
