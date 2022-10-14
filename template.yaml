@@ -970,6 +970,7 @@ Resources:
               - dynamodb:Query
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
+              - !Join ['/', [!GetAtt QueryRequestDynamoDBTable.Arn, 'index', 'athenaQueryIdIndex']]
       ReservedConcurrentExecutions: 10
 
   InitiateNotificationLogs:
