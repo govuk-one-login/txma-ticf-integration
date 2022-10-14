@@ -1,4 +1,3 @@
-import { INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP } from '../../constants/awsParameters'
 import { cloudWatchLogsClient } from './cloudWatchLogsClient'
 import {
   DescribeLogStreamsCommand,
@@ -15,16 +14,24 @@ export const getCloudWatchLogEventsGroupByMessagePattern = async (
     logGroupName,
     ...eventMessagePatterns
   )
-  const requestId = extractRequestIDFromEventMessage(event.message as string)
-  const eventLogStream = [{ logStreamName: event.logStreamName as string }]
 
-  // Wait for final request in group
-  await waitForEventWithPatterns(logGroupName, `END RequestId: ${requestId}`)
+  if (event) {
+    const requestId = extractRequestIDFromEventMessage(event.message as string)
+    const eventLogStream = [{ logStreamName: event.logStreamName as string }]
 
-  const logEvents = await findMatchingLogEvents(eventLogStream, requestId)
-  console.log(`Events for Request Id ${requestId}:`, logEvents)
+    // Wait for final request in group
+    await waitForEventWithPatterns(logGroupName, `END RequestId: ${requestId}`)
+    const logEvents = await findMatchingLogEvents(
+      logGroupName,
+      eventLogStream,
+      requestId
+    )
+    console.log(`Events for Request Id ${requestId}:`, logEvents)
 
-  return logEvents
+    return logEvents
+  } else {
+    return []
+  }
 }
 
 const getLogStreams = async (logGroupName: string) => {
@@ -42,11 +49,12 @@ const getLogStreams = async (logGroupName: string) => {
 }
 
 const findMatchingLogEvents = async (
+  logGroupName: string,
   logStreams: LogStream[],
   ...filterPatterns: string[]
 ) => {
   const input = {
-    logGroupName: INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+    logGroupName: logGroupName,
     logStreamNames: logStreams.map(
       (logStream) => logStream?.logStreamName
     ) as string[],
@@ -76,7 +84,11 @@ const waitForEventWithPatterns = async (
 
   while (!eventMatched && attempts < 30) {
     attempts++
-    logEvents = await findMatchingLogEvents(logStreams, ...eventMessagePatterns)
+    logEvents = await findMatchingLogEvents(
+      logGroupName,
+      logStreams,
+      ...eventMessagePatterns
+    )
 
     if (logEvents.length == 0) {
       await pause(1000)
@@ -94,8 +106,6 @@ const waitForEventWithPatterns = async (
 
     return logEvents[0]
   }
-
-  throw Error(`Event not found with patterns ${eventMessagePatterns} not found`)
 }
 
 const pause = (delay: number): Promise<unknown> => {
