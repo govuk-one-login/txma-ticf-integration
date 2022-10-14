@@ -1,8 +1,8 @@
 import { approveZendeskRequest } from './utils/approveZendeskRequest'
 import { createZendeskRequest } from './utils/raiseZendeskRequest'
 import { populateTableWithRequestDetails } from './utils/dynamoDB'
-// import { getEnvVariable } from './lib/zendeskParameters'
-// import { addMessageToQueue } from './utils/sqs'
+import { getEnvVariable } from './lib/zendeskParameters'
+import { addMessageToQueue } from './utils/sqs'
 
 describe('Generate SQL for Athena after request is validated', () => {
   jest.setTimeout(30000)
@@ -18,14 +18,14 @@ describe('Generate SQL for Athena after request is validated', () => {
 
     // ACT:
     // Put message in queue
-    // await addMessageToQueue(
-    //   ticketID,
-    //   getEnvVariable('INITIATE_ATHENA_QUERY_QUEUE_URL')
-    // )
-    // Validate DB is being queried or successfully queried
+    await addMessageToQueue(
+      `${ticketID}`,
+      getEnvVariable('INITIATE_ATHENA_QUERY_QUEUE_URL')
+    )
+    // Validate Query details are successfully received from dynamoDB.
 
     // ASSERT:
-    // Validate SQL is generated
+    // Validate that SQL is generated
     // Validate SQL contains relevant zendesk parameters
   })
 
