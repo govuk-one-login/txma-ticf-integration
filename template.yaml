@@ -967,6 +967,7 @@ Resources:
               - dynamodb:PutItem
               - dynamodb:GetItem
               - dynamodb:UpdateItem
+              - dynamodb:Query
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
       ReservedConcurrentExecutions: 10
