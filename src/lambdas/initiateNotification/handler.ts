@@ -16,6 +16,11 @@ export const handler = async (
   console.log(requestData)
 
   await confirmQueryState(queryDetails, zendeskId)
+
+  const recipientName = requestData.recipientName
+  const recipientEmail = requestData.recipientEmail
+
+  console.log(`Signed link being sent to ${recipientName} at ${recipientEmail}`)
 }
 
 const confirmQueryState = async (
