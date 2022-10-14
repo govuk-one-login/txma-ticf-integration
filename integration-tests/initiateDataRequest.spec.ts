@@ -1,12 +1,21 @@
 import {
-  getMatchingLogEvents,
-  extractRequestIDFromEventMessage,
-  waitForLogStreamContainingEvent
+  // findMatchingLogEvent,
+  // extractRequestIDFromEventMessage,
+  // getCloudWatchLogEventsForRequest,
+  getCloudWatchLogEventsByMessagePattern
 } from './utils/aws/cloudWatchGetLogs'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import { invalidRequestData, validRequestData } from './constants/requestData'
+import { INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP } from './constants/awsParameters'
+import { FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs'
+
+const assertLogPresent = (logEvents: FilteredLogEvent[], message: string) => {
+  const event = logEvents.find((event) => event.message?.includes(message))
+  const eventFound = event ? true : false
+  expect(eventFound).toEqual(true)
+}
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
@@ -24,28 +33,17 @@ describe('Submit a PII request with approved ticket data', () => {
     })
 
     it('Should log a success in cloud watch if Zendesk request is valid', async () => {
-      // Cloudwatch - Fetch latest log stream containing the ticket details
-      const webhookReceivedMessage = 'INFO received Zendesk webhook'
-      const eventLogStream = await waitForLogStreamContainingEvent(
-        webhookReceivedMessage,
-        `"zendeskId`,
-        `"${ticketId}`
-      )
-      const logStreamRequestID = extractRequestIDFromEventMessage(
-        eventLogStream.eventMessage
+      const logStreamEvents = await getCloudWatchLogEventsByMessagePattern(
+        INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+        'received Zendesk webhook',
+        'zendeskId',
+        ticketId
       )
 
-      // filter for ticket's successful validation event in the same log stream
-      const validRequestFilterPattern = `"${logStreamRequestID}" Sent data transfer`
-      console.log(`VALIDATION FILTER PATTERN: ${validRequestFilterPattern}`)
-      const validationEvents = await getMatchingLogEvents(
-        validRequestFilterPattern,
-        eventLogStream.logStreamName
+      assertLogPresent(
+        logStreamEvents,
+        'Sent data transfer queue message with id'
       )
-
-      expect(validationEvents.length).toEqual(1)
-      console.log(`VALIDATION EVENT: ${validationEvents[0].message}`)
-      expect.stringContaining('Sent data transfer queue message with id')
     })
   })
 
@@ -62,28 +60,13 @@ describe('Submit a PII request with approved ticket data', () => {
     })
 
     it('Should log an error in cloud watch if zendesk request is not valid', async () => {
-      // Cloudwatch - Fetch latest log stream containing the ticket details
-      const webhookReceivedMessage = 'INFO received Zendesk webhook'
-      const eventLogStream = await waitForLogStreamContainingEvent(
-        webhookReceivedMessage,
-        `"zendeskId`,
-        `"${ticketId}`
+      const logStreamEvents = await getCloudWatchLogEventsByMessagePattern(
+        INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+        'received Zendesk webhook',
+        'zendeskId',
+        ticketId
       )
-      const logStreamRequestID = extractRequestIDFromEventMessage(
-        eventLogStream.eventMessage
-      )
-
-      // filter for ticket's validation error event in the same log stream
-      const invalidRequestFilterPattern = `"${logStreamRequestID}" INFO Zendesk request was invalid`
-      console.log(`VALIDATION FILTER PATTERN: ${invalidRequestFilterPattern}`)
-      const validationEvents = await getMatchingLogEvents(
-        invalidRequestFilterPattern,
-        eventLogStream.logStreamName
-      )
-
-      expect(validationEvents.length).toEqual(1)
-      console.log(`VALIDATION EVENT: ${validationEvents[0].message}`)
-      expect.stringContaining('Zendesk request was invalid')
+      assertLogPresent(logStreamEvents, 'Zendesk request was invalid')
     })
   })
 })
