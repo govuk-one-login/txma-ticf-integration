@@ -34,9 +34,7 @@ const sendWebhook = async (
   customHeaders: {
     [key: string]: string
   },
-  webhookRequestData: {
-    [key: string]: string
-  }
+  webhookRequestData: ZendeskWebhookRequest
 ) => {
   return axios({
     url: webhookUrl,

@@ -1,9 +1,4 @@
-import {
-  // findMatchingLogEvent,
-  // extractRequestIDFromEventMessage,
-  // getCloudWatchLogEventsForRequest,
-  getCloudWatchLogEventsByMessagePattern
-} from './utils/aws/cloudWatchGetLogs'
+import { getCloudWatchLogEventsByMessagePattern } from './utils/aws/cloudWatchGetLogs'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
