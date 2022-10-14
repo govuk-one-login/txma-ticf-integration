@@ -67,6 +67,7 @@ export const getQueryByAthenaQueryId = async (
       `No data returned from db for athenaQueryId: ${athenaQueryId}`
     )
   }
+  console.log(data)
 
   const responseItem = data.Items[0]
   const zendeskRequest = responseItem.requestInfo?.M
