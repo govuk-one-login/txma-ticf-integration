@@ -18,7 +18,10 @@ export const createZendeskTicket = async (requestData: ZendeskRequestData) => {
       },
       data: requestData
     })
-    return response.data.request.id.toString()
+    const ticketId = response.data.request.id.toString()
+    console.log(`Created ticket with id: ${ticketId}`)
+
+    return ticketId
   } catch (error) {
     console.log(error)
     throw 'Creating Zendesk ticket failed'
