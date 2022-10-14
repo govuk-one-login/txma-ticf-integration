@@ -57,6 +57,7 @@ export const getQueryByAthenaQueryId = async (
     TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
     KeyConditionExpression: '#attribute = :value',
     IndexName: 'athenaQueryIdIndex',
+    ProjectionExpression: 'zendeskId, athenaQueryId, requestInfo',
     ExpressionAttributeNames: { '#attribute': 'athenaQueryId' },
     ExpressionAttributeValues: { ':value': { S: `${athenaQueryId}` } }
   }
@@ -67,10 +68,13 @@ export const getQueryByAthenaQueryId = async (
       `No data returned from db for athenaQueryId: ${athenaQueryId}`
     )
   }
-  console.log(data)
 
   const responseItem = data.Items[0]
   const zendeskRequest = responseItem.requestInfo?.M
+
+  console.log(responseItem)
+  console.log(responseItem.zendeskId)
+  console.log(zendeskRequest)
 
   const queryRequestDBParams = {
     zendeskId: zendeskRequest?.zendeskId?.S,
