@@ -16,7 +16,7 @@ export const getCloudWatchLogEventsGroupByMessagePattern = async (
   )
 
   if (event) {
-    const requestId = extractRequestIDFromEventMessage(event.message as string)
+    const requestId = extractRequestIdFromEventMessage(event.message as string)
     const eventLogStream = [{ logStreamName: event.logStreamName as string }]
 
     // Wait for final request in group
@@ -65,11 +65,10 @@ const findMatchingLogEvents = async (
   return response.events ?? []
 }
 
-const extractRequestIDFromEventMessage = (message: string) => {
-  let requestId = ''
-  const firstLine = message.slice(0, message.indexOf('{'))
-  requestId = firstLine.split(/\s+/)[1]
-  console.log(`REQUEST ID: ${requestId}`)
+const extractRequestIdFromEventMessage = (message: string) => {
+  const requestId = message.split('\t')[1]
+  console.log(`RequestId: ${requestId}`)
+
   return requestId
 }
 
