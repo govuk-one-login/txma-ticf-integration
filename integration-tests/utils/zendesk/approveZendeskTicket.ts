@@ -9,7 +9,7 @@ import {
 
 export const approveZendeskTicket = async (ticketId: string) => {
   try {
-    await axios({
+    const response = await axios({
       url: `${ZENDESK_BASE_URL}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}`,
       method: 'PUT',
       headers: {
@@ -18,6 +18,11 @@ export const approveZendeskTicket = async (ticketId: string) => {
       },
       data: ticketApprovalData
     })
+
+    expect(response.data.ticket.status).toEqual('open')
+    expect(response.data.ticket.tags).toEqual(
+      expect.arrayContaining(['approved'])
+    )
   } catch (error) {
     console.log(error)
     throw 'Error approving Zendesk ticket'
