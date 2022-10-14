@@ -1,4 +1,4 @@
-import { getCloudWatchLogEventsByMessagePattern } from './utils/aws/cloudWatchGetLogs'
+import { getCloudWatchLogEventsGroupByMessagePattern } from './utils/aws/cloudWatchGetLogs'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
@@ -28,7 +28,7 @@ describe('Submit a PII request with approved ticket data', () => {
     })
 
     it('Should log a success in cloud watch if Zendesk request is valid', async () => {
-      const logStreamEvents = await getCloudWatchLogEventsByMessagePattern(
+      const logStreamEvents = await getCloudWatchLogEventsGroupByMessagePattern(
         INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
         'received Zendesk webhook',
         'zendeskId',
@@ -55,7 +55,7 @@ describe('Submit a PII request with approved ticket data', () => {
     })
 
     it('Should log an error in cloud watch if zendesk request is not valid', async () => {
-      const logStreamEvents = await getCloudWatchLogEventsByMessagePattern(
+      const logStreamEvents = await getCloudWatchLogEventsGroupByMessagePattern(
         INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
         'received Zendesk webhook',
         'zendeskId',

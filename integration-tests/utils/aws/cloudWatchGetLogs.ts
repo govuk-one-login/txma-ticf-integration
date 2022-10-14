@@ -7,38 +7,24 @@ import {
   FilteredLogEvent
 } from '@aws-sdk/client-cloudwatch-logs'
 
-export const getCloudWatchLogEventsByMessagePattern = async (
+export const getCloudWatchLogEventsGroupByMessagePattern = async (
   logGroupName: string,
   ...eventMessagePatterns: string[]
 ) => {
-  let attempts = 0
-  let logStreams = await getLogStreams(logGroupName)
-  let eventMatched = false
-  let logEvents: FilteredLogEvent[]
+  const event = await waitForEventWithPatterns(
+    logGroupName,
+    ...eventMessagePatterns
+  )
+  const requestId = extractRequestIDFromEventMessage(event.message as string)
+  const eventLogStream = [{ logStreamName: event.logStreamName as string }]
 
-  while (!eventMatched && attempts < 20) {
-    attempts++
-    logEvents = await findMatchingLogEvents(logStreams, ...eventMessagePatterns)
+  // Wait for final request in group
+  await waitForEventWithPatterns(logGroupName, `END RequestId: ${requestId}`)
 
-    if (logEvents.length == 0) {
-      await pause(1000)
-      logStreams = await getLogStreams(logGroupName)
-      continue
-    }
+  const logEvents = await findMatchingLogEvents(eventLogStream, requestId)
+  console.log(`Events for Request Id ${requestId}:`, logEvents)
 
-    if (logEvents.length > 1) {
-      throw 'More than 1 event matched, check filter patterns'
-    }
-
-    const message = logEvents[0]?.message as string
-    console.log(`Found event: ${message}`)
-    eventMatched = true
-
-    const requestId = extractRequestIDFromEventMessage(message)
-    return await findMatchingLogEvents(logStreams, requestId)
-  }
-
-  return []
+  return logEvents
 }
 
 const getLogStreams = async (logGroupName: string) => {
@@ -51,10 +37,6 @@ const getLogStreams = async (logGroupName: string) => {
   const command = new DescribeLogStreamsCommand(input)
   const response = await cloudWatchLogsClient.send(command)
   const logStreams = response?.logStreams ?? []
-
-  logStreams.length > 0
-    ? console.log(`Searching in log stream: ${logStreams[0]?.logStreamName}`)
-    : console.log('No log streams found')
 
   return logStreams
 }
@@ -81,6 +63,39 @@ const extractRequestIDFromEventMessage = (message: string) => {
   requestId = firstLine.split(/\s+/)[1]
   console.log(`REQUEST ID: ${requestId}`)
   return requestId
+}
+
+const waitForEventWithPatterns = async (
+  logGroupName: string,
+  ...eventMessagePatterns: string[]
+) => {
+  let attempts = 0
+  let logStreams = await getLogStreams(logGroupName)
+  let eventMatched = false
+  let logEvents: FilteredLogEvent[]
+
+  while (!eventMatched && attempts < 30) {
+    attempts++
+    logEvents = await findMatchingLogEvents(logStreams, ...eventMessagePatterns)
+
+    if (logEvents.length == 0) {
+      await pause(1000)
+      logStreams = await getLogStreams(logGroupName)
+      continue
+    }
+
+    if (logEvents.length > 1) {
+      throw 'More than 1 event matched, check filter patterns'
+    }
+
+    const message = logEvents[0]?.message as string
+    console.log(`Found event: ${message}`)
+    eventMatched = true
+
+    return logEvents[0]
+  }
+
+  throw Error(`Event not found with patterns ${eventMessagePatterns} not found`)
 }
 
 const pause = (delay: number): Promise<unknown> => {
