@@ -1,5 +1,5 @@
-import { initiateDataRequestLambdalogGroupName } from '../lib/awsParameters'
 import { cloudWatchLogsClient } from './awsClients'
+import { pause } from './pause'
 import {
   DescribeLogStreamsCommandInput,
   DescribeLogStreamsCommandOutput,
@@ -19,9 +19,11 @@ const getLogStreamPrefix = () => {
   }`
 }
 
-const getLatestLogStreamName = async (): Promise<string> => {
+const getLatestLogStreamName = async (
+  logGroupName: string
+): Promise<string> => {
   const describeLogStreamsParams: DescribeLogStreamsCommandInput = {
-    logGroupName: initiateDataRequestLambdalogGroupName,
+    logGroupName: logGroupName,
     orderBy: 'LastEventTime',
     descending: true,
     limit: 1
@@ -49,6 +51,7 @@ interface EventLogStream {
 }
 
 const waitForLogStreamContainingEvent = async (
+  logGroupName: string,
   eventFilterPattern: string,
   ...eventMessagePatterns: string[]
 ): Promise<EventLogStream> => {
@@ -56,7 +59,7 @@ const waitForLogStreamContainingEvent = async (
     throw Error('No message patterns provided for event')
   }
 
-  let latestLogStreamName = await getLatestLogStreamName()
+  let latestLogStreamName = await getLatestLogStreamName(logGroupName)
   console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
   let eventMatched = false
   let eventMessage = ''
@@ -64,10 +67,11 @@ const waitForLogStreamContainingEvent = async (
   while (!eventMatched) {
     const logEvents = await getMatchingLogEvents(
       `${eventFilterPattern}`,
-      latestLogStreamName
+      latestLogStreamName,
+      logGroupName
     )
     if (logEvents.length == 0) {
-      latestLogStreamName = await getLatestLogStreamName()
+      latestLogStreamName = await getLatestLogStreamName(logGroupName)
       continue
     }
     const matchingEvent = logEvents.filter((event) => {
@@ -82,14 +86,14 @@ const waitForLogStreamContainingEvent = async (
       }
       return containsAllPatterns
     })
-    if (matchingEvent.length == 1) {
+    if (matchingEvent.length >= 1) {
       console.log(`Event found in log stream: ${latestLogStreamName}`)
       eventMessage = matchingEvent[0].message as string
       console.log(`MATCHED EVENT: ${eventMessage}`)
       eventMatched = true
       break
     } else {
-      latestLogStreamName = await getLatestLogStreamName()
+      latestLogStreamName = await getLatestLogStreamName(logGroupName)
     }
   }
   const result: EventLogStream = {
@@ -100,16 +104,13 @@ const waitForLogStreamContainingEvent = async (
   return result
 }
 
-const pause = (delay: number): Promise<unknown> => {
-  return new Promise((r) => setTimeout(r, delay))
-}
-
 const getMatchingLogEvents = async (
   filterPattern: string,
-  streamName: string
+  streamName: string,
+  logGroupName: string
 ): Promise<FilteredLogEvent[]> => {
   const filterLogEventsParams: FilterLogEventsCommandInput = {
-    logGroupName: initiateDataRequestLambdalogGroupName,
+    logGroupName: logGroupName,
     logStreamNames: [streamName],
     filterPattern: `${filterPattern}`
   }

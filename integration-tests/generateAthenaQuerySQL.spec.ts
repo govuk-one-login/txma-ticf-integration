@@ -1,8 +1,12 @@
 import { approveZendeskRequest } from './utils/approveZendeskRequest'
 import { createZendeskRequest } from './utils/raiseZendeskRequest'
-import { populateTableWithRequestDetails } from './utils/dynamoDB'
+import {
+  populateTableWithRequestDetails,
+  getValueFromDynamoDB
+} from './utils/dynamoDB'
 import { getEnvVariable } from './lib/zendeskParameters'
 import { addMessageToQueue } from './utils/sqs'
+import { pause } from './utils/pause'
 import {
   waitForLogStreamContainingEvent,
   extractRequestIDFromEventMessage,
@@ -10,7 +14,7 @@ import {
 } from './utils/cloudwatchUtils'
 
 describe('Athena Query SQL generation', () => {
-  jest.setTimeout(30000)
+  jest.setTimeout(180000)
 
   it('Retrieval Completion message in Audit Queue should trigger Athena SQL lambda', async () => {
     // SETUP:
@@ -23,6 +27,7 @@ describe('Athena Query SQL generation', () => {
 
     // ACT:
     // Put message in queue
+    await pause(30000) // lambda seems to be querying dynamodb too quickly
     await addMessageToQueue(
       `${ticketID}`,
       getEnvVariable('INITIATE_ATHENA_QUERY_QUEUE_URL')
@@ -32,6 +37,7 @@ describe('Athena Query SQL generation', () => {
     // Validate event is processed by queue
     const eventProcessingMessage = 'Handling Athena Query event'
     const eventLogStream = await waitForLogStreamContainingEvent(
+      getEnvVariable('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
       eventProcessingMessage,
       `"body`,
       `"${ticketID}`
@@ -48,7 +54,8 @@ describe('Athena Query SQL generation', () => {
     console.log(`SQL GENERATION FILTER PATTERN: ${sqlGenerationFilterPattern}`)
     const sqlGenerationEvents = await getMatchingLogEvents(
       sqlGenerationFilterPattern,
-      eventLogStream.logStreamName
+      eventLogStream.logStreamName,
+      getEnvVariable('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME')
     )
 
     expect(sqlGenerationEvents.length).toEqual(1)
@@ -58,11 +65,24 @@ describe('Athena Query SQL generation', () => {
     console.log(`SQL GENERATION FILTER PATTERN: ${sqlGeneratedFilterPattern}`)
     const sqlGeneratedEvents = await getMatchingLogEvents(
       sqlGenerationFilterPattern,
-      eventLogStream.logStreamName
+      eventLogStream.logStreamName,
+      getEnvVariable('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME')
     )
     expect(sqlGeneratedEvents.length).toEqual(1)
 
-    // Validate SQL contains relevant zendesk parameters
+    //TT2-18
+    const athenaQueryExecutionFilterPattern = `"${logStreamRequestID}" INFO Athena query execution initiated with QueryExecutionId`
+    const athenaQueryInitiatedEvents = await getMatchingLogEvents(
+      athenaQueryExecutionFilterPattern,
+      eventLogStream.logStreamName,
+      getEnvVariable('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME')
+    )
+    expect(athenaQueryInitiatedEvents.length).toEqual(1)
+
+    //Validate athenaQueryId is put in the table
+    const value = await getValueFromDynamoDB(ticketID, 'athenaQueryId')
+
+    expect(value!.athenaQueryId.S).toBeDefined()
   })
 
   /*it('Valid SQL should be created if ticket has custom data paths', () => {

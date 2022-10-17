@@ -49,11 +49,8 @@ const validRequestData = {
       },
       {
         id: PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: [
-          'restricted.this1.that1',
-          'restricted.this2.that2',
-          'restricted.this3.that3.those3'
-        ]
+        value:
+          'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3'
       }
     ],
     comment: {

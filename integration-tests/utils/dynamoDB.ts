@@ -1,11 +1,11 @@
-import { PutItemCommand } from '@aws-sdk/client-dynamodb'
+import { GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb'
 // import { PII_FORM_REQUEST_DATE_FIELD_ID } from '../lib/customFieldIDs'
 import { getEnvVariable } from '../lib/zendeskParameters'
 import { dynamoDBClient } from './awsClients'
 import { getTicketDetails } from './zendeskUtils'
 import { ZendeskFormFieldIDs } from '../lib/zendeskFormFieldIDs'
 
-const populateTableWithRequestDetails = async (ticketID: string) => {
+export const populateTableWithRequestDetails = async (ticketID: string) => {
   const ticketDetails = await getTicketDetails(ticketID)
 
   const populateTableParams = {
@@ -17,13 +17,13 @@ const populateTableWithRequestDetails = async (ticketID: string) => {
         M: {
           zendeskId: { S: `${ticketID}` },
           dateFrom: {
-            S: `${getCustomFieldValue(
+            S: `${getFieldValue(
               ticketDetails,
               ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
             )}`
           },
           dateTo: {
-            S: `${getCustomFieldValue(
+            S: `${getFieldValue(
               ticketDetails,
               ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
             )}`
@@ -35,13 +35,13 @@ const populateTableWithRequestDetails = async (ticketID: string) => {
             )}`
           },
           recipientEmail: {
-            S: `${getCustomFieldValue(
+            S: `${getFieldValue(
               ticketDetails,
               ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL
             )}`
           },
           recipientName: {
-            S: `${getCustomFieldValue(
+            S: `${getFieldValue(
               ticketDetails,
               ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECEIPIENT_NAME
             )}`
@@ -102,29 +102,18 @@ const populateTableWithRequestDetails = async (ticketID: string) => {
   } catch (error) {
     console.log(error)
   }
-  expect(data?.$metadata.httpStatusCode).toEqual(200)
   expect(data?.Attributes?.zendeskId).not.toEqual(ticketID)
 }
 
 function getFieldListValues(ticketDetails: { fields: any[] }, fieldID: number) {
-  /*const valueList =
-    getFieldValue(ticketDetails, fieldID) == null
-      ? []
-      : getFieldValue(ticketDetails, fieldID)
-          .split(' ')
-          .map((item: string) => ({ S: item }))
-
-  console.log(`LIST VALUE FIELD ${fieldID}: ${valueList}`)
-  return valueList*/
-
   const value = getFieldValue(ticketDetails, fieldID)
   if (value == null) {
     return []
   } else if (typeof value === 'string') {
-    return getFieldValue(ticketDetails, fieldID)
-      .split(' ')
-      .map((item: string) => ({ S: item }))
+    console.log(`VALUE IS A STRING: ${value}`)
+    return value.split(' ').map((item: string) => ({ S: item }))
   } else if (value.constructor.name === 'Array') {
+    console.log(`VALUE IS AN ARRAY: ${value}`)
     return getFieldValue(ticketDetails, fieldID).map((item: string) => ({
       S: item
     }))
@@ -143,18 +132,27 @@ function getFieldValue(ticketDetails: { fields: any[] }, fieldID: number) {
   return value
 }
 
-function getCustomFieldValue(
-  ticketDetails: { custom_fields: any[] },
-  customFieldID: number
-) {
-  const value = ticketDetails.custom_fields
-    .filter((custom_field: { id: number }) => {
-      return custom_field.id === customFieldID
-    })
-    .pop().value
-  console.log(value)
+export const getValueFromDynamoDB = async (
+  ticketId: string,
+  attributeName: string
+) => {
+  const getAttributeValueParams = {
+    TableName: getEnvVariable('AUDIT_REQUEST_DYNAMODB_TABLE'),
+    Key: {
+      zendeskId: { S: `${ticketId}` }
+    },
+    ProjectionExpression: attributeName
+  }
 
-  return value
+  let item = null
+  try {
+    item = await dynamoDBClient.send(
+      new GetItemCommand(getAttributeValueParams)
+    )
+    console.log(item.Item)
+  } catch (error) {
+    console.log(error)
+  }
+  expect(item?.Item).toBeDefined()
+  return item!.Item
 }
-
-export { populateTableWithRequestDetails }

@@ -6,6 +6,7 @@ import {
 
 import { createZendeskRequest } from '../utils/raiseZendeskRequest'
 import { approveZendeskRequest } from '../utils/approveZendeskRequest'
+import { getEnvVariable } from '../lib/zendeskParameters'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
@@ -31,7 +32,8 @@ describe('Submit a PII request with approved ticket data', () => {
     console.log(`VALIDATION FILTER PATTERN: ${validRequestFilterPattern}`)
     const validationEvents = await getMatchingLogEvents(
       validRequestFilterPattern,
-      eventLogStream.logStreamName
+      eventLogStream.logStreamName,
+      getEnvVariable('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME')
     )
 
     expect(validationEvents.length).toEqual(1)
@@ -59,7 +61,8 @@ describe('Submit a PII request with approved ticket data', () => {
     console.log(`VALIDATION FILTER PATTERN: ${invalidRequestFilterPattern}`)
     const validationEvents = await getMatchingLogEvents(
       invalidRequestFilterPattern,
-      eventLogStream.logStreamName
+      eventLogStream.logStreamName,
+      getEnvVariable('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME')
     )
 
     expect(validationEvents.length).toEqual(1)
