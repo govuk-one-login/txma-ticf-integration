@@ -17,10 +17,10 @@ export const getCloudWatchLogEventsGroupByMessagePattern = async (
     maxAttempts
   )
 
-  if (!event) return []
+  if (!event || !event.message) return []
 
-  const requestId = extractRequestIdFromEventMessage(event.message as string)
-  const eventLogStream = [{ logStreamName: event.logStreamName as string }]
+  const requestId = extractRequestIdFromEventMessage(event.message)
+  const eventLogStream = [{ logStreamName: event.logStreamName }]
   const requestEndFilterPattern = [`END RequestId: ${requestId}`]
 
   // Wait for final request in group
@@ -88,6 +88,7 @@ const waitForEventWithPatterns = async (
 
   while (attempts < maxAttempts) {
     attempts++
+    await pause(1000)
     logEvents = await findMatchingLogEvents(
       logGroupName,
       logStreams,
@@ -95,7 +96,6 @@ const waitForEventWithPatterns = async (
     )
 
     if (logEvents.length == 0) {
-      await pause(1000)
       logStreams = await getLogStreams(logGroupName)
       continue
     }
