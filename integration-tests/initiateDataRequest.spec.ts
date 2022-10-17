@@ -8,7 +8,7 @@ import {
   PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP
 } from './constants/awsParameters'
 import { FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs'
-import { showZendeskTicket } from './utils/zendesk/showZendeskTicket'
+import { getZendeskTicket } from './utils/zendesk/getZendeskTicket'
 import { listZendeskTicketComments } from './utils/zendesk/listZendeskTicketComments'
 
 describe('Submit a PII request with approved ticket data', () => {
@@ -109,7 +109,7 @@ describe('Submit a PII request with approved ticket data', () => {
         isLogPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
       ).toEqual(false)
 
-      const zendeskTicket = await showZendeskTicket(ticketId)
+      const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')
       expect(
         await isZendeskCommentPresent(ticketId, CLOSE_ZENDESK_TICKET_COMMENT)

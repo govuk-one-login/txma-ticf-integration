@@ -84,10 +84,9 @@ const waitForEventWithPatterns = async (
 ) => {
   let attempts = 0
   let logStreams = await getLogStreams(logGroupName)
-  let eventMatched = false
   let logEvents: FilteredLogEvent[]
 
-  while (!eventMatched && attempts < maxAttempts) {
+  while (attempts < maxAttempts) {
     attempts++
     logEvents = await findMatchingLogEvents(
       logGroupName,
@@ -107,7 +106,6 @@ const waitForEventWithPatterns = async (
 
     const message = logEvents[0]?.message as string
     console.log(`Found event: ${message}`)
-    eventMatched = true
 
     return logEvents[0]
   }

@@ -6,7 +6,7 @@ import {
   ZENDESK_TICKETS_ENDPOINT
 } from '../../constants/zendeskParameters'
 
-export const showZendeskTicket = async (ticketId: string) => {
+export const getZendeskTicket = async (ticketId: string) => {
   try {
     const response = await axios({
       url: `${ZENDESK_BASE_URL}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}`,
