@@ -5,11 +5,14 @@ import {
   ZENDESK_BASE_URL,
   ZENDESK_TICKETS_ENDPOINT
 } from '../../constants/zendeskParameters'
+import { ZendeskComment } from '../../types/zendeskComment'
 
-export const showZendeskTicket = async (ticketId: string) => {
+export const listZendeskTicketComments = async (
+  ticketId: string
+): Promise<ZendeskComment[]> => {
   try {
     const response = await axios({
-      url: `${ZENDESK_BASE_URL}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}`,
+      url: `${ZENDESK_BASE_URL}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}/comments`,
       method: 'GET',
       headers: {
         Authorization: authoriseAs(ZENDESK_AGENT_EMAIL),
@@ -17,9 +20,9 @@ export const showZendeskTicket = async (ticketId: string) => {
       }
     })
 
-    return response.data.ticket
+    return response.data.comments
   } catch (error) {
     console.log(error)
-    throw 'Error getting Zendesk ticket details'
+    throw 'Error getting Zendesk ticket comments'
   }
 }

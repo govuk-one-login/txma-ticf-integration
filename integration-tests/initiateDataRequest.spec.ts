@@ -9,25 +9,39 @@ import {
 } from './constants/awsParameters'
 import { FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs'
 import { showZendeskTicket } from './utils/zendesk/showZendeskTicket'
+import { listZendeskTicketComments } from './utils/zendesk/listZendeskTicketComments'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
 
+  const CLOSE_ZENDESK_TICKET_COMMENT =
+    'Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: From Date is in the future, To Date is in the future'
   const DATA_SENT_TO_QUEUE_MESSAGE = 'Sent data transfer queue message with id'
   const SQS_EVENT_RECEIVED_MESSAGE = 'Handling data request SQS event'
   const WEBHOOK_INVALID_MESSAGE = 'Zendesk request was invalid'
   const WEBHOOK_RECEIVED_MESSAGE = 'received Zendesk webhook'
-
-  const isLogPresent = (logEvents: FilteredLogEvent[], message: string) => {
-    const event = logEvents.find((event) => event.message?.includes(message))
-    return event ? true : false
-  }
 
   const getQueueMessageId = (logEvents: FilteredLogEvent[]) => {
     const event = logEvents.find((event) =>
       event.message?.includes(DATA_SENT_TO_QUEUE_MESSAGE)
     )
     return event?.message?.split('id')[1].trim()
+  }
+
+  const isLogPresent = (logEvents: FilteredLogEvent[], message: string) => {
+    const event = logEvents.find((event) => event.message?.includes(message))
+    return event ? true : false
+  }
+
+  const isZendeskCommentPresent = async (
+    ticketId: string,
+    commentBody: string
+  ) => {
+    const ticketComments = await listZendeskTicketComments(ticketId)
+    const comment = ticketComments.find((comment) =>
+      comment.body.includes(commentBody)
+    )
+    return comment ? true : false
   }
 
   describe('valid requests', () => {
@@ -63,7 +77,6 @@ describe('Submit a PII request with approved ticket data', () => {
             [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
             50
           )
-        console.log(processDataRequestEvents)
         expect(processDataRequestEvents).not.toEqual([])
       }
     })
@@ -81,7 +94,7 @@ describe('Submit a PII request with approved ticket data', () => {
       await deleteZendeskTicket(ticketId)
     })
 
-    it('Should log an error in cloud watch if zendesk request is not valid', async () => {
+    it('Should log an error in cloud watch and close ticket if zendesk request is not valid', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -97,7 +110,10 @@ describe('Submit a PII request with approved ticket data', () => {
       ).toEqual(false)
 
       const zendeskTicket = await showZendeskTicket(ticketId)
-      expect(zendeskTicket.ticket.status).toEqual('closed')
+      expect(zendeskTicket.status).toEqual('closed')
+      expect(
+        await isZendeskCommentPresent(ticketId, CLOSE_ZENDESK_TICKET_COMMENT)
+      ).toEqual(true)
     })
   })
 })
