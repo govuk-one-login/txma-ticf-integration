@@ -46,9 +46,7 @@ describe('Submit a PII request with approved ticket data', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          WEBHOOK_RECEIVED_MESSAGE,
-          'zendeskId',
-          ticketId
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
         )
 
       expect(
@@ -62,9 +60,8 @@ describe('Submit a PII request with approved ticket data', () => {
         const processDataRequestEvents =
           await getCloudWatchLogEventsGroupByMessagePattern(
             PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
-            SQS_EVENT_RECEIVED_MESSAGE,
-            'messageId',
-            messageId
+            [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+            50
           )
         console.log(processDataRequestEvents)
         expect(processDataRequestEvents).not.toEqual([])
@@ -88,10 +85,9 @@ describe('Submit a PII request with approved ticket data', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          WEBHOOK_RECEIVED_MESSAGE,
-          'zendeskId',
-          ticketId
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
         )
+
       expect(
         isLogPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
       ).toEqual(true)
