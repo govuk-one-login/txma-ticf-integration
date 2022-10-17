@@ -81,6 +81,12 @@ const populateTableWithRequestDetails = async (ticketID: string) => {
               ticketDetails,
               ZendeskFormFieldIDs.PII_FORM_USER_ID_LIST_FIELD_ID
             )
+          },
+          piiTypes: {
+            L: getFieldListValues(
+              ticketDetails,
+              ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID
+            )
           }
         }
       }
@@ -101,7 +107,7 @@ const populateTableWithRequestDetails = async (ticketID: string) => {
 }
 
 function getFieldListValues(ticketDetails: { fields: any[] }, fieldID: number) {
-  const valueList =
+  /*const valueList =
     getFieldValue(ticketDetails, fieldID) == null
       ? []
       : getFieldValue(ticketDetails, fieldID)
@@ -109,17 +115,22 @@ function getFieldListValues(ticketDetails: { fields: any[] }, fieldID: number) {
           .map((item: string) => ({ S: item }))
 
   console.log(`LIST VALUE FIELD ${fieldID}: ${valueList}`)
-  return valueList
+  return valueList*/
 
-  // const value = getFieldValue(ticketDetails, fieldID)
-  // if (value == null) {
-  //   return []
-  // } else {
-  //   // L: dataRequestParams.sessionIds.map((id) => ({ S: id }))
-  //   const it = value.split(' ').map((item: string) => ({ S: item }))
-  //   console.log(`LIST: ${it}`)
-  //   return it
-  // }
+  const value = getFieldValue(ticketDetails, fieldID)
+  if (value == null) {
+    return []
+  } else if (typeof value === 'string') {
+    return getFieldValue(ticketDetails, fieldID)
+      .split(' ')
+      .map((item: string) => ({ S: item }))
+  } else if (value.constructor.name === 'Array') {
+    return getFieldValue(ticketDetails, fieldID).map((item: string) => ({
+      S: item
+    }))
+  } else {
+    throw Error('Data request parameter not of valid type')
+  }
 }
 
 function getFieldValue(ticketDetails: { fields: any[] }, fieldID: number) {
