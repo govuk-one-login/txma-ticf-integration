@@ -17,9 +17,25 @@ import {
   PII_FORM_REQUEST_STATUS_FIELD_ID
 } from './zendeskParameters'
 
+const generateSubjectLine = () => {
+  const fixedSubjectLine = process.env.FIXED_SUBJECT_LINE
+  if (fixedSubjectLine) {
+    return fixedSubjectLine
+  }
+  return `Integration Test Request - ` + generateRandomNumber()
+}
+
+const generateEventIds = () => {
+  const overrideEventIds = process.env.OVERRIDE_EVENT_IDS
+  if (overrideEventIds) {
+    return overrideEventIds
+  }
+  return '637783 3256'
+}
+
 export const validRequestData: ZendeskRequestData = {
   request: {
-    subject: `Integration Test Request - ` + generateRandomNumber(),
+    subject: generateSubjectLine(),
     ticket_form_id: ZENDESK_PII_FORM_ID,
     custom_fields: [
       {
@@ -28,7 +44,7 @@ export const validRequestData: ZendeskRequestData = {
       },
       {
         id: PII_FORM_IDENTIFIER_LIST_FIELD_ID,
-        value: '637783 3256'
+        value: generateEventIds()
       },
       {
         id: PII_FORM_REQUEST_DATE_FIELD_ID,

@@ -17,7 +17,8 @@
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
     "test": "jest -c jest.config.ts",
     "test:cov": "jest -c jest.config.ts --coverage",
-    "test:integration": "jest -c jest.integration.config.ts"
+    "test:integration": "jest -c jest.integration.config.ts",
+    "createTestTicket": "FIXED_DATA_REQUEST_DATE=$0 FIXED_SUBJECT_LINE=$1 OVERRIDE_EVENT_IDS=$2 ts-node integration-tests/utils/zendesk/createAndApproveTicket.ts"
   },
   "dependencies": {
     "@aws-sdk/client-athena": "3.163.0",
