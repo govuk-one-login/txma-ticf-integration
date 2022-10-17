@@ -2,8 +2,7 @@ import { cloudWatchLogsClient } from './cloudWatchLogsClient'
 import {
   DescribeLogStreamsCommand,
   LogStream,
-  FilterLogEventsCommand,
-  FilteredLogEvent
+  FilterLogEventsCommand
 } from '@aws-sdk/client-cloudwatch-logs'
 
 export const getCloudWatchLogEventsGroupByMessagePattern = async (
@@ -83,20 +82,19 @@ const waitForEventWithPatterns = async (
   maxAttempts: number
 ) => {
   let attempts = 0
-  let logStreams = await getLogStreams(logGroupName)
-  let logEvents: FilteredLogEvent[]
 
   while (attempts < maxAttempts) {
     attempts++
-    await pause(1000)
-    logEvents = await findMatchingLogEvents(
+    const logStreams = await getLogStreams(logGroupName)
+
+    const logEvents = await findMatchingLogEvents(
       logGroupName,
       logStreams,
       eventMessagePatterns
     )
 
     if (logEvents.length == 0) {
-      logStreams = await getLogStreams(logGroupName)
+      await pause(1000)
       continue
     }
 
