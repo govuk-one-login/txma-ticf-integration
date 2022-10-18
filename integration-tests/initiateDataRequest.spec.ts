@@ -208,7 +208,7 @@ describe('Submit a PII request with approved ticket data', () => {
       await deleteZendeskTicket(ticketId)
     })
 
-    it('Should log an error in cloud watch and close ticket if zendesk request is not valid', async () => {
+    test('invalid data should not start data retrieval process, and should close ticket', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
