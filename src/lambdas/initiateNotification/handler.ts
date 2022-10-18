@@ -2,6 +2,9 @@ import { EventBridgeEvent } from 'aws-lambda'
 import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
+import { generateSecureDownloadHash } from './generateSecureDownloadHash'
+import { queueSendResultsReadyEmail } from './queueSendResultsReadyEmail'
+import { writeOutSecureDownloadRecord } from './writeOutSecureDownloadRecord'
 
 export const handler = async (
   event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>
@@ -19,6 +22,15 @@ export const handler = async (
 
   const recipientName = requestData.requestInfo.recipientName
   const recipientEmail = requestData.requestInfo.recipientEmail
+  const downloadHash = generateSecureDownloadHash()
+
+  await writeOutSecureDownloadRecord(athenaQueryId, downloadHash)
+
+  await queueSendResultsReadyEmail({
+    downloadHash,
+    recipientEmail,
+    recipientName
+  })
 
   console.log(`Signed link being sent to ${recipientName} at ${recipientEmail}`)
 }
