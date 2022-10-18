@@ -112,7 +112,6 @@ describe('Submit a PII request with approved ticket data', () => {
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
-
       console.log('messageId', messageId)
 
       const processDataRequestEvents =
