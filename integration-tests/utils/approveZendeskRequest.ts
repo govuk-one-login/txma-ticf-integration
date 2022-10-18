@@ -4,12 +4,15 @@ import { ticketApprovalData } from '../lib/requestData'
 import { authoriseAs } from './zendeskUtils'
 
 import { getEnvVariable } from '../lib/zendeskParameters'
+// import { pause } from './pause'
 
 const ticketsEndpoint = '/api/v2/tickets'
 const zendeskBaseURL: string = getEnvVariable('ZENDESK_BASE_URL')
 const agentUsername: string = getEnvVariable('ZENDESK_AGENT_USERNAME')
 
 const approveZendeskRequest = async (ticketId: string) => {
+  // Fixes issue with log steams getting generated too soon when running serially
+  // await pause(200)
   // approve and submit ticket (fires webhook)
   const approvalResponse = await axios({
     url: `${zendeskBaseURL}${ticketsEndpoint}/${ticketId}`,

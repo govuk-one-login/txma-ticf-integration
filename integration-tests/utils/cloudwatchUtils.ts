@@ -33,7 +33,7 @@ const getLatestLogStreamName = async (
     describeLogStreamsParams
   )
 
-  await pause(500)
+  await pause(100)
 
   const describeLogStreamsResponse: DescribeLogStreamsCommandOutput =
     await cloudWatchLogsClient.send(describeLogStreamsCommand)
@@ -60,7 +60,6 @@ const waitForLogStreamContainingEvent = async (
   }
 
   let latestLogStreamName = await getLatestLogStreamName(logGroupName)
-  console.log(`LATEST LOG STREAM NAME: ${latestLogStreamName}`)
   let eventMatched = false
   let eventMessage = ''
 
@@ -74,18 +73,26 @@ const waitForLogStreamContainingEvent = async (
       latestLogStreamName = await getLatestLogStreamName(logGroupName)
       continue
     }
+
     const matchingEvent = logEvents.filter((event) => {
       let containsAllPatterns = false
       for (const element of eventMessagePatterns) {
         if (!event.message?.includes(element)) {
+          console.log(`Event does not contain ${element}. Checking next event`)
           containsAllPatterns = false
           break
         } else {
+          console.log(`Event contains ${element}`)
           containsAllPatterns = true
         }
       }
       return containsAllPatterns
     })
+
+    console.log(
+      `${matchingEvent.length} events match zendesk id in ${latestLogStreamName}`
+    )
+
     if (matchingEvent.length >= 1) {
       console.log(`Event found in log stream: ${latestLogStreamName}`)
       eventMessage = matchingEvent[0].message as string
@@ -96,6 +103,7 @@ const waitForLogStreamContainingEvent = async (
       latestLogStreamName = await getLatestLogStreamName(logGroupName)
     }
   }
+
   const result: EventLogStream = {
     logStreamName: latestLogStreamName,
     eventMessage: eventMessage
@@ -119,15 +127,12 @@ const getMatchingLogEvents = async (
     filterLogEventsParams
   )
 
-  await pause(500)
+  await pause(100)
   const filterLogEventsResponse: FilterLogEventsCommandOutput =
     await cloudWatchLogsClient.send(filterLogEventsCommand)
 
   const filterLogEvents: FilteredLogEvent[] =
     filterLogEventsResponse.events ?? []
-
-  console.log(`FILTERED LOG EVENTS: ${filterLogEvents.length}`)
-
   return filterLogEvents
 }
 

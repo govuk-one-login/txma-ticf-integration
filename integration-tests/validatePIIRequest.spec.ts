@@ -9,11 +9,10 @@ import { approveZendeskRequest } from './utils/approveZendeskRequest'
 import { getEnvVariable } from './lib/zendeskParameters'
 
 describe('Submit a PII request with approved ticket data', () => {
-  jest.setTimeout(60000)
+  jest.setTimeout(100000)
 
   it('Should log a success in cloud watch if Zendesk request is valid', async () => {
     const ticketID = await createZendeskRequest(true)
-
     await approveZendeskRequest(ticketID)
 
     // Cloudwatch - Fetch latest log stream containing the ticket details
@@ -37,7 +36,7 @@ describe('Submit a PII request with approved ticket data', () => {
       getEnvVariable('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME')
     )
 
-    expect(validationEvents.length).toEqual(1)
+    expect(validationEvents.length).toBeGreaterThanOrEqual(1)
     console.log(`VALIDATION EVENT: ${validationEvents[0].message}`)
     expect.stringContaining('Sent data transfer queue message with id')
   })
