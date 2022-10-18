@@ -1,10 +1,10 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { s3Client } from './s3Client'
 
-export const deleteAuditData = async (bucket: string, object: string) => {
+export const deleteAuditData = async (bucket: string, key: string) => {
   const input = {
     Bucket: bucket,
-    Key: `firehose/${object}`
+    Key: `firehose/${key}`
   }
   const command = new DeleteObjectCommand(input)
 

@@ -39,8 +39,18 @@ describe('Submit a PII request with approved ticket data', () => {
     logEvents: FilteredLogEvent[],
     message: string
   ) => {
-    const event = logEvents.find((event) => event.message?.includes(message))
-    expect(event).toBeDefined()
+    const event = logEvents.some((event) => event.message?.includes(message))
+    console.log('message', message)
+    expect(event).toEqual(true)
+  }
+
+  const assertEventNotPresent = (
+    logEvents: FilteredLogEvent[],
+    message: string
+  ) => {
+    const event = logEvents.some((event) => event.message?.includes(message))
+    console.log('message', message)
+    expect(event).toEqual(false)
   }
 
   const assertZendeskCommentPresent = async (
@@ -51,6 +61,7 @@ describe('Submit a PII request with approved ticket data', () => {
     const comment = ticketComments.find((comment) =>
       comment.body.includes(commentBody)
     )
+    console.log('commentBody', commentBody)
     expect(comment).toBeDefined()
   }
 
@@ -118,7 +129,7 @@ describe('Submit a PII request with approved ticket data', () => {
         await getCloudWatchLogEventsGroupByMessagePattern(
           PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
           [COPY_COMPLETE_MESSAGE, 'zendeskId', ticketId],
-          50
+          100
         )
       expect(copyCompletedEvents).not.toEqual([])
 
@@ -134,13 +145,13 @@ describe('Submit a PII request with approved ticket data', () => {
       await copyAuditDataFromTestDataBucket(
         AUDIT_BUCKET_NAME,
         INTEGRATION_TEST_DATE_PREFIX,
-        '02',
+        '01',
         TEST_FILE_NAME
       )
       await copyAuditDataFromTestDataBucket(
         ANALYSIS_BUCKET_NAME,
         INTEGRATION_TEST_DATE_PREFIX,
-        '02',
+        '01',
         TEST_FILE_NAME
       )
       ticketId = await createZendeskTicket(validRequestData)
@@ -151,7 +162,7 @@ describe('Submit a PII request with approved ticket data', () => {
       await deleteZendeskTicket(ticketId)
       await deleteAuditData(
         ANALYSIS_BUCKET_NAME,
-        `${INTEGRATION_TEST_DATE_PREFIX}/02/${TEST_FILE_NAME}`
+        `${INTEGRATION_TEST_DATE_PREFIX}/01/${TEST_FILE_NAME}`
       )
     })
 
@@ -177,11 +188,7 @@ describe('Submit a PII request with approved ticket data', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
-        processDataRequestEvents,
-        STANDARD_TIER_OBJECTS_TO_COPY_MESSAGE
-      )
-      assertEventPresent(processDataRequestEvents, S3_COPY_JOB_STARTED_MESSAGE)
+      assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
       assertEventPresent(processDataRequestEvents, DATA_AVAILABLE_MESSAGE)
     })
   })
@@ -206,7 +213,10 @@ describe('Submit a PII request with approved ticket data', () => {
         )
 
       assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      assertEventNotPresent(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
 
       const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')

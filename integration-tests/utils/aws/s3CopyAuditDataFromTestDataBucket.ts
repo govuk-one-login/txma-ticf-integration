@@ -15,5 +15,7 @@ export const copyAuditDataFromTestDataBucket = async (
   }
   const command = new CopyObjectCommand(input)
 
-  return await s3Client.send(command)
+  const response = await s3Client.send(command)
+  console.log(response)
+  return response
 }
