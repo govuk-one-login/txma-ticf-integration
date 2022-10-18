@@ -11,14 +11,14 @@ export const handler = async (
   const athenaQueryId = queryDetails.queryExecutionId
 
   const requestData = await getQueryByAthenaQueryId(athenaQueryId)
-  const zendeskId = requestData.zendeskId
+  const zendeskId = requestData.requestInfo.zendeskId
 
   console.log(requestData)
 
   await confirmQueryState(queryDetails, zendeskId)
 
-  const recipientName = requestData.recipientName
-  const recipientEmail = requestData.recipientEmail
+  const recipientName = requestData.requestInfo.recipientName
+  const recipientEmail = requestData.requestInfo.recipientEmail
 
   console.log(`Signed link being sent to ${recipientName} at ${recipientEmail}`)
 }

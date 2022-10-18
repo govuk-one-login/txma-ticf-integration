@@ -2,6 +2,8 @@ import https from 'node:https'
 import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import { isZendeskUserResult, ZendeskUser } from '../../types/zendeskUserResult'
 import { base64Encode, makeHttpsRequest } from '../http/httpsRequestUtils'
+import { loggingCopy } from '../../constants/loggingCopy'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   const secrets = await retrieveZendeskApiSecrets()
@@ -19,11 +21,11 @@ export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   const data = await makeHttpsRequest(options)
 
   if (!isZendeskUserResult(data)) {
-    throw Error('The returned data was not a Zendesk user')
+    throw Error(interpolateTemplate('zendeskUserNotFound', loggingCopy))
   }
 
   const userInfo = data.user
-  console.log('Zendesk user with matching id found', userInfo)
+  console.log(interpolateTemplate('zendeskUserFound', loggingCopy), userInfo)
 
   return userInfo
 }

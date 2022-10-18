@@ -1,8 +1,8 @@
 import { SQSEvent } from 'aws-lambda'
+import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import { createQuerySql } from './createQuerySql'
 import { startQueryExecution } from './startQueryExecution'
-import { getQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { updateQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBUpdate'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
@@ -18,9 +18,9 @@ export const handler = async (event: SQSEvent): Promise<void> => {
 
   await checkAthenaTableExists(athenaTable, zendeskId)
 
-  const requestData = await getQueryByZendeskId(zendeskId)
+  const requestData = await getDatabaseEntryByZendeskId(zendeskId)
 
-  const querySql = createQuerySql(requestData)
+  const querySql = createQuerySql(requestData.requestInfo)
 
   await confirmQuerySqlGeneration(querySql, zendeskId)
 

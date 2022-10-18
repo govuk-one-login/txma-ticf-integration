@@ -12,6 +12,8 @@ import {
   TEST_QUERY_DATABASE_TABLE_NAME,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
+  TEST_REQUESTER_EMAIL,
+  TEST_REQUESTER_NAME,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 const dynamoMock = mockClient(DynamoDBClient)
@@ -30,6 +32,8 @@ describe('dynamoDbPut', () => {
             zendeskId: { S: ZENDESK_TICKET_ID },
             recipientEmail: { S: TEST_RECIPIENT_EMAIL },
             recipientName: { S: TEST_RECIPIENT_NAME },
+            requesterEmail: { S: TEST_REQUESTER_EMAIL },
+            requesterName: { S: TEST_REQUESTER_NAME },
             dateFrom: { S: TEST_DATE_FROM },
             dateTo: { S: TEST_DATE_TO },
             eventIds: { L: [{ S: '123' }, { S: '456' }] },

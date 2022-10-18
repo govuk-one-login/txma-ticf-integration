@@ -1,24 +1,24 @@
 import axios from 'axios'
-import crypto from 'crypto'
-import { deleteZendeskTicket } from './utils/deleteZendeskTicket'
+import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import { generateZendeskRequestDate } from './utils/helpers'
-import { createZendeskRequest } from './utils/createZendeskTicket'
+import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
+import { validRequestData } from './constants/requestData'
 import {
-  VALID_RECIPIENT_EMAIL,
-  VALID_RECIPIENT_NAME,
-  VALID_REQUESTER_EMAIL,
-  VALID_REQUESTER_NAME
-} from './lib/requestData'
+  ZENDESK_END_USER_EMAIL,
+  ZENDESK_END_USER_NAME,
+  ZENDESK_WEBHOOK_API_BASE_URL
+} from './constants/zendeskParameters'
+import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
+import { generateSignatureHeaders } from './utils/zendesk/generateSignatureHeaders'
 
-const baseUrl = process.env.ZENDESK_WEBHOOK_API_BASE_URL as string
-const webhookUrl = `${baseUrl}/zendesk-webhook`
+const webhookUrl = `${ZENDESK_WEBHOOK_API_BASE_URL}/zendesk-webhook`
 
-const defaultWebhookRequestData = {
+const defaultWebhookRequestData: ZendeskWebhookRequest = {
   zendeskId: '1',
-  recipientEmail: VALID_RECIPIENT_EMAIL,
-  recipientName: VALID_RECIPIENT_NAME,
-  requesterEmail: VALID_REQUESTER_EMAIL,
-  requesterName: VALID_REQUESTER_NAME,
+  recipientEmail: ZENDESK_END_USER_EMAIL,
+  recipientName: ZENDESK_END_USER_NAME,
+  requesterEmail: ZENDESK_END_USER_EMAIL,
+  requesterName: ZENDESK_END_USER_NAME,
   dateFrom: generateZendeskRequestDate(-60),
   dateTo: generateZendeskRequestDate(-60),
   identifierType: 'event_id',
@@ -34,9 +34,7 @@ const sendWebhook = async (
   customHeaders: {
     [key: string]: string
   },
-  webhookRequestData: {
-    [key: string]: string
-  }
+  webhookRequestData: ZendeskWebhookRequest
 ) => {
   return axios({
     url: webhookUrl,
@@ -77,23 +75,10 @@ describe('Zendesk request integrity', () => {
 })
 
 describe('Zendesk ticket check', () => {
-  const generateSignatureHeaders = (requestData: { [key: string]: string }) => {
-    const timestamp = '2022-09-05T09:52:10Z'
-    const signature: string = crypto
-      .createHmac('sha256', process.env.ZENDESK_WEBHOOK_SECRET_KEY as string)
-      .update(timestamp + JSON.stringify(requestData))
-      .digest('base64')
-
-    return {
-      'X-Zendesk-Webhook-Signature-Timestamp': timestamp,
-      'X-Zendesk-Webhook-Signature': signature
-    }
-  }
-
   let ticketId: string
 
   beforeAll(async () => {
-    ticketId = await createZendeskRequest()
+    ticketId = await createZendeskTicket(validRequestData)
   })
 
   afterAll(async () => {

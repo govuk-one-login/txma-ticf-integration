@@ -3,15 +3,15 @@ import { confirmAthenaTable } from './confirmAthenaTable'
 import { startQueryExecution } from './startQueryExecution'
 import { testAthenaQueryEvent } from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { getQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { createQuerySql } from './createQuerySql'
 import { updateQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBUpdate'
 import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
 import {
   dataPathsTestDataRequest,
-  noIdTestDataRequest
+  noIdTestDataRequest,
+  testDataRequest
 } from '../../utils/tests/testDataRequest'
-
 jest.mock('./confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
 }))
@@ -19,7 +19,7 @@ jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
-  getQueryByZendeskId: jest.fn()
+  getDatabaseEntryByZendeskId: jest.fn()
 }))
 jest.mock('./createQuerySql', () => ({
   createQuerySql: jest.fn()
@@ -35,7 +35,7 @@ const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
 >
 const mockUpdateZendeskTicket = updateZendeskTicketById as jest.Mock
-const mockGetQueryByZendeskId = getQueryByZendeskId as jest.Mock
+const mockGetDatabaseEntryByZendeskId = getDatabaseEntryByZendeskId as jest.Mock
 const mockCreateQuerySql = createQuerySql as jest.Mock
 const mockUpdateQueryByZendeskId = updateQueryByZendeskId as jest.Mock
 const mockStartQueryExecution = startQueryExecution as jest.Mock
@@ -43,6 +43,9 @@ const mockStartQueryExecution = startQueryExecution as jest.Mock
 describe('initiate athena query handler', () => {
   beforeEach(() => {
     jest.resetAllMocks()
+    mockGetDatabaseEntryByZendeskId.mockResolvedValue({
+      requestInfo: testDataRequest
+    })
   })
 
   it('confirms whether the athena data source exists and whether query sql has been generated', async () => {
@@ -50,7 +53,9 @@ describe('initiate athena query handler', () => {
       tableAvailable: true,
       message: 'test message'
     })
-    mockGetQueryByZendeskId.mockResolvedValue(dataPathsTestDataRequest)
+    mockGetDatabaseEntryByZendeskId.mockResolvedValue({
+      requestInfo: dataPathsTestDataRequest
+    })
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
@@ -107,7 +112,9 @@ describe('initiate athena query handler', () => {
       tableAvailable: true,
       message: 'test message'
     })
-    mockGetQueryByZendeskId.mockResolvedValue(noIdTestDataRequest)
+    mockGetDatabaseEntryByZendeskId.mockResolvedValue({
+      requestInfo: noIdTestDataRequest
+    })
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: false,
       error: 'sql error message'
@@ -118,7 +125,7 @@ describe('initiate athena query handler', () => {
       'sql error message'
     )
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
-    expect(mockGetQueryByZendeskId).toHaveBeenCalledWith(testZendeskId)
+    expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(testZendeskId)
     expect(mockCreateQuerySql).toHaveBeenCalledWith(noIdTestDataRequest)
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       testZendeskId,
@@ -133,7 +140,9 @@ describe('initiate athena query handler', () => {
       tableAvailable: true,
       message: 'test message'
     })
-    mockGetQueryByZendeskId.mockResolvedValue(dataPathsTestDataRequest)
+    mockGetDatabaseEntryByZendeskId.mockResolvedValue({
+      requestInfo: dataPathsTestDataRequest
+    })
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
@@ -150,7 +159,7 @@ describe('initiate athena query handler', () => {
       'test athena error'
     )
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
-    expect(mockGetQueryByZendeskId).toHaveBeenCalledWith(testZendeskId)
+    expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(testZendeskId)
     expect(mockCreateQuerySql).toHaveBeenCalledWith(dataPathsTestDataRequest)
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
       sqlGenerated: true,

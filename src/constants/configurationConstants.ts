@@ -1,0 +1,2 @@
+export const MAX_GLACIER_RETRIES = 484
+export const MAX_AUDIT_TO_ANALYSIS_COPY_RETRIES = 60
