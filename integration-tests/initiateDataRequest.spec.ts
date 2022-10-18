@@ -8,7 +8,7 @@ import {
   PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP
 } from './constants/awsParameters'
 import { FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs'
-import { showZendeskTicket } from './utils/zendesk/showZendeskTicket'
+import { getZendeskTicket } from './utils/zendesk/getZendeskTicket'
 import { listZendeskTicketComments } from './utils/zendesk/listZendeskTicketComments'
 
 describe('Submit a PII request with approved ticket data', () => {
@@ -25,7 +25,10 @@ describe('Submit a PII request with approved ticket data', () => {
     const event = logEvents.find((event) =>
       event.message?.includes(DATA_SENT_TO_QUEUE_MESSAGE)
     )
-    return event?.message?.split('id')[1].trim()
+
+    if (!event) throw Error('Message not added to queue')
+
+    return event.message?.split('id')[1].trim() as string
   }
 
   const isLogPresent = (logEvents: FilteredLogEvent[], message: string) => {
@@ -62,23 +65,23 @@ describe('Submit a PII request with approved ticket data', () => {
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
         )
+      expect(initiateDataRequestEvents).not.toEqual([])
 
       expect(
         isLogPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
       ).toEqual(true)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
+      expect(messageId).not.toBeEmpty()
+      console.log('messageId', messageId)
 
-      if (messageId) {
-        console.log('messageId', messageId)
-        const processDataRequestEvents =
-          await getCloudWatchLogEventsGroupByMessagePattern(
-            PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
-            [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
-            50
-          )
-        expect(processDataRequestEvents).not.toEqual([])
-      }
+      const processDataRequestEvents =
+        await getCloudWatchLogEventsGroupByMessagePattern(
+          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+          50
+        )
+      expect(processDataRequestEvents).not.toEqual([])
     })
   })
 
@@ -109,7 +112,7 @@ describe('Submit a PII request with approved ticket data', () => {
         isLogPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
       ).toEqual(false)
 
-      const zendeskTicket = await showZendeskTicket(ticketId)
+      const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')
       expect(
         await isZendeskCommentPresent(ticketId, CLOSE_ZENDESK_TICKET_COMMENT)
