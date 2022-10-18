@@ -20,7 +20,7 @@ import {
 
 export const validRequestData: ZendeskRequestData = {
   request: {
-    subject: `Integration Test Request - ` + generateRandomNumber() + ' TT2-15',
+    subject: `Integration Test Request - ` + generateRandomNumber(),
     ticket_form_id: ZENDESK_PII_FORM_ID,
     custom_fields: [
       {
@@ -60,7 +60,7 @@ export const validRequestData: ZendeskRequestData = {
 
 export const invalidRequestData: ZendeskRequestData = {
   request: {
-    subject: `Integration Test Request - ` + generateRandomNumber() + ' TT2-15',
+    subject: `Integration Test Request - ` + generateRandomNumber(),
     ticket_form_id: ZENDESK_PII_FORM_ID,
     custom_fields: [
       {
@@ -100,7 +100,7 @@ export const invalidRequestData: ZendeskRequestData = {
 
 export const validApiTestRequestData = {
   request: {
-    subject: `Integration Test Request - ` + generateRandomNumber() + ' TT2-15',
+    subject: `Integration Test Request - ` + generateRandomNumber(),
     ticket_form_id: ZENDESK_PII_FORM_ID,
     custom_fields: [
       {
