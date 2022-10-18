@@ -39,18 +39,22 @@ describe('Submit a PII request with approved ticket data', () => {
     logEvents: FilteredLogEvent[],
     message: string
   ) => {
-    const event = logEvents.some((event) => event.message?.includes(message))
+    const eventPresent = logEvents.some((event) =>
+      event.message?.includes(message)
+    )
     console.log('message', message)
-    expect(event).toEqual(true)
+    expect(eventPresent).toEqual(true)
   }
 
   const assertEventNotPresent = (
     logEvents: FilteredLogEvent[],
     message: string
   ) => {
-    const event = logEvents.some((event) => event.message?.includes(message))
+    const eventPresent = logEvents.some((event) =>
+      event.message?.includes(message)
+    )
     console.log('message', message)
-    expect(event).toEqual(false)
+    expect(eventPresent).toEqual(false)
   }
 
   const assertZendeskCommentPresent = async (
@@ -58,11 +62,11 @@ describe('Submit a PII request with approved ticket data', () => {
     commentBody: string
   ) => {
     const ticketComments = await listZendeskTicketComments(ticketId)
-    const comment = ticketComments.find((comment) =>
+    const commentPresent = ticketComments.some((comment) =>
       comment.body.includes(commentBody)
     )
     console.log('commentBody', commentBody)
-    expect(comment).toBeDefined()
+    expect(commentPresent).toEqual(true)
   }
 
   const getQueueMessageId = (logEvents: FilteredLogEvent[]) => {
