@@ -48,6 +48,10 @@ process.env.ZENDESK_WEBHOOK_API_BASE_URL = '(get from AWS console)'
 process.enc.ZENDESK_WEBHOOK_SECRET_KEY = '(check with Test team/Tech lead)'
 process.env.ZENDESK_END_USER_EMAIL = '(value in Team Test Confluence)'
 process.env.ZENDESK_AGENT_EMAIL = '(value in Team Test Confluence)'
+process.env.AUDIT_REQUEST_DYNAMODB_TABLE = '(get from AWS console)'
+process.env.INITIATE_ATHENA_QUERY_QUEUE_URL = '(get from AWS console)'
+process.env.INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME = '(get from AWS console)'
+process.env.INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME = '(get from AWS console)'
 
 ```
 

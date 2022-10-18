@@ -1,11 +1,10 @@
 import { GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb'
-// import { PII_FORM_REQUEST_DATE_FIELD_ID } from '../lib/customFieldIDs'
 import { getEnvVariable } from '../lib/zendeskParameters'
 import { dynamoDBClient } from './awsClients'
 import { getTicketDetails } from './zendeskUtils'
 import { ZendeskFormFieldIDs } from '../lib/zendeskFormFieldIDs'
 
-export const populateTableWithRequestDetails = async (ticketID: string) => {
+export const populateDynamoDBWithRequestDetails = async (ticketID: string) => {
   const ticketDetails = await getTicketDetails(ticketID)
 
   const populateTableParams = {
@@ -93,9 +92,6 @@ export const populateTableWithRequestDetails = async (ticketID: string) => {
     }
   }
 
-  // const data = await dynamoDBClient.send(
-  //   new PutItemCommand(populateTableParams)
-  // )
   let data = null
   try {
     data = await dynamoDBClient.send(new PutItemCommand(populateTableParams))
@@ -110,10 +106,8 @@ function getFieldListValues(ticketDetails: { fields: any[] }, fieldID: number) {
   if (value == null) {
     return []
   } else if (typeof value === 'string') {
-    console.log(`VALUE IS A STRING: ${value}`)
     return value.split(' ').map((item: string) => ({ S: item }))
   } else if (value.constructor.name === 'Array') {
-    console.log(`VALUE IS AN ARRAY: ${value}`)
     return getFieldValue(ticketDetails, fieldID).map((item: string) => ({
       S: item
     }))
@@ -128,7 +122,6 @@ function getFieldValue(ticketDetails: { fields: any[] }, fieldID: number) {
       return field.id === fieldID
     })
     .pop().value
-  console.log(`FIELD VALUE ${fieldID}: ${value}`)
   return value
 }
 

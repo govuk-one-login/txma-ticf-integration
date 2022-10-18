@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getEnvVariable } from '../lib/zendeskParameters'
+const zendeskTicketEndpoint = '/api/v2/tickets/'
 
 const generateRandomNumber = () => {
   return Math.floor(Math.random() * 100).toString()
@@ -25,11 +26,13 @@ const generateZendeskRequestDate = (offset: number): string => {
   return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`
 }
 
-const getTicketDetails = async (ticketID: string) => {
+const getTicketDetails = async (
+  ticketID: string
+): Promise<{ fields: any[] }> => {
   const response = await axios({
     url: `${getEnvVariable(
       'ZENDESK_BASE_URL'
-    )}/api/v2/tickets/${ticketID}.json`,
+    )}${zendeskTicketEndpoint}${ticketID}.json`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -38,9 +41,7 @@ const getTicketDetails = async (ticketID: string) => {
       )}`
     }
   })
-
   expect(response.status).toEqual(200)
-  console.log(response.data)
   return response.data.ticket
 }
 

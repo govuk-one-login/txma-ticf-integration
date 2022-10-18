@@ -25,7 +25,8 @@ const validRequestData = {
       },
       {
         id: PII_FORM_EVENT_ID_LIST_FIELD_ID,
-        value: '637783 3256'
+        value:
+          'c9e2bf44-b95e-4f9a-81c4-cf02d42c1555 c9e2bf44-b95e-4f9a-81c4-cf02d42cabcd'
       },
       {
         id: PII_FORM_REQUEST_DATE_FIELD_ID,

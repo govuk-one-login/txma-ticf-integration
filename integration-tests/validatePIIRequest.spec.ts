@@ -2,11 +2,11 @@ import {
   getMatchingLogEvents,
   extractRequestIDFromEventMessage,
   waitForLogStreamContainingEvent
-} from '../utils/cloudwatchUtils'
+} from './utils/cloudwatchUtils'
 
-import { createZendeskRequest } from '../utils/raiseZendeskRequest'
-import { approveZendeskRequest } from '../utils/approveZendeskRequest'
-import { getEnvVariable } from '../lib/zendeskParameters'
+import { createZendeskRequest } from './utils/raiseZendeskRequest'
+import { approveZendeskRequest } from './utils/approveZendeskRequest'
+import { getEnvVariable } from './lib/zendeskParameters'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(60000)
@@ -19,6 +19,7 @@ describe('Submit a PII request with approved ticket data', () => {
     // Cloudwatch - Fetch latest log stream containing the ticket details
     const webhookReceivedMessage = 'INFO received Zendesk webhook'
     const eventLogStream = await waitForLogStreamContainingEvent(
+      getEnvVariable('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
       webhookReceivedMessage,
       `"zendeskId`,
       `"${ticketID}`
@@ -48,6 +49,7 @@ describe('Submit a PII request with approved ticket data', () => {
     // Cloudwatch - Fetch latest log stream containing the ticket details
     const webhookReceivedMessage = 'INFO received Zendesk webhook'
     const eventLogStream = await waitForLogStreamContainingEvent(
+      getEnvVariable('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
       webhookReceivedMessage,
       `"zendeskId`,
       `"${ticketID}`
