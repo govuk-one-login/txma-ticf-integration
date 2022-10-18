@@ -42,6 +42,8 @@ In order to ensure that dependencies cannot be altered by anything other than Ya
 To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test.env` and have the following entries (the values should be retrieved as indicated in the placeholders):
 
 ```
+process.env.ANALYSIS_BUCKET_NAME = '(get from AWS console)'
+process.env.AUDIT_BUCKET_NAME = '(get from AWS console)'
 process.env.ZENDESK_API_KEY = '(check with Test team/Tech lead)'
 process.env.ZENDESK_BASE_URL = '(value in Team Test Confluence)'
 process.env.ZENDESK_WEBHOOK_API_BASE_URL = '(get from AWS console)'

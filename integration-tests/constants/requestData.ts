@@ -3,10 +3,11 @@ import {
   generateRandomNumber,
   generateZendeskRequestDate
 } from '../utils/helpers'
+import { INTEGRATION_TEST_DATE, TEST_DATA_EVENT_ID } from './awsParameters'
 import {
   PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
   PII_FORM_IDENTIFIER_FIELD_ID,
-  PII_FORM_IDENTIFIER_LIST_FIELD_ID,
+  PII_FORM_IDENTIFIER_EVENT_ID_FIELD_ID,
   PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
   PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
   PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
@@ -27,12 +28,12 @@ export const validRequestData: ZendeskRequestData = {
         value: 'event_id'
       },
       {
-        id: PII_FORM_IDENTIFIER_LIST_FIELD_ID,
-        value: '637783 3256'
+        id: PII_FORM_IDENTIFIER_EVENT_ID_FIELD_ID,
+        value: TEST_DATA_EVENT_ID
       },
       {
         id: PII_FORM_REQUEST_DATE_FIELD_ID,
-        value: generateZendeskRequestDate(-60)
+        value: INTEGRATION_TEST_DATE
       },
       {
         id: PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
@@ -67,12 +68,52 @@ export const invalidRequestData: ZendeskRequestData = {
         value: 'event_id'
       },
       {
-        id: PII_FORM_IDENTIFIER_LIST_FIELD_ID,
+        id: PII_FORM_IDENTIFIER_EVENT_ID_FIELD_ID,
         value: '637783 3256'
       },
       {
         id: PII_FORM_REQUEST_DATE_FIELD_ID,
         value: generateZendeskRequestDate(50)
+      },
+      {
+        id: PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
+        value: ['drivers_license']
+      },
+      {
+        id: PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
+        value: ''
+      },
+      {
+        id: PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+        value: ZENDESK_END_USER_EMAIL
+      },
+      {
+        id: PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
+        value: ZENDESK_END_USER_NAME
+      }
+    ],
+    comment: {
+      body: 'PII request created in integration test'
+    }
+  }
+}
+
+export const validApiTestRequestData = {
+  request: {
+    subject: `Integration Test Request - ` + generateRandomNumber(),
+    ticket_form_id: ZENDESK_PII_FORM_ID,
+    custom_fields: [
+      {
+        id: PII_FORM_IDENTIFIER_FIELD_ID,
+        value: 'event_id'
+      },
+      {
+        id: PII_FORM_IDENTIFIER_EVENT_ID_FIELD_ID,
+        value: '637783 3256'
+      },
+      {
+        id: PII_FORM_REQUEST_DATE_FIELD_ID,
+        value: generateZendeskRequestDate(-60)
       },
       {
         id: PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
