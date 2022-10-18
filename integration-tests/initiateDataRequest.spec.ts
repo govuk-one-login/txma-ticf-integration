@@ -72,7 +72,6 @@ describe('Submit a PII request with approved ticket data', () => {
       ).toEqual(true)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
-      expect(messageId).not.toBeEmpty()
       console.log('messageId', messageId)
 
       const processDataRequestEvents =
