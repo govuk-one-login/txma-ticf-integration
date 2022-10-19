@@ -41,7 +41,7 @@ export const validRequestData: ZendeskRequestData = {
         value: ZENDESK_END_USER_EMAIL
       },
       {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
         value: ZENDESK_END_USER_NAME
       }
     ],
@@ -81,7 +81,7 @@ export const invalidRequestData: ZendeskRequestData = {
         value: ZENDESK_END_USER_EMAIL
       },
       {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
         value: ZENDESK_END_USER_NAME
       }
     ],

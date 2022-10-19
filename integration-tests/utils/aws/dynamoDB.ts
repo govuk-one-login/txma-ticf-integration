@@ -46,7 +46,7 @@ export const populateDynamoDBWithRequestDetails = async (ticketID: string) => {
           recipientName: {
             S: `${getFieldValue(
               ticketDetails,
-              ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECEIPIENT_NAME
+              ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME
             )}`
           },
           requesterEmail: {
