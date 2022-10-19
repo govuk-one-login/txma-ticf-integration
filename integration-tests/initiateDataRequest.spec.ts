@@ -15,7 +15,7 @@ import { FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs'
 import { getZendeskTicket } from './utils/zendesk/getZendeskTicket'
 import { listZendeskTicketComments } from './utils/zendesk/listZendeskTicketComments'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAllAuditDataWithPrefix'
+import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(90000)
