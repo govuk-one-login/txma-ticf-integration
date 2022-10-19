@@ -29,6 +29,7 @@ export const TEST_SIGNED_URL = 'signed.url.com'
 export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
 export const TEST_ANALYSIS_BUCKET_ARN = 'myAnalysisBucketArn'
 export const TEST_AUDIT_BUCKET = 'myAuditBucket'
+export const TEST_QUERY_RESULTS_BUCKET = 'myQueryResultsBucket'
 export const TEST_DATE_FROM = '2021-08-21'
 export const TEST_DATE_TO = '2021-08-21'
 export const TEST_BATCH_JOB_MANIFEST_BUCKET_ARN = 'myManifestBucketArn'
@@ -58,3 +59,5 @@ export const TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME = 11
 export const TEST_DOWNLOAD_HASH = 'myDownloadHash'
 export const TEST_SECURE_DOWNLOAD_WEBSITE_BASE_PATH =
   'http://my-download-website/secure'
+export const TEST_SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME = 'secureDownloadDynamoDb'
+export const TEST_ATHENA_QUERY_ID = 'abc123'

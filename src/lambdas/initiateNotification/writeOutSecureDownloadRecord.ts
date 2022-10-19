@@ -1,9 +1,20 @@
+import { PutItemCommand, PutItemCommandInput } from '@aws-sdk/client-dynamodb'
+import { ddbClient } from '../../sharedServices/dynamoDB/dynamoDBClient'
+import { getEnv } from '../../utils/helpers'
+
 export const writeOutSecureDownloadRecord = async (
   athenaQueryId: string,
   downloadHash: string
 ) => {
-  // TODO: stop logging out the hash here, just doing it before we have real code for linting purposes
-  console.log(
-    `creating secure download for athena query id ${athenaQueryId} and download hash ${downloadHash}`
-  )
+  const putCommand: PutItemCommandInput = {
+    TableName: getEnv('SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME'),
+    Item: {
+      downloadHash: { S: downloadHash },
+      downloadsRemaining: { N: '3' },
+      s3ResultsKey: { S: `${athenaQueryId}.csv` },
+      s3ResultsBucket: { S: getEnv('QUERY_RESULTS_BUCKET_NAME') }
+    }
+  }
+
+  await ddbClient.send(new PutItemCommand(putCommand))
 }

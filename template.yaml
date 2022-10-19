@@ -952,9 +952,11 @@ Resources:
       Environment:
         Variables:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
+          SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME: '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME}}'
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
           EMAIL_SEND_QUEUE_URL: !Ref SendEmailQueue
           SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SECURE_DOWNLOAD_WEBSITE_BASE_PATH}}'
+          QUERY_RESULTS_BUCKET_NAME: !Ref QueryResultsBucket
       FunctionName: !Sub ${AWS::StackName}-initiate-notification
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
