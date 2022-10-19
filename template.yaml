@@ -1012,6 +1012,12 @@ Resources:
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
               - !Join ['/', [!GetAtt QueryRequestDynamoDBTable.Arn, 'index', 'athenaQueryIdIndex']]
+          - Sid: DynamoDBPutSecureDownload
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+            Resource:
+              - '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_ARN}}'
       ReservedConcurrentExecutions: 10
 
   InitiateNotificationLogs:
