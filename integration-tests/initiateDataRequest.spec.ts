@@ -18,7 +18,7 @@ import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFrom
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAllAuditDataWithPrefix'
 
 describe('Submit a PII request with approved ticket data', () => {
-  jest.setTimeout(300000)
+  jest.setTimeout(90000)
 
   const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'
   const CLOSE_ZENDESK_TICKET_COMMENT =
