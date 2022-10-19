@@ -3,8 +3,8 @@ import {
   generateRandomNumber,
   generateZendeskRequestDate
 } from '../utils/helpers'
-import { ZendeskFormFieldIDs } from './zendeskFormFieldIDs'
 import {
+  ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME
 } from './zendeskParameters'

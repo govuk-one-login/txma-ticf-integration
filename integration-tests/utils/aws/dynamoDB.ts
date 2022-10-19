@@ -1,15 +1,20 @@
-import { GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb'
-import { dynamoDBClient } from '../awsClients'
-import { AUDIT_REQUEST_DYNAMODB } from '../../constants/awsParameters'
-import { ZendeskFormFieldIDs } from '../../constants/zendeskFormFieldIDs'
 import {
+  DeleteItemCommand,
+  GetItemCommand,
+  PutItemCommand
+} from '@aws-sdk/client-dynamodb'
+
+import { AUDIT_REQUEST_DYNAMODB } from '../../constants/awsParameters'
+import {
+  ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME
 } from '../../constants/zendeskParameters'
-import { getZendeskTicket } from '../zendesk/getZendeskTicket'
+import { dynamoDBTicketDetails } from '../../constants/dynamoDBTicketDetails'
+import { dynamoDBClient } from './dynamoDBClient'
 
-export const populateDynamoDBWithRequestDetails = async (ticketID: string) => {
-  const ticketDetails = await getZendeskTicket(ticketID)
+export const populateDynamoDBWithTestItemDetails = async (ticketID: string) => {
+  const ticketDetails = dynamoDBTicketDetails.ticket
 
   const populateTableParams = {
     TableName: AUDIT_REQUEST_DYNAMODB,
@@ -163,4 +168,20 @@ export const getValueFromDynamoDB = async (
   }
   expect(item?.Item).toBeDefined()
   return item!.Item
+}
+
+export const deleteDynamoDBTestItem = async (ticketID: string) => {
+  const deleteItemParams = {
+    TableName: AUDIT_REQUEST_DYNAMODB,
+    Key: {
+      zendeskId: { S: ticketID }
+    }
+  }
+
+  try {
+    await dynamoDBClient.send(new DeleteItemCommand(deleteItemParams))
+  } catch (error) {
+    console.log(error)
+    throw 'Error deleting item from dynamoDB'
+  }
 }
