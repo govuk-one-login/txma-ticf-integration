@@ -4,14 +4,13 @@ import { s3Client } from './s3Client'
 
 export const copyAuditDataFromTestDataBucket = async (
   targetBucket: string,
-  targetDatePrefix: string,
-  targetHourPrefix: string,
+  prefix: string,
   fileName: string
 ) => {
   const input = {
     Bucket: targetBucket,
     CopySource: `${TEST_DATA_BUCKET_NAME}/${fileName}`,
-    Key: `firehose/${targetDatePrefix}/${targetHourPrefix}/${fileName}`
+    Key: `${prefix}/${fileName}`
   }
   const command = new CopyObjectCommand(input)
 

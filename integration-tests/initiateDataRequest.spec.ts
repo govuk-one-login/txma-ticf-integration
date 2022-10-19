@@ -14,8 +14,8 @@ import {
 import { FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs'
 import { getZendeskTicket } from './utils/zendesk/getZendeskTicket'
 import { listZendeskTicketComments } from './utils/zendesk/listZendeskTicketComments'
-import { deleteAuditData } from './utils/aws/s3DeleteAuditData'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
+import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAllAuditDataWithPrefix'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(300000)
@@ -83,10 +83,17 @@ describe('Submit a PII request with approved ticket data', () => {
     let ticketId: string
 
     beforeEach(async () => {
+      await deleteAuditDataWithPrefix(
+        AUDIT_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
+      )
+      await deleteAuditDataWithPrefix(
+        ANALYSIS_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
+      )
       await copyAuditDataFromTestDataBucket(
         AUDIT_BUCKET_NAME,
-        INTEGRATION_TEST_DATE_PREFIX,
-        '01',
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX}/01/`,
         TEST_FILE_NAME
       )
       ticketId = await createZendeskTicket(validRequestData)
@@ -95,10 +102,6 @@ describe('Submit a PII request with approved ticket data', () => {
 
     afterEach(async () => {
       await deleteZendeskTicket(ticketId)
-      await deleteAuditData(
-        ANALYSIS_BUCKET_NAME,
-        `${INTEGRATION_TEST_DATE_PREFIX}/01/${TEST_FILE_NAME}`
-      )
     })
 
     test('request for valid data all in standard tier', async () => {
@@ -145,16 +148,22 @@ describe('Submit a PII request with approved ticket data', () => {
     let ticketId: string
 
     beforeEach(async () => {
+      await deleteAuditDataWithPrefix(
+        AUDIT_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
+      )
+      await deleteAuditDataWithPrefix(
+        ANALYSIS_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
+      )
       await copyAuditDataFromTestDataBucket(
         AUDIT_BUCKET_NAME,
-        INTEGRATION_TEST_DATE_PREFIX,
-        '01',
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX}/01/`,
         TEST_FILE_NAME
       )
       await copyAuditDataFromTestDataBucket(
         ANALYSIS_BUCKET_NAME,
-        INTEGRATION_TEST_DATE_PREFIX,
-        '01',
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX}/01/`,
         TEST_FILE_NAME
       )
       ticketId = await createZendeskTicket(validRequestData)
@@ -163,10 +172,6 @@ describe('Submit a PII request with approved ticket data', () => {
 
     afterEach(async () => {
       await deleteZendeskTicket(ticketId)
-      await deleteAuditData(
-        ANALYSIS_BUCKET_NAME,
-        `${INTEGRATION_TEST_DATE_PREFIX}/01/${TEST_FILE_NAME}`
-      )
     })
 
     test('request for valid data already in analysis bucket', async () => {
