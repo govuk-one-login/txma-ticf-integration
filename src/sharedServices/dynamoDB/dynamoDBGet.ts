@@ -1,27 +1,22 @@
-import { GetItemCommand } from '@aws-sdk/client-dynamodb'
-import {
-  DataRequestParams,
-  isDataRequestParams
-} from '../../types/dataRequestParams'
+import { AttributeValue, GetItemCommand } from '@aws-sdk/client-dynamodb'
+import { isDataRequestParams } from '../../types/dataRequestParams'
+import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { getEnv } from '../../utils/helpers'
 import { ddbClient } from './dynamoDBClient'
 
-export const getQueryByZendeskId = async (
+export const getDatabaseEntryByZendeskId = async (
   zendeskId: string
-): Promise<DataRequestParams> => {
+): Promise<DataRequestDatabaseEntry> => {
   const params = {
-    TableName: getEnv('DYNAMODB_TABLE_NAME'),
+    TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
     Key: { zendeskId: { S: zendeskId } }
   }
 
   const data = await ddbClient.send(new GetItemCommand(params))
-  console.log(data)
-  const responseObject = data?.Item?.requestInfo?.M
-  if (!responseObject) {
-    throw new Error(
-      `Request info not returned from db for zendesk ticket: ${zendeskId}`
-    )
+  if (!data?.Item) {
+    throw Error(`Cannot find database entry for zendesk ticket '${zendeskId}'`)
   }
+  const responseObject = data?.Item?.requestInfo?.M
 
   const dataRequestParams = {
     zendeskId: responseObject?.zendeskId?.S,
@@ -42,9 +37,26 @@ export const getQueryByZendeskId = async (
 
   if (!isDataRequestParams(dataRequestParams)) {
     throw new Error(
-      `Event data returned from db was not of correct type for zendesk ticket: ${zendeskId}`
+      `Event data returned from db was not of correct type for zendesk ticket: '${zendeskId}'`
     )
   }
 
-  return dataRequestParams
+  data?.Item
+  return {
+    requestInfo: dataRequestParams,
+    checkGlacierStatusCount: retrieveNumericValue(
+      data?.Item?.checkGlacierStatusCount
+    ),
+    checkCopyStatusCount: retrieveNumericValue(
+      data?.Item?.checkCopyStatusCount
+    ),
+    athenaQueryId: data?.Item?.athenaQueryId?.S
+  }
+}
+
+const retrieveNumericValue = (
+  attributeValue: AttributeValue
+): number | undefined => {
+  const numericValueAsString = attributeValue?.N
+  return numericValueAsString ? parseInt(numericValueAsString) : undefined
 }

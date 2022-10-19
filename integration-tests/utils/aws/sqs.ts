@@ -1,5 +1,5 @@
 import { SendMessageCommand } from '@aws-sdk/client-sqs'
-import { sqsClient } from './awsClients'
+import { sqsClient } from '../awsClients'
 
 export const addMessageToQueue = async (message: any, queueURL: string) => {
   const queueMessageParams = {

@@ -1,14 +1,18 @@
 import { GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb'
-import { getEnvVariable } from '../lib/zendeskParameters'
-import { dynamoDBClient } from './awsClients'
-import { getTicketDetails } from './zendeskUtils'
-import { ZendeskFormFieldIDs } from '../lib/zendeskFormFieldIDs'
+import { dynamoDBClient } from '../awsClients'
+import { AUDIT_REQUEST_DYNAMODB } from '../../constants/awsParameters'
+import { ZendeskFormFieldIDs } from '../../constants/zendeskFormFieldIDs'
+import {
+  ZENDESK_END_USER_EMAIL,
+  ZENDESK_END_USER_NAME
+} from '../../constants/zendeskParameters'
+import { getZendeskTicket } from '../zendesk/getZendeskTicket'
 
 export const populateDynamoDBWithRequestDetails = async (ticketID: string) => {
-  const ticketDetails = await getTicketDetails(ticketID)
+  const ticketDetails = await getZendeskTicket(ticketID)
 
   const populateTableParams = {
-    TableName: getEnvVariable('AUDIT_REQUEST_DYNAMODB_TABLE'),
+    TableName: AUDIT_REQUEST_DYNAMODB,
     ReturnValues: 'ALL_OLD',
     Item: {
       zendeskId: { S: `${ticketID}` },
@@ -45,11 +49,11 @@ export const populateDynamoDBWithRequestDetails = async (ticketID: string) => {
               ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECEIPIENT_NAME
             )}`
           },
-          resultsEmail: {
-            S: `${getEnvVariable('ZENDESK_END_USER_EMAIL')}`
+          requesterEmail: {
+            S: `${ZENDESK_END_USER_EMAIL}`
           },
-          resultsName: {
-            S: `${getEnvVariable('ZENDESK_END_USER_NAME')}`
+          requesterName: {
+            S: `${ZENDESK_END_USER_NAME}`
           },
           dataPaths: {
             L: getFieldListValues(
@@ -97,6 +101,7 @@ export const populateDynamoDBWithRequestDetails = async (ticketID: string) => {
     data = await dynamoDBClient.send(new PutItemCommand(populateTableParams))
   } catch (error) {
     console.log(error)
+    throw 'Error populating dynamoDB'
   }
   expect(data?.Attributes?.zendeskId).not.toEqual(ticketID)
 }
@@ -127,14 +132,24 @@ function getFieldValue(ticketDetails: { fields: any[] }, fieldID: number) {
 
 export const getValueFromDynamoDB = async (
   ticketId: string,
-  attributeName: string
+  attributeName?: string
 ) => {
-  const getAttributeValueParams = {
-    TableName: getEnvVariable('AUDIT_REQUEST_DYNAMODB_TABLE'),
-    Key: {
-      zendeskId: { S: `${ticketId}` }
-    },
-    ProjectionExpression: attributeName
+  let getAttributeValueParams
+  if (attributeName) {
+    getAttributeValueParams = {
+      TableName: AUDIT_REQUEST_DYNAMODB,
+      Key: {
+        zendeskId: { S: `${ticketId}` }
+      },
+      ProjectionExpression: attributeName
+    }
+  } else {
+    getAttributeValueParams = {
+      TableName: AUDIT_REQUEST_DYNAMODB,
+      Key: {
+        zendeskId: { S: `${ticketId}` }
+      }
+    }
   }
 
   let item = null

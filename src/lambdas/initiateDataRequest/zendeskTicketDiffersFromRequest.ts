@@ -1,3 +1,4 @@
+import { loggingCopy } from '../../constants/loggingCopy'
 import { getZendeskTicket } from '../../sharedServices/zendesk/getZendeskTicket'
 import { getZendeskUser } from '../../sharedServices/zendesk/getZendeskUser'
 import { DataRequestParams } from '../../types/dataRequestParams'
@@ -7,11 +8,12 @@ import {
   getEnvAsNumber,
   mapSpaceSeparatedStringToList
 } from '../../utils/helpers'
+import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const zendeskTicketDiffersFromRequest = async (
   requestParams: DataRequestParams
 ) => {
-  console.log('Matching received request with existing Zendesk Tickets')
+  console.log(interpolateTemplate('requestMatchesZendeskTickets', loggingCopy))
   const ticketDetails = await getZendeskTicket(requestParams.zendeskId)
   const requesterDetails = await getZendeskUser(ticketDetails.requester_id)
 
@@ -149,12 +151,14 @@ const ticketAndRequestDetailsDiffer = (
 
   if (unmatchedParameters.length > 0) {
     console.warn(
-      'Request does not match values on Ticket, the following parameters do not match:',
+      interpolateTemplate('requestDoesntMatcheZendeskTickets', loggingCopy),
       unmatchedParameters
     )
     return true
   } else {
-    console.log('Request details match existing Zendesk ticket')
+    console.log(
+      interpolateTemplate('requestMatchesExistingZendeskTickets', loggingCopy)
+    )
     return false
   }
 }
