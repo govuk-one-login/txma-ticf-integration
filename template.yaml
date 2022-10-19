@@ -1023,7 +1023,7 @@ Resources:
             Action:
               - kms:Decrypt
             Resource:
-              - {{resolve:ssm:SECURE_DOWNLOAD_DATABASE_KMS_KEY_ARN}}
+              - '{{resolve:ssm:SECURE_DOWNLOAD_DATABASE_KMS_KEY_ARN}}'
       ReservedConcurrentExecutions: 10
 
   InitiateNotificationLogs:
