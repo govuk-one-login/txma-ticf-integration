@@ -17,7 +17,7 @@ env:
 jobs:
   build-test-and-validate:
     name: Run tests and validation
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write
       contents: read
