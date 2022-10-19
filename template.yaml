@@ -1024,6 +1024,22 @@ Resources:
               - kms:Decrypt
             Resource:
               - '{{resolve:ssm:SECURE_DOWNLOAD_DATABASE_KMS_KEY_ARN}}'
+          - Sid: AllowQueueSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+            - !GetAtt SendEmailQueue.Arn
+          - Sid: AllowQueueKmsAccess
+            Effect: Allow
+            Action:
+              - kms:GenerateDataKey
+              - kms:Encrypt
+            # For some reason, Decrypt is needed to add items to the queue.
+            # See here for some discussion of this: https://github.com/aws/aws-cdk/issues/6609
+              - kms:Decrypt
+            Resource:
+            - !GetAtt QueueKmsKey.Arn
       ReservedConcurrentExecutions: 10
 
   InitiateNotificationLogs:
