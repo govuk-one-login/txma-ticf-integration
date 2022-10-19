@@ -439,6 +439,19 @@ Resources:
       LogGroupName: !Join ['', ['/aws/lambda/', !Ref ProcessDataRequestFunction]]
       RetentionInDays: 30
   
+  SendEmailQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SendEmailDeadLetterQueue.Arn
+        maxReceiveCount: 5
+  
+  SendEmailDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+  
   SendEmailRequestToNotifyFunction:
     #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
     #checkov:skip=CKV_AWS_117:VPC not required
@@ -450,6 +463,12 @@ Resources:
           NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifySecrets
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets 
       FunctionName: !Sub ${AWS::StackName}-send-email-request-to-notify
+      Events:
+        SendEmailEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SendEmailQueue.Arn
+            BatchSize: 1
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies: 
         - Statement:
@@ -934,6 +953,7 @@ Resources:
         Variables:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
+          EMAIL_SEND_QUEUE_URL: !Ref SendEmailQueue 
       FunctionName: !Sub ${AWS::StackName}-initiate-notification
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:

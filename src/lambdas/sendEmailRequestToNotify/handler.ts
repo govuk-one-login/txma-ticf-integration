@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent } from 'aws-lambda'
+import { SQSEvent } from 'aws-lambda'
 import { sendEmailToNotify } from './sendEmailToNotify'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { PersonalisationOptions } from '../../types/notify/personalisationOptions'
@@ -7,15 +7,9 @@ import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import { notifyCopy } from '../../constants/notifyCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
 
-// event type is a placeholder
-export const handler = async (event: APIGatewayProxyEvent) => {
-  if (!event.body) {
-    throw Error(interpolateTemplate('missingEventBody', notifyCopy))
-  }
-  const requestDetails: PersonalisationOptions = tryParseJSON(event.body)
-  if (!requestDetails.zendeskId) {
-    throw Error(interpolateTemplate('zendeskTicketIdMissing', notifyCopy))
-  }
+export const handler = async (event: SQSEvent) => {
+  const requestDetails = parseRequestDetails(event)
+
   if (isEventBodyInvalid(requestDetails)) {
     await closeZendeskTicket(
       requestDetails.zendeskId,
@@ -40,6 +34,24 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       interpolateTemplate('resultNotEmailed', notifyCopy)
     )
   }
+}
+
+const parseRequestDetails = (event: SQSEvent) => {
+  if (!event.Records.length) {
+    throw Error('No records found in event')
+  }
+
+  const eventBody = event.Records[0].body
+  if (!eventBody) {
+    throw Error(interpolateTemplate('missingEventBody', notifyCopy))
+  }
+
+  const requestDetails: PersonalisationOptions = tryParseJSON(eventBody)
+  if (!requestDetails.zendeskId) {
+    throw Error(interpolateTemplate('zendeskTicketIdMissing', notifyCopy))
+  }
+
+  return requestDetails
 }
 
 const isEventBodyInvalid = (requestDetails: PersonalisationOptions) => {

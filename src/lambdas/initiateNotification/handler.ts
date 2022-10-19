@@ -14,11 +14,11 @@ export const handler = async (
   const athenaQueryId = queryDetails.queryExecutionId
 
   const requestData = await getQueryByAthenaQueryId(athenaQueryId)
-  const zendeskId = requestData.requestInfo.zendeskId
+  const zendeskTicketId = requestData.requestInfo.zendeskId
 
   console.log(requestData)
 
-  await confirmQueryState(queryDetails, zendeskId)
+  await confirmQueryState(queryDetails, zendeskTicketId)
 
   const recipientName = requestData.requestInfo.recipientName
   const recipientEmail = requestData.requestInfo.recipientEmail
@@ -29,10 +29,9 @@ export const handler = async (
   await queueSendResultsReadyEmail({
     downloadHash,
     recipientEmail,
-    recipientName
+    recipientName,
+    zendeskTicketId
   })
-
-  console.log(`Signed link being sent to ${recipientName} at ${recipientEmail}`)
 }
 
 const confirmQueryState = async (

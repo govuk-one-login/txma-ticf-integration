@@ -1,4 +1,3 @@
-import { defaultApiRequest } from '../../utils/tests/events/defaultApiRequest'
 import {
   TEST_NOTIFY_EMAIL,
   TEST_NOTIFY_NAME,
@@ -8,6 +7,7 @@ import {
 import { handler } from './handler'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { sendEmailToNotify } from './sendEmailToNotify'
+import { constructSqsEvent } from '../../utils/tests/events/sqsEvent'
 
 jest.mock('./sendEmailToNotify', () => ({
   sendEmailToNotify: jest.fn()
@@ -34,10 +34,7 @@ const validEventBody = `{
       "signedUrl": "${TEST_SIGNED_URL}"
     }`
 const callHandlerWithBody = async (customBody: string) => {
-  await handler({
-    ...defaultApiRequest,
-    body: customBody
-  })
+  await handler(constructSqsEvent(customBody))
 }
 
 describe('initiate sendEmailRequest handler', () => {
@@ -64,6 +61,13 @@ describe('initiate sendEmailRequest handler', () => {
       'closed'
     )
   })
+
+  it('throws an error when no event records are in the SQSEvent object', async () => {
+    await expect(handler({ Records: [] })).rejects.toThrow(
+      'No records found in event'
+    )
+  })
+
   it('throws an error when no event body is present', async () => {
     const invalidEventBody = ''
 

@@ -20,6 +20,7 @@ export const MOCK_INITIATE_DATA_REQUEST_QUEUE_URL =
 export const MOCK_INITIATE_ATHENA_QUERY_QUEUE_URL =
   'https://initiate_athena_query_queue_'
 export const MOCK_TERMINATED_JOB_QUEUE_URL = 'https://terminate_job_queue_'
+export const MOCK_SEND_EMAIL_QUEUE_URL = 'https://send_email_queue'
 export const TEST_ZENDESK_SECRET_NAME = 'myZendeskSecretName'
 export const TEST_NOTIFY_SECRET_NAME = 'myNotifySecretName'
 export const TEST_NOTIFY_EMAIL = 'test@email.com'
@@ -54,3 +55,4 @@ export const TEST_ZENDESK_FIELD_ID_SESSION_IDS = 8
 export const TEST_ZENDESK_FIELD_ID_USER_IDS = 9
 export const TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL = 10
 export const TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME = 11
+export const TEST_DOWNLOAD_HASH = 'myDownloadHash'
