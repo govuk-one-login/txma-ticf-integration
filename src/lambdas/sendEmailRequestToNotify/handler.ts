@@ -8,6 +8,7 @@ import { notifyCopy } from '../../constants/notifyCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
 
 export const handler = async (event: SQSEvent) => {
+  console.log('received event', JSON.stringify(event, null, 2))
   const requestDetails = parseRequestDetails(event)
 
   if (isEventBodyInvalid(requestDetails)) {

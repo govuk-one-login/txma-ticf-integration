@@ -9,6 +9,7 @@ import { writeOutSecureDownloadRecord } from './writeOutSecureDownloadRecord'
 export const handler = async (
   event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>
 ): Promise<void> => {
+  console.log('received event', JSON.stringify(event, null, 2))
   const queryDetails = event.detail
 
   const athenaQueryId = queryDetails.queryExecutionId
