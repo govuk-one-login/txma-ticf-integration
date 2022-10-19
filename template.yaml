@@ -1018,6 +1018,12 @@ Resources:
               - dynamodb:PutItem
             Resource:
               - '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_ARN}}'
+          - Sid: SecureDownloadDatabaseKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - {{resolve:ssm:SECURE_DOWNLOAD_DATABASE_KMS_KEY_ARN}}
       ReservedConcurrentExecutions: 10
 
   InitiateNotificationLogs:
