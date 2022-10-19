@@ -490,6 +490,12 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SecretsKmsKey.Arn
+          - Sid: KmsQueueAllowDecrypt
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt QueueKmsKey.Arn
       ReservedConcurrentExecutions: 10
 
   SendEmailRequestToNotifyLogs:
