@@ -491,7 +491,6 @@ Resources:
             Resource:
               - !GetAtt SecretsKmsKey.Arn
       ReservedConcurrentExecutions: 10
-      Timeout: 900
 
   SendEmailRequestToNotifyLogs:
     Type: AWS::Logs::LogGroup
