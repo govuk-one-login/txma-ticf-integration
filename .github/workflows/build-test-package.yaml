@@ -36,8 +36,10 @@ jobs:
         with:
           aws-region: ${{ env.REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_VALIDATE_ROLE_ARN }}
-      - name: Install Yarn v3
+      - name: Node - Enable Corepack
         run: corepack enable
+      - name: Install ESBuild binaries
+        run: yarn unplug
       - name: Run linting
         if: always()
         run: yarn lint
@@ -46,7 +48,8 @@ jobs:
         run: yarn test
       - name: Build Lambda functions
         if: always()
-        run: yarn build
+        run: |
+          yarn build
       - name: Validate SAM template
         if: always()
         run: sam validate --config-env build
