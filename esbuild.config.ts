@@ -40,7 +40,6 @@ esbuild
     logLevel: 'info',
     minify: true,
     platform: 'node',
-    // plugins: [pnpPlugin()],
     outdir: 'dist',
     sourcesContent: false,
     sourcemap: 'inline',
