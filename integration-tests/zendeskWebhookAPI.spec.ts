@@ -2,7 +2,7 @@ import axios from 'axios'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import { generateZendeskRequestDate } from './utils/helpers'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
-import { validRequestData } from './constants/requestData'
+import { validApiTestRequestData } from './constants/requestData'
 import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME,
@@ -78,7 +78,7 @@ describe('Zendesk ticket check', () => {
   let ticketId: string
 
   beforeAll(async () => {
-    ticketId = await createZendeskTicket(validRequestData)
+    ticketId = await createZendeskTicket(validApiTestRequestData)
   })
 
   afterAll(async () => {

@@ -235,7 +235,7 @@ describe('checkDataTransferStatus', () => {
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
     expect(console.log).toHaveBeenLastCalledWith(
-      'Restore/copy process complete. Placing zendeskId on InitiateAthenaQueryQueue'
+      `Restore/copy process complete. Placing zendeskId '${ZENDESK_TICKET_ID}' on InitiateAthenaQueryQueue`
     )
     expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
   })
