@@ -2,13 +2,15 @@ import { cloudWatchLogsClient } from './cloudWatchLogsClient'
 import {
   DescribeLogStreamsCommand,
   LogStream,
-  FilterLogEventsCommand
+  FilterLogEventsCommand,
+  FilteredLogEvent
 } from '@aws-sdk/client-cloudwatch-logs'
+import { pause } from '../helpers'
 
 export const getCloudWatchLogEventsGroupByMessagePattern = async (
   logGroupName: string,
   eventMessagePatterns: string[],
-  maxAttempts = 30
+  maxAttempts = 50
 ) => {
   const event = await waitForEventWithPatterns(
     logGroupName,
@@ -109,6 +111,24 @@ const waitForEventWithPatterns = async (
   }
 }
 
-const pause = (delay: number): Promise<unknown> => {
-  return new Promise((r) => setTimeout(r, delay))
+export const assertEventPresent = (
+  logEvents: FilteredLogEvent[],
+  message: string
+) => {
+  const eventPresent = logEvents.some((event) =>
+    event.message?.includes(message)
+  )
+  console.log('message', message)
+  expect(eventPresent).toEqual(true)
+}
+
+export const assertEventNotPresent = (
+  logEvents: FilteredLogEvent[],
+  message: string
+) => {
+  const eventPresent = logEvents.some((event) =>
+    event.message?.includes(message)
+  )
+  console.log('message', message)
+  expect(eventPresent).toEqual(false)
 }
