@@ -16,9 +16,25 @@ import {
   ZENDESK_PII_FORM_ID
 } from './zendeskParameters'
 
+const generateSubjectLine = () => {
+  const fixedSubjectLine = process.env.FIXED_SUBJECT_LINE
+  if (fixedSubjectLine) {
+    return fixedSubjectLine
+  }
+  return `Integration Test Request - ${generateRandomNumber()}`
+}
+
+const generateEventIds = () => {
+  const overrideEventIds = process.env.OVERRIDE_EVENT_IDS
+  if (overrideEventIds) {
+    return overrideEventIds
+  }
+  return TEST_DATA_EVENT_ID
+}
+
 export const validRequestData: ZendeskRequestData = {
   request: {
-    subject: `Integration Test Request - ` + generateRandomNumber(),
+    subject: generateSubjectLine(),
     ticket_form_id: ZENDESK_PII_FORM_ID,
     custom_fields: [
       {
@@ -27,7 +43,7 @@ export const validRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
-        value: TEST_DATA_EVENT_ID
+        value: generateEventIds()
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
@@ -39,11 +55,15 @@ export const validRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: TEST_DATA_DATA_PATHS
+        value: process.env.DATA_PATHS
+          ? process.env.DATA_PATHS
+          : TEST_DATA_DATA_PATHS
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: process.env.FIXED_RECIPIENT_EMAIL
+          ? process.env.FIXED_RECIPIENT_EMAIL
+          : ZENDESK_END_USER_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
