@@ -22,7 +22,7 @@ const generateSubjectLine = () => {
   if (fixedSubjectLine) {
     return fixedSubjectLine
   }
-  return `Integration Test Request - ` + generateRandomNumber()
+  return `Integration Test Request - ${generateRandomNumber()}`
 }
 
 const generateEventIds = () => {
