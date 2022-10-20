@@ -28,7 +28,7 @@ export const handler = async (event: SQSEvent) => {
   } catch (error) {
     console.error(
       interpolateTemplate('requestNotSentToNotify', loggingCopy),
-      error
+      JSON.stringify(error)
     )
     await closeZendeskTicket(
       requestDetails.zendeskId,
