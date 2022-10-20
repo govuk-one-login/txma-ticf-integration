@@ -10,6 +10,10 @@ import {
 } from './constants/zendeskParameters'
 import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
 import { generateSignatureHeaders } from './utils/zendesk/generateSignatureHeaders'
+import {
+  TEST_DATA_DATA_PATHS,
+  TEST_DATA_EVENT_ID
+} from './constants/awsParameters'
 
 const webhookUrl = `${ZENDESK_WEBHOOK_API_BASE_URL}/zendesk-webhook`
 
@@ -22,14 +26,12 @@ const defaultWebhookRequestData: ZendeskWebhookRequest = {
   dateFrom: generateZendeskRequestDate(-60),
   dateTo: generateZendeskRequestDate(-60),
   identifierType: 'event_id',
-  eventIds:
-    'c9e2bf44-b95e-4f9a-81c4-cf02d42c1555 c9e2bf44-b95e-4f9a-81c4-cf02d42cabcd',
+  eventIds: TEST_DATA_EVENT_ID,
   piiTypes: 'drivers_license',
   sessionIds: '',
   journeyIds: '',
   userIds: '',
-  dataPaths:
-    'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3'
+  dataPaths: TEST_DATA_DATA_PATHS
 }
 
 const sendWebhook = async (

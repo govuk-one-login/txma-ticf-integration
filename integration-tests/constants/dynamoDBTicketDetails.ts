@@ -1,3 +1,5 @@
+import { TEST_DATA_DATA_PATHS } from './awsParameters'
+
 export const dynamoDBTicketDetails = {
   ticket: {
     id: 1520,
@@ -79,8 +81,7 @@ export const dynamoDBTicketDetails = {
       { id: 6150527091484, value: null },
       {
         id: 5698447116060,
-        value:
-          'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3'
+        value: TEST_DATA_DATA_PATHS
       },
       { id: 6150149933852, value: null },
       { id: 6151420423452, value: null },
@@ -209,8 +210,7 @@ export const dynamoDBTicketDetails = {
       { id: 6150527091484, value: null },
       {
         id: 5698447116060,
-        value:
-          'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3'
+        value: TEST_DATA_DATA_PATHS
       },
       { id: 6150149933852, value: null },
       { id: 6151420423452, value: null },
