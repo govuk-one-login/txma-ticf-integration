@@ -48,8 +48,7 @@ jobs:
         run: yarn test
       - name: Build Lambda functions
         if: always()
-        run: |
-          yarn build
+        run: yarn build
       - name: Validate SAM template
         if: always()
         run: sam validate --config-env build
