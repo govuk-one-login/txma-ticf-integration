@@ -41,16 +41,16 @@ export const createQuerySql = (
 
   const queryString = `SELECT event_id, ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
 
-  const formattedDateFrom = formatDateFrom(requestData.dateFrom)
-  const formattedDateTo = formatDateTo(requestData.dateTo)
-
-  identifiers.push(formattedDateFrom)
-  identifiers.push(formattedDateTo)
+  const queryParameters = generateQueryParameters(
+    identifiers,
+    requestData.dateFrom,
+    requestData.dateTo
+  )
 
   return {
     sqlGenerated: true,
     sql: queryString,
-    queryParameters: identifiers
+    queryParameters: queryParameters
   }
 }
 
@@ -108,6 +108,17 @@ const formatWhereStatment = (
   }
 
   return `${identifierType} IN (${whereStatementsArray.join(', ')})`
+}
+
+const generateQueryParameters = (
+  identifiers: string[],
+  dateFrom: string,
+  dateTo: string
+): string[] => {
+  const queryParameters = identifiers
+  queryParameters.push(formatDateFrom(dateFrom))
+  queryParameters.push(formatDateTo(dateTo))
+  return queryParameters
 }
 
 const formatDateFrom = (dateFrom: string): string => {
