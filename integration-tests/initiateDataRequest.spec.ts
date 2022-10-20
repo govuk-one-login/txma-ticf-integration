@@ -1,4 +1,8 @@
-import { getCloudWatchLogEventsGroupByMessagePattern } from './utils/aws/cloudWatchGetLogs'
+import {
+  assertEventNotPresent,
+  assertEventPresent,
+  getCloudWatchLogEventsGroupByMessagePattern
+} from './utils/aws/cloudWatchGetLogs'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
@@ -34,28 +38,6 @@ describe('Submit a PII request with approved ticket data', () => {
   const SQS_EVENT_RECEIVED_MESSAGE = 'Handling data request SQS event'
   const WEBHOOK_INVALID_MESSAGE = 'Zendesk request was invalid'
   const WEBHOOK_RECEIVED_MESSAGE = 'received Zendesk webhook'
-
-  const assertEventPresent = (
-    logEvents: FilteredLogEvent[],
-    message: string
-  ) => {
-    const eventPresent = logEvents.some((event) =>
-      event.message?.includes(message)
-    )
-    console.log('message', message)
-    expect(eventPresent).toEqual(true)
-  }
-
-  const assertEventNotPresent = (
-    logEvents: FilteredLogEvent[],
-    message: string
-  ) => {
-    const eventPresent = logEvents.some((event) =>
-      event.message?.includes(message)
-    )
-    console.log('message', message)
-    expect(eventPresent).toEqual(false)
-  }
 
   const assertZendeskCommentPresent = async (
     ticketId: string,

@@ -22,12 +22,14 @@ const defaultWebhookRequestData: ZendeskWebhookRequest = {
   dateFrom: generateZendeskRequestDate(-60),
   dateTo: generateZendeskRequestDate(-60),
   identifierType: 'event_id',
-  eventIds: '637783 3256',
+  eventIds:
+    'c9e2bf44-b95e-4f9a-81c4-cf02d42c1555 c9e2bf44-b95e-4f9a-81c4-cf02d42cabcd',
   piiTypes: 'drivers_license',
   sessionIds: '',
   journeyIds: '',
   userIds: '',
-  dataPaths: ''
+  dataPaths:
+    'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3'
 }
 
 const sendWebhook = async (
@@ -92,7 +94,6 @@ describe('Zendesk ticket check', () => {
     const headers = {
       ...generateSignatureHeaders(webhookRequestData)
     }
-
     const response = await sendWebhook(headers, webhookRequestData)
     expect(response.status).toEqual(200)
     expect(response.data.message).toEqual('data transfer initiated')
