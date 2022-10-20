@@ -21,7 +21,9 @@ const checkEnvironmentVariablesSet = (environmentVariables: string[]) =>
 
 const checkRequiredEnvironmentVariableSet = (environmentVariable: string) => {
   if (!process.env[environmentVariable]) {
-    throw new Error(`Must set ${environmentVariable} when calling this utility`)
+    throw new Error(
+      `Must set the environment variable ${environmentVariable} in your shell when calling this utility`
+    )
   }
 }
 
