@@ -59,7 +59,7 @@ describe('initiate athena query handler', () => {
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
-      idParameters: ['123']
+      queryParameters: ['123']
     })
     mockUpdateQueryByZendeskId.mockResolvedValue('test db return object')
     mockStartQueryExecution.mockResolvedValue({
@@ -74,7 +74,7 @@ describe('initiate athena query handler', () => {
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
       sqlGenerated: true,
       sql: 'test sql string',
-      idParameters: ['123']
+      queryParameters: ['123']
     })
     expect(mockUpdateQueryByZendeskId).toHaveBeenCalledWith(
       testZendeskId,
@@ -146,7 +146,7 @@ describe('initiate athena query handler', () => {
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
-      idParameters: ['123']
+      queryParameters: ['123']
     })
     mockStartQueryExecution.mockResolvedValue({
       queryExecuted: false,
@@ -164,7 +164,7 @@ describe('initiate athena query handler', () => {
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
       sqlGenerated: true,
       sql: 'test sql string',
-      idParameters: ['123']
+      queryParameters: ['123']
     })
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       testZendeskId,
