@@ -1,6 +1,5 @@
 export const dynamoDBTicketDetails = {
   ticket: {
-    url: 'https://govuk1620731396.zendesk.com/api/v2/tickets/1520.json',
     id: 1520,
     external_id: null,
     via: {

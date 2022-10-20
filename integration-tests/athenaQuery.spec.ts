@@ -5,12 +5,11 @@ import {
 } from './utils/aws/dynamoDB'
 import { addMessageToQueue } from './utils/aws/sqs'
 import {
-  getCloudWatchLogEventsGroupByMessagePattern,
-  isLogPresent
+  assertEventPresent,
+  getCloudWatchLogEventsGroupByMessagePattern
 } from './utils/aws/cloudWatchGetLogs'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { validRequestData } from './constants/requestData'
-import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import {
   INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP,
   INITIATE_ATHENA_QUERY_QUEUE_URL
@@ -21,7 +20,7 @@ import { generateRandomNumber } from './utils/helpers'
 //TODO: add test for request without data paths when TT2-76 has been implemented
 
 describe('Athena Query SQL generation and execution', () => {
-  jest.setTimeout(60000)
+  jest.setTimeout(90000)
 
   describe('Query SQL generation and execution successful', () => {
     const randomTicketId = (Number(generateRandomNumber()) * 1000).toString()
@@ -51,15 +50,9 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      expect(
-        isLogPresent(athenaQueryEvents, GENERATING_ATHENA_SQL_MESSAGE)
-      ).toBe(true)
-      expect(
-        isLogPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
-      ).toBe(true)
-      expect(
-        isLogPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
-      ).toBe(true)
+      assertEventPresent(athenaQueryEvents, GENERATING_ATHENA_SQL_MESSAGE)
+      assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
+      assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
       //Athena query id should now be in dynamodb
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
@@ -72,7 +65,6 @@ describe('Athena Query SQL generation and execution', () => {
 
     beforeAll(async () => {
       ticketId = await createZendeskTicket(validRequestData)
-      await approveZendeskTicket(ticketId)
     })
 
     afterAll(async () => {
@@ -92,16 +84,14 @@ describe('Athena Query SQL generation and execution', () => {
             ATHENA_EVENT_HANDLER_MESSAGE,
             'body',
             ticketId,
-            'ApproximateReceiveCount',
-            '2'
+            `ApproximateReceiveCount\\":`,
+            `\\"2\\"`
           ]
         )
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      expect(isLogPresent(athenaQueryEvents, ATHENA_HANDLER_INVOKE_ERROR)).toBe(
-        true
-      )
+      assertEventPresent(athenaQueryEvents, ATHENA_HANDLER_INVOKE_ERROR)
     })
   })
 })

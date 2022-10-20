@@ -72,7 +72,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     !glacierRestoreStillInProgress
   ) {
     console.log(
-      'Restore/copy process complete. Placing zendeskId on InitiateAthenaQueryQueue'
+      `Restore/copy process complete. Placing zendeskId '${zendeskId}' on InitiateAthenaQueryQueue`
     )
     await sendInitiateAthenaQueryMessage(zendeskId)
   }
