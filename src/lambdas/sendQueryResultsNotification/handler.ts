@@ -10,14 +10,12 @@ export const handler = async (
   event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>
 ): Promise<void> => {
   console.log('received event', JSON.stringify(event, null, 2))
-  const queryDetails = event.detail
 
+  const queryDetails = event.detail
   const athenaQueryId = queryDetails.queryExecutionId
 
   const requestData = await getQueryByAthenaQueryId(athenaQueryId)
   const zendeskTicketId = requestData.requestInfo.zendeskId
-
-  console.log(requestData)
 
   await confirmQueryState(queryDetails, zendeskTicketId)
 
@@ -44,8 +42,6 @@ const confirmQueryState = async (
   if (queryState == 'CANCELLED' || queryState == 'FAILED') {
     const message = `Athena Query ${queryDetails.queryExecutionId} did not complete with status: ${queryState}`
     await updateZendeskTicketById(zendeskId, message, 'closed')
-    return
+    throw Error(message)
   }
-
-  return
 }
