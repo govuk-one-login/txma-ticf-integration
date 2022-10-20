@@ -3,7 +3,11 @@ import {
   generateRandomNumber,
   generateZendeskRequestDate
 } from '../utils/helpers'
-import { INTEGRATION_TEST_DATE, TEST_DATA_EVENT_ID } from './awsParameters'
+import {
+  INTEGRATION_TEST_DATE,
+  TEST_DATA_DATA_PATHS,
+  TEST_DATA_EVENT_ID
+} from './awsParameters'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
@@ -34,8 +38,7 @@ export const validRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value:
-          'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3'
+        value: TEST_DATA_DATA_PATHS
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
@@ -115,7 +118,7 @@ export const validApiTestRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: ''
+        value: TEST_DATA_DATA_PATHS
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
