@@ -5,6 +5,7 @@ import {
 } from '../utils/helpers'
 import {
   INTEGRATION_TEST_DATE,
+  TEST_DATA_DATA_PATHS,
   INTEGRATION_TEST_DATE_GLACIER,
   TEST_DATA_EVENT_ID
 } from './awsParameters'
@@ -38,8 +39,7 @@ export const validRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value:
-          'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3'
+        value: TEST_DATA_DATA_PATHS
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
@@ -119,7 +119,7 @@ export const validApiTestRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: ''
+        value: TEST_DATA_DATA_PATHS
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
