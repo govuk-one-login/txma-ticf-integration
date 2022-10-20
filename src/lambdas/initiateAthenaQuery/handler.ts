@@ -66,7 +66,7 @@ const confirmQuerySqlGeneration = async (
 
   if (querySql.sql) {
     console.log(
-      `Athena SQL generated: ${querySql.sql}, parameters: ${querySql.idParameters}`
+      `Athena SQL generated: ${querySql.sql}, parameters: ${querySql.queryParameters}`
     )
   }
   return
