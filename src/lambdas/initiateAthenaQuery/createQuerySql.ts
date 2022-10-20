@@ -50,7 +50,7 @@ export const createQuerySql = (
   return {
     sqlGenerated: true,
     sql: queryString,
-    idParameters: identifiers
+    queryParameters: identifiers
   }
 }
 
@@ -113,13 +113,11 @@ const formatWhereStatment = (
 const formatDateFrom = (dateFrom: string): string => {
   const splitDateFrom = dateFrom.split('-')
   splitDateFrom.push('00')
-  const formattedDateFrom = splitDateFrom.join('/')
-  return formattedDateFrom
+  return splitDateFrom.join('/')
 }
 
 const formatDateTo = (dateTo: string): string => {
   const splitDateTo = dateTo.split('-')
   splitDateTo.push('23')
-  const formattedDateTo = splitDateTo.join('/')
-  return formattedDateTo
+  return splitDateTo.join('/')
 }

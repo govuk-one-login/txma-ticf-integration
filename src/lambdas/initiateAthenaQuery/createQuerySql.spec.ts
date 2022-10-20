@@ -19,7 +19,7 @@ describe('create Query SQL', () => {
       expect(createQuerySql(dataPathsTestDataRequest)).toEqual({
         sqlGenerated: true,
         sql: `SELECT json_extract(restricted, '$.user.firstName') as user_firstname, json_extract(restricted, '$.user.lastName') as user_lastname FROM test_database.test_table WHERE ${id} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
-        idParameters: [
+        queryParameters: [
           `123${idExtension}`,
           `456${idExtension}`,
           TEST_FORMATTED_DATE_FROM,
