@@ -149,7 +149,7 @@ describe('initiate sendEmailRequest handler', () => {
 
     expect(console.error).toHaveBeenCalledWith(
       'Could not send a request to Notify: ',
-      JSON.stringify(Error('A Notify related error'))
+      Error('A Notify related error')
     )
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
@@ -189,7 +189,7 @@ describe('initiate sendEmailRequest handler', () => {
     expect(console.error).toHaveBeenNthCalledWith(
       1,
       'Could not send a request to Notify: ',
-      JSON.stringify(Error('A Notify related error'))
+      Error('A Notify related error')
     )
     expect(console.error).toHaveBeenLastCalledWith(
       'Could not update Zendesk ticket: ',

@@ -6,6 +6,7 @@ import { tryParseJSON } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import { notifyCopy } from '../../constants/notifyCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
+import { NotifyError } from '../../types/notify/notifyError'
 
 export const handler = async (event: SQSEvent) => {
   console.log('received event', JSON.stringify(event, null, 2))
@@ -27,14 +28,27 @@ export const handler = async (event: SQSEvent) => {
     )
   } catch (error) {
     console.error(
-      interpolateTemplate('requestNotSentToNotify', loggingCopy),
-      JSON.stringify(error)
+      `${interpolateTemplate(
+        'requestNotSentToNotify',
+        loggingCopy
+      )}${formatNotifyErrors(error)}`,
+      error
     )
     await closeZendeskTicket(
       requestDetails.zendeskId,
       interpolateTemplate('resultNotEmailed', notifyCopy)
     )
   }
+}
+
+const formatNotifyErrors = (error: unknown): string => {
+  const notifyError = error as NotifyError
+  const firstNotifyError = notifyError?.response?.data?.errors[0]
+  if (firstNotifyError) {
+    return firstNotifyError
+  }
+
+  return ''
 }
 
 const parseRequestDetails = (event: SQSEvent) => {
