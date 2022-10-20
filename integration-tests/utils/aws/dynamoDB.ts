@@ -101,14 +101,15 @@ export const populateDynamoDBWithTestItemDetails = async (ticketID: string) => {
     }
   }
 
-  let data = null
   try {
-    data = await dynamoDBClient.send(new PutItemCommand(populateTableParams))
+    const data = await dynamoDBClient.send(
+      new PutItemCommand(populateTableParams)
+    )
+    expect(data?.Attributes?.zendeskId).not.toEqual(ticketID)
   } catch (error) {
     console.log(error)
     throw 'Error populating dynamoDB'
   }
-  expect(data?.Attributes?.zendeskId).not.toEqual(ticketID)
 }
 
 function getFieldListValues(ticketDetails: { fields: any[] }, fieldID: number) {
