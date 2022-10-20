@@ -23,6 +23,28 @@ export const getDatabaseEntryByZendeskId = async (
   return parseDatabaseItem(data?.Item)
 }
 
+export const getQueryByAthenaQueryId = async (
+  athenaQueryId: string
+): Promise<DataRequestDatabaseEntry> => {
+  const params = {
+    TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
+    KeyConditionExpression: '#attribute = :value',
+    IndexName: 'athenaQueryIdIndex',
+    ProjectionExpression: 'zendeskId, athenaQueryId, requestInfo',
+    ExpressionAttributeNames: { '#attribute': 'athenaQueryId' },
+    ExpressionAttributeValues: { ':value': { S: `${athenaQueryId}` } }
+  }
+
+  const data = await ddbClient.send(new QueryCommand(params))
+  if (!data?.Items?.length) {
+    throw new Error(
+      `No data returned from db for athenaQueryId: ${athenaQueryId}`
+    )
+  }
+
+  return parseDatabaseItem(data.Items[0])
+}
+
 const parseDatabaseItem = (item: Record<string, AttributeValue>) => {
   const responseObject = item?.requestInfo?.M
 
@@ -61,26 +83,4 @@ const retrieveNumericValue = (
 ): number | undefined => {
   const numericValueAsString = attributeValue?.N
   return numericValueAsString ? parseInt(numericValueAsString) : undefined
-}
-
-export const getQueryByAthenaQueryId = async (
-  athenaQueryId: string
-): Promise<DataRequestDatabaseEntry> => {
-  const params = {
-    TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
-    KeyConditionExpression: '#attribute = :value',
-    IndexName: 'athenaQueryIdIndex',
-    ProjectionExpression: 'zendeskId, athenaQueryId, requestInfo',
-    ExpressionAttributeNames: { '#attribute': 'athenaQueryId' },
-    ExpressionAttributeValues: { ':value': { S: `${athenaQueryId}` } }
-  }
-
-  const data = await ddbClient.send(new QueryCommand(params))
-  if (!data.Items) {
-    throw new Error(
-      `No data returned from db for athenaQueryId: ${athenaQueryId}`
-    )
-  }
-
-  return parseDatabaseItem(data.Items[0])
 }
