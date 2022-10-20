@@ -945,15 +945,15 @@ Resources:
       State: 'ENABLED'
       Targets:
         -
-          Arn: !GetAtt InitiateNotificationFunction.Arn
+          Arn: !GetAtt SendQueryResultsNotificationFunction.Arn
           Id: AthenaEventTarget
 
-  InitiateNotificationFunction:
+  SendQueryResultsNotificationFunction:
     #checkov:skip=CKV_AWS_116:Not triggered by SQS
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
-      Handler: initiateNotification.handler
+      Handler: sendQueryResultsNotification.handler
       Environment:
         Variables:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
@@ -962,7 +962,7 @@ Resources:
           EMAIL_SEND_QUEUE_URL: !Ref SendEmailQueue
           SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SECURE_DOWNLOAD_WEBSITE_BASE_PATH}}'
           QUERY_RESULTS_BUCKET_NAME: !Ref QueryResultsBucket
-      FunctionName: !Sub ${AWS::StackName}-initiate-notification
+      FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
         - Statement:
@@ -1048,17 +1048,17 @@ Resources:
             - !GetAtt QueueKmsKey.Arn
       ReservedConcurrentExecutions: 10
 
-  InitiateNotificationLogs:
+  SendQueryResultsNotificationLogs:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateNotificationFunction]]
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref SendQueryResultsNotificationFunction]]
       RetentionInDays: 30
 
   PermissionForAthenaEventToInvokeLambda:
     Type: AWS::Lambda::Permission
     Properties:
-      FunctionName: !Ref InitiateNotificationFunction
+      FunctionName: !Ref SendQueryResultsNotificationFunction
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt AthenaEBRule.Arn
