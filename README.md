@@ -55,6 +55,29 @@ process.env.PROCESS_DATA_REQUEST_LAMBA_LOG_GROUP_NAME = '(get from AWS console)'
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
 
+### Creating and approving a Zendesk ticket
+
+Obviously, you can use the Zendesk UI to do this, but it can be a bit clunky to do this manually, especially if you need to repeat the process a few times.
+There is therefore a script built-in to our `package.json` that you can run, as follows
+
+Firstly, you'll need to set some environment variables in your shell (e.g. in your `.zshrc`). They cross over with those in `.integration.test.env`, but you don't need as many. Set the following
+
+```
+export ZENDESK_API_KEY='(check with Test team/Tech lead)'
+export ZENDESK_BASE_URL='(value in Team Test Confluence)'
+export ZENDESK_END_USER_EMAIL='(value in Team Test Confluence)'
+export ZENDESK_AGENT_EMAIL='(value in Team Test Confluence)'
+export ZENDESK_ADMIN_EMAIL='(value in Team Test Confluence)'
+```
+
+You then run
+
+```
+yarn createTestTicket <recipient email address> <data date, e.g. 2022-09-01> "<Subject line for ticket>" "<space-separated event ids e.g. c9e2bf44-b95e-4f9a-81c4-cf02d42c1552>" "<space-separated data paths, e.g. restricted.address>"
+```
+
+and the utility will create and approve a Zendesk ticket for you.
+
 ## Running Zendesk webhook locally
 
 1. `yarn build` - This will make a build of the code which the SAM template refers to

@@ -56,11 +56,13 @@ export const validRequestData: ZendeskRequestData = {
       },
       {
         id: PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: ''
+        value: process.env.DATA_PATHS ? process.env.DATA_PATHS : ''
       },
       {
         id: PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: process.env.FIXED_RECIPIENT_EMAIL
+          ? process.env.FIXED_RECIPIENT_EMAIL
+          : ZENDESK_END_USER_EMAIL
       },
       {
         id: PII_FORM_IDENTIFIER_RECEIPIENT_NAME,
