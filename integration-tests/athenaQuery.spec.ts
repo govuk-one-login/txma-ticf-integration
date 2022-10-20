@@ -56,7 +56,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       //Athena query id should now be in dynamodb
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
-      expect(value!.athenaQueryId.S).toBeDefined()
+      expect(value?.athenaQueryId.S).toBeDefined()
     })
   })
 
