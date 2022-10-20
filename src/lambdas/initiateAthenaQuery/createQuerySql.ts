@@ -39,7 +39,7 @@ export const createQuerySql = (
     'ATHENA_TABLE_NAME'
   )}`
 
-  const queryString = `SELECT ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
+  const queryString = `SELECT event_id, ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
 
   const formattedDateFrom = formatDateFrom(requestData.dateFrom)
   const formattedDateTo = formatDateTo(requestData.dateTo)
