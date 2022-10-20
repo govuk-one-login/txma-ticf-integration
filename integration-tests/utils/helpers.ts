@@ -30,3 +30,7 @@ export const getEnv = (name: EnvironmentVar['name']) => {
 export const pause = (delay: number): Promise<unknown> => {
   return new Promise((r) => setTimeout(r, delay))
 }
+
+export const appendRandomIdToFilename = (fileName: string) => {
+  return fileName.replace('.gz', '') + Math.round(Math.random() * 100000)
+}
