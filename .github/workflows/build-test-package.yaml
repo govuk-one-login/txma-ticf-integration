@@ -64,6 +64,7 @@ jobs:
           name: sam-build
           path: |
             dist/
+            samconfig.toml
             template.yaml
 
   check-yarn-cache:
