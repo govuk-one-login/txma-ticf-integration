@@ -904,8 +904,8 @@ Resources:
       AttributeDefinitions: 
         - AttributeName: "zendeskId"
           AttributeType: "S"
-        # - AttributeName: "athenaQueryId"
-        #   AttributeType: "S"
+        - AttributeName: "athenaQueryId"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "zendeskId"
           KeyType: "HASH"
