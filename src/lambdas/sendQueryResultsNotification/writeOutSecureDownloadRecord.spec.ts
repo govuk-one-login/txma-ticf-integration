@@ -11,12 +11,20 @@ import {
   TEST_SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
+import { currentDateEpochMilliseconds } from '../../utils/currentDateEpochMilliseconds'
 import { writeOutSecureDownloadRecord } from './writeOutSecureDownloadRecord'
+import { when } from 'jest-when'
 import 'aws-sdk-client-mock-jest'
 
-const dynamoMock = mockClient(DynamoDBClient)
+jest.mock('../../utils/currentDateEpochMilliseconds', () => ({
+  currentDateEpochMilliseconds: jest.fn()
+}))
 
+const dynamoMock = mockClient(DynamoDBClient)
+const TEST_EPOCH_MILLISECONDS = 1666360736316
 describe('writeOutSecureDownloadRecord', () => {
+  when(currentDateEpochMilliseconds).mockReturnValue(TEST_EPOCH_MILLISECONDS)
+
   describe('addNewDataRequestRecord', () => {
     const basicRecordExpectation: PutItemCommandInput = {
       TableName: TEST_SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME,
@@ -25,7 +33,8 @@ describe('writeOutSecureDownloadRecord', () => {
         downloadsRemaining: { N: '3' },
         s3ResultsBucket: { S: TEST_QUERY_RESULTS_BUCKET },
         s3ResultsKey: { S: `${TEST_ATHENA_QUERY_ID}.csv` },
-        zendeskId: { S: ZENDESK_TICKET_ID }
+        zendeskId: { S: ZENDESK_TICKET_ID },
+        createdDate: { N: TEST_EPOCH_MILLISECONDS.toString() }
       }
     }
     it('should write a new secure download record', async () => {
