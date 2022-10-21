@@ -32,5 +32,7 @@ export const pause = (delay: number): Promise<unknown> => {
 }
 
 export const appendRandomIdToFilename = (fileName: string) => {
-  return fileName.replace('.gz', '') + Math.round(Math.random() * 100000)
+  return (
+    fileName.replace('.gz', '') + Math.round(Math.random() * 100000) + '.gz'
+  )
 }
