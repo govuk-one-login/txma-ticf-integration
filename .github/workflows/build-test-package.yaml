@@ -11,7 +11,6 @@ on:
   workflow_dispatch: {}
 
 env:
-  DEV_ARTIFACT_BUCKET: ${{ secrets.DEV_ARTIFACT_BUCKET }}
   REGION: eu-west-2
 
 jobs:
@@ -31,7 +30,7 @@ jobs:
           python-version: '3.8'
       - name: Setup SAM CLI
         uses: aws-actions/setup-sam@v2
-      - name: Assume AWS role
+      - name: Assume AWS Validate role
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: ${{ env.REGION }}
@@ -52,7 +51,7 @@ jobs:
       - name: Validate SAM template
         if: always()
         run: sam validate --config-env build
-      - name: Run checkov on SAM template
+      - name: Run Checkov on SAM template
         if: always()
         uses: bridgecrewio/checkov-action@master
         with:
@@ -105,18 +104,17 @@ jobs:
         with:
           aws-region: ${{ env.REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
-      - name: Deploy to feature stack in the testing account
+      - name: Deploy to feature stack in the dev account
         env:
+          DEV_ARTIFACT_BUCKET: ${{ secrets.DEV_ARTIFACT_BUCKET }}
           FEATURE_BRANCH_NAME: ${{ github.event.ref }}
         run: |
           stack_name=$(echo ${FEATURE_BRANCH_NAME##*/} | tr -cd '[a-zA-Z0-9-]' | tr '[:upper:]' '[:lower:]')
           sam deploy \
+            --config-env dev
             --stack-name ${stack_name:0:32} \
-            --capabilities CAPABILITY_IAM \
-            --region ${REGION} \
             --no-fail-on-empty-changeset \
-            --s3-bucket ${DEV_ARTIFACT_BUCKET} \
-            --parameter-overrides ParameterKey=Environment,ParameterValue=dev
+            --s3-bucket ${DEV_ARTIFACT_BUCKET}
 
   package-artifacts:
     name: Package artifacts for deployment
