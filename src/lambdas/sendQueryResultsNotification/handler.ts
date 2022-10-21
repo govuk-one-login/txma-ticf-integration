@@ -25,7 +25,11 @@ export const handler = async (
   const recipientEmail = requestData.requestInfo.recipientEmail
   const downloadHash = generateSecureDownloadHash()
 
-  await writeOutSecureDownloadRecord(athenaQueryId, downloadHash)
+  await writeOutSecureDownloadRecord(
+    athenaQueryId,
+    downloadHash,
+    zendeskTicketId
+  )
 
   await queueSendResultsReadyEmail({
     downloadHash,
