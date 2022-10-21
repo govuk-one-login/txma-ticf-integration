@@ -11,7 +11,7 @@
   "private": true,
   "scripts": {
     "build": "tsc --noEmit && ts-node ./esbuild.config.ts",
-    "lint": "prettier . --check ; eslint .",
+    "lint": "prettier . --check || exit 1 ; eslint . --max-warnings=0",
     "lint:fix": "prettier . --write ; eslint . --fix",
     "postinstall": "husky install",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
