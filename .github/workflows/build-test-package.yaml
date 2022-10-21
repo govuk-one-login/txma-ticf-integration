@@ -74,8 +74,10 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: Install Yarn v3
+      - name: Node - Enable Corepack
         run: corepack enable
+      - name: Install ESBuild binaries
+        run: yarn unplug
       - name: Check Yarn cache
         run: yarn install --immutable --immutable-cache --check-cache
 
