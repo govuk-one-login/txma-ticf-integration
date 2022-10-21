@@ -10,11 +10,12 @@ import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME
 } from '../../constants/zendeskParameters'
-import { dynamoDBTicketDetails } from '../../constants/dynamoDBTicketDetails'
+import { dynamoDBItemDetails } from '../../constants/dynamoDBItemDetails'
 import { dynamoDBClient } from './dynamoDBClient'
+import { ItemDetails } from '../../types/dynamoDBItem'
 
 export const populateDynamoDBWithTestItemDetails = async (ticketID: string) => {
-  const ticketDetails = dynamoDBTicketDetails.ticket
+  const ticketDetails = dynamoDBItemDetails.ticket
 
   const populateTableParams = {
     TableName: AUDIT_REQUEST_DYNAMODB,
@@ -101,24 +102,25 @@ export const populateDynamoDBWithTestItemDetails = async (ticketID: string) => {
     }
   }
 
-  let data = null
   try {
-    data = await dynamoDBClient.send(new PutItemCommand(populateTableParams))
+    const data = await dynamoDBClient.send(
+      new PutItemCommand(populateTableParams)
+    )
+    expect(data?.Attributes?.zendeskId).not.toEqual(ticketID)
   } catch (error) {
     console.log(error)
     throw 'Error populating dynamoDB'
   }
-  expect(data?.Attributes?.zendeskId).not.toEqual(ticketID)
 }
 
-function getFieldListValues(ticketDetails: { fields: any[] }, fieldID: number) {
+function getFieldListValues(ticketDetails: ItemDetails, fieldID: number) {
   const value = getFieldValue(ticketDetails, fieldID)
   if (value == null) {
     return []
   } else if (typeof value === 'string') {
     return value.split(' ').map((item: string) => ({ S: item }))
   } else if (value.constructor.name === 'Array') {
-    return getFieldValue(ticketDetails, fieldID).map((item: string) => ({
+    return value.map((item: string) => ({
       S: item
     }))
   } else {
@@ -126,13 +128,11 @@ function getFieldListValues(ticketDetails: { fields: any[] }, fieldID: number) {
   }
 }
 
-function getFieldValue(ticketDetails: { fields: any[] }, fieldID: number) {
-  const value = ticketDetails.fields
-    .filter((field: { id: number }) => {
-      return field.id === fieldID
-    })
-    .pop().value
-  return value
+function getFieldValue(ticketDetails: ItemDetails, fieldID: number) {
+  const field = ticketDetails.fields.filter((field) => {
+    return field.id === fieldID
+  })
+  return field.pop()?.value
 }
 
 export const getValueFromDynamoDB = async (
@@ -167,7 +167,7 @@ export const getValueFromDynamoDB = async (
     console.log(error)
   }
   expect(item?.Item).toBeDefined()
-  return item!.Item
+  return item?.Item
 }
 
 export const deleteDynamoDBTestItem = async (ticketID: string) => {
