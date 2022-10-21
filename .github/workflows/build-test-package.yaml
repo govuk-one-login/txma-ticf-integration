@@ -111,7 +111,7 @@ jobs:
         run: |
           stack_name=$(echo ${FEATURE_BRANCH_NAME##*/} | tr -cd '[a-zA-Z0-9-]' | tr '[:upper:]' '[:lower:]')
           sam deploy \
-            --config-env dev
+            --config-env dev \
             --stack-name ${stack_name:0:32} \
             --no-fail-on-empty-changeset \
             --s3-bucket ${DEV_ARTIFACT_BUCKET}

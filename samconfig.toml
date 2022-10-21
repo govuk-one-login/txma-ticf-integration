@@ -13,7 +13,6 @@ parameter_overrides=[
 
 [build.validate.parameters]
 region = "eu-west-2"
-stack_name = "ticf-integration"
 parameter_overrides=[
     "Environment=build"
 ]
