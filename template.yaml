@@ -23,19 +23,19 @@ Parameters:
     Default: none
 
 Conditions:
-  DeployS3Cleanup: !Equals [ !Ref Environment, dev]
-  IntegrationTests: !Equals [ !Ref Environment, dev]
-  UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
-  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
+  DeployS3Cleanup: !Equals [ !Ref Environment, dev ]
+  IntegrationTests: !Or [ !Equals [ !Ref Environment, dev ], !Equals [ !Ref Environment, staging ] ]
+  UseCodeSigning: !Not [ !Equals [!Ref CodeSigningConfigArn, none ] ]
+  UsePermissionsBoundary: !Not [ !Equals [!Ref PermissionsBoundary, none ] ]
 
 Globals:
   Function:
-    CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
+    CodeSigningConfigArn: !If [ UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue ]
     CodeUri: dist/
     Environment:
       Variables:
         NODE_OPTIONS: --enable-source-maps
-    PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
+    PermissionsBoundary: !If [ UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue ]
     Runtime: nodejs16.x
     Timeout: 15
   Api:
@@ -305,7 +305,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateDataRequestFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref InitiateDataRequestFunction ] ]
       RetentionInDays: 30
 
   ProcessDataRequestFunction:
@@ -349,7 +349,7 @@ Resources:
               Action:
                 - s3:PutObject
               Resource:
-                - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
+                - !Join [ '/', [ !GetAtt BatchJobManifestBucket.Arn, '*' ] ]
             - Sid: Logs
               Effect: Allow
               Action:
@@ -435,7 +435,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref ProcessDataRequestFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref ProcessDataRequestFunction ] ]
       RetentionInDays: 30
   
   SendEmailRequestToNotifyFunction:
@@ -477,7 +477,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref SendEmailRequestToNotifyFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref SendEmailRequestToNotifyFunction ] ]
       RetentionInDays: 30
 
   InitiateDataRequestQueue:
@@ -610,10 +610,10 @@ Resources:
             - Sid: AllowReadFromManifestBucket
               Effect: Allow
               Action:
-                -  "s3:GetObject"
-                -  "s3:GetObjectVersion"
+                -  s3:GetObject
+                -  s3:GetObjectVersion
               Resource:
-                - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
+                - !Join [ '/', [ !GetAtt BatchJobManifestBucket.Arn, '*' ] ]
       - PolicyName: AllowS3Copy
         PolicyDocument:
             Version: '2012-10-17'
@@ -625,7 +625,7 @@ Resources:
                 - s3:PutObjectAcl
                 - s3:PutObjectTagging
               Resource: 
-                - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+                - !Join [ '/', [ !GetAtt AnalysisBucket.Arn, '*' ] ]
             - Sid: AllowReadFromAuditBucket
               Effect: Allow
               Action: 
@@ -742,7 +742,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateAthenaQueryFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref InitiateAthenaQueryFunction ] ]
       RetentionInDays: 30
 
   #NOTE - This is a placeholder SQS queue which will be replaced - it is here to enable the Athena lambda to be created 
@@ -806,8 +806,8 @@ Resources:
     Properties:
       CatalogId: !Ref AWS::AccountId
       DatabaseInput:
-        Description: "TxMA - Event Message Analysis Database"
-        Name:  !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], !Sub "_${Environment}_analysis_database" ] ]
+        Description: TxMA - Event Message Analysis Database
+        Name:  !Join [ '', [ !Join [ '', !Split [ '-', !Ref AWS::StackName ] ], !Sub '_${Environment}_analysis_database' ] ]
 
   AuditAnalysisTable:
     Type: AWS::Glue::Table
@@ -815,8 +815,8 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       DatabaseName: !Ref AuditAnalysisDatabase
       TableInput:
-        Description: "Table contains event message data to be analysed"
-        Name: !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], !Sub "_${Environment}_analysis_table" ] ]
+        Description: Table contains event message data to be analysed
+        Name: !Join [ '', [ !Join [ '', !Split [ '-', !Ref AWS::StackName ] ], !Sub '_${Environment}_analysis_table' ] ]
         Parameters:
           has_encrypted_data: false
           projection.enabled: true
@@ -825,28 +825,28 @@ Resources:
           projection.datetime.format: 'yyyy/MM/dd/HH'
           projection.datetime.interval: 1
           projection.datetime.interval.unit: HOURS
-          storage.location.template: !Join ["", ["s3://", !Sub "${AWS::StackName}", !Sub "-${Environment}-analysis-bucket/firehose/${datetime}/" ]]
+          storage.location.template: !Join [ '', [ 's3://', !Ref AWS::StackName, '-', !Ref Environment, '-analysis-bucket/firehose/${datetime}/' ] ]
         PartitionKeys:
-          - {Name: "datetime", Type: string}
+          - { Name: "datetime", Type: string }
         StorageDescriptor:
           Columns:
-            - {Name: "event_id", Type: string}
-            - {Name: "client_id", Type: string}
-            - {Name: "timestamp", Type: bigint}
-            - {Name: "timestamp_formatted", Type: string}
-            - {Name: "event_name", Type: string}
-            - {Name: "component_id", Type: string}
-            - {Name: "user", Type: string}
-            - {Name: "platform", Type: string}
-            - {Name: "restricted", Type: string}
-            - {Name: "extensions", Type: string}
+            - { Name: "event_id", Type: string }
+            - { Name: "client_id", Type: string }
+            - { Name: "timestamp", Type: bigint }
+            - { Name: "timestamp_formatted", Type: string }
+            - { Name: "event_name", Type: string }
+            - { Name: "component_id", Type: string }
+            - { Name: "user", Type: string }
+            - { Name: "platform", Type: string }
+            - { Name: "restricted", Type: string }
+            - { Name: "extensions", Type: string }
           Compressed: true
-          InputFormat: "org.apache.hadoop.mapred.TextInputFormat"
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Sub s3://${AWS::StackName}-${Environment}-analysis-bucket/firehose/
-          OutputFormat: "org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat"
+          OutputFormat: org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat
           SerdeInfo:
-            Parameters: {"ignore.malformed.json": true,"serialiazation.format": 1,"field.delim":""}
-            SerializationLibrary: "org.openx.data.jsonserde.JsonSerDe"
+            Parameters: { "ignore.malformed.json": true, "serialiazation.format": 1, "field.delim": "" }
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
           StoredAsSubDirectories: false
         TableType: EXTERNAL_TABLE
 
@@ -861,27 +861,27 @@ Resources:
         PublishCloudWatchMetricsEnabled: false
         ResultConfiguration:
           EncryptionConfiguration:
-            EncryptionOption: "SSE_S3"
-          OutputLocation: !Join ['', ['s3://', !Ref QueryResultsBucket, '/'] ]
+            EncryptionOption: SSE_S3
+          OutputLocation: !Join [ '', [ 's3://', !Ref QueryResultsBucket, '/' ] ]
 
   QueryRequestDynamoDBTable: 
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions: 
-        - AttributeName: "zendeskId"
-          AttributeType: "S"
-        - AttributeName: "athenaQueryId"
-          AttributeType: "S"
+        - AttributeName: zendeskId
+          AttributeType: S
+        - AttributeName: athenaQueryId
+          AttributeType: S
       KeySchema:
-        - AttributeName: "zendeskId"
-          KeyType: "HASH"
+        - AttributeName: zendeskId
+          KeyType: HASH
       GlobalSecondaryIndexes:
         - IndexName: athenaQueryIdIndex
           KeySchema:
-            - AttributeName: "athenaQueryId"
-              KeyType: "HASH"
+            - AttributeName: athenaQueryId
+              KeyType: HASH
           Projection:
-            ProjectionType: "KEYS_ONLY"
+            ProjectionType: KEYS_ONLY
           ProvisionedThroughput:
             ReadCapacityUnits: 5
             WriteCapacityUnits: 5
@@ -934,7 +934,7 @@ Resources:
     Condition: DeployS3Cleanup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref EmptyS3BucketsFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref EmptyS3BucketsFunction ] ]
       RetentionInDays: 30
 
   EmptyS3Buckets:
