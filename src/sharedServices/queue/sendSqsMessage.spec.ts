@@ -1,7 +1,9 @@
-import { mockClient } from 'aws-sdk-client-mock'
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
 import { sendSqsMessage, sendSqsMessageWithStringBody } from './sendSqsMessage'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
+import { mockClient } from 'aws-sdk-client-mock'
+import 'aws-sdk-client-mock-jest'
+
 const sqsMock = mockClient(SQSClient)
 
 jest.mock('../../utils/helpers', () => ({

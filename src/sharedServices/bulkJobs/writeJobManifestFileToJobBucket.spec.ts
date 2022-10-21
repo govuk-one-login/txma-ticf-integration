@@ -4,8 +4,10 @@ import {
 } from '../../utils/tests/testConstants'
 import { createManifestFileText } from './createManifestFileText'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
-import { mockClient } from 'aws-sdk-client-mock'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { mockClient } from 'aws-sdk-client-mock'
+import 'aws-sdk-client-mock-jest'
+
 jest.mock('./createManifestFileText', () => ({
   createManifestFileText: jest.fn()
 }))
