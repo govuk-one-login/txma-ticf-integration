@@ -1,6 +1,6 @@
 export interface PersonalisationOptions {
   firstName: string
   zendeskId: string
-  signedUrl: string
+  secureDownloadUrl: string
   email: string
 }

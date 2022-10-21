@@ -73,7 +73,7 @@ const isEventBodyInvalid = (requestDetails: PersonalisationOptions) => {
   return !(
     requestDetails.firstName &&
     requestDetails.zendeskId &&
-    requestDetails.signedUrl &&
+    requestDetails.secureDownloadUrl &&
     requestDetails.email
   )
 }

@@ -71,8 +71,8 @@ describe('sendQueryResultsNotification', () => {
   it.each(['CANCELLED', 'FAILED'])(
     `should throw an error if the Athena query state is set to %p`,
     async (state: string) => {
-      givenDbReturnsData()
       const message = `Athena Query ${TEST_ATHENA_QUERY_ID} did not complete with status: ${state}`
+      givenDbReturnsData()
 
       await expect(
         handler(generateAthenaEventBridgeEvent(state))
@@ -81,20 +81,6 @@ describe('sendQueryResultsNotification', () => {
         dbQueryResult.requestInfo.zendeskId,
         message,
         'closed'
-      )
-      expect(generateSecureDownloadHash).not.toHaveBeenCalled()
-    }
-  )
-
-  it.each(['QUEUED', 'RUNNING'])(
-    `should throw an error if the Athena query state is %p`,
-    async (state: string) => {
-      givenDbReturnsData()
-
-      await expect(
-        handler(generateAthenaEventBridgeEvent(state))
-      ).rejects.toThrow(
-        `Function was called with unexpected state: ${state}. Ensure the template is configured correctly`
       )
       expect(generateSecureDownloadHash).not.toHaveBeenCalled()
     }

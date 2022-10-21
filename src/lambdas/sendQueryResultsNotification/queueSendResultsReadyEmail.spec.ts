@@ -18,10 +18,10 @@ jest.mock('./createSecureDownloadLink', () => ({
   createSecureDownloadLink: jest.fn()
 }))
 
-const MOCK_SECURE_DOWNLOAD_LINK = 'http://secure-download-link/123'
+const MOCK_SECURE_DOWNLOAD_URL = 'http://secure-download-link/123'
 describe('queueSendResultsReadyEmail', () => {
   const givenSecureDownloadLinkAvailable = () => {
-    when(createSecureDownloadLink).mockReturnValue(MOCK_SECURE_DOWNLOAD_LINK)
+    when(createSecureDownloadLink).mockReturnValue(MOCK_SECURE_DOWNLOAD_URL)
   }
 
   it('should queue send email with link', async () => {
@@ -37,7 +37,7 @@ describe('queueSendResultsReadyEmail', () => {
       {
         firstName: TEST_RECIPIENT_NAME,
         zendeskId: ZENDESK_TICKET_ID,
-        signedUrl: MOCK_SECURE_DOWNLOAD_LINK,
+        secureDownloadUrl: MOCK_SECURE_DOWNLOAD_URL,
         email: TEST_RECIPIENT_EMAIL
       },
       MOCK_SEND_EMAIL_QUEUE_URL

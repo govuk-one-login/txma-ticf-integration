@@ -12,7 +12,7 @@ export const queueSendResultsReadyEmail = async (parameters: {
     email: parameters.recipientEmail,
     firstName: parameters.recipientName,
     zendeskId: parameters.zendeskTicketId,
-    signedUrl: createSecureDownloadLink(parameters.downloadHash)
+    secureDownloadUrl: createSecureDownloadLink(parameters.downloadHash)
   }
   console.log(
     `Queueing email send for zendesk ticket id ${parameters.zendeskTicketId}`
