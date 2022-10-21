@@ -1,8 +1,8 @@
 import { createQuerySql } from './createQuerySql'
 import {
-  testDataRequest,
   noIdTestDataRequest,
-  dataPathsTestDataRequest
+  dataPathsTestDataRequest,
+  testDataRequestWithNoDataPathsOrPiiTypes
 } from '../../utils/tests/testDataRequest'
 import { IdentifierTypes } from '../../types/dataRequestParams'
 import {
@@ -29,10 +29,10 @@ describe('create Query SQL', () => {
     }
   )
 
-  test('returns an error message if there are no dataPaths', () => {
-    expect(createQuerySql(testDataRequest)).toEqual({
+  test('returns an error message if there are no dataPaths or piiTypes', () => {
+    expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: false,
-      error: 'No dataPaths in request'
+      error: 'No dataPaths or piiTypes in request'
     })
   })
 

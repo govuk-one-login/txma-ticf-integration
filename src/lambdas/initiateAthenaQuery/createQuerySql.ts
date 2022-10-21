@@ -19,14 +19,17 @@ export const createQuerySql = (
     }
   }
 
-  if (!requestData.dataPaths || requestData.dataPaths.length < 1) {
+  if (!requestData.dataPaths.length && !requestData.piiTypes.length) {
     return {
       sqlGenerated: false,
-      error: 'No dataPaths in request'
+      error: 'No dataPaths or piiTypes in request'
     }
   }
 
-  const sqlSelectStatement = formatSelectStatement(requestData.dataPaths)
+  const sqlSelectStatement = formatSelectStatement(
+    requestData.dataPaths,
+    requestData.piiTypes
+  )
 
   // formatWhereStatement ensures that the WHERE statement is parameterised to
   // protect against SQL injection
@@ -72,13 +75,18 @@ const getIdentifiers = (
 }
 
 const formatSelectStatement = (
-  dataPaths: string[] | undefined
+  dataPaths: string[] | undefined,
+  piiTypes: string[] | undefined
 ): string | undefined => {
   const formattedDataPaths = dataPaths?.map((dataPath) =>
     formatDataPath(dataPath)
   )
 
-  return formattedDataPaths?.join(', ')
+  const formattedPiiTypes = piiTypes?.map((piiType) => formatPiiTypes(piiType))
+
+  const formattedPaths = formattedDataPaths.concat(formattedPiiTypes)
+
+  return formattedPaths.join(', ')
 }
 
 const formatDataPath = (dataPath: string): string => {
@@ -91,6 +99,10 @@ const formatDataPath = (dataPath: string): string => {
   const newResultName = splitDataPath.join('_').toLowerCase()
 
   return `json_extract(${dataColumn}, '$.${dataTarget}') as ${newResultName}`
+}
+
+const formatPiiTypes = (piiType: string): string => {
+  return piiType
 }
 
 const formatWhereStatment = (
