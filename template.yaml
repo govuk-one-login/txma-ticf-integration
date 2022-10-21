@@ -896,6 +896,8 @@ Resources:
             EncryptionOption: "SSE_S3"
           OutputLocation: !Join ['', ['s3://', !Ref QueryResultsBucket, '/'] ]
 
+
+# NOTE - the global secondary index will be added again once merged with main following an amendment to the projection type - this is a 2 stage process in AWS
   QueryRequestDynamoDBTable: 
     Type: AWS::DynamoDB::Table
     Properties:
@@ -907,16 +909,16 @@ Resources:
       KeySchema:
         - AttributeName: "zendeskId"
           KeyType: "HASH"
-      GlobalSecondaryIndexes:
-        - IndexName: athenaQueryIdIndex
-          KeySchema:
-            - AttributeName: "athenaQueryId"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "ALL"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
+      # GlobalSecondaryIndexes:
+      #   - IndexName: athenaQueryIdIndex
+      #     KeySchema:
+      #       - AttributeName: "athenaQueryId"
+      #         KeyType: "HASH"
+      #     Projection:
+      #       ProjectionType: "ALL"
+      #     ProvisionedThroughput:
+      #       ReadCapacityUnits: 5
+      #       WriteCapacityUnits: 5
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
