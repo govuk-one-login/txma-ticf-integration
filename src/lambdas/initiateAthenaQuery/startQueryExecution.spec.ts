@@ -19,7 +19,7 @@ describe('start Query execution', () => {
 
     const result = await startQueryExecution({
       sqlGenerated: true,
-      idParameters: ['test_parameter'],
+      queryParameters: ['test_parameter'],
       sql: 'test sql'
     })
     expect(athenaMock).toHaveReceivedCommandWith(StartQueryExecutionCommand, {
@@ -41,7 +41,7 @@ describe('start Query execution', () => {
 
     const result = await startQueryExecution({
       sqlGenerated: true,
-      idParameters: ['test_parameter'],
+      queryParameters: ['test_parameter'],
       sql: 'test sql'
     })
     expect(result).toEqual({
