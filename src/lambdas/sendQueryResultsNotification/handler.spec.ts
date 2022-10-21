@@ -68,20 +68,6 @@ describe('sendQueryResultsNotification', () => {
     }
   }
 
-  it.each(['QUEUED', 'RUNNING'])(
-    `should return from the function if the query state is %p`,
-    async (state: string) => {
-      givenDbReturnsData()
-
-      await expect(
-        handler(generateAthenaEventBridgeEvent(state))
-      ).rejects.toThrow(
-        `Function was called with unexpected state: ${state}. Ensure the template is configured correctly`
-      )
-      expect(generateSecureDownloadHash).not.toHaveBeenCalled()
-    }
-  )
-
   it.each(['CANCELLED', 'FAILED'])(
     `should throw an error if the Athena query state is set to %p`,
     async (state: string) => {
@@ -100,14 +86,32 @@ describe('sendQueryResultsNotification', () => {
     }
   )
 
+  it.each(['QUEUED', 'RUNNING'])(
+    `should throw an error if the Athena query state is %p`,
+    async (state: string) => {
+      givenDbReturnsData()
+
+      await expect(
+        handler(generateAthenaEventBridgeEvent(state))
+      ).rejects.toThrow(
+        `Function was called with unexpected state: ${state}. Ensure the template is configured correctly`
+      )
+      expect(generateSecureDownloadHash).not.toHaveBeenCalled()
+    }
+  )
+
   it('should throw an error if the Athena query state is unrecognised', async () => {
+    const unrecognisedQueryState = 'something unrecognised'
     givenDbReturnsData()
 
     await expect(
-      handler(generateAthenaEventBridgeEvent('something unrecognised'))
-    ).rejects.toThrow('Athena Query state unrecognised')
+      handler(generateAthenaEventBridgeEvent(unrecognisedQueryState))
+    ).rejects.toThrow(
+      `Function was called with unexpected state: ${unrecognisedQueryState}. Ensure the template is configured correctly`
+    )
     expect(generateSecureDownloadHash).not.toHaveBeenCalled()
   })
+
   it('should call the relevant function given a successful query state', async () => {
     givenDbReturnsData()
     when(generateSecureDownloadHash).mockReturnValue(TEST_DOWNLOAD_HASH)

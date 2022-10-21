@@ -47,13 +47,6 @@ const confirmQueryState = async (
       return
     }
 
-    case 'QUEUED':
-    case 'RUNNING': {
-      throw Error(
-        `Function was called with unexpected state: ${queryState}. Ensure the template is configured correctly`
-      )
-    }
-
     case 'CANCELLED':
     case 'FAILED': {
       const message = `Athena Query ${queryDetails.queryExecutionId} did not complete with status: ${queryState}`
@@ -62,6 +55,8 @@ const confirmQueryState = async (
     }
 
     default:
-      throw Error('Athena Query state unrecognised')
+      throw Error(
+        `Function was called with unexpected state: ${queryState}. Ensure the template is configured correctly`
+      )
   }
 }
