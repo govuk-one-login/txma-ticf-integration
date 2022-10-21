@@ -5,6 +5,7 @@ import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZend
 import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
 import {
   TEST_ATHENA_QUERY_ID,
+  TEST_DOWNLOAD_HASH,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
   ZENDESK_TICKET_ID
@@ -18,15 +19,19 @@ import { queueSendResultsReadyEmail } from './queueSendResultsReadyEmail'
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: jest.fn()
 }))
+
 jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
+
 jest.mock('./generateSecureDownloadHash', () => ({
   generateSecureDownloadHash: jest.fn()
 }))
+
 jest.mock('./writeOutSecureDownloadRecord', () => ({
   writeOutSecureDownloadRecord: jest.fn()
 }))
+
 jest.mock('./queueSendResultsReadyEmail', () => ({
   queueSendResultsReadyEmail: jest.fn()
 }))
@@ -36,9 +41,11 @@ describe('sendQueryResultsNotification', () => {
     requestInfo: testDataRequest,
     athenaQueryId: TEST_ATHENA_QUERY_ID
   }
+
   const givenDbReturnsData = () => {
     when(getQueryByAthenaQueryId).mockResolvedValue(dbQueryResult)
   }
+
   const generateAthenaEventBridgeEvent = (
     state: string
   ): EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails> => {
@@ -60,6 +67,7 @@ describe('sendQueryResultsNotification', () => {
       }
     }
   }
+
   it.each(['QUEUED', 'RUNNING'])(
     `should return from the function if the query state is %p`,
     async (state: string) => {
@@ -73,6 +81,7 @@ describe('sendQueryResultsNotification', () => {
       expect(generateSecureDownloadHash).not.toHaveBeenCalled()
     }
   )
+
   it.each(['CANCELLED', 'FAILED'])(
     `should throw an error if the Athena query state is set to %p`,
     async (state: string) => {
@@ -90,6 +99,7 @@ describe('sendQueryResultsNotification', () => {
       expect(generateSecureDownloadHash).not.toHaveBeenCalled()
     }
   )
+
   it('should throw an error if the Athena query state is unrecognised', async () => {
     givenDbReturnsData()
 
@@ -99,9 +109,8 @@ describe('sendQueryResultsNotification', () => {
     expect(generateSecureDownloadHash).not.toHaveBeenCalled()
   })
   it('should call the relevant function given a successful query state', async () => {
-    const secureDownloadHash = 'mySecureDownloadHash'
     givenDbReturnsData()
-    when(generateSecureDownloadHash).mockReturnValue(secureDownloadHash)
+    when(generateSecureDownloadHash).mockReturnValue(TEST_DOWNLOAD_HASH)
 
     await handler(generateAthenaEventBridgeEvent('SUCCEEDED'))
 
@@ -109,11 +118,11 @@ describe('sendQueryResultsNotification', () => {
     expect(generateSecureDownloadHash).toHaveBeenCalled()
     expect(writeOutSecureDownloadRecord).toHaveBeenCalledWith(
       TEST_ATHENA_QUERY_ID,
-      secureDownloadHash,
+      TEST_DOWNLOAD_HASH,
       ZENDESK_TICKET_ID
     )
     expect(queueSendResultsReadyEmail).toHaveBeenCalledWith({
-      downloadHash: secureDownloadHash,
+      downloadHash: TEST_DOWNLOAD_HASH,
       recipientEmail: TEST_RECIPIENT_EMAIL,
       recipientName: TEST_RECIPIENT_NAME,
       zendeskTicketId: ZENDESK_TICKET_ID
