@@ -1,9 +1,8 @@
 version = 0.1
-[default.global.parameters]
-region = "eu-west-2"
-stack_name = "ticf-integration"
 
 [dev.deploy.parameters]
+region = "eu-west-2"
+stack_name = "ticf-integration"
 tags = "project=\"di-txma-ticf-integration\" stage=\"dev\""
 capabilities = "CAPABILITY_NAMED_IAM"
 parameter_overrides=[
@@ -13,6 +12,8 @@ parameter_overrides=[
 ]
 
 [build.validate.parameters]
+region = "eu-west-2"
+stack_name = "ticf-integration"
 parameter_overrides=[
     "Environment=build"
 ]
