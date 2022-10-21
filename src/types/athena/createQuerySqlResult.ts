@@ -1,6 +1,6 @@
 export interface CreateQuerySqlResult {
   sqlGenerated: boolean
   sql?: string
-  idParameters?: string[]
+  queryParameters?: string[]
   error?: string
 }

@@ -26,8 +26,6 @@ export const createQuerySql = (
     }
   }
 
-  // The SELECT statement relies upon user inputs - dataPaths, piiTypes - which are validated to
-  // minimise SQL injection risk
   const sqlSelectStatement = formatSelectStatement(requestData.dataPaths)
 
   // formatWhereStatement ensures that the WHERE statement is parameterised to
@@ -41,12 +39,18 @@ export const createQuerySql = (
     'ATHENA_TABLE_NAME'
   )}`
 
-  const queryString = `SELECT ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement}`
+  const queryString = `SELECT event_id, ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
+
+  const queryParameters = generateQueryParameters(
+    identifiers,
+    requestData.dateFrom,
+    requestData.dateTo
+  )
 
   return {
     sqlGenerated: true,
     sql: queryString,
-    idParameters: identifiers
+    queryParameters: queryParameters
   }
 }
 
@@ -104,4 +108,27 @@ const formatWhereStatment = (
   }
 
   return `${identifierType} IN (${whereStatementsArray.join(', ')})`
+}
+
+const generateQueryParameters = (
+  identifiers: string[],
+  dateFrom: string,
+  dateTo: string
+): string[] => {
+  const queryParameters = identifiers
+  queryParameters.push(formatDateFrom(dateFrom))
+  queryParameters.push(formatDateTo(dateTo))
+  return queryParameters
+}
+
+const formatDateFrom = (dateFrom: string): string => {
+  const splitDateFrom = dateFrom.split('-')
+  splitDateFrom.push('00')
+  return splitDateFrom.join('/')
+}
+
+const formatDateTo = (dateTo: string): string => {
+  const splitDateTo = dateTo.split('-')
+  splitDateTo.push('23')
+  return splitDateTo.join('/')
 }

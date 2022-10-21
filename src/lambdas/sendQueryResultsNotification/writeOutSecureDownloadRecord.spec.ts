@@ -12,6 +12,7 @@ import {
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { writeOutSecureDownloadRecord } from './writeOutSecureDownloadRecord'
+import 'aws-sdk-client-mock-jest'
 
 const dynamoMock = mockClient(DynamoDBClient)
 

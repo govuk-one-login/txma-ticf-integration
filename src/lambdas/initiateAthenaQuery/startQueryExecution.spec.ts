@@ -1,9 +1,10 @@
 import { startQueryExecution } from './startQueryExecution'
-import { mockClient } from 'aws-sdk-client-mock'
 import {
   AthenaClient,
   StartQueryExecutionCommand
 } from '@aws-sdk/client-athena'
+import { mockClient } from 'aws-sdk-client-mock'
+import 'aws-sdk-client-mock-jest'
 
 const athenaMock = mockClient(AthenaClient)
 
@@ -19,7 +20,7 @@ describe('start Query execution', () => {
 
     const result = await startQueryExecution({
       sqlGenerated: true,
-      idParameters: ['test_parameter'],
+      queryParameters: ['test_parameter'],
       sql: 'test sql'
     })
     expect(athenaMock).toHaveReceivedCommandWith(StartQueryExecutionCommand, {
@@ -41,7 +42,7 @@ describe('start Query execution', () => {
 
     const result = await startQueryExecution({
       sqlGenerated: true,
-      idParameters: ['test_parameter'],
+      queryParameters: ['test_parameter'],
       sql: 'test sql'
     })
     expect(result).toEqual({

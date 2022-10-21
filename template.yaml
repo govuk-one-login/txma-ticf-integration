@@ -24,6 +24,7 @@ Parameters:
 
 Conditions:
   DeployS3Cleanup: !Equals [ !Ref Environment, dev]
+  IntegrationTests: !Equals [ !Ref Environment, dev]
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
 
@@ -1113,3 +1114,21 @@ Resources:
       - EmptyS3BucketsLogs
     Properties:
       ServiceToken: !GetAtt EmptyS3BucketsFunction.Arn
+
+  IntegrationTestDataBucket:
+  #checkov:skip=CKV_AWS_18: Logging not required for test resource
+    Type: AWS::S3::Bucket
+    Condition: IntegrationTests
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${AWS::StackName}-integration-test-data-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled

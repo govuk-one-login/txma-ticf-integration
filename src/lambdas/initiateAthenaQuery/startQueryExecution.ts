@@ -38,9 +38,9 @@ export const startQueryExecution = async (
 const generateQueryExecutionCommandInput = (
   queryParams: CreateQuerySqlResult
 ): StartQueryExecutionCommandInput => {
-  const { idParameters, sql } = queryParams
+  const { queryParameters, sql } = queryParams
   return {
-    ExecutionParameters: idParameters,
+    ExecutionParameters: queryParameters,
     QueryExecutionContext: {
       Database: getEnv('ATHENA_DATABASE_NAME')
     },

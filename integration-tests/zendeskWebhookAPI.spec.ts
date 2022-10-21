@@ -2,7 +2,7 @@ import axios from 'axios'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import { generateZendeskRequestDate } from './utils/helpers'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
-import { validRequestData } from './constants/requestData'
+import { validApiTestRequestData } from './constants/requestData'
 import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME,
@@ -10,6 +10,10 @@ import {
 } from './constants/zendeskParameters'
 import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
 import { generateSignatureHeaders } from './utils/zendesk/generateSignatureHeaders'
+import {
+  TEST_DATA_DATA_PATHS,
+  TEST_DATA_EVENT_ID
+} from './constants/awsParameters'
 
 const webhookUrl = `${ZENDESK_WEBHOOK_API_BASE_URL}/zendesk-webhook`
 
@@ -22,12 +26,12 @@ const defaultWebhookRequestData: ZendeskWebhookRequest = {
   dateFrom: generateZendeskRequestDate(-60),
   dateTo: generateZendeskRequestDate(-60),
   identifierType: 'event_id',
-  eventIds: '637783 3256',
+  eventIds: TEST_DATA_EVENT_ID,
   piiTypes: 'drivers_license',
   sessionIds: '',
   journeyIds: '',
   userIds: '',
-  dataPaths: ''
+  dataPaths: TEST_DATA_DATA_PATHS
 }
 
 const sendWebhook = async (
@@ -78,7 +82,7 @@ describe('Zendesk ticket check', () => {
   let ticketId: string
 
   beforeAll(async () => {
-    ticketId = await createZendeskTicket(validRequestData)
+    ticketId = await createZendeskTicket(validApiTestRequestData)
   })
 
   afterAll(async () => {
@@ -92,7 +96,6 @@ describe('Zendesk ticket check', () => {
     const headers = {
       ...generateSignatureHeaders(webhookRequestData)
     }
-
     const response = await sendWebhook(headers, webhookRequestData)
     expect(response.status).toEqual(200)
     expect(response.data.message).toEqual('data transfer initiated')
