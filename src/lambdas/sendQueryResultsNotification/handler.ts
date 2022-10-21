@@ -42,10 +42,26 @@ const confirmQueryState = async (
   zendeskId: string
 ): Promise<void> => {
   const queryState = queryDetails.currentState
+  switch (queryState) {
+    case 'SUCCEEDED': {
+      return
+    }
 
-  if (queryState == 'CANCELLED' || queryState == 'FAILED') {
-    const message = `Athena Query ${queryDetails.queryExecutionId} did not complete with status: ${queryState}`
-    await updateZendeskTicketById(zendeskId, message, 'closed')
-    throw Error(message)
+    case 'QUEUED':
+    case 'RUNNING': {
+      throw Error(
+        `Function was called with unexpected state: ${queryState}. Ensure the template is configured correctly`
+      )
+    }
+
+    case 'CANCELLED':
+    case 'FAILED': {
+      const message = `Athena Query ${queryDetails.queryExecutionId} did not complete with status: ${queryState}`
+      await updateZendeskTicketById(zendeskId, message, 'closed')
+      throw Error(message)
+    }
+
+    default:
+      throw Error('Athena Query state unrecognised')
   }
 }
