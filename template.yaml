@@ -4,6 +4,14 @@ Description: >
 Transform: AWS::Serverless-2016-10-31
 
 Parameters:
+  AuditBucketArn:
+    Description: The ARN of the audit bucket
+    Type: String
+    Default: arn:aws:s3:::audit-sandbox-message-batch
+  AuditBucketName:
+    Description: The name of the audit bucket
+    Type: String
+    Default: audit-sandbox-message-batch
   CodeSigningConfigArn:
     Description: The ARN of the Code Signing Config to use, provided by the deployment pipeline
     Type: String
@@ -232,7 +240,7 @@ Resources:
       Handler: initiateDataRequest.handler
       Environment:
         Variables:
-          AUDIT_BUCKET_NAME: !Sub audit-${Environment}-message-batch
+          AUDIT_BUCKET_NAME: !Ref AuditBucketName
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
@@ -264,7 +272,7 @@ Resources:
               - s3:ListBucket
             Resource:
               - !GetAtt AnalysisBucket.Arn
-              - !Sub arn:aws:s3:::audit-${Environment}-message-batch
+              - !Ref AuditBucketArn
           - Sid: Logs
             Effect: Allow
             Action:
@@ -315,7 +323,7 @@ Resources:
       Handler: processDataRequest.handler
       Environment:
         Variables:
-          AUDIT_BUCKET_NAME: !Sub audit-${Environment}-message-batch
+          AUDIT_BUCKET_NAME: !Ref AuditBucketName
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
@@ -343,7 +351,7 @@ Resources:
                 - s3:ListBucket
               Resource:
                 - !GetAtt AnalysisBucket.Arn
-                - !Sub arn:aws:s3:::audit-${Environment}-message-batch
+                - !Ref AuditBucketArn
             - Sid: S3AllowJobManifestWrite
               Effect: Allow
               Action:
@@ -603,7 +611,7 @@ Resources:
               Action:
                 - s3:RestoreObject
               Resource:
-                - !Sub arn:aws:s3:::audit-${Environment}-message-batch/*
+                - !Sub ${AuditBucketArn}/*
             - Sid: AllowReadFromManifestBucket
               Effect: Allow
               Action:
@@ -631,7 +639,7 @@ Resources:
                 - s3:GetObjectTagging
                 - s3:ListBucket
               Resource:
-                - !Sub arn:aws:s3:::audit-${Environment}-message-batch/*
+                - !Sub ${AuditBucketArn}/*
             
   # Data Analysis
 
