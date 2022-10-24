@@ -1,3 +1,4 @@
+import { piiTypesDataPathsMap } from '../../constants/piiTypesDataPathsMap'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import {
   DataRequestParams,
@@ -78,15 +79,13 @@ const formatSelectStatement = (
   dataPaths: string[] | undefined,
   piiTypes: string[] | undefined
 ): string | undefined => {
-  const formattedDataPaths = dataPaths?.map((dataPath) =>
-    formatDataPath(dataPath)
-  )
+  const paths = dataPaths
 
-  const formattedPiiTypes = piiTypes?.map((piiType) => formatPiiTypes(piiType))
+  piiTypes?.map((piiType) => paths?.push(piiTypeDataPathMap(piiType)))
 
-  const formattedPaths = formattedDataPaths.concat(formattedPiiTypes)
+  const formattedPaths = paths?.map((path) => formatDataPath(path))
 
-  return formattedPaths.join(', ')
+  return formattedPaths?.join(', ')
 }
 
 const formatDataPath = (dataPath: string): string => {
@@ -101,8 +100,14 @@ const formatDataPath = (dataPath: string): string => {
   return `json_extract(${dataColumn}, '$.${dataTarget}') as ${newResultName}`
 }
 
-const formatPiiTypes = (piiType: string): string => {
-  return piiType
+const piiTypeDataPathMap = (piiType: string): string => {
+  const pair = piiTypesDataPathsMap.find((pair) => pair.piiType === piiType)
+
+  if (pair?.dataPath === undefined || pair?.dataPath === null) {
+    throw Error(`${piiType} is not a valid piiType`)
+  }
+
+  return pair.dataPath
 }
 
 const formatWhereStatment = (

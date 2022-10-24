@@ -1,30 +1,30 @@
 export const piiTypesDataPathsMap = [
   {
-    piiType: 'requestToNotify',
-    dataPath: 'restricted.'
+    piiType: 'passport_number',
+    dataPath: 'restricted.passport'
   },
   {
-    piiType: 'requestToNotify',
-    dataPath: 'restricted.'
+    piiType: 'passport_expiry_date',
+    dataPath: 'restricted.passport'
   },
   {
-    piiType: 'requestToNotify',
-    dataPath: 'restricted.'
+    piiType: 'drivers_license',
+    dataPath: 'restricted.dl'
   },
   {
-    piiType: 'requestToNotify',
-    dataPath: 'restricted.'
+    piiType: 'dob',
+    dataPath: 'restricted.dob'
   },
   {
-    piiType: 'requestToNotify',
-    dataPath: 'restricted.'
+    piiType: 'name',
+    dataPath: 'restricted.name'
   },
   {
-    piiType: 'requestToNotify',
-    dataPath: 'restricted.'
+    piiType: 'current_address',
+    dataPath: 'restricted.address'
   },
   {
-    piiType: 'requestToNotify',
-    dataPath: 'restricted.'
+    piiType: 'previous_address',
+    dataPath: 'restricted.address'
   }
 ]
