@@ -198,7 +198,7 @@ export const validGlacierRequestData: ZendeskRequestData = {
   }
 }
 
-export const validMixRequestData: ZendeskRequestData = {
+export const validStandardAndGlacierTiersRequestData: ZendeskRequestData = {
   request: {
     subject: `Integration Test Request - ` + generateRandomNumber(),
     ticket_form_id: ZENDESK_PII_FORM_ID,
@@ -238,7 +238,7 @@ export const validMixRequestData: ZendeskRequestData = {
   }
 }
 
-export const validNoRequestData: ZendeskRequestData = {
+export const validRequestNoData: ZendeskRequestData = {
   request: {
     subject: `Integration Test Request - ` + generateRandomNumber(),
     ticket_form_id: ZENDESK_PII_FORM_ID,

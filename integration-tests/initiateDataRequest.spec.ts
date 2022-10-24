@@ -9,9 +9,9 @@ import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import {
   invalidRequestData,
   validGlacierRequestData,
-  validMixRequestData,
-  validNoRequestData,
-  validRequestData
+  validRequestNoData,
+  validRequestData,
+  validStandardAndGlacierTiersRequestData
 } from './constants/requestData'
 import {
   ANALYSIS_BUCKET_NAME,
@@ -221,11 +221,13 @@ describe('Submit a PII request with approved ticket data', () => {
         `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}/02/${TEST_FILE_NAME}`,
         TEST_FILE_NAME
       )
-      ticketId = await createZendeskTicket(validMixRequestData)
+      ticketId = await createZendeskTicket(
+        validStandardAndGlacierTiersRequestData
+      )
       await approveZendeskTicket(ticketId)
     })
 
-    test('request for valid data in standard and glacier tier', async () => {
+    test('valid request with data in standard and glacier tier', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -295,7 +297,7 @@ describe('Submit a PII request with approved ticket data', () => {
           ANALYSIS_BUCKET_NAME,
           `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
         )
-        ticketId = await createZendeskTicket(validNoRequestData)
+        ticketId = await createZendeskTicket(validRequestNoData)
         await approveZendeskTicket(ticketId)
       })
 
