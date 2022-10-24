@@ -11,13 +11,17 @@ import {
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { validRequestData } from './constants/requestData'
 import {
+  ANALYSIS_BUCKET_NAME,
+  ATHENA_QUERY_TEST_FILE_NAME,
   INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP,
   INITIATE_ATHENA_QUERY_QUEUE_URL
 } from './constants/awsParameters'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import { generateRandomNumber } from './utils/helpers'
+import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 
-//TODO: add test for request without data paths when TT2-76 has been implemented
+// TODO: ADD TO SET UP: - COPY DATA FROM TEST BUCKET TO ANALYSIS BUCKET, ENSURING DATE AND CONTENT MATCH ZENDESK TICKET DATE
+// TODO: add test for request without data paths when TT2-76 has been implemented
 
 describe('Athena Query SQL generation and execution', () => {
   jest.setTimeout(90000)
@@ -26,6 +30,12 @@ describe('Athena Query SQL generation and execution', () => {
     const randomTicketId = (Number(generateRandomNumber()) * 1000).toString()
     beforeAll(async () => {
       await populateDynamoDBWithTestItemDetails(randomTicketId)
+      //TODO: CONTINUE MONDAY
+      copyAuditDataFromTestDataBucket(
+        ANALYSIS_BUCKET_NAME,
+        'PATH_TO_NEW_FILE_THAT_I_WILL_PUT_INTO_THE_TEST_BUCKET',
+        ATHENA_QUERY_TEST_FILE_NAME
+      )
     })
 
     afterAll(async () => {
