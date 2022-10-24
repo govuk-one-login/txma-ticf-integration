@@ -1,4 +1,3 @@
-import { mockClient } from 'aws-sdk-client-mock'
 import { startGlacierRestore } from './startGlacierRestore'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
@@ -9,6 +8,9 @@ import {
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { when } from 'jest-when'
+import { mockClient } from 'aws-sdk-client-mock'
+import 'aws-sdk-client-mock-jest'
+
 jest.mock('./writeJobManifestFileToJobBucket', () => ({
   writeJobManifestFileToJobBucket: jest.fn()
 }))
