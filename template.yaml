@@ -23,19 +23,19 @@ Parameters:
     Default: none
 
 Conditions:
-  DeployS3Cleanup: !Equals [ !Ref Environment, dev]
-  IntegrationTests: !Equals [ !Ref Environment, dev]
-  UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
-  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
+  DeployS3Cleanup: !Equals [ !Ref Environment, dev ]
+  IntegrationTests: !Or [ !Equals [ !Ref Environment, dev ], !Equals [ !Ref Environment, staging ] ]
+  UseCodeSigning: !Not [ !Equals [!Ref CodeSigningConfigArn, none ] ]
+  UsePermissionsBoundary: !Not [ !Equals [!Ref PermissionsBoundary, none ] ]
 
 Globals:
   Function:
-    CodeSigningConfigArn: !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
+    CodeSigningConfigArn: !If [ UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue ]
     CodeUri: dist/
     Environment:
       Variables:
         NODE_OPTIONS: --enable-source-maps
-    PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
+    PermissionsBoundary: !If [ UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue ]
     Runtime: nodejs16.x
     Timeout: 15
   Api:
@@ -66,7 +66,7 @@ Resources:
   LambdaKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: !Sub alias/${AWS::StackName}/sandbox/lambda-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/lambda-kms-key
+      AliasName: !Sub alias/${AWS::StackName}/${Environment}/lambda-kms-key
       TargetKeyId: !Ref LambdaKmsKey
 
   LogsKmsKey:
@@ -101,7 +101,7 @@ Resources:
   LogsKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: !Sub alias/${AWS::StackName}/sandbox/logs-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/logs-kms-key
+      AliasName: !Sub alias/${AWS::StackName}/${Environment}/logs-kms-key
       TargetKeyId: !Ref LogsKmsKey
 
   ZendeskSecretSet:
@@ -149,7 +149,7 @@ Resources:
   SecretsKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: !Sub alias/${AWS::StackName}/sandbox/secrets-kms-key #TODO: Update to !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
+      AliasName: !Sub alias/${AWS::StackName}/${Environment}/secrets-kms-key
       TargetKeyId: !Ref SecretsKmsKey
 
   QueueKmsKey:
@@ -181,7 +181,7 @@ Resources:
   QueueKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: !Sub alias/${AWS::StackName}/sandbox/queue-kms-key
+      AliasName: !Sub alias/${AWS::StackName}/${Environment}/queue-kms-key
       TargetKeyId: !Ref QueueKmsKey
 
   DatabaseKmsKey:
@@ -202,7 +202,7 @@ Resources:
   DatabaseKmsKeyAlias:
     Type: AWS::KMS::Alias
     Properties:
-      AliasName: !Sub alias/${AWS::StackName}/sandbox/database-kms-key
+      AliasName: !Sub alias/${AWS::StackName}/${Environment}/database-kms-key
       TargetKeyId: !Ref DatabaseKmsKey
 
   # Data Retrieval
@@ -232,8 +232,7 @@ Resources:
       Handler: initiateDataRequest.handler
       Environment:
         Variables:
-          #TODO: Update with parameterised bucket name when merging with TxMA 1
-          AUDIT_BUCKET_NAME: audit-sandbox-message-batch
+          AUDIT_BUCKET_NAME: !Sub audit-${Environment}-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
@@ -265,7 +264,7 @@ Resources:
               - s3:ListBucket
             Resource:
               - !GetAtt AnalysisBucket.Arn
-              - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+              - !Sub arn:aws:s3:::audit-${Environment}-message-batch
           - Sid: Logs
             Effect: Allow
             Action:
@@ -276,7 +275,7 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
-              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
+              - !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-*
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
@@ -306,7 +305,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateDataRequestFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref InitiateDataRequestFunction ] ]
       RetentionInDays: 30
 
   ProcessDataRequestFunction:
@@ -316,8 +315,7 @@ Resources:
       Handler: processDataRequest.handler
       Environment:
         Variables:
-          #TODO: Update with parameterised bucket name when merging with TxMA 1
-          AUDIT_BUCKET_NAME: audit-sandbox-message-batch
+          AUDIT_BUCKET_NAME: !Sub audit-${Environment}-message-batch
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
@@ -345,13 +343,13 @@ Resources:
                 - s3:ListBucket
               Resource:
                 - !GetAtt AnalysisBucket.Arn
-                - arn:aws:s3:::audit-sandbox-message-batch #TODO: Update with parameter when merging with TxMA 1
+                - !Sub arn:aws:s3:::audit-${Environment}-message-batch
             - Sid: S3AllowJobManifestWrite
               Effect: Allow
               Action:
                 - s3:PutObject
               Resource:
-                - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
+                - !Join [ '/', [ !GetAtt BatchJobManifestBucket.Arn, '*' ] ]
             - Sid: Logs
               Effect: Allow
               Action:
@@ -437,7 +435,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref ProcessDataRequestFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref ProcessDataRequestFunction ] ]
       RetentionInDays: 30
   
   SendEmailRequestToNotifyFunction:
@@ -479,7 +477,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref SendEmailRequestToNotifyFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref SendEmailRequestToNotifyFunction ] ]
       RetentionInDays: 30
 
   InitiateDataRequestQueue:
@@ -508,7 +506,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      BucketName: !Sub ${AWS::StackName}-sandbox-analysis-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-bucket
+      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-bucket
       LifecycleConfiguration:
         Rules:
           - Id: AnalysisCleanupRule
@@ -529,7 +527,7 @@ Resources:
     #checkov:skip=CKV_AWS_18:This is the logs bucket
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-sandbox-analysis-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-logs
+      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-logs
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -549,7 +547,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      BucketName: !Sub ${AWS::StackName}-batch-job-manifest-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-batch-job-manifest-bucket
+      BucketName: !Sub ${AWS::StackName}-${Environment}-batch-job-manifest-bucket
       LifecycleConfiguration:
         Rules:
           - Id: BatchJobManifestCleanupRule
@@ -570,7 +568,7 @@ Resources:
     #checkov:skip=CKV_AWS_18:This is the logs bucket
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-sandbox-batch-job-bucket-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}--batch-job-bucket-log
+      BucketName: !Sub ${AWS::StackName}-${Environment}-batch-job-bucket-logs
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -586,10 +584,7 @@ Resources:
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
-      PermissionsBoundary: !If
-        - UsePermissionsBoundary
-        - !Ref PermissionsBoundary
-        - !Ref AWS::NoValue
+      PermissionsBoundary: !If [ UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue ]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -608,14 +603,14 @@ Resources:
               Action:
                 - s3:RestoreObject
               Resource:
-                - arn:aws:s3:::audit-sandbox-message-batch/* #TODO: Update with parameter when merging with TxMA 1
+                - !Sub arn:aws:s3:::audit-${Environment}-message-batch/*
             - Sid: AllowReadFromManifestBucket
               Effect: Allow
               Action:
-                -  "s3:GetObject"
-                -  "s3:GetObjectVersion"
+                -  s3:GetObject
+                -  s3:GetObjectVersion
               Resource:
-                - !Join ['/', [!GetAtt BatchJobManifestBucket.Arn, '*']]
+                - !Join [ '/', [ !GetAtt BatchJobManifestBucket.Arn, '*' ] ]
       - PolicyName: AllowS3Copy
         PolicyDocument:
             Version: '2012-10-17'
@@ -627,7 +622,7 @@ Resources:
                 - s3:PutObjectAcl
                 - s3:PutObjectTagging
               Resource: 
-                - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+                - !Join [ '/', [ !GetAtt AnalysisBucket.Arn, '*' ] ]
             - Sid: AllowReadFromAuditBucket
               Effect: Allow
               Action: 
@@ -636,7 +631,7 @@ Resources:
                 - s3:GetObjectTagging
                 - s3:ListBucket
               Resource:
-                - arn:aws:s3:::audit-sandbox-message-batch/*
+                - !Sub arn:aws:s3:::audit-${Environment}-message-batch/*
             
   # Data Analysis
 
@@ -684,7 +679,7 @@ Resources:
               - s3:GetObject
             Resource:
               - !GetAtt AnalysisBucket.Arn
-              - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+              - !Join ['/', [ !GetAtt AnalysisBucket.Arn, '*' ] ]
           - Sid: S3ResultsPermissions
             Effect: Allow
             Action:
@@ -697,7 +692,7 @@ Resources:
               - s3:GetObject
             Resource:
               - !GetAtt QueryResultsBucket.Arn
-              - !Join ['/', [!GetAtt QueryResultsBucket.Arn, '*']]
+              - !Join [ '/', [ !GetAtt QueryResultsBucket.Arn, '*' ] ]
           - Sid: KmsQueueAllowDecrypt
             Effect: Allow
             Action:
@@ -714,7 +709,7 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource: 
-              - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
+              - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-*
           - Sid: KmsSecretsDecryptionKey
             Effect: Allow
             Action:
@@ -744,7 +739,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref InitiateAthenaQueryFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref InitiateAthenaQueryFunction ] ]
       RetentionInDays: 30
 
   #NOTE - This is a placeholder SQS queue which will be replaced - it is here to enable the Athena lambda to be created 
@@ -768,7 +763,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      BucketName: !Sub ${AWS::StackName}-sandbox-query-results-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-query-results-bucket
+      BucketName: !Sub ${AWS::StackName}-${Environment}-query-results-bucket
       LifecycleConfiguration:
         Rules:
           - Id: AnalysisCleanupRule
@@ -789,7 +784,7 @@ Resources:
     #checkov:skip=CKV_AWS_18:This is the query results logs bucket
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-sandbox-query-results-logs #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-logs
+      BucketName: !Sub ${AWS::StackName}-${Environment}-query-results-logs
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -808,8 +803,8 @@ Resources:
     Properties:
       CatalogId: !Ref AWS::AccountId
       DatabaseInput:
-        Description: "TxMA - Event Message Analysis Database"
-        Name:  !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "_sandbox_analysis_database" ] ]    #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "_", "${Environment}", "_analysis_database" ] ]
+        Description: TxMA - Event Message Analysis Database
+        Name:  !Join [ '', [ !Join [ '', !Split [ '-', !Ref AWS::StackName ] ], !Sub '_${Environment}_analysis_database' ] ]
 
   AuditAnalysisTable:
     Type: AWS::Glue::Table
@@ -817,8 +812,8 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       DatabaseName: !Ref AuditAnalysisDatabase
       TableInput:
-        Description: "Table contains event message data to be analysed"
-        Name: !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "_sandbox_analysis_table" ] ] #TODO: Update to !Join ["", [ !Join [ "", !Split [ "-", !Sub "${AWS::StackName}"]], "_", "${Environment}", "_analysis_table" ] ]
+        Description: Table contains event message data to be analysed
+        Name: !Join [ '', [ !Join [ '', !Split [ '-', !Ref AWS::StackName ] ], !Sub '_${Environment}_analysis_table' ] ]
         Parameters:
           has_encrypted_data: false
           projection.enabled: true
@@ -827,28 +822,28 @@ Resources:
           projection.datetime.format: 'yyyy/MM/dd/HH'
           projection.datetime.interval: 1
           projection.datetime.interval.unit: HOURS
-          storage.location.template: !Join ["", ["s3://", !Sub "${AWS::StackName}", "-sandbox-analysis-bucket/firehose/${datetime}/" ]] #TODO: Update to !Join ["", ["s3://", !Sub "${AWS::StackName}", "-", !Sub "${Environment}", "-analysis-bucket/firehose/${datetime}/" ]]
+          storage.location.template: !Join [ '', [ 's3://', !Ref AWS::StackName, '-', !Ref Environment, '-analysis-bucket/firehose/${datetime}/' ] ]
         PartitionKeys:
-          - {Name: "datetime", Type: string}
+          - { Name: "datetime", Type: string }
         StorageDescriptor:
           Columns:
-            - {Name: "event_id", Type: string}
-            - {Name: "client_id", Type: string}
-            - {Name: "timestamp", Type: bigint}
-            - {Name: "timestamp_formatted", Type: string}
-            - {Name: "event_name", Type: string}
-            - {Name: "component_id", Type: string}
-            - {Name: "user", Type: string}
-            - {Name: "platform", Type: string}
-            - {Name: "restricted", Type: string}
-            - {Name: "extensions", Type: string}
+            - { Name: "event_id", Type: string }
+            - { Name: "client_id", Type: string }
+            - { Name: "timestamp", Type: bigint }
+            - { Name: "timestamp_formatted", Type: string }
+            - { Name: "event_name", Type: string }
+            - { Name: "component_id", Type: string }
+            - { Name: "user", Type: string }
+            - { Name: "platform", Type: string }
+            - { Name: "restricted", Type: string }
+            - { Name: "extensions", Type: string }
           Compressed: true
-          InputFormat: "org.apache.hadoop.mapred.TextInputFormat"
-          Location: !Sub s3://${AWS::StackName}-sandbox-analysis-bucket/firehose/ #TODO: Update to !Sub s3://${AWS::StackName}-${Environment}-sandbox-analysis-bucket/firehose/
-          OutputFormat: "org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat"
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          Location: !Sub s3://${AWS::StackName}-${Environment}-analysis-bucket/firehose/
+          OutputFormat: org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat
           SerdeInfo:
-            Parameters: {"ignore.malformed.json": true,"serialiazation.format": 1,"field.delim":""}
-            SerializationLibrary: "org.openx.data.jsonserde.JsonSerDe"
+            Parameters: { "ignore.malformed.json": true, "serialiazation.format": 1, "field.delim": "" }
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
           StoredAsSubDirectories: false
         TableType: EXTERNAL_TABLE
 
@@ -856,34 +851,34 @@ Resources:
     Type: AWS::Athena::WorkGroup
     Properties:
       Description: The workgroup for TxMA queries
-      Name: !Sub ${AWS::StackName}-sandbox-analysis-queries-workgroup #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-queries-workgroup
+      Name: !Sub ${AWS::StackName}-${Environment}-analysis-queries-workgroup
       RecursiveDeleteOption: true
       WorkGroupConfiguration:
         EnforceWorkGroupConfiguration: true
         PublishCloudWatchMetricsEnabled: false
         ResultConfiguration:
           EncryptionConfiguration:
-            EncryptionOption: "SSE_S3"
-          OutputLocation: !Join ['', ['s3://', !Ref QueryResultsBucket, '/'] ]
+            EncryptionOption: SSE_S3
+          OutputLocation: !Join [ '', [ 's3://', !Ref QueryResultsBucket, '/' ] ]
 
   QueryRequestDynamoDBTable: 
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions: 
-        - AttributeName: "zendeskId"
-          AttributeType: "S"
-        - AttributeName: "athenaQueryId"
-          AttributeType: "S"
+        - AttributeName: zendeskId
+          AttributeType: S
+        - AttributeName: athenaQueryId
+          AttributeType: S
       KeySchema:
-        - AttributeName: "zendeskId"
-          KeyType: "HASH"
+        - AttributeName: zendeskId
+          KeyType: HASH
       GlobalSecondaryIndexes:
         - IndexName: athenaQueryIdIndex
           KeySchema:
-            - AttributeName: "athenaQueryId"
-              KeyType: "HASH"
+            - AttributeName: athenaQueryId
+              KeyType: HASH
           Projection:
-            ProjectionType: "KEYS_ONLY"
+            ProjectionType: KEYS_ONLY
           ProvisionedThroughput:
             ReadCapacityUnits: 5
             WriteCapacityUnits: 5
@@ -936,7 +931,7 @@ Resources:
     Condition: DeployS3Cleanup
     Properties:
       KmsKeyId: !GetAtt LogsKmsKey.Arn
-      LogGroupName: !Join ['', ['/aws/lambda/', !Ref EmptyS3BucketsFunction]]
+      LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref EmptyS3BucketsFunction ] ]
       RetentionInDays: 30
 
   EmptyS3Buckets:
@@ -957,7 +952,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      BucketName: !Sub ${AWS::StackName}-integration-test-data-bucket #TODO: Update to !Sub ${AWS::StackName}-${Environment}-analysis-bucket
+      BucketName: !Sub ${AWS::StackName}-${Environment}-test-data-bucket
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
