@@ -7,7 +7,9 @@ import {
   INTEGRATION_TEST_DATE,
   TEST_DATA_DATA_PATHS,
   INTEGRATION_TEST_DATE_GLACIER,
-  TEST_DATA_EVENT_ID
+  TEST_DATA_EVENT_ID,
+  INTEGRATION_TEST_DATE_MIX_DATA,
+  INTEGRATION_TEST_DATE_NO_DATA
 } from './awsParameters'
 import {
   ZendeskFormFieldIDs,
@@ -196,6 +198,85 @@ export const validGlacierRequestData: ZendeskRequestData = {
   }
 }
 
+export const validStandardAndGlacierTiersRequestData: ZendeskRequestData = {
+  request: {
+    subject: `Integration Test Request - ` + generateRandomNumber(),
+    ticket_form_id: ZENDESK_PII_FORM_ID,
+    custom_fields: [
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID,
+        value: 'event_id'
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
+        value: TEST_DATA_EVENT_ID
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+        value: INTEGRATION_TEST_DATE_MIX_DATA
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
+        value: ['drivers_license']
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
+        value: ''
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+        value: ZENDESK_END_USER_EMAIL
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
+        value: ZENDESK_END_USER_NAME
+      }
+    ],
+    comment: {
+      body: 'PII request created in integration test'
+    }
+  }
+}
+
+export const validRequestNoData: ZendeskRequestData = {
+  request: {
+    subject: `Integration Test Request - ` + generateRandomNumber(),
+    ticket_form_id: ZENDESK_PII_FORM_ID,
+    custom_fields: [
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID,
+        value: 'event_id'
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
+        value: TEST_DATA_EVENT_ID
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+        value: INTEGRATION_TEST_DATE_NO_DATA
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
+        value: ['drivers_license']
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
+        value: ''
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+        value: ZENDESK_END_USER_EMAIL
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
+        value: ZENDESK_END_USER_NAME
+      }
+    ],
+    comment: {
+      body: 'PII request created in integration test'
+    }
+  }
+}
 export const ticketApprovalData = {
   ticket: {
     tags: ['process_started', 'approved'],

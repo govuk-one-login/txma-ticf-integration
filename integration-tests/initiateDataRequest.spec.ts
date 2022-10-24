@@ -9,7 +9,9 @@ import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import {
   invalidRequestData,
   validGlacierRequestData,
-  validRequestData
+  validRequestNoData,
+  validRequestData,
+  validStandardAndGlacierTiersRequestData
 } from './constants/requestData'
 import {
   ANALYSIS_BUCKET_NAME,
@@ -17,6 +19,8 @@ import {
   INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
   INTEGRATION_TEST_DATE_PREFIX,
   INTEGRATION_TEST_DATE_PREFIX_GLACIER,
+  INTEGRATION_TEST_DATE_PREFIX_MIX_DATA,
+  INTEGRATION_TEST_DATE_PREFIX_NO_DATA,
   PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
   TEST_FILE_NAME
 } from './constants/awsParameters'
@@ -41,6 +45,8 @@ describe('Submit a PII request with approved ticket data', () => {
     'Number of standard tier files to copy was 1, glacier tier files to copy was 0'
   const GLACIER_TIER_OBJECTS_TO_COPY_MESSAGE =
     'Number of standard tier files to copy was 0, glacier tier files to copy was 1'
+  const MIX_TIER_OBJECTS_TO_COPY_MESSAGE =
+    'Number of standard tier files to copy was 1, glacier tier files to copy was 1'
   const S3_COPY_JOB_STARTED_MESSAGE =
     'Started S3 copy job for zendesk ticket with id'
   const S3_GLACIER_RESTORE_STARTED_MESSAGE =
@@ -192,6 +198,63 @@ describe('Submit a PII request with approved ticket data', () => {
     })
   })
 
+  describe('valid requests for standard and glacier copy - analysis bucket empty', () => {
+    let ticketId: string
+
+    beforeEach(async () => {
+      await deleteAuditDataWithPrefix(
+        AUDIT_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}`
+      )
+      await deleteAuditDataWithPrefix(
+        ANALYSIS_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}`
+      )
+      await copyAuditDataFromTestDataBucket(
+        AUDIT_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}/01/${TEST_FILE_NAME}`,
+        TEST_FILE_NAME,
+        'GLACIER'
+      )
+      await copyAuditDataFromTestDataBucket(
+        AUDIT_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}/02/${TEST_FILE_NAME}`,
+        TEST_FILE_NAME
+      )
+      ticketId = await createZendeskTicket(
+        validStandardAndGlacierTiersRequestData
+      )
+      await approveZendeskTicket(ticketId)
+    })
+
+    test('valid request with data in standard and glacier tier', async () => {
+      const initiateDataRequestEvents =
+        await getCloudWatchLogEventsGroupByMessagePattern(
+          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+        )
+      expect(initiateDataRequestEvents).not.toEqual([])
+
+      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+
+      const messageId = getQueueMessageId(initiateDataRequestEvents)
+      console.log('messageId', messageId)
+
+      const processDataRequestEvents =
+        await getCloudWatchLogEventsGroupByMessagePattern(
+          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+          50
+        )
+      expect(processDataRequestEvents).not.toEqual([])
+
+      assertEventPresent(
+        processDataRequestEvents,
+        MIX_TIER_OBJECTS_TO_COPY_MESSAGE
+      )
+    })
+  })
+
   describe('valid requests - data present in analysis bucket', () => {
     let ticketId: string
 
@@ -220,6 +283,50 @@ describe('Submit a PII request with approved ticket data', () => {
 
     afterEach(async () => {
       await deleteZendeskTicket(ticketId)
+    })
+
+    describe('valid requests for no data copy - analysis bucket empty', () => {
+      let ticketId: string
+
+      beforeEach(async () => {
+        await deleteAuditDataWithPrefix(
+          AUDIT_BUCKET_NAME,
+          `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
+        )
+        await deleteAuditDataWithPrefix(
+          ANALYSIS_BUCKET_NAME,
+          `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
+        )
+        ticketId = await createZendeskTicket(validRequestNoData)
+        await approveZendeskTicket(ticketId)
+      })
+
+      test('request for valid data, no files present', async () => {
+        const initiateDataRequestEvents =
+          await getCloudWatchLogEventsGroupByMessagePattern(
+            INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+            [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+          )
+        expect(initiateDataRequestEvents).not.toEqual([])
+
+        assertEventPresent(
+          initiateDataRequestEvents,
+          DATA_SENT_TO_QUEUE_MESSAGE
+        )
+
+        const messageId = getQueueMessageId(initiateDataRequestEvents)
+        console.log('messageId', messageId)
+
+        const processDataRequestEvents =
+          await getCloudWatchLogEventsGroupByMessagePattern(
+            PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+            [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+            50
+          )
+        expect(processDataRequestEvents).not.toEqual([])
+
+        assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
+      })
     })
 
     test('request for valid data already in analysis bucket', async () => {
