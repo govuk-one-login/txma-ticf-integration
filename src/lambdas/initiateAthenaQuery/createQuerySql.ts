@@ -122,7 +122,7 @@ const generateQueryParameters = (
 }
 
 const formatDateFrom = (dateFrom: string): string => {
-  return `${dateFrom.replaceAll('-', '/').concat('/00')}`
+  return `'${dateFrom.replaceAll('-', '/').concat('/00')}'`
 }
 
 const formatDateTo = (dateTo: string): string => {

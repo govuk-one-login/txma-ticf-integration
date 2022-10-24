@@ -20,7 +20,7 @@ export const handler = async (
   try {
     await confirmQueryState(queryDetails, zendeskTicketId)
   } catch (error) {
-    console.log('Error caught')
+    console.error(error)
     return
   }
 

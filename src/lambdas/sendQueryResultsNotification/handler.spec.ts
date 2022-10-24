@@ -68,15 +68,20 @@ describe('sendQueryResultsNotification', () => {
     }
   }
 
-  xit.each(['CANCELLED', 'FAILED'])(
-    `should throw an error if the Athena query state is set to %p`,
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it.each(['CANCELLED', 'FAILED'])(
+    `should log an error if the Athena query state is set to %p`,
     async (state: string) => {
+      jest.spyOn(global.console, 'error')
+
       const message = `Athena Query ${TEST_ATHENA_QUERY_ID} did not complete with status: ${state}`
       givenDbReturnsData()
 
-      await expect(
-        handler(generateAthenaEventBridgeEvent(state))
-      ).rejects.toThrow(message)
+      await handler(generateAthenaEventBridgeEvent(state))
+      expect(console.error).toHaveBeenCalledWith(Error(message))
       expect(updateZendeskTicketById).toHaveBeenCalledWith(
         dbQueryResult.requestInfo.zendeskId,
         message,
@@ -86,15 +91,19 @@ describe('sendQueryResultsNotification', () => {
     }
   )
 
-  xit('should throw an error if the Athena query state is unrecognised', async () => {
+  it('should log an error if the Athena query state is unrecognised', async () => {
+    jest.spyOn(global.console, 'error')
+
     const unrecognisedQueryState = 'something unrecognised'
     givenDbReturnsData()
 
-    await expect(
-      handler(generateAthenaEventBridgeEvent(unrecognisedQueryState))
-    ).rejects.toThrow(
-      `Function was called with unexpected state: ${unrecognisedQueryState}. Ensure the template is configured correctly`
+    await handler(generateAthenaEventBridgeEvent(unrecognisedQueryState))
+    expect(console.error).toHaveBeenCalledWith(
+      Error(
+        `Function was called with unexpected state: ${unrecognisedQueryState}. Ensure the template is configured correctly`
+      )
     )
+
     expect(generateSecureDownloadHash).not.toHaveBeenCalled()
   })
 
