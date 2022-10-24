@@ -17,7 +17,12 @@ export const handler = async (
   const requestData = await getQueryByAthenaQueryId(athenaQueryId)
   const zendeskTicketId = requestData.requestInfo.zendeskId
 
-  await confirmQueryState(queryDetails, zendeskTicketId)
+  try {
+    await confirmQueryState(queryDetails, zendeskTicketId)
+  } catch (error) {
+    console.log('Error caught')
+    return
+  }
 
   const recipientName = requestData.requestInfo.recipientName
   const recipientEmail = requestData.requestInfo.recipientEmail
