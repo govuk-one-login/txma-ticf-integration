@@ -1,30 +1,9 @@
-export const piiTypesDataPathsMap = [
-  {
-    piiType: 'passport_number',
-    dataPath: 'restricted.passport'
-  },
-  {
-    piiType: 'passport_expiry_date',
-    dataPath: 'restricted.passport'
-  },
-  {
-    piiType: 'drivers_license',
-    dataPath: 'restricted.dl'
-  },
-  {
-    piiType: 'dob',
-    dataPath: 'restricted.dob'
-  },
-  {
-    piiType: 'name',
-    dataPath: 'restricted.name'
-  },
-  {
-    piiType: 'current_address',
-    dataPath: 'restricted.address'
-  },
-  {
-    piiType: 'previous_address',
-    dataPath: 'restricted.address'
-  }
-]
+export const PII_TYPES_DATA_PATHS_MAP: { [key: string]: string } = {
+  passport_number: 'restricted.passport',
+  passport_expiry_date: 'restricted.passportExpiryDate',
+  drivers_license: 'restricted.dl',
+  dob: 'restricted.dob',
+  name: 'restricted.name',
+  current_address: 'restricted.currentAddress',
+  previous_address: 'restricted.previousAddress'
+}

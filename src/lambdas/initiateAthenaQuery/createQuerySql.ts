@@ -1,4 +1,4 @@
-import { piiTypesDataPathsMap } from '../../constants/piiTypesDataPathsMap'
+import { PII_TYPES_DATA_PATHS_MAP } from '../../constants/piiTypesDataPathsMap'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import {
   DataRequestParams,
@@ -101,13 +101,7 @@ const formatDataPath = (dataPath: string): string => {
 }
 
 const piiTypeDataPathMap = (piiType: string): string => {
-  const pair = piiTypesDataPathsMap.find((pair) => pair.piiType === piiType)
-
-  if (pair?.dataPath === undefined || pair?.dataPath === null) {
-    throw Error(`${piiType} is not a valid piiType`)
-  }
-
-  return pair.dataPath
+  return PII_TYPES_DATA_PATHS_MAP[piiType]
 }
 
 const formatWhereStatment = (
