@@ -55,6 +55,7 @@ process.env.ZENDESK_BASE_URL = '(value in Team Test Confluence)'
 process.env.ZENDESK_WEBHOOK_API_BASE_URL = '(get from AWS console)'
 process.enc.ZENDESK_WEBHOOK_SECRET_KEY = '(check with Test team/Tech lead)'
 process.env.ZENDESK_END_USER_EMAIL = '(value in Team Test Confluence)'
+process.env.ZENDESK_END_USER_NAME = '(value in Team Test Confluence)'
 process.env.ZENDESK_AGENT_EMAIL = '(value in Team Test Confluence)'
 process.env.ZENDESK_ADMIN_EMAIL = '(value in Team Test Confluence)'
 ```
