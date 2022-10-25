@@ -27,7 +27,6 @@ import {
 } from './constants/dynamoDBItemDetails'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 
-// TODO: ADD TO SET UP: - COPY DATA FROM TEST BUCKET TO ANALYSIS BUCKET, ENSURING DATE IN TEST FILE AND CONTENT MATCH DYNAMODB TICKET DATE
 describe('Athena Query SQL generation and execution', () => {
   jest.setTimeout(90000)
 
@@ -174,7 +173,5 @@ describe('Athena Query SQL generation and execution', () => {
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
       assertEventPresent(athenaQueryEvents, ATHENA_HANDLER_INVOKE_ERROR)
     })
-
-    /*it('Lambda should error if details have neither data paths nor pii types', async () => {})*/
   })
 })
