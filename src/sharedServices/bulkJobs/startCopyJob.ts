@@ -44,7 +44,7 @@ const createS3CopyJob = async (
   const input = {
     ConfirmationRequired: false,
     ClientRequestToken: `s3-copy-job-for-ticket-id-${zendeskTicketId}`,
-    AccountId: getEnv('ACCOUNT_ID'),
+    AccountId: getEnv('AWS_ACCOUNT_ID'),
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
     Operation: {

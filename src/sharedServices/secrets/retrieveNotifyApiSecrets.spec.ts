@@ -3,7 +3,7 @@ import { retrieveNotifySecrets } from './retrieveNotifyApiSecrets'
 // Dependencies
 import { retrieveSecrets } from './retrieveSecrets'
 import {
-  TEST_NOTIFY_SECRET_NAME,
+  TEST_NOTIFY_SECRET_ARN,
   ALL_NOTIFY_SECRETS
 } from '../../utils/tests/testConstants'
 
@@ -33,7 +33,7 @@ describe('retrieveNotifySecrets', () => {
     expect(secrets.notifyTemplateId).toEqual(
       ALL_NOTIFY_SECRETS.notifyTemplateId
     )
-    expect(retrieveSecrets).toHaveBeenCalledWith(TEST_NOTIFY_SECRET_NAME)
+    expect(retrieveSecrets).toHaveBeenCalledWith(TEST_NOTIFY_SECRET_ARN)
   })
   it.each(['NOTIFY_API_KEY', 'NOTIFY_TEMPLATE_ID'])(
     `should throw an error when %p is not set`,
@@ -46,7 +46,7 @@ describe('retrieveNotifySecrets', () => {
       givenSecretKeysSet(secretCollection)
 
       expect(retrieveNotifySecrets()).rejects.toThrow(
-        `Secret with key ${keyToOmit} not set in ${TEST_NOTIFY_SECRET_NAME}`
+        `Secret with key ${keyToOmit} not set in ${TEST_NOTIFY_SECRET_ARN}`
       )
     }
   )

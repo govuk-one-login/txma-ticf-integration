@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Infrastructure for development tools
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  CodeSigningConfigArn:
+    Description: The ARN of the Code Signing Config to use, provided by the deployment pipeline
+    Type: String
+    Default: none
+  Environment:
+    Description: The environment type
+    Type: String
+    AllowedValues:
+      - dev
+  PermissionsBoundary:
+    Description: The ARN of the permissions boundary to apply to any role created by the template
+    Type: String
+    Default: none
+
+Conditions:
+  UseCodeSigning: !Not [ !Equals [ !Ref CodeSigningConfigArn, none ] ]
+  UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundary, none ] ]
+
+Globals:
+  Function:
+    CodeSigningConfigArn: !If [ UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue ]
+    CodeUri: ../../dist/
+    Environment:
+      Variables:
+        NODE_OPTIONS: --enable-source-maps
+    PermissionsBoundary: !If [ UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue ]
+    ReservedConcurrentExecutions: 100
+    Runtime: nodejs16.x
+    Timeout: 15
+
+Resources:
+  EmptyS3BucketsFunction:
+    #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_116:DLQ not required as failures will be reported to CloudFormation
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: emptyS3Buckets.handler
+      FunctionName: !Sub ${AWS::StackName}-empty-s3-buckets
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Policies:
+        - Statement:
+          - Sid: ListStackResources
+            Effect: Allow
+            Action:
+              - cloudformation:ListStackResources
+            Resource: '*'
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:PutLogEvents
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+            Resource: !GetAtt EmptyS3BucketsLogs.Arn
+          - Sid: S3ReadWrite
+            Effect: Allow
+            Action:
+              - s3:DeleteObject*
+              - s3:GetBucketVersioning
+              - s3:ListBucket
+              - s3:ListBucketVersions
+              - s3:PutBucketVersioning
+            Resource: '*'
+
+  EmptyS3BucketsLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-empty-s3-buckets'
+      RetentionInDays: 30
+
+  EmptyS3BucketFunctionArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: EmptyS3BucketFunctionArn
+      Type: String
+      Value: !GetAtt EmptyS3BucketsFunction.Arn

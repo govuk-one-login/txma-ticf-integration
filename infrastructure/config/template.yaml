@@ -1,0 +1,196 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Config for TICF integration
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Description: The environment type
+    Type: String
+    AllowedValues:
+      - dev
+      - build
+      - staging
+      - integration
+      - production
+
+Mappings:
+  Environment:
+    dev:
+      ZendeskFieldIdDataPaths: '5698447116060'
+      ZendeskFieldIdDateFrom: '5605700069916'
+      ZendeskFieldIdDateTo: '5605700069916'
+      ZendeskFieldIdEventIds: '5605423021084'
+      ZendeskFieldIdIdentifierType: '5605352623260'
+      ZendeskFieldIdJourneyIds: '5605588962460'
+      ZendeskFieldIdPiiTypes: '5641719421852'
+      ZendeskFieldIdRecipientEmail: '6202354485660'
+      ZendeskFieldIdRecipientName: '6202301182364'
+      ZendeskFieldIdSessionIds: '5605573488156'
+      ZendeskFieldIdUserIds: '5605546094108'
+
+    build:
+      ZendeskFieldIdDataPaths: '5698447116060'
+      ZendeskFieldIdDateFrom: '5605700069916'
+      ZendeskFieldIdDateTo: '5605700069916'
+      ZendeskFieldIdEventIds: '5605423021084'
+      ZendeskFieldIdIdentifierType: '5605352623260'
+      ZendeskFieldIdJourneyIds: '5605588962460'
+      ZendeskFieldIdPiiTypes: '5641719421852'
+      ZendeskFieldIdRecipientEmail: '6202354485660'
+      ZendeskFieldIdRecipientName: '6202301182364'
+      ZendeskFieldIdSessionIds: '5605573488156'
+      ZendeskFieldIdUserIds: '5605546094108'
+
+    staging:
+      ZendeskFieldIdDataPaths: '5698447116060'
+      ZendeskFieldIdDateFrom: '5605700069916'
+      ZendeskFieldIdDateTo: '5605700069916'
+      ZendeskFieldIdEventIds: '5605423021084'
+      ZendeskFieldIdIdentifierType: '5605352623260'
+      ZendeskFieldIdJourneyIds: '5605588962460'
+      ZendeskFieldIdPiiTypes: '5641719421852'
+      ZendeskFieldIdRecipientEmail: '6202354485660'
+      ZendeskFieldIdRecipientName: '6202301182364'
+      ZendeskFieldIdSessionIds: '5605573488156'
+      ZendeskFieldIdUserIds: '5605546094108'
+
+    integration:
+      ZendeskFieldIdDataPaths: '5698447116060'
+      ZendeskFieldIdDateFrom: '5605700069916'
+      ZendeskFieldIdDateTo: '5605700069916'
+      ZendeskFieldIdEventIds: '5605423021084'
+      ZendeskFieldIdIdentifierType: '5605352623260'
+      ZendeskFieldIdJourneyIds: '5605588962460'
+      ZendeskFieldIdPiiTypes: '5641719421852'
+      ZendeskFieldIdRecipientEmail: '6202354485660'
+      ZendeskFieldIdRecipientName: '6202301182364'
+      ZendeskFieldIdSessionIds: '5605573488156'
+      ZendeskFieldIdUserIds: '5605546094108'
+
+    production: #TODO: Populate with production values
+      ZendeskFieldIdDataPaths: 'x'
+      ZendeskFieldIdDateFrom: 'x'
+      ZendeskFieldIdDateTo: 'x'
+      ZendeskFieldIdEventIds: 'x'
+      ZendeskFieldIdIdentifierType: 'x'
+      ZendeskFieldIdJourneyIds: 'x'
+      ZendeskFieldIdPiiTypes: 'x'
+      ZendeskFieldIdRecipientEmail: 'x'
+      ZendeskFieldIdRecipientName: 'x'
+      ZendeskFieldIdSessionIds: 'x'
+      ZendeskFieldIdUserIds: 'x'
+
+Resources:
+  ZendeskFieldIdDataPathsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdDataPaths
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdDataPaths ]
+
+  ZendeskFieldIdDateFromParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdDateFrom
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdDateFrom ]
+
+  ZendeskFieldIdDateToParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdDateTo
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdDateTo ]
+
+  ZendeskFieldIdEventIdsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdEventIds
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdEventIds ]
+
+  ZendeskFieldIdIdentifierTypeParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdIdentifierType
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdIdentifierType ]
+
+  ZendeskFieldIdJourneyIdsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdJourneyIds
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdJourneyIds ]
+
+  ZendeskFieldIdPiiTypesParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdPiiTypes
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdPiiTypes ]
+
+  ZendeskFieldIdRecipientEmailParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdRecipientEmail
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdRecipientEmail ]
+
+  ZendeskFieldIdRecipientNameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdRecipientName
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdRecipientName ]
+
+  ZendeskFieldIdSessionIdsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdSessionIds
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdSessionIds ]
+
+  ZendeskFieldIdUserIdsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: '^\d+$'
+      Name: ZendeskFieldIdUserIds
+      Type: String
+      Value: !FindInMap [ Environment, !Ref Environment, ZendeskFieldIdUserIds ]
+
+  ZendeskSecretSet:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: ZendeskSecrets
+      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+
+  ZendeskSecretSetArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: ZendeskSecretSetArn
+      Type: String
+      Value: !Ref ZendeskSecretSet
+
+  NotifySecretSet:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: NotifySecrets
+      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+
+  NotifySecretSetArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: NotifySecretSetArn
+      Type: String
+      Value: !Ref NotifySecretSet

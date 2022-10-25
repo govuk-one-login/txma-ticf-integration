@@ -44,7 +44,7 @@ const createBulkGlacierRestoreJob = async (
   const input = {
     ConfirmationRequired: false,
     ClientRequestToken: `glacier-restore-for-ticket-id-${zendeskTicketId}`,
-    AccountId: getEnv('ACCOUNT_ID'),
+    AccountId: getEnv('AWS_ACCOUNT_ID'),
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
     Operation: {

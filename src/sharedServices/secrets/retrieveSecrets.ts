@@ -6,13 +6,13 @@ import {
 import { getEnv } from '../../utils/helpers'
 
 export const retrieveSecrets = async (
-  secretName: string
+  secretId: string
 ): Promise<{ [key: string]: string }> => {
   const client = new SecretsManagerClient({
     region: getEnv('AWS_REGION')
   })
   const command: GetSecretValueCommandInput = {
-    SecretId: secretName
+    SecretId: secretId
   }
   const data = await client.send(new GetSecretValueCommand(command))
   return JSON.parse(data.SecretString as string)

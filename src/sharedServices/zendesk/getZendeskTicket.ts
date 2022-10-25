@@ -31,7 +31,7 @@ export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
   const ticketInfo = data.ticket
   console.log(
     interpolateTemplate('zendeskTicketIdFound', loggingCopy),
-    ticketInfo
+    JSON.stringify(ticketInfo)
   )
 
   return ticketInfo
