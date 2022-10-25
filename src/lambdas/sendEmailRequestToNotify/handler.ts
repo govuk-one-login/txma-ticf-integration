@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent } from 'aws-lambda'
+import { SQSEvent } from 'aws-lambda'
 import { sendEmailToNotify } from './sendEmailToNotify'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { PersonalisationOptions } from '../../types/notify/personalisationOptions'
@@ -6,16 +6,12 @@ import { tryParseJSON } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import { notifyCopy } from '../../constants/notifyCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
+import { NotifyError } from '../../types/notify/notifyError'
 
-// event type is a placeholder
-export const handler = async (event: APIGatewayProxyEvent) => {
-  if (!event.body) {
-    throw Error(interpolateTemplate('missingEventBody', notifyCopy))
-  }
-  const requestDetails: PersonalisationOptions = tryParseJSON(event.body)
-  if (!requestDetails.zendeskId) {
-    throw Error(interpolateTemplate('zendeskTicketIdMissing', notifyCopy))
-  }
+export const handler = async (event: SQSEvent) => {
+  console.log('received event', JSON.stringify(event, null, 2))
+  const requestDetails = parseRequestDetails(event)
+
   if (isEventBodyInvalid(requestDetails)) {
     await closeZendeskTicket(
       requestDetails.zendeskId,
@@ -32,7 +28,10 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     )
   } catch (error) {
     console.error(
-      interpolateTemplate('requestNotSentToNotify', loggingCopy),
+      `${interpolateTemplate(
+        'requestNotSentToNotify',
+        loggingCopy
+      )}${formatNotifyErrors(error)}`,
       error
     )
     await closeZendeskTicket(
@@ -42,11 +41,39 @@ export const handler = async (event: APIGatewayProxyEvent) => {
   }
 }
 
+const formatNotifyErrors = (error: unknown): string => {
+  const notifyError = error as NotifyError
+  const firstNotifyError = notifyError?.response?.data?.errors[0]
+  if (firstNotifyError) {
+    return firstNotifyError
+  }
+
+  return ''
+}
+
+const parseRequestDetails = (event: SQSEvent) => {
+  if (!event.Records.length) {
+    throw Error('No records found in event')
+  }
+
+  const eventBody = event.Records[0].body
+  if (!eventBody) {
+    throw Error(interpolateTemplate('missingEventBody', notifyCopy))
+  }
+
+  const requestDetails: PersonalisationOptions = tryParseJSON(eventBody)
+  if (!requestDetails.zendeskId) {
+    throw Error(interpolateTemplate('zendeskTicketIdMissing', notifyCopy))
+  }
+
+  return requestDetails
+}
+
 const isEventBodyInvalid = (requestDetails: PersonalisationOptions) => {
   return !(
     requestDetails.firstName &&
     requestDetails.zendeskId &&
-    requestDetails.signedUrl &&
+    requestDetails.secureDownloadUrl &&
     requestDetails.email
   )
 }
