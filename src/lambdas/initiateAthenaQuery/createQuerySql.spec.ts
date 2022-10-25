@@ -12,7 +12,7 @@ import {
 
 describe('create Query SQL', () => {
   it.each(['event_id', 'session_id', 'journey_id', 'user_id'])(
-    `returns a formatted SQL query if conditions satisfied`,
+    `returns a formatted SQL query if requested id type is present`,
     (id) => {
       dataPathsTestDataRequest.identifierType = id as IdentifierTypes
       const idExtension = id.charAt(0)
@@ -28,6 +28,22 @@ describe('create Query SQL', () => {
       })
     }
   )
+
+  // test('returns a formatted SQL query handling each piiType', () => {
+  //   const testRequest = testDataRequestWithNoDataPathsOrPiiTypes
+  //   testRequest.piiTypes = ['passport_number']
+  //   console.log(testRequest)
+  //   expect(createQuerySql(testRequest)).toEqual({
+  //     sqlGenerated: true,
+  //     sql: `SELECT event_id, json_extract(restricted, '$.passport[0].documentnumber') as passport[0]_documentnumber FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+  //     queryParameters: [
+  //       '123',
+  //       '456',
+  //       TEST_FORMATTED_DATE_FROM,
+  //       TEST_FORMATTED_DATE_TO
+  //     ]
+  //   })
+  // })
 
   test('returns an error message if there are no dataPaths or piiTypes', () => {
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({

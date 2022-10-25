@@ -32,8 +32,6 @@ export const createQuerySql = (
     requestData.piiTypes
   )
 
-  // formatWhereStatement ensures that the WHERE statement is parameterised to
-  // protect against SQL injection
   const sqlWhereStatement = formatWhereStatment(
     identifierType,
     identifiers.length
@@ -62,13 +60,13 @@ const getIdentifiers = (
   identifierType: IdentifierTypes,
   requestData: DataRequestParams
 ): string[] => {
-  if (identifierType === 'event_id' && requestData.eventIds) {
+  if (identifierType === 'event_id' && requestData.eventIds.length) {
     return requestData.eventIds
-  } else if (identifierType === 'journey_id' && requestData.journeyIds) {
+  } else if (identifierType === 'journey_id' && requestData.journeyIds.length) {
     return requestData.journeyIds
-  } else if (identifierType === 'session_id' && requestData.sessionIds) {
+  } else if (identifierType === 'session_id' && requestData.sessionIds.length) {
     return requestData.sessionIds
-  } else if (identifierType === 'user_id' && requestData.userIds) {
+  } else if (identifierType === 'user_id' && requestData.userIds.length) {
     return requestData.userIds
   }
 
@@ -76,16 +74,18 @@ const getIdentifiers = (
 }
 
 const formatSelectStatement = (
-  dataPaths: string[] | undefined,
-  piiTypes: string[] | undefined
-): string | undefined => {
+  dataPaths: string[],
+  piiTypes: string[]
+): string => {
   const paths = dataPaths
 
-  piiTypes?.map((piiType) => paths?.push(piiTypeDataPathMap(piiType)))
+  piiTypes.map((piiType) => paths.push(piiTypeDataPathMap(piiType)))
 
-  const formattedPaths = paths?.map((path) => formatDataPath(path))
+  console.log(`paths: ${paths}`)
 
-  return formattedPaths?.join(', ')
+  const formattedPaths = paths.map((path) => formatDataPath(path))
+
+  return formattedPaths.join(', ')
 }
 
 const formatDataPath = (dataPath: string): string => {

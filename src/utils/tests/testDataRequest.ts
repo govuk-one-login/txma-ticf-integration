@@ -69,6 +69,11 @@ export const noIdTestDataRequest = {
   dateFrom: TEST_DATE_FROM,
   dateTo: TEST_DATE_TO,
   identifierType: 'event_id',
+  eventIds: [],
+  userIds: [],
+  journeyIds: [],
+  sessionIds: [],
+  dataPaths: [],
   piiTypes: ['passport_number']
 } as DataRequestParams
 
