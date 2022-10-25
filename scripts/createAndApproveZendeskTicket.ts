@@ -6,10 +6,11 @@ import {
   ZENDESK_END_USER_NAME,
   ZENDESK_PII_FORM_ID
 } from '../integration-tests/constants/zendeskParameters'
+import { getEnv } from '../integration-tests/utils/helpers'
 
 const generateTicketData = (): ZendeskRequestData => ({
   request: {
-    subject: process.env.FIXED_SUBJECT_LINE!,
+    subject: getEnv('FIXED_SUBJECT_LINE'),
     ticket_form_id: ZENDESK_PII_FORM_ID,
     custom_fields: [
       {
@@ -18,11 +19,11 @@ const generateTicketData = (): ZendeskRequestData => ({
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
-        value: process.env.OVERRIDE_EVENT_IDS!
+        value: getEnv('OVERRIDE_EVENT_IDS')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
-        value: process.env.FIXED_DATA_REQUEST_DATE!
+        value: getEnv('FIXED_DATA_REQUEST_DATE')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
@@ -30,11 +31,11 @@ const generateTicketData = (): ZendeskRequestData => ({
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: process.env.DATA_PATHS!
+        value: getEnv('DATA_PATHS')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: process.env.FIXED_RECIPIENT_EMAIL!
+        value: getEnv('FIXED_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
@@ -42,7 +43,7 @@ const generateTicketData = (): ZendeskRequestData => ({
       }
     ],
     comment: {
-      body: 'PII request created in integration test'
+      body: 'PII request created by command-line tool'
     }
   }
 })
