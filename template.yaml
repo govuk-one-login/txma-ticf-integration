@@ -446,6 +446,19 @@ Resources:
       LogGroupName: !Join [ '', [ '/aws/lambda/', !Ref ProcessDataRequestFunction ] ]
       RetentionInDays: 30
   
+  SendEmailQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SendEmailDeadLetterQueue.Arn
+        maxReceiveCount: 5
+  
+  SendEmailDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+  
   SendEmailRequestToNotifyFunction:
     #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
     #checkov:skip=CKV_AWS_117:VPC not required
@@ -457,6 +470,12 @@ Resources:
           NOTIFY_API_SECRETS_NAME: !Sub ${AWS::StackName}-NotifySecrets
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets 
       FunctionName: !Sub ${AWS::StackName}-send-email-request-to-notify
+      Events:
+        SendEmailEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SendEmailQueue.Arn
+            BatchSize: 1
       KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies: 
         - Statement:
@@ -478,8 +497,13 @@ Resources:
               - kms:Decrypt
             Resource:
               - !GetAtt SecretsKmsKey.Arn
+          - Sid: KmsQueueAllowDecrypt
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt QueueKmsKey.Arn
       ReservedConcurrentExecutions: 10
-      Timeout: 900
 
   SendEmailRequestToNotifyLogs:
     Type: AWS::Logs::LogGroup
@@ -738,6 +762,12 @@ Resources:
               - dynamodb:UpdateItem
             Resource:
               - !GetAtt QueryRequestDynamoDBTable.Arn
+          - Sid: Events
+            Effect: Allow
+            Action: 
+              - events:PutEvents
+            Resource:
+              - '*'
       ReservedConcurrentExecutions: 10
       DeadLetterQueue:
         Type: SQS
@@ -869,6 +899,8 @@ Resources:
             EncryptionOption: SSE_S3
           OutputLocation: !Join [ '', [ 's3://', !Ref QueryResultsBucket, '/' ] ]
 
+
+# NOTE - the global secondary index will be added again once merged with main following an amendment to the projection type - this is a 2 stage process in AWS
   QueryRequestDynamoDBTable: 
     Type: AWS::DynamoDB::Table
     Properties:
@@ -886,7 +918,7 @@ Resources:
             - AttributeName: athenaQueryId
               KeyType: HASH
           Projection:
-            ProjectionType: KEYS_ONLY
+            ProjectionType: "ALL"
           ProvisionedThroughput:
             ReadCapacityUnits: 5
             WriteCapacityUnits: 5
@@ -900,6 +932,143 @@ Resources:
         SSEType: KMS
         KMSMasterKeyId: !GetAtt DatabaseKmsKey.Arn
 
+  # Notification
+
+  AthenaEBRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: The rule listening for Athena Status Change Events and triggering the sendEmailRequestToNotify lambda
+      EventPattern:
+        source:
+          - 'aws.athena'
+        detail-type:
+          - 'Athena Query State Change'
+        detail:
+          currentState:
+            - 'SUCCEEDED'
+            - 'FAILED'
+            - 'CANCELLED'
+      State: 'ENABLED'
+      Targets:
+        -
+          Arn: !GetAtt SendQueryResultsNotificationFunction.Arn
+          Id: AthenaEventTarget
+
+  SendQueryResultsNotificationFunction:
+    #checkov:skip=CKV_AWS_116:Not triggered by SQS
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: sendQueryResultsNotification.handler
+      Environment:
+        Variables:
+          QUERY_REQUEST_DYNAMODB_TABLE_NAME: !Ref QueryRequestDynamoDBTable
+          SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME: '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME}}'
+          ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
+          EMAIL_SEND_QUEUE_URL: !Ref SendEmailQueue
+          SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SECURE_DOWNLOAD_WEBSITE_BASE_PATH}}'
+          QUERY_RESULTS_BUCKET_NAME: !Ref QueryResultsBucket
+      FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      Policies:
+        - Statement:
+          - Sid: S3ResultsPermissions
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetBucketLocation
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:AbortMultipartUpload
+              - s3:PutObject
+              - s3:GetObject
+            Resource:
+              - !GetAtt QueryResultsBucket.Arn
+              - !Join ['/', [!GetAtt QueryResultsBucket.Arn, '*']]
+          - Sid: KmsQueueAllowDecrypt
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt QueueKmsKey.Arn
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Sid: SecretsManager
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: 
+              - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${AWS::StackName}-ZendeskSecrets-??????
+          - Sid: KmsSecretsDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt SecretsKmsKey.Arn
+          - Sid: KmsDatabaseDecryptionKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - !GetAtt DatabaseKmsKey.Arn
+          - Sid: DynamoDBPutQuery
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+              - dynamodb:Query
+            Resource:
+              - !GetAtt QueryRequestDynamoDBTable.Arn
+              - !Join ['/', [!GetAtt QueryRequestDynamoDBTable.Arn, 'index', 'athenaQueryIdIndex']]
+          - Sid: DynamoDBPutSecureDownload
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+            Resource:
+              - '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_ARN}}'
+          - Sid: SecureDownloadDatabaseKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - '{{resolve:ssm:SECURE_DOWNLOAD_DATABASE_KMS_KEY_ARN}}'
+          - Sid: AllowQueueSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+            - !GetAtt SendEmailQueue.Arn
+          - Sid: AllowQueueKmsAccess
+            Effect: Allow
+            Action:
+              - kms:GenerateDataKey
+              - kms:Encrypt
+            # For some reason, Decrypt is needed to add items to the queue.
+            # See here for some discussion of this: https://github.com/aws/aws-cdk/issues/6609
+              - kms:Decrypt
+            Resource:
+            - !GetAtt QueueKmsKey.Arn
+      ReservedConcurrentExecutions: 10
+
+  SendQueryResultsNotificationLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref SendQueryResultsNotificationFunction]]
+      RetentionInDays: 30
+
+  PermissionForAthenaEventToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref SendQueryResultsNotificationFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt AthenaEBRule.Arn
+      
   # Dev Resources
   EmptyS3BucketsFunction:
     #checkov:skip=CKV_AWS_116:DLQ not required as failures will be reported to CloudFormation
