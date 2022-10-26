@@ -53,8 +53,8 @@ describe('create Query SQL', () => {
         queryParameters: [
           '123',
           '456',
-          TEST_FORMATTED_DATE_FROM,
-          TEST_FORMATTED_DATE_TO
+          `'${TEST_FORMATTED_DATE_FROM}'`,
+          `'${TEST_FORMATTED_DATE_TO}'`
         ]
       })
       testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
@@ -72,8 +72,8 @@ describe('create Query SQL', () => {
       queryParameters: [
         '123',
         '456',
-        TEST_FORMATTED_DATE_FROM,
-        TEST_FORMATTED_DATE_TO
+        `'${TEST_FORMATTED_DATE_FROM}'`,
+        `'${TEST_FORMATTED_DATE_TO}'`
       ]
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
