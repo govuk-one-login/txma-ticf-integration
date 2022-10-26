@@ -22,8 +22,8 @@ describe('create Query SQL', () => {
         queryParameters: [
           `123${idExtension}`,
           `456${idExtension}`,
-          TEST_FORMATTED_DATE_FROM,
-          TEST_FORMATTED_DATE_TO
+          `'${TEST_FORMATTED_DATE_FROM}'`,
+          `'${TEST_FORMATTED_DATE_TO}'`
         ]
       })
     }

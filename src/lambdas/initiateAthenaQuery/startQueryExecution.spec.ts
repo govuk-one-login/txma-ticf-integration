@@ -1,9 +1,10 @@
 import { startQueryExecution } from './startQueryExecution'
-import { mockClient } from 'aws-sdk-client-mock'
 import {
   AthenaClient,
   StartQueryExecutionCommand
 } from '@aws-sdk/client-athena'
+import { mockClient } from 'aws-sdk-client-mock'
+import 'aws-sdk-client-mock-jest'
 
 const athenaMock = mockClient(AthenaClient)
 

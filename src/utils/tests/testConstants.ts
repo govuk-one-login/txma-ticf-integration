@@ -20,14 +20,16 @@ export const MOCK_INITIATE_DATA_REQUEST_QUEUE_URL =
 export const MOCK_INITIATE_ATHENA_QUERY_QUEUE_URL =
   'https://initiate_athena_query_queue_'
 export const MOCK_TERMINATED_JOB_QUEUE_URL = 'https://terminate_job_queue_'
+export const MOCK_SEND_EMAIL_QUEUE_URL = 'https://send_email_queue'
 export const TEST_ZENDESK_SECRET_NAME = 'myZendeskSecretName'
 export const TEST_NOTIFY_SECRET_NAME = 'myNotifySecretName'
 export const TEST_NOTIFY_EMAIL = 'test@email.com'
 export const TEST_NOTIFY_NAME = 'TestName'
-export const TEST_SIGNED_URL = 'signed.url.com'
+export const TEST_SECURE_DOWNLOAD_URL = 'secureDownload.url.com'
 export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
 export const TEST_ANALYSIS_BUCKET_ARN = 'myAnalysisBucketArn'
 export const TEST_AUDIT_BUCKET = 'myAuditBucket'
+export const TEST_QUERY_RESULTS_BUCKET = 'myQueryResultsBucket'
 export const TEST_DATE_FROM = '2021-08-21'
 export const TEST_DATE_TO = '2021-08-21'
 export const TEST_FORMATTED_DATE_FROM = '2021/08/21/00'
@@ -56,3 +58,8 @@ export const TEST_ZENDESK_FIELD_ID_SESSION_IDS = 8
 export const TEST_ZENDESK_FIELD_ID_USER_IDS = 9
 export const TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL = 10
 export const TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME = 11
+export const TEST_DOWNLOAD_HASH = 'myDownloadHash'
+export const TEST_SECURE_DOWNLOAD_WEBSITE_BASE_PATH =
+  'http://my-download-website/secure'
+export const TEST_SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME = 'secureDownloadDynamoDb'
+export const TEST_ATHENA_QUERY_ID = 'abc123'

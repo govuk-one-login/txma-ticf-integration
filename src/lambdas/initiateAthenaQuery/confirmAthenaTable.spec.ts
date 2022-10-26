@@ -1,6 +1,7 @@
-import { mockClient } from 'aws-sdk-client-mock'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import { GlueClient, GetTableCommand } from '@aws-sdk/client-glue'
+import { mockClient } from 'aws-sdk-client-mock'
+import 'aws-sdk-client-mock-jest'
 
 const glueMock = mockClient(GlueClient)
 

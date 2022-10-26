@@ -1,13 +1,13 @@
-import { defaultApiRequest } from '../../utils/tests/events/defaultApiRequest'
 import {
   TEST_NOTIFY_EMAIL,
   TEST_NOTIFY_NAME,
-  TEST_SIGNED_URL,
+  TEST_SECURE_DOWNLOAD_URL,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { handler } from './handler'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { sendEmailToNotify } from './sendEmailToNotify'
+import { constructSqsEvent } from '../../utils/tests/events/sqsEvent'
 
 jest.mock('./sendEmailToNotify', () => ({
   sendEmailToNotify: jest.fn()
@@ -31,13 +31,10 @@ const validEventBody = `{
       "email": "${TEST_NOTIFY_EMAIL}",
       "firstName": "${TEST_NOTIFY_NAME}",
       "zendeskId": "${ZENDESK_TICKET_ID}",
-      "signedUrl": "${TEST_SIGNED_URL}"
+      "secureDownloadUrl": "${TEST_SECURE_DOWNLOAD_URL}"
     }`
 const callHandlerWithBody = async (customBody: string) => {
-  await handler({
-    ...defaultApiRequest,
-    body: customBody
-  })
+  await handler(constructSqsEvent(customBody))
 }
 
 describe('initiate sendEmailRequest handler', () => {
@@ -55,7 +52,7 @@ describe('initiate sendEmailRequest handler', () => {
       email: TEST_NOTIFY_EMAIL,
       firstName: TEST_NOTIFY_NAME,
       zendeskId: ZENDESK_TICKET_ID,
-      signedUrl: TEST_SIGNED_URL
+      secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL
     })
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
@@ -64,6 +61,13 @@ describe('initiate sendEmailRequest handler', () => {
       'closed'
     )
   })
+
+  it('throws an error when no event records are in the SQSEvent object', async () => {
+    await expect(handler({ Records: [] })).rejects.toThrow(
+      'No records found in event'
+    )
+  })
+
   it('throws an error when no event body is present', async () => {
     const invalidEventBody = ''
 
@@ -75,7 +79,7 @@ describe('initiate sendEmailRequest handler', () => {
     const eventBodyParams = JSON.stringify({
       email: TEST_NOTIFY_EMAIL,
       firstName: TEST_NOTIFY_NAME,
-      signedUrl: TEST_SIGNED_URL
+      secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL
     })
 
     await expect(callHandlerWithBody(eventBodyParams)).rejects.toThrow(
@@ -86,7 +90,7 @@ describe('initiate sendEmailRequest handler', () => {
     const eventBodyParams = JSON.stringify({
       email: TEST_NOTIFY_EMAIL,
       firstName: TEST_NOTIFY_NAME,
-      signedUrl: TEST_SIGNED_URL,
+      secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL,
       zendeskId: ''
     })
 
@@ -94,13 +98,13 @@ describe('initiate sendEmailRequest handler', () => {
       'Zendesk ticket ID missing from event body'
     )
   })
-  it.each(['firstName', 'email', 'signedUrl'])(
+  it.each(['firstName', 'email', 'secureDownloadUrl'])(
     'updates Zendesk ticket, and throws an error when %p is missing from the event body',
     async (missingPropertyName: string) => {
       const eventBodyParams = {
         email: TEST_NOTIFY_EMAIL,
         firstName: TEST_NOTIFY_NAME,
-        signedUrl: TEST_SIGNED_URL,
+        secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL,
         zendeskId: ZENDESK_TICKET_ID
       } as { [key: string]: string }
       delete eventBodyParams[missingPropertyName]
@@ -116,13 +120,13 @@ describe('initiate sendEmailRequest handler', () => {
       )
     }
   )
-  it.each(['firstName', 'email', 'signedUrl'])(
+  it.each(['firstName', 'email', 'secureDownloadUrl'])(
     'updates Zendesk ticket, and throws an error when %p is an empty string',
     async (emptyStringPropertyName: string) => {
       const eventBodyParams = {
         email: TEST_NOTIFY_EMAIL,
         firstName: TEST_NOTIFY_NAME,
-        signedUrl: TEST_SIGNED_URL,
+        secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL,
         zendeskId: ZENDESK_TICKET_ID
       } as { [key: string]: string }
       eventBodyParams[emptyStringPropertyName] = ''
@@ -162,7 +166,7 @@ describe('initiate sendEmailRequest handler', () => {
       email: TEST_NOTIFY_EMAIL,
       firstName: TEST_NOTIFY_NAME,
       zendeskId: ZENDESK_TICKET_ID,
-      signedUrl: TEST_SIGNED_URL
+      secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL
     })
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(

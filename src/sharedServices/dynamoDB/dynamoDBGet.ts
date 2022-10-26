@@ -1,4 +1,8 @@
-import { AttributeValue, GetItemCommand } from '@aws-sdk/client-dynamodb'
+import {
+  AttributeValue,
+  GetItemCommand,
+  QueryCommand
+} from '@aws-sdk/client-dynamodb'
 import { isDataRequestParams } from '../../types/dataRequestParams'
 import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { getEnv } from '../../utils/helpers'
@@ -16,7 +20,33 @@ export const getDatabaseEntryByZendeskId = async (
   if (!data?.Item) {
     throw Error(`Cannot find database entry for zendesk ticket '${zendeskId}'`)
   }
-  const responseObject = data?.Item?.requestInfo?.M
+  return parseDatabaseItem(data?.Item)
+}
+
+export const getQueryByAthenaQueryId = async (
+  athenaQueryId: string
+): Promise<DataRequestDatabaseEntry> => {
+  const params = {
+    TableName: getEnv('QUERY_REQUEST_DYNAMODB_TABLE_NAME'),
+    KeyConditionExpression: '#attribute = :value',
+    IndexName: 'athenaQueryIdIndex',
+    ProjectionExpression: 'zendeskId, athenaQueryId, requestInfo',
+    ExpressionAttributeNames: { '#attribute': 'athenaQueryId' },
+    ExpressionAttributeValues: { ':value': { S: `${athenaQueryId}` } }
+  }
+
+  const data = await ddbClient.send(new QueryCommand(params))
+  if (!data?.Items?.length) {
+    throw new Error(
+      `No data returned from db for athenaQueryId: ${athenaQueryId}`
+    )
+  }
+
+  return parseDatabaseItem(data.Items[0])
+}
+
+const parseDatabaseItem = (item: Record<string, AttributeValue>) => {
+  const responseObject = item?.requestInfo?.M
 
   const dataRequestParams = {
     zendeskId: responseObject?.zendeskId?.S,
@@ -36,24 +66,18 @@ export const getDatabaseEntryByZendeskId = async (
   }
 
   if (!isDataRequestParams(dataRequestParams)) {
-    throw new Error(
-      `Event data returned from db was not of correct type for zendesk ticket: '${zendeskId}'`
-    )
+    throw new Error(`Event data returned from db was not of correct type`)
   }
 
-  data?.Item
   return {
     requestInfo: dataRequestParams,
     checkGlacierStatusCount: retrieveNumericValue(
-      data?.Item?.checkGlacierStatusCount
+      item?.checkGlacierStatusCount
     ),
-    checkCopyStatusCount: retrieveNumericValue(
-      data?.Item?.checkCopyStatusCount
-    ),
-    athenaQueryId: data?.Item?.athenaQueryId?.S
+    checkCopyStatusCount: retrieveNumericValue(item?.checkCopyStatusCount),
+    athenaQueryId: item?.athenaQueryId?.S
   }
 }
-
 const retrieveNumericValue = (
   attributeValue: AttributeValue
 ): number | undefined => {
