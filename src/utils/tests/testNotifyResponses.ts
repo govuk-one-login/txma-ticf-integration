@@ -18,7 +18,7 @@ export const testSuccessfulNotifyResponse: CustomAxiosResponse = {
       "personalisation":{
         "firstName":"${TEST_NOTIFY_NAME}",
         "zendeskId":"${ZENDESK_TICKET_ID}",
-        "signedUrl":"signedurl.com"
+        "secureDownloadUrl":"mySecureDownloadUrl.com"
       }
     }`
   },

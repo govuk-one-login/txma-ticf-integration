@@ -13,7 +13,9 @@ export const startQueryExecution = async (
   // validate queryParams
   console.log('Attempting to start Athena query execution')
 
-  const client = new AthenaClient({ region: getEnv('AWS_REGION') })
+  const client = new AthenaClient({
+    region: getEnv('AWS_REGION')
+  })
 
   const input = generateQueryExecutionCommandInput(queryParams)
   console.log(input)

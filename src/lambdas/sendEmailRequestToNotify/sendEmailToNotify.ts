@@ -16,7 +16,7 @@ export const sendEmailToNotify = async (
       personalisation: {
         firstName: requestDetails.firstName,
         zendeskId: requestDetails.zendeskId,
-        signedUrl: requestDetails.signedUrl
+        secureDownloadUrl: requestDetails.secureDownloadUrl
       }
     })
   )

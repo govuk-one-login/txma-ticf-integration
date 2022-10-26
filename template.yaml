@@ -72,6 +72,20 @@ Globals:
     OpenApiVersion: 3.0.1
 
 Resources:
+  S3Resources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./infrastructure/s3.yaml
+      Parameters:
+        Environment: !Ref Environment
+
+  SqsResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./infrastructure/sqs.yaml
+      Parameters:
+        Environment: !Ref Environment
+
   ZendeskWebhookApi:
     #checkov:skip=CKV_AWS_120:We explicitly don't want caching because we want the lambda to fire off every time a Zendesk ticket is approved
     Type: AWS::Serverless::Api
@@ -99,7 +113,7 @@ Resources:
       Handler: initiateDataRequest.handler
       Environment:
         Variables:
-          INITIATE_DATA_REQUEST_QUEUE_URL: '{{resolve:ssm:InitiateDataRequestQueueUrl}}'
+          INITIATE_DATA_REQUEST_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueUrl
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZendeskFieldIdDataPaths}}'
           ZENDESK_FIELD_ID_DATE_FROM: '{{resolve:ssm:ZendeskFieldIdDateFrom}}'
@@ -144,7 +158,7 @@ Resources:
             Effect: Allow
             Action:
               - sqs:SendMessage
-            Resource: '{{resolve:ssm:InitiateDataRequestQueueArn}}'
+            Resource: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueArn
           - Sid: UseSqsKmsKey
             Effect: Allow
             Action:
@@ -170,21 +184,21 @@ Resources:
         Variables:
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
           AUDIT_BUCKET_NAME: !Ref AuditBucketName
-          ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
-          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          ANALYSIS_BUCKET_ARN: !GetAtt S3Resources.Outputs.AnalysisBucketArn
+          ANALYSIS_BUCKET_NAME: !GetAtt S3Resources.Outputs.AnalysisBucketName
           BATCH_JOB_MANIFEST_BUCKET_ARN: '{{resolve:ssm:BatchJobManifestBucketArn}}'
           BATCH_JOB_MANIFEST_BUCKET_NAME: '{{resolve:ssm:BatchJobManifestBucketName}}'
           BATCH_JOB_ROLE_ARN: !GetAtt BatchJobsRole.Arn
-          INITIATE_ATHENA_QUERY_QUEUE_URL: '{{resolve:ssm:InitiateAthenaQueryQueueUrl}}'
-          INITIATE_DATA_REQUEST_QUEUE_URL: '{{resolve:ssm:InitiateDataRequestQueueUrl}}'
+          INITIATE_ATHENA_QUERY_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateAthenaQueryQueueUrl
+          INITIATE_DATA_REQUEST_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueUrl
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
-          TERMINATED_JOB_QUEUE_URL: '{{resolve:ssm:TerminatedJobQueueUrl}}'
+          TERMINATED_JOB_QUEUE_URL: !GetAtt SqsResources.Outputs.TerminatedJobQueueUrl
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       Events:
         InitiateDataRequestEvent:
           Type: SQS
           Properties:
-            Queue: '{{resolve:ssm:InitiateDataRequestQueueArn}}'
+            Queue: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueArn
             BatchSize: 1
       FunctionName: !Sub ${AWS::StackName}-process-data
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
@@ -224,31 +238,28 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: DecryptSecrets
+            - Sid: DecryptKmsKeys
               Effect: Allow
               Action:
                 - kms:Decrypt
-              Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
-            - Sid: DynamoDbReadWrite
+              Resource: 
+                - '{{resolve:ssm:SecretsKmsKeyArn}}'
+                - '{{resolve:ssm:DatabaseKmsKeyArn}}'
+            - Sid: QueryRequestTableReadWrite
               Effect: Allow
               Action:
                 - dynamodb:GetItem
                 - dynamodb:PutItem
                 - dynamodb:UpdateItem
               Resource: '{{resolve:ssm:QueryRequestTableArn}}'
-            - Sid: DecryptDynamoDbItems
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource: '{{resolve:ssm:DatabaseKmsKeyArn}}'
             - Sid: AllowSqsSend
               Effect: Allow
               Action:
                 - sqs:SendMessage
               Resource:
-                - '{{resolve:ssm:InitiateAthenaQueryQueueArn}}'
-                - '{{resolve:ssm:InitiateDataRequestQueueArn}}'
-                - '{{resolve:ssm:TerminatedJobQueueArn}}'
+                - !GetAtt SqsResources.Outputs.InitiateAthenaQueryQueueArn
+                - !GetAtt SqsResources.Outputs.InitiateDataRequestQueueArn
+                - !GetAtt SqsResources.Outputs.TerminatedJobQueueArn
             - Sid: UseSqsKmsKey
               Effect: Allow
               Action:
@@ -258,7 +269,7 @@ Resources:
               Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
       DeadLetterQueue:
         Type: SQS
-        TargetArn: '{{resolve:ssm:InitiateDataRequestDeadLetterQueueArn}}'
+        TargetArn: !GetAtt SqsResources.Outputs.InitiateDataRequestDeadLetterQueueArn
 
   ProcessDataRequestLogs:
     Type: AWS::Logs::LogGroup
@@ -284,7 +295,7 @@ Resources:
         InitiateAthenaQueryEvent:
           Type: SQS
           Properties:
-            Queue: '{{resolve:ssm:InitiateAthenaQueryQueueArn}}'
+            Queue: !GetAtt SqsResources.Outputs.InitiateAthenaQueryQueueArn
             BatchSize: 1
       FunctionName: !Sub ${AWS::StackName}-initiate-athena-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
@@ -335,8 +346,7 @@ Resources:
             Resource:
               - '{{resolve:ssm:DatabaseKmsKeyArn}}'
               - '{{resolve:ssm:SecretsKmsKeyArn}}'
-              - '{{resolve:ssm:SqsKmsKeyArn}}'
-          - Sid: DynamoDbReadWrite
+          - Sid: QueryRequestTableReadWrite
             Effect: Allow
             Action:
               - dynamodb:PutItem
@@ -345,7 +355,7 @@ Resources:
             Resource: '{{resolve:ssm:QueryRequestTableArn}}'
       DeadLetterQueue:
         Type: SQS
-        TargetArn: '{{resolve:ssm:InitiateAthenaQueryDeadLetterQueueArn}}'
+        TargetArn: !GetAtt SqsResources.Outputs.InitiateAthenaQueryDeadLetterQueueArn
 
   InitiateAthenaQueryLogs:
     Type: AWS::Logs::LogGroup
@@ -353,7 +363,7 @@ Resources:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-initiate-athena-query'
       RetentionInDays: 30
-
+  
   SendEmailRequestToNotifyFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
@@ -367,7 +377,13 @@ Resources:
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       FunctionName: !Sub ${AWS::StackName}-send-email-request-to-notify
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
+      Events:
+        SendEmailEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SqsResources.Outputs.SendEmailQueueArn
+            BatchSize: 1
+      Policies: 
         - Statement:
           - Sid: Logs
             Effect: Allow
@@ -388,6 +404,13 @@ Resources:
             Action:
               - kms:Decrypt
             Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
 
   SendEmailRequestToNotifyLogs:
     Type: AWS::Logs::LogGroup
@@ -396,119 +419,116 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-email-request-to-notify'
       RetentionInDays: 30
 
-  AnalysisBucket:
-    Type: AWS::S3::Bucket
+  SendQueryResultsNotificationFunction:
+    #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_116:Not triggered by SQS
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
     Properties:
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-bucket
-      LifecycleConfiguration:
-        Rules:
-          - Id: AnalysisCleanupRule
-            Status: Enabled
-            ExpirationInDays: 30
-      LoggingConfiguration:
-        DestinationBucketName: !Ref AnalysisLogsBucket
-        LogFilePrefix: String
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
-
-  AnalysisLogsBucket:
-    #checkov:skip=CKV_AWS_18:This is the logs bucket
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-logs
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
-
-  BatchJobsRole:
-    Type: AWS::IAM::Role
-    Properties:
-      PermissionsBoundary: !If [ UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue ]
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - batchoperations.s3.amazonaws.com
-            Action: sts:AssumeRole
+      Handler: sendQueryResultsNotification.handler
+      Environment:
+        Variables:
+          QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
+          QUERY_RESULTS_BUCKET_NAME: '{{resolve:ssm:QueryResultsBucketName}}'
+          SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME: '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME}}'
+          SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SECURE_DOWNLOAD_WEBSITE_BASE_PATH}}'
+          SEND_EMAIL_QUEUE_URL: !GetAtt SqsResources.Outputs.SendEmailQueueUrl
+          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+      FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
+      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
       Policies:
-        - PolicyName: AllowS3GlacierRestore
-          PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-              - Sid: AllowAuditBucketRestore
-                Effect: Allow
-                Action:
-                  - s3:RestoreObject
-                Resource:
-                  - !Sub ${AuditBucketArn}/*
-              - Sid: AllowManifestBucketRead
-                Effect: Allow
-                Action:
-                  -  s3:GetObject
-                  -  s3:GetObjectVersion
-                Resource:
-                  - !Join [ '/', [ '{{resolve:ssm:BatchJobManifestBucketArn}}', '*' ] ]
-        - PolicyName: AllowS3Copy
-          PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-              - Sid: AllowAnalysisBucketWrite
-                Effect: Allow
-                Action:
-                  - s3:PutObject
-                  - s3:PutObjectAcl
-                  - s3:PutObjectTagging
-                Resource:
-                  - !Join [ '/', [ !GetAtt AnalysisBucket.Arn, '*' ] ]
-              - Sid: AllowAuditBucketRead
-                Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:GetObjectAcl
-                  - s3:GetObjectTagging
-                  - s3:ListBucket
-                Resource:
-                  - !Sub ${AuditBucketArn}/*
+        - Statement:
+          - Sid: WriteToResultsBucket
+            Effect: Allow
+            Action:
+              - s3:AbortMultipartUpload
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:PutObject
+            Resource:
+              - '{{resolve:ssm:QueryResultsBucketName}}'
+              - '{{resolve:ssm:QueryResultsBucketName}}/*'
+          - Sid: DecryptKmsKeys
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - '{{resolve:ssm:DatabaseKmsKey.Arn}}'
+              - '{{resolve:ssm:SecretsKmsKey.Arn}}'
+              - '{{resolve:ssm:SqsKmsKey.Arn}}'
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !GetAtt SendQueryResultsNotificationLogs.Arn
+          - Sid: SecretsManager
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          - Sid: QueryRequestTableReadWrite
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+              - dynamodb:Query
+            Resource:
+              - '{{resolve:ssm:QueryRequestTableArn}}'
+              - '{{resolve:ssm:QueryRequestTableArn}}/index/athenaQueryIdIndex'
+          - Sid: SecureDownloadTableWrite
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+            Resource: '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_ARN}}'
+          - Sid: AllowSqsSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource: !GetAtt SqsResources.Outputs.SendEmailQueueArn
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
 
-  IntegrationTestDataBucket:
-    #checkov:skip=CKV_AWS_18: Logging not required for test resource
-    Type: AWS::S3::Bucket
-    Condition: DeployIntegrationTestResources
+  SendQueryResultsNotificationLogs:
+    Type: AWS::Logs::LogGroup
     Properties:
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      BucketName: !Sub ${AWS::StackName}-${Environment}-test-data-bucket
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
+      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-query-results-notification'
+      RetentionInDays: 30
 
-  EmptyS3Buckets:
-    Type: AWS::CloudFormation::CustomResource
-    Condition: DeployDevResources
+  PermissionForAthenaEventToInvokeLambda:
+    Type: AWS::Lambda::Permission
     Properties:
-      ServiceToken: '{{resolve:ssm:EmptyS3BucketFunctionArn}}'
+      FunctionName: !Ref SendQueryResultsNotificationFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt AthenaEBRule.Arn
+
+  AthenaEBRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: The rule listening for Athena Status Change Events and triggering the sendEmailRequestToNotify lambda
+      EventPattern:
+        source:
+          - 'aws.athena'
+        detail-type:
+          - 'Athena Query State Change'
+        detail:
+          currentState:
+            - 'SUCCEEDED'
+            - 'FAILED'
+            - 'CANCELLED'
+      State: 'ENABLED'
+      Targets:
+        - Arn: !GetAtt SendQueryResultsNotificationFunction.Arn
+          Id: AthenaEventTarget
