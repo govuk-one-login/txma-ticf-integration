@@ -32,6 +32,10 @@ export const INTEGRATION_TEST_DATE_PREFIX_GLACIER = '2022/02/14'
 export const INTEGRATION_TEST_DATE_NO_DATA = '2022-01-07'
 export const INTEGRATION_TEST_DATE_PREFIX_NO_DATA = '2022/01/07'
 
+export const END_TO_END_TEST_EVENT_ID = 'c9e2bf44-b95e-4f9a-81c4-cf02d42c1552'
 export const END_TO_END_TEST_FILE_NAME =
   'AuditFireHose-staging-62-2022-03-22-01-35-32-98935951-5374-4652-88a4-2ec3eadfc0cd.gz'
 export const END_TO_END_TEST_DATE_PREFIX = '2022/03/22'
+export const END_TO_END_TEST_DATE = '2022-03-22'
+export const END_TO_END_TEST_DATA_PATH =
+  'restricted.name, restricted.birthDate, restricted.address.uprn'
