@@ -3,7 +3,7 @@ import { QueryCommand } from '@aws-sdk/client-dynamodb'
 import { getEnv } from '../helpers'
 export const retrieveSecureDownloadDbRecord = async (
   zendeskId: string
-): Promise<string> => {
+): Promise<string | undefined> => {
   const results = await dynamoDBClient.send(
     new QueryCommand({
       TableName: getEnv('SECURE_DOWNLOAD_DYNAMODB_TABLE'),
@@ -18,16 +18,13 @@ export const retrieveSecureDownloadDbRecord = async (
   )
 
   if (!results?.Items?.length) {
-    throw new Error(
-      `No data returned from secure download db for zendeskId: ${zendeskId}`
-    )
+    return undefined
   }
 
   const result = results.Items[0]?.downloadHash.S
   if (!result) {
-    throw new Error(
-      'Query result from secure download db had no downloadHash set'
-    )
+    return undefined
   }
+
   return result
 }
