@@ -136,9 +136,13 @@ const generateQueryParameters = (
 }
 
 const formatDateFrom = (dateFrom: string): string => {
-  return `'${dateFrom.replaceAll('-', '/').concat('/00')}'`
+  const splitDateFrom = dateFrom.split('-')
+  splitDateFrom.push('00')
+  return `'${splitDateFrom.join('/')}'`
 }
 
 const formatDateTo = (dateTo: string): string => {
-  return `'${dateTo.replaceAll('-', '/').concat('/23')}'`
+  const splitDateTo = dateTo.split('-')
+  splitDateTo.push('23')
+  return `'${splitDateTo.join('/')}'`
 }
