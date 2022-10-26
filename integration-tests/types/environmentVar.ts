@@ -20,4 +20,5 @@ export type EnvironmentVar = {
     | 'DATA_PATHS'
     | 'FIXED_RECIPIENT_EMAIL'
     | 'FIXED_SUBJECT_LINE'
+    | 'SECURE_DOWNLOAD_DYNAMODB_TABLE'
 }

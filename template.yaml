@@ -364,6 +364,19 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-initiate-athena-query'
       RetentionInDays: 30
   
+  SendEmailQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SendEmailDeadLetterQueue.Arn
+        maxReceiveCount: 5
+  
+  SendEmailDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+  
   SendEmailRequestToNotifyFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
