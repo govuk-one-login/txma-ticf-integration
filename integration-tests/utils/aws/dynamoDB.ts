@@ -10,12 +10,14 @@ import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME
 } from '../../constants/zendeskParameters'
-import { dynamoDBItemDetails } from '../../constants/dynamoDBItemDetails'
 import { dynamoDBClient } from './dynamoDBClient'
-import { ItemDetails } from '../../types/dynamoDBItem'
+import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
 
-export const populateDynamoDBWithTestItemDetails = async (ticketID: string) => {
-  const ticketDetails = dynamoDBItemDetails.ticket
+export const populateDynamoDBWithTestItemDetails = async (
+  ticketID: string,
+  itemDetails: DynamoDBItem
+) => {
+  const ticketDetails = itemDetails.ticket
 
   const populateTableParams = {
     TableName: AUDIT_REQUEST_DYNAMODB,
