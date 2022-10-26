@@ -12,7 +12,7 @@ import {
 
 describe('create Query SQL', () => {
   it.each(['event_id', 'session_id', 'journey_id', 'user_id'])(
-    `returns a formatted SQL query if requested id type is present`,
+    `returns a formatted SQL query if requested id type of %p is present`,
     (id) => {
       dataPathsTestDataRequest.identifierType = id as IdentifierTypes
       const idExtension = id.charAt(0)
@@ -29,21 +29,73 @@ describe('create Query SQL', () => {
     }
   )
 
-  // test('returns a formatted SQL query handling each piiType', () => {
-  //   const testRequest = testDataRequestWithNoDataPathsOrPiiTypes
-  //   testRequest.piiTypes = ['passport_number']
-  //   console.log(testRequest)
-  //   expect(createQuerySql(testRequest)).toEqual({
-  //     sqlGenerated: true,
-  //     sql: `SELECT event_id, json_extract(restricted, '$.passport[0].documentnumber') as passport[0]_documentnumber FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
-  //     queryParameters: [
-  //       '123',
-  //       '456',
-  //       TEST_FORMATTED_DATE_FROM,
-  //       TEST_FORMATTED_DATE_TO
-  //     ]
-  //   })
-  // })
+  it.each([
+    [
+      'passport_number',
+      `json_extract(restricted, '$.passport[0].documentnumber')`
+    ],
+    [
+      'passport_expiry_date',
+      `json_extract(restricted, '$.passport[0].expirydate')`
+    ],
+    ['drivers_license', `json_extract(restricted, '$.drivingpermit')`],
+    ['dob', `json_extract(restricted, '$.birthdate[0].value')`],
+    ['name', `json_extract(restricted, '$.name')`],
+    ['current_address', `json_extract(restricted, '$.address')`],
+    ['previous_address', `json_extract(restricted, '$.address')`]
+  ])(
+    `returns a formatted SQL query handling piiType of %p`,
+    (piiType, piiSql) => {
+      testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = [piiType]
+      expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
+        sqlGenerated: true,
+        sql: `SELECT event_id, ${piiSql} as ${piiType} FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+        queryParameters: [
+          '123',
+          '456',
+          TEST_FORMATTED_DATE_FROM,
+          TEST_FORMATTED_DATE_TO
+        ]
+      })
+      testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
+    }
+  )
+
+  test('returns a formatted SQL query handling dataPaths', () => {
+    testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = [
+      'restricted.user.firstName'
+    ]
+    expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
+      sqlGenerated: true,
+      sql: `SELECT event_id, json_extract(restricted, '$.user.firstName') as user_firstname FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+      queryParameters: [
+        '123',
+        '456',
+        TEST_FORMATTED_DATE_FROM,
+        TEST_FORMATTED_DATE_TO
+      ]
+    })
+    testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
+  })
+
+  test('returns a formatted SQL query handling dataPaths and piiTypes', () => {
+    testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = [
+      'restricted.user.firstName'
+    ]
+    testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = ['passport_number']
+    expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
+      sqlGenerated: true,
+      sql: `SELECT event_id, json_extract(restricted, '$.user.firstName') as user_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+      queryParameters: [
+        '123',
+        '456',
+        TEST_FORMATTED_DATE_FROM,
+        TEST_FORMATTED_DATE_TO
+      ]
+    })
+    testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
+    testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
+  })
 
   test('returns an error message if there are no dataPaths or piiTypes', () => {
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({

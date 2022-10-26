@@ -77,27 +77,30 @@ const formatSelectStatement = (
   dataPaths: string[],
   piiTypes: string[]
 ): string => {
-  const paths = dataPaths
+  const formattedDataPaths = dataPaths.map((dataPath) =>
+    formatDataPath(dataPath)
+  )
+  const formattedPiiTypes = piiTypes.map((piiType) => formatPiiType(piiType))
 
-  piiTypes.map((piiType) => paths.push(piiTypeDataPathMap(piiType)))
-
-  console.log(`paths: ${paths}`)
-
-  const formattedPaths = paths.map((path) => formatDataPath(path))
-
-  return formattedPaths.join(', ')
+  return formattedDataPaths.concat(formattedPiiTypes).join(', ')
 }
 
 const formatDataPath = (dataPath: string): string => {
   const splitDataPath = dataPath.split('.')
-
   const dataColumn = splitDataPath.shift()
-
   const dataTarget = splitDataPath.join('.')
-
   const newResultName = splitDataPath.join('_').toLowerCase()
 
   return `json_extract(${dataColumn}, '$.${dataTarget}') as ${newResultName}`
+}
+
+const formatPiiType = (piiType: string): string => {
+  const piiTypePath = piiTypeDataPathMap(piiType)
+  const splitPiiTypePath = piiTypePath.split('.')
+  const dataColumn = splitPiiTypePath.shift()
+  const dataTarget = splitPiiTypePath.join('.')
+
+  return `json_extract(${dataColumn}, '$.${dataTarget}') as ${piiType}`
 }
 
 const piiTypeDataPathMap = (piiType: string): string => {
@@ -126,7 +129,7 @@ const generateQueryParameters = (
   dateFrom: string,
   dateTo: string
 ): string[] => {
-  const queryParameters = identifiers
+  const queryParameters = identifiers.map((identifier) => identifier)
   queryParameters.push(formatDateFrom(dateFrom))
   queryParameters.push(formatDateTo(dateTo))
   return queryParameters
