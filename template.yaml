@@ -1145,7 +1145,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      BucketName: !Sub ${AWS::StackName}-${Environment}-valid-email-recipients-bucket
+      BucketName: !Sub ${AWS::StackName}-${Environment}-email-recipients
       LoggingConfiguration:
         DestinationBucketName: !Ref ValidEmailRecipientsLogsBucket
         LogFilePrefix: String
@@ -1161,7 +1161,7 @@ Resources:
     #checkov:skip=CKV_AWS_18:This is the query results logs bucket
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-${Environment}-valid-email-recipients-bucket-logs
+      BucketName: !Sub ${AWS::StackName}-${Environment}-email-recipients-logs
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
