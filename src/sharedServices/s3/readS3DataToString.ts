@@ -4,7 +4,7 @@ import { getEnv } from '../../utils/helpers'
 export const readS3DataToString = async (
   bucketName: string,
   fileKey: string
-): Promise<string | undefined> => {
+): Promise<string> => {
   console.log(`reading file ${fileKey} from bucket ${bucketName}`)
 
   const s3Client = new S3Client({ region: getEnv('AWS_REGION') })
