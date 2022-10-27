@@ -274,6 +274,12 @@ Resources:
             Resource:
               - !GetAtt AnalysisBucket.Arn
               - !Ref AuditBucketArn
+          - Sid: S3ReadEmailRecipients
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - !GetAtt ValidEmailRecipientsBucket.Arn
           - Sid: Logs
             Effect: Allow
             Action:
