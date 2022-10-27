@@ -279,7 +279,7 @@ Resources:
             Action:
               - s3:GetObject
             Resource:
-              - !GetAtt ValidEmailRecipientsBucket.Arn
+              - !Join ['/', [!GetAtt ValidEmailRecipientsBucket.Arn, '*']]
           - Sid: Logs
             Effect: Allow
             Action:
