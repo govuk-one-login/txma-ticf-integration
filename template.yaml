@@ -52,7 +52,6 @@ Mappings:
       DeployIntegrationTestResources: false
 
 Conditions:
-  DeployDevResources: !Equals [ true, !FindInMap [ Environment, !Ref Environment, DeployDevResources ] ]
   DeployIntegrationTestResources: !Equals [ true, !FindInMap [ Environment, !Ref Environment, DeployIntegrationTestResources ] ]
   UseCodeSigning: !Not [ !Equals [ !Ref CodeSigningConfigArn, none ] ]
   UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundary, none ] ]
@@ -78,8 +77,10 @@ Resources:
       Location: ./infrastructure/s3.yaml
       Parameters:
         AuditBucketArn: !Ref AuditBucketArn
+        DeployDevResources: !FindInMap [ Environment, !Ref Environment, DeployDevResources ]
         Environment: !Ref Environment
         PermissionsBoundary: !Ref PermissionsBoundary
+        StackName: !Ref AWS::StackName
 
   SqsResources:
     Type: AWS::Serverless::Application
@@ -348,6 +349,7 @@ Resources:
             Resource:
               - '{{resolve:ssm:DatabaseKmsKeyArn}}'
               - '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
           - Sid: QueryRequestTableReadWrite
             Effect: Allow
             Action:
@@ -355,6 +357,12 @@ Resources:
               - dynamodb:GetItem
               - dynamodb:UpdateItem
             Resource: '{{resolve:ssm:QueryRequestTableArn}}'
+          - Sid: Events
+            Effect: Allow
+            Action: 
+              - events:PutEvents
+            Resource:
+              - '*'
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt SqsResources.Outputs.InitiateAthenaQueryDeadLetterQueueArn
@@ -464,8 +472,8 @@ Resources:
               - s3:ListMultipartUploadParts
               - s3:PutObject
             Resource:
-              - '{{resolve:ssm:QueryResultsBucketName}}'
-              - '{{resolve:ssm:QueryResultsBucketName}}/*'
+              - '{{resolve:ssm:QueryResultsBucketArn}}'
+              - '{{resolve:ssm:QueryResultsBucketArn}}/*'
           - Sid: DecryptKmsKeys
             Effect: Allow
             Action:

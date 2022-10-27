@@ -2,6 +2,9 @@ Parameters:
   AuditBucketArn:
     Description: ARN of the Audit bucket
     Type: String
+  DeployDevResources:
+    Description: Flag to deploy dev infrastructure
+    Type: String
   Environment:
     Description: The environment type
     Type: String
@@ -14,8 +17,12 @@ Parameters:
   PermissionsBoundary:
     Description: The ARN of the permissions boundary to apply to any role created by the template
     Type: String
+  StackName:
+    Description: The name of the parent stack
+    Type: String
 
 Conditions:
+  DeployDevResources: !Equals [true, !Ref DeployDevResources]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
 
 Resources:
@@ -26,7 +33,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-bucket
+      BucketName: !Sub ${StackName}-${Environment}-analysis-bucket
       LifecycleConfiguration:
         Rules:
           - Id: AnalysisCleanupRule
@@ -47,7 +54,7 @@ Resources:
     #checkov:skip=CKV_AWS_18:This is the logs bucket
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-logs
+      BucketName: !Sub ${StackName}-${Environment}-analysis-logs
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -121,9 +128,10 @@ Resources:
                   - !Sub ${AuditBucketArn}/*
 
   EmptyS3Buckets:
+    Condition: DeployDevResources
     Type: AWS::CloudFormation::CustomResource
     Properties:
-      ServiceToken: '{{resolve:ssm:EmptyS3BucketFunctionArn}}'
+      ServiceToken: '{{resolve:ssm:EmptyS3BucketsFunctionArn}}'
 
 Outputs:
   AnalysisBucketArn:
