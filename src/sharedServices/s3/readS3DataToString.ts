@@ -24,7 +24,7 @@ export const readS3DataToString = async (
 
   console.log(
     'handled: ',
-    (returnedRecipientList.Body as Buffer).toString('ascii')
+    JSON.stringify((returnedRecipientList.Body as Buffer).toString('ascii'))
   )
   return (returnedRecipientList.Body as Buffer).toString('ascii')
 }

@@ -68,6 +68,7 @@ const handleInvalidRequest = async (
   console.log(interpolateTemplate('requestInvalid', loggingCopy))
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
+  console.log('Validation message: ', validationMessage)
   const newTicketStatus = 'closed'
   await updateZendeskTicket(
     requestBody,
