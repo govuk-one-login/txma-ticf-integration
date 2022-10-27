@@ -48,6 +48,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.0"],\
             ["aws-testing-library", "npm:2.1.5"],\
             ["axios", "npm:0.27.2"],\
+            ["csv-parser", "npm:3.0.0"],\
             ["esbuild", "npm:0.15.12"],\
             ["eslint", "npm:8.25.0"],\
             ["eslint-config-prettier", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:8.5.0"],\
@@ -5740,6 +5741,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.0"],\
             ["aws-testing-library", "npm:2.1.5"],\
             ["axios", "npm:0.27.2"],\
+            ["csv-parser", "npm:3.0.0"],\
             ["esbuild", "npm:0.15.12"],\
             ["eslint", "npm:8.25.0"],\
             ["eslint-config-prettier", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:8.5.0"],\

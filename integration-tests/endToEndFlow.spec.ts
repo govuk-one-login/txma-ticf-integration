@@ -1,8 +1,12 @@
 import axios from 'axios'
 import { parse } from 'node-html-parser'
+// import neatCsv from 'neat-csv'
+import csv from 'csv-parser'
+import { Readable } from 'stream'
 import {
   AUDIT_BUCKET_NAME,
   END_TO_END_TEST_DATE_PREFIX,
+  END_TO_END_TEST_EVENT_ID,
   END_TO_END_TEST_FILE_NAME
 } from './constants/awsParameters'
 import { endToEndTestRequestData } from './constants/requestData'
@@ -99,7 +103,30 @@ describe('Query results generated', () => {
 
     const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
     expect(resultsFileS3Link.startsWith('https')).toBeTrue
-    const csvData = downloadResultsCSVFromLink(resultsFileS3Link)
+
+    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
     console.log(csvData)
+
+    const rows: Record<string, unknown>[] = []
+    const stream = new Readable()
+    stream._read = () => undefined
+    stream.push(csvData)
+    stream.push(null)
+    stream
+      .pipe(csv())
+      .on('data', (data) => rows.push(data))
+      .on('end', () => {
+        console.log(rows)
+      })
+
+    console.log(rows)
+
+    expect(rows.length).toEqual(1)
+    expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
+
+    /*const rows = await neatCsv(csvData)
+    console.log(rows)
+    expect(rows.length).toEqual(1)
+    expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)*/
   })
 })
