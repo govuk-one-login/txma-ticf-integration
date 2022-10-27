@@ -12,8 +12,9 @@ import { isSignatureInvalid } from './validateRequestSource'
 import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 
-const mockValidateZendeskRequest =
-  validateZendeskRequest as jest.Mock<ValidatedDataRequestParamsResult>
+const mockValidateZendeskRequest = validateZendeskRequest as jest.Mock<
+  Promise<ValidatedDataRequestParamsResult>
+>
 
 const mockUpdateZendeskTicket = updateZendeskTicket as jest.Mock
 
@@ -54,11 +55,11 @@ describe('initate data request handler', () => {
     dataRequestParams?: DataRequestParams,
     validationMessage?: string
   ) => {
-    mockValidateZendeskRequest.mockImplementation(() => ({
+    mockValidateZendeskRequest.mockResolvedValue({
       isValid,
       dataRequestParams,
       validationMessage
-    }))
+    })
   }
 
   const givenValidRequest = () => {

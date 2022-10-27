@@ -22,7 +22,7 @@ export const handler = async (
     return await handleInvalidSignature()
   }
 
-  const validatedZendeskRequest = validateZendeskRequest(event.body)
+  const validatedZendeskRequest = await validateZendeskRequest(event.body)
 
   if (!validatedZendeskRequest.isValid) {
     return await handleInvalidRequest(event.body, validatedZendeskRequest)

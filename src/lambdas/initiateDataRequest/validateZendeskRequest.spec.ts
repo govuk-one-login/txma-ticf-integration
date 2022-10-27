@@ -1,7 +1,15 @@
+import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { validateZendeskRequest } from './validateZendeskRequest'
 import { IdentifierTypes } from '../../types/dataRequestParams'
+import { when } from 'jest-when'
+
+jest.mock('./isEmailInValidRecipientList', () => ({
+  isEmailInValidRecipientList: jest.fn()
+}))
+
 describe('validateZendeskRequest', () => {
   const testValidResultsEmail = 'myname@somedomain.gov.uk'
+  const testNotInValidRecipientListEmail = 'someothername@somedomain.gov.uk'
   const testResultsName = 'my resultsname'
   const testZendeskId = '123'
   interface RequestBody {
@@ -105,8 +113,10 @@ describe('validateZendeskRequest', () => {
   const buildValidRequestBody = () =>
     buildValidRequestBodyWithIds('session_id', 'sessionId1')
 
-  const runValidationWithInvalidRequestBody = (requestBody: string | null) => {
-    const validationResult = validateZendeskRequest(requestBody)
+  const runValidationWithInvalidRequestBody = async (
+    requestBody: string | null
+  ) => {
+    const validationResult = await validateZendeskRequest(requestBody)
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual('No data in request')
   }
@@ -129,6 +139,13 @@ describe('validateZendeskRequest', () => {
       .toString()
       .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
 
+  beforeEach(() => {
+    when(isEmailInValidRecipientList)
+      .calledWith(testValidResultsEmail)
+      .mockResolvedValue(true)
+      .defaultResolvedValue(false)
+  })
+
   it('should return an invalid response if request body is null', () => {
     runValidationWithInvalidRequestBody(null)
   })
@@ -141,14 +158,16 @@ describe('validateZendeskRequest', () => {
     runValidationWithInvalidRequestBody('hello')
   })
 
-  it('should parse data into response if request data is valid', () => {
+  it('should parse data into response if request data is valid', async () => {
     const request = buildValidRequestBodyWithIds(
       'session_id',
       'sessionId1 sessionId2 sessionId3',
       'dob name passport_number'
     )
 
-    const validationResult = validateZendeskRequest(JSON.stringify(request))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(request)
+    )
 
     const fields = Object.keys(validationResult.dataRequestParams ?? {})
     fields.map((field) => expect(fieldKeys).toContain(field))
@@ -179,8 +198,8 @@ describe('validateZendeskRequest', () => {
     ])
   })
 
-  it('should parse data into response if request contains sessionIds', () => {
-    const validationResult = validateZendeskRequest(
+  it('should parse data into response if request contains sessionIds', async () => {
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithIds(
           'session_id',
@@ -198,52 +217,60 @@ describe('validateZendeskRequest', () => {
     expect(validationResult.dataRequestParams?.eventIds).toEqual([])
   })
 
-  it('should return an invalid response if request does not contain sessionIds when required', () => {
+  it('should return an invalid response if request does not contain sessionIds when required', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.identifierType = 'session_id'
     requestBody.sessionIds = ''
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'At least one session id should be provided'
     )
   })
 
-  it('should return an invalid response if request does not contain journeyIds when required', () => {
+  it('should return an invalid response if request does not contain journeyIds when required', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.identifierType = 'journey_id'
     requestBody.journeyIds = ''
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'At least one journey id should be provided'
     )
   })
 
-  it('should return an invalid response if request does not contain eventIds when required', () => {
+  it('should return an invalid response if request does not contain eventIds when required', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.identifierType = 'event_id'
     requestBody.eventIds = ''
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'At least one event id should be provided'
     )
   })
 
-  it('should return an invalid response if request does not contain userIds when required', () => {
+  it('should return an invalid response if request does not contain userIds when required', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.identifierType = 'user_id'
     requestBody.userIds = ''
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'At least one user id should be provided'
     )
   })
 
-  it('should parse data into response if request contains journeyIds', () => {
-    const validationResult = validateZendeskRequest(
+  it('should parse data into response if request contains journeyIds', async () => {
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithIds(
           'journey_id',
@@ -262,8 +289,8 @@ describe('validateZendeskRequest', () => {
     expect(validationResult.dataRequestParams?.userIds).toEqual([])
   })
 
-  it('should parse data into response if request contains eventIds', () => {
-    const validationResult = validateZendeskRequest(
+  it('should parse data into response if request contains eventIds', async () => {
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(buildValidRequestBodyWithIds('event_id', 'id1 id2 id3'))
     )
 
@@ -274,8 +301,8 @@ describe('validateZendeskRequest', () => {
     ])
   })
 
-  it('should parse data into response if request contains userIds', () => {
-    const validationResult = validateZendeskRequest(
+  it('should parse data into response if request contains userIds', async () => {
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithIds('user_id', 'userId1 userId2 userId3')
       )
@@ -298,16 +325,16 @@ describe('validateZendeskRequest', () => {
     'previous_address'
   ]
   validPiiTypes.forEach((type) => {
-    it(`should return a valid response if piiTypes contains ${type}`, () => {
-      const validationResult = validateZendeskRequest(
+    it(`should return a valid response if piiTypes contains ${type}`, async () => {
+      const validationResult = await validateZendeskRequest(
         JSON.stringify(buildValidRequestBodyWithPiiTypes(type))
       )
       expect(validationResult.isValid).toEqual(true)
     })
   })
 
-  it('should return an invalid response if piiTypes contains an invalid value', () => {
-    const validationResult = validateZendeskRequest(
+  it('should return an invalid response if piiTypes contains an invalid value', async () => {
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithPiiTypes('passport_number something')
       )
@@ -318,8 +345,8 @@ describe('validateZendeskRequest', () => {
     )
   })
 
-  it('should return a valid response with dataPaths set', () => {
-    const validationResult = validateZendeskRequest(
+  it('should return a valid response with dataPaths set', async () => {
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithDataPaths('myPath.path1 myPath.path2')
       )
@@ -334,8 +361,8 @@ describe('validateZendeskRequest', () => {
 
   const invalidDates = ['', 'blah', '01-08-2021']
   invalidDates.forEach((date) =>
-    it(`should return an invalid response if an invalid fromDate of ${date} is passed`, () => {
-      const validationResult = validateZendeskRequest(
+    it(`should return an invalid response if an invalid fromDate of ${date} is passed`, async () => {
+      const validationResult = await validateZendeskRequest(
         JSON.stringify(buildRequestBodyWithDates(date, '2021-08-01'))
       )
       console.log(validationResult.validationMessage)
@@ -345,8 +372,8 @@ describe('validateZendeskRequest', () => {
   )
 
   invalidDates.forEach((date) =>
-    it(`should return an invalid response if an invalid toDate of ${date} is passed`, () => {
-      const validationResult = validateZendeskRequest(
+    it(`should return an invalid response if an invalid toDate of ${date} is passed`, async () => {
+      const validationResult = await validateZendeskRequest(
         JSON.stringify(buildRequestBodyWithDates('2021-08-01', date))
       )
       expect(validationResult.isValid).toEqual(false)
@@ -356,9 +383,9 @@ describe('validateZendeskRequest', () => {
 
   const todayDateString = getTodayAsString()
   const tomorrowDateString = getTodayPlusDaysAsString(1)
-  it(`should return an invalid response if fromDate is ${tomorrowDateString} after today ${todayDateString}`, () => {
+  it(`should return an invalid response if fromDate is ${tomorrowDateString} after today ${todayDateString}`, async () => {
     const dayAfterTomorrowDateString = getTodayPlusDaysAsString(2)
-    const validationResult = validateZendeskRequest(
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildRequestBodyWithDates(
           tomorrowDateString,
@@ -372,8 +399,8 @@ describe('validateZendeskRequest', () => {
     )
   })
 
-  it(`should return an invalid response if toDate is ${tomorrowDateString}, after today ${todayDateString}`, () => {
-    const validationResult = validateZendeskRequest(
+  it(`should return an invalid response if toDate is ${tomorrowDateString}, after today ${todayDateString}`, async () => {
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildRequestBodyWithDates(todayDateString, tomorrowDateString)
       )
@@ -384,8 +411,8 @@ describe('validateZendeskRequest', () => {
     )
   })
 
-  it('should return an invalid response if toDate is before fromDate', () => {
-    const validationResult = validateZendeskRequest(
+  it('should return an invalid response if toDate is before fromDate', async () => {
+    const validationResult = await validateZendeskRequest(
       JSON.stringify(buildRequestBodyWithDates('2021-08-01', '2021-07-30'))
     )
     expect(validationResult.isValid).toEqual(false)
@@ -393,121 +420,157 @@ describe('validateZendeskRequest', () => {
       'To Date is before From Date'
     )
   })
-  it('should return an invalid response if recipientEmail is not set', () => {
+  it('should return an invalid response if recipientEmail is not set', async () => {
     const requestBody = buildValidRequestBody()
     delete requestBody.recipientEmail
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Recipient email format invalid'
     )
   })
 
-  it('should return an invalid response if requesterEmail is not set', () => {
+  it('should return an invalid response if requesterEmail is not set', async () => {
     const requestBody = buildValidRequestBody()
     delete requestBody.requesterEmail
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Requester email format invalid'
     )
   })
 
-  it('should return an invalid response if recipientEmail is not valid', () => {
+  it('should return an invalid response if recipientEmail is not valid', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.recipientEmail = 'notanemail'
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Recipient email format invalid'
     )
   })
 
-  it('should return an invalid response if requesterEmail is not valid', () => {
+  it('should return an invalid response if requesterEmail is not valid', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.requesterEmail = 'notanemail'
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Requester email format invalid'
     )
   })
 
-  it('should return an invalid response if recipientEmail is not for a .gov.uk domain', () => {
+  it('should return an invalid response if recipientEmail is not for a .gov.uk domain', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.recipientEmail = 'someperson@test.com'
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Recipient email format invalid'
     )
   })
 
-  it('should return an invalid response if requesterEmail is not for a .gov.uk domain', () => {
+  it('should return an invalid response if recipientEmail is not in the valid recipient list', async () => {
+    const requestBody = buildValidRequestBody()
+    requestBody.recipientEmail = testNotInValidRecipientListEmail
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual(
+      'Recipient email not in valid recipient list'
+    )
+  })
+
+  it('should return an invalid response if requesterEmail is not for a .gov.uk domain', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.requesterEmail = 'someperson@test.com'
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Requester email format invalid'
     )
   })
 
-  it('should return an invalid response if recipientName is blank', () => {
+  it('should return an invalid response if recipientName is blank', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.recipientName = ''
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Recipient name is missing'
     )
   })
 
-  it('should return an invalid response if requesterName is blank', () => {
+  it('should return an invalid response if requesterName is blank', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.requesterName = ''
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Requester name is missing'
     )
   })
 
-  it('should return an invalid response if recipientName is not set', () => {
+  it('should return an invalid response if recipientName is not set', async () => {
     const requestBody = buildValidRequestBody()
     delete requestBody.recipientName
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Recipient name is missing'
     )
   })
 
-  it('should return an invalid response if requesterName is not set', () => {
+  it('should return an invalid response if requesterName is not set', async () => {
     const requestBody = buildValidRequestBody()
     delete requestBody.requesterName
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'Requester name is missing'
     )
   })
 
-  it('should return an invalid response if neither piiTypes or dataPaths are set', () => {
+  it('should return an invalid response if neither piiTypes or dataPaths are set', async () => {
     const requestBody = buildValidRequestBody()
     requestBody.piiTypes = ''
     requestBody.dataPaths = ''
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'PII types and/or Data Paths must be set'
     )
   })
 
-  it('should return an invalid response if piiTypes and dataPaths properties are missing', () => {
+  it('should return an invalid response if piiTypes and dataPaths properties are missing', async () => {
     const requestBody = buildValidRequestBody()
     delete requestBody.dataPaths
-    const validationResult = validateZendeskRequest(JSON.stringify(requestBody))
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(requestBody)
+    )
     expect(validationResult.isValid).toEqual(false)
     expect(validationResult.validationMessage).toEqual(
       'PII types and/or Data Paths must be set'
