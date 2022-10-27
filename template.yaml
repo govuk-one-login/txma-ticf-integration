@@ -243,6 +243,7 @@ Resources:
           AUDIT_BUCKET_NAME: !Ref AuditBucketName
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
+          VALID_EMAIL_RECIPIENTS_BUCKET: !Ref ValidEmailRecipientsBucket
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
           ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZENDESK_FIELD_ID_DATA_PATHS}}'
           ZENDESK_FIELD_ID_DATE_FROM: '{{resolve:ssm:ZENDESK_FIELD_ID_DATE_FROM}}'
@@ -1129,6 +1130,42 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
       BucketName: !Sub ${AWS::StackName}-${Environment}-test-data-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  ValidEmailRecipientsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${AWS::StackName}-${Environment}-valid-email-recipients-bucket
+      LoggingConfiguration:
+        DestinationBucketName: !Ref ValidEmailRecipientsLogsBucket
+        LogFilePrefix: String
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  ValidEmailRecipientsLogsBucket:
+    #checkov:skip=CKV_AWS_18:This is the query results logs bucket
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-${Environment}-valid-email-recipients-bucket-logs
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
