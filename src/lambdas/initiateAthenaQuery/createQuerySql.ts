@@ -86,16 +86,16 @@ const formatSelectStatement = (
 }
 
 const formatDataPath = (dataPath: string): string => {
-  const splitDataPath = dataPath.split('.')
+  const splitDataPath = dataPath.toLowerCase().split('.')
   const dataColumn = splitDataPath.shift()
   const dataTarget = splitDataPath.join('.')
-  const newResultName = splitDataPath.join('_').toLowerCase()
+  const newResultName = splitDataPath.join('_').replaceAll(/[0-9[\]]/g, '')
 
   return `json_extract(${dataColumn}, '$.${dataTarget}') as ${newResultName}`
 }
 
 const formatPiiType = (piiType: string): string => {
-  const piiTypePath = piiTypeDataPathMap(piiType)
+  const piiTypePath = piiTypeDataPathMap(piiType).toLowerCase()
   const splitPiiTypePath = piiTypePath.split('.')
   const dataColumn = splitPiiTypePath.shift()
   const dataTarget = splitPiiTypePath.join('.')
