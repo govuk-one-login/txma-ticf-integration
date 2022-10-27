@@ -69,6 +69,11 @@ export const noIdTestDataRequest = {
   dateFrom: TEST_DATE_FROM,
   dateTo: TEST_DATE_TO,
   identifierType: 'event_id',
+  eventIds: [],
+  userIds: [],
+  journeyIds: [],
+  sessionIds: [],
+  dataPaths: [],
   piiTypes: ['passport_number']
 } as DataRequestParams
 
@@ -85,5 +90,23 @@ export const dataPathsTestDataRequest = {
   sessionIds: ['123s', '456s'],
   userIds: ['123u', '456u'],
   journeyIds: ['123j', '456j'],
-  dataPaths: ['restricted.user.firstName', 'restricted.user.lastName']
+  dataPaths: ['restricted.user.firstName', 'restricted.user.lastName'],
+  piiTypes: []
+} as DataRequestParams
+
+export const testDataRequestWithNoDataPathsOrPiiTypes = {
+  zendeskId: ZENDESK_TICKET_ID,
+  recipientEmail: 'myuser@test.gov.uk',
+  recipientName: 'my name',
+  requesterEmail: 'myuser@test.gov.uk',
+  requesterName: 'my name',
+  dateFrom: TEST_DATE_FROM,
+  dateTo: TEST_DATE_TO,
+  dataPaths: [],
+  identifierType: 'event_id',
+  eventIds: ['123', '456'],
+  journeyIds: ['123', '456'],
+  piiTypes: [],
+  sessionIds: ['123', '456'],
+  userIds: ['123', '456']
 } as DataRequestParams

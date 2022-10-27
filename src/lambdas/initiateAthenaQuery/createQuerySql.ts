@@ -1,3 +1,4 @@
+import { PII_TYPES_DATA_PATHS_MAP } from '../../constants/piiTypesDataPathsMap'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import {
   DataRequestParams,
@@ -19,17 +20,18 @@ export const createQuerySql = (
     }
   }
 
-  if (!requestData.dataPaths || requestData.dataPaths.length < 1) {
+  if (!requestData.dataPaths.length && !requestData.piiTypes.length) {
     return {
       sqlGenerated: false,
-      error: 'No dataPaths in request'
+      error: 'No dataPaths or piiTypes in request'
     }
   }
 
-  const sqlSelectStatement = formatSelectStatement(requestData.dataPaths)
+  const sqlSelectStatement = formatSelectStatement(
+    requestData.dataPaths,
+    requestData.piiTypes
+  )
 
-  // formatWhereStatement ensures that the WHERE statement is parameterised to
-  // protect against SQL injection
   const sqlWhereStatement = formatWhereStatment(
     identifierType,
     identifiers.length
@@ -58,13 +60,13 @@ const getIdentifiers = (
   identifierType: IdentifierTypes,
   requestData: DataRequestParams
 ): string[] => {
-  if (identifierType === 'event_id' && requestData.eventIds) {
+  if (identifierType === 'event_id' && requestData.eventIds.length) {
     return requestData.eventIds
-  } else if (identifierType === 'journey_id' && requestData.journeyIds) {
+  } else if (identifierType === 'journey_id' && requestData.journeyIds.length) {
     return requestData.journeyIds
-  } else if (identifierType === 'session_id' && requestData.sessionIds) {
+  } else if (identifierType === 'session_id' && requestData.sessionIds.length) {
     return requestData.sessionIds
-  } else if (identifierType === 'user_id' && requestData.userIds) {
+  } else if (identifierType === 'user_id' && requestData.userIds.length) {
     return requestData.userIds
   }
 
@@ -72,25 +74,37 @@ const getIdentifiers = (
 }
 
 const formatSelectStatement = (
-  dataPaths: string[] | undefined
-): string | undefined => {
-  const formattedDataPaths = dataPaths?.map((dataPath) =>
+  dataPaths: string[],
+  piiTypes: string[]
+): string => {
+  const formattedDataPaths = dataPaths.map((dataPath) =>
     formatDataPath(dataPath)
   )
+  const formattedPiiTypes = piiTypes.map((piiType) => formatPiiType(piiType))
 
-  return formattedDataPaths?.join(', ')
+  return formattedDataPaths.concat(formattedPiiTypes).join(', ')
 }
 
 const formatDataPath = (dataPath: string): string => {
-  const splitDataPath = dataPath.split('.')
-
+  const splitDataPath = dataPath.toLowerCase().split('.')
   const dataColumn = splitDataPath.shift()
-
   const dataTarget = splitDataPath.join('.')
-
-  const newResultName = splitDataPath.join('_').toLowerCase()
+  const newResultName = splitDataPath.join('_').replaceAll(/[0-9[\]]/g, '')
 
   return `json_extract(${dataColumn}, '$.${dataTarget}') as ${newResultName}`
+}
+
+const formatPiiType = (piiType: string): string => {
+  const piiTypePath = piiTypeDataPathMap(piiType).toLowerCase()
+  const splitPiiTypePath = piiTypePath.split('.')
+  const dataColumn = splitPiiTypePath.shift()
+  const dataTarget = splitPiiTypePath.join('.')
+
+  return `json_extract(${dataColumn}, '$.${dataTarget}') as ${piiType}`
+}
+
+const piiTypeDataPathMap = (piiType: string): string => {
+  return PII_TYPES_DATA_PATHS_MAP[piiType]
 }
 
 const formatWhereStatment = (
@@ -115,16 +129,20 @@ const generateQueryParameters = (
   dateFrom: string,
   dateTo: string
 ): string[] => {
-  const queryParameters = identifiers
+  const queryParameters = identifiers.map((identifier) => identifier)
   queryParameters.push(formatDateFrom(dateFrom))
   queryParameters.push(formatDateTo(dateTo))
   return queryParameters
 }
 
 const formatDateFrom = (dateFrom: string): string => {
-  return `'${dateFrom.replaceAll('-', '/').concat('/00')}'`
+  const splitDateFrom = dateFrom.split('-')
+  splitDateFrom.push('00')
+  return `'${splitDateFrom.join('/')}'`
 }
 
 const formatDateTo = (dateTo: string): string => {
-  return `'${dateTo.replaceAll('-', '/').concat('/23')}'`
+  const splitDateTo = dateTo.split('-')
+  splitDateTo.push('23')
+  return `'${splitDateTo.join('/')}'`
 }

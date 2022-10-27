@@ -38,3 +38,6 @@ export const END_TO_END_TEST_FILE_NAME =
 export const END_TO_END_TEST_DATE_PREFIX = '2022/09/01'
 export const END_TO_END_TEST_DATE = '2022-09-01'
 export const END_TO_END_TEST_DATA_PATH = 'restricted.name'
+
+export const ATHENA_QUERY_TEST_FILE_NAME = 'athena-query-test-data.gz'
+export const ATHENA_QUERY_DATA_TEST_DATE_PREFIX = '2022/07/01'
