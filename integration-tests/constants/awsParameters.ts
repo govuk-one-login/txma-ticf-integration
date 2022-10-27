@@ -37,7 +37,8 @@ export const END_TO_END_TEST_FILE_NAME =
   'AuditFireHose-staging-62-2022-09-01-13-49-32-98935951-5374-4652-88a4-2ec3eadfc0cd.gz'
 export const END_TO_END_TEST_DATE_PREFIX = '2022/09/01'
 export const END_TO_END_TEST_DATE = '2022-09-01'
-export const END_TO_END_TEST_DATA_PATH = 'restricted.name'
+export const END_TO_END_TEST_DATA_PATH =
+  'restricted.name restricted.address[0].postalCode restricted.address[0].validFrom restricted.birthDate[0].value'
 
 export const ATHENA_QUERY_TEST_FILE_NAME = 'athena-query-test-data.gz'
 export const ATHENA_QUERY_DATA_TEST_DATE_PREFIX = '2022/07/01'

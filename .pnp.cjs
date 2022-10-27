@@ -49,6 +49,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-testing-library", "npm:2.1.5"],\
             ["axios", "npm:0.27.2"],\
             ["csv-parser", "npm:3.0.0"],\
+            ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.15.12"],\
             ["eslint", "npm:8.25.0"],\
             ["eslint-config-prettier", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:8.5.0"],\
@@ -5619,6 +5620,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["csv-string", [\
+        ["npm:4.1.1", {\
+          "packageLocation": "./.yarn/cache/csv-string-npm-4.1.1-5cbe9cc480-5855d4a9a5.zip/node_modules/csv-string/",\
+          "packageDependencies": [\
+            ["csv-string", "npm:4.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["debug", [\
         ["npm:4.3.4", {\
           "packageLocation": "./.yarn/cache/debug-npm-4.3.4-4513954577-3dbad3f94e.zip/node_modules/debug/",\
@@ -5742,6 +5752,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-testing-library", "npm:2.1.5"],\
             ["axios", "npm:0.27.2"],\
             ["csv-parser", "npm:3.0.0"],\
+            ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.15.12"],\
             ["eslint", "npm:8.25.0"],\
             ["eslint-config-prettier", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:8.5.0"],\

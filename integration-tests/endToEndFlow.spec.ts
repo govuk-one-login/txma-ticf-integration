@@ -1,15 +1,16 @@
 import axios from 'axios'
 import { parse } from 'node-html-parser'
-// import neatCsv from 'neat-csv'
-import csv from 'csv-parser'
-import { Readable } from 'stream'
+import * as CSV from 'csv-string'
 import {
   AUDIT_BUCKET_NAME,
   END_TO_END_TEST_DATE_PREFIX,
   END_TO_END_TEST_EVENT_ID,
   END_TO_END_TEST_FILE_NAME
 } from './constants/awsParameters'
-import { endToEndTestRequestData } from './constants/requestData'
+import {
+  endToEndTestRequestDataNoMatch,
+  endToEndTestRequestDataWithMatch
+} from './constants/requestData'
 import { retrieveSecureDownloadDbRecord } from './utils/aws/retrieveSecureDownloadDbRecord'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
@@ -59,23 +60,7 @@ describe('Query results generated', () => {
     }
   }
 
-  beforeEach(async () => {
-    await deleteAuditDataWithPrefix(
-      AUDIT_BUCKET_NAME,
-      `firehose/${END_TO_END_TEST_DATE_PREFIX}`
-    )
-
-    await copyAuditDataFromTestDataBucket(
-      AUDIT_BUCKET_NAME,
-      `firehose/${END_TO_END_TEST_DATE_PREFIX}/01/${END_TO_END_TEST_FILE_NAME}`,
-      END_TO_END_TEST_FILE_NAME
-    )
-  })
-
-  it('Fraud Site table should be populated after query completes successfully', async () => {
-    const zendeskId: string = await createZendeskTicket(endToEndTestRequestData)
-    await approveZendeskTicket(zendeskId)
-
+  const waitForDownloadHash = async (zendeskId: string): Promise<string> => {
     let downloadHash = await retrieveSecureDownloadDbRecord(zendeskId)
     const maxAttempts = 30
     let attempts = 0
@@ -90,13 +75,37 @@ describe('Query results generated', () => {
         'Download hash not populated within reasonable time. Please check logs to ensure that data retrieval and query execution were successful'
       )
     }
-    console.log(`DOWNLOAD HASH: ${downloadHash}`)
     expect(downloadHash).toBeDefined()
+    console.log(`DOWNLOAD HASH: ${downloadHash}`)
+    return downloadHash ? downloadHash : ''
+  }
 
-    let secureDownloadPageHTML = ''
-    if (downloadHash) {
-      secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
-    }
+  beforeEach(async () => {
+    await deleteAuditDataWithPrefix(
+      AUDIT_BUCKET_NAME,
+      `firehose/${END_TO_END_TEST_DATE_PREFIX}`
+    )
+
+    await copyAuditDataFromTestDataBucket(
+      AUDIT_BUCKET_NAME,
+      `firehose/${END_TO_END_TEST_DATE_PREFIX}/01/${END_TO_END_TEST_FILE_NAME}`,
+      END_TO_END_TEST_FILE_NAME
+    )
+  })
+
+  it('Query matches data - CSV file containing query results can be downloaded', async () => {
+    const EXPECTED_ADDRESS_VALID_FROM_DATE = `"2014-01-01"`
+    const EXPECTED_BIRTH_DATE = `"1981-07-28"`
+    const EXPECTED_POSTALCODE = `"AB10 6QW"`
+
+    const zendeskId: string = await createZendeskTicket(
+      endToEndTestRequestDataWithMatch
+    )
+    await approveZendeskTicket(zendeskId)
+
+    const downloadHash = await waitForDownloadHash(zendeskId)
+
+    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
 
     console.log(secureDownloadPageHTML)
     expect(secureDownloadPageHTML).toBeDefined()
@@ -107,26 +116,36 @@ describe('Query results generated', () => {
     const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
     console.log(csvData)
 
-    const rows: Record<string, unknown>[] = []
-    const stream = new Readable()
-    stream._read = () => undefined
-    stream.push(csvData)
-    stream.push(null)
-    stream
-      .pipe(csv())
-      .on('data', (data) => rows.push(data))
-      .on('end', () => {
-        console.log(rows)
-      })
-
+    const rows = CSV.parse(csvData, { output: 'objects' })
     console.log(rows)
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
+    expect(rows[0].address_postalcode).toEqual(EXPECTED_POSTALCODE)
+    expect(rows[0].address_validfrom).toEqual(EXPECTED_ADDRESS_VALID_FROM_DATE)
+    expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
+    expect(rows[0].name).toBeDefined()
+  })
 
-    /*const rows = await neatCsv(csvData)
+  it('Query does not match data - Empty CSV file should be downloaded', async () => {
+    const zendeskId: string = await createZendeskTicket(
+      endToEndTestRequestDataNoMatch
+    )
+    await approveZendeskTicket(zendeskId)
+    const downloadHash = await waitForDownloadHash(zendeskId)
+
+    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+
+    console.log(secureDownloadPageHTML)
+    expect(secureDownloadPageHTML).toBeDefined()
+
+    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
+    expect(resultsFileS3Link.startsWith('https')).toBeTrue
+
+    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
+    console.log(csvData)
+    const rows = CSV.parse(csvData, { output: 'objects' })
     console.log(rows)
-    expect(rows.length).toEqual(1)
-    expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)*/
+    expect(rows.length).toEqual(0)
   })
 })
