@@ -1,4 +1,7 @@
 Parameters:
+  AuditBucketArn:
+    Description: ARN of the Audit bucket
+    Type: String
   Environment:
     Description: The environment type
     Type: String
@@ -8,6 +11,12 @@ Parameters:
       - staging
       - integration
       - production
+  PermissionsBoundary:
+    Description: The ARN of the permissions boundary to apply to any role created by the template
+    Type: String
+
+Conditions:
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
 
 Resources:
   AnalysisBucket:
@@ -113,7 +122,6 @@ Resources:
 
   EmptyS3Buckets:
     Type: AWS::CloudFormation::CustomResource
-    Condition: DeployDevResources
     Properties:
       ServiceToken: '{{resolve:ssm:EmptyS3BucketFunctionArn}}'
 
@@ -122,3 +130,5 @@ Outputs:
     Value: !GetAtt AnalysisBucket.Arn
   AnalysisBucketName:
     Value: !Ref AnalysisBucket
+  BatchJobsRoleArn:
+    Value: !GetAtt BatchJobsRole.Arn

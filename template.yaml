@@ -77,7 +77,9 @@ Resources:
     Properties:
       Location: ./infrastructure/s3.yaml
       Parameters:
+        AuditBucketArn: !Ref AuditBucketArn
         Environment: !Ref Environment
+        PermissionsBoundary: !Ref PermissionsBoundary
 
   SqsResources:
     Type: AWS::Serverless::Application
@@ -188,7 +190,7 @@ Resources:
           ANALYSIS_BUCKET_NAME: !GetAtt S3Resources.Outputs.AnalysisBucketName
           BATCH_JOB_MANIFEST_BUCKET_ARN: '{{resolve:ssm:BatchJobManifestBucketArn}}'
           BATCH_JOB_MANIFEST_BUCKET_NAME: '{{resolve:ssm:BatchJobManifestBucketName}}'
-          BATCH_JOB_ROLE_ARN: !GetAtt BatchJobsRole.Arn
+          BATCH_JOB_ROLE_ARN: !GetAtt S3Resources.Outputs.BatchJobsRoleArn
           INITIATE_ATHENA_QUERY_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateAthenaQueryQueueUrl
           INITIATE_DATA_REQUEST_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueUrl
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
@@ -209,7 +211,7 @@ Resources:
               Action:
                 - s3:ListBucket
               Resource:
-                - !GetAtt AnalysisBucket.Arn
+                - !GetAtt S3Resources.Outputs.AnalysisBucketArn
                 - !Ref AuditBucketArn
             - Sid: ManifestBucketWrite
               Effect: Allow
@@ -225,7 +227,7 @@ Resources:
               Effect: Allow
               Action:
                 - iam:PassRole
-              Resource: !GetAtt BatchJobsRole.Arn
+              Resource: !GetAtt S3Resources.Outputs.BatchJobsRoleArn
             - Sid: Logs
               Effect: Allow
               Action:
@@ -367,7 +369,7 @@ Resources:
   SendEmailQueue:
     Type: AWS::SQS::Queue
     Properties:
-      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SendEmailDeadLetterQueue.Arn
         maxReceiveCount: 5
@@ -375,7 +377,7 @@ Resources:
   SendEmailDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
-      KmsMasterKeyId: !GetAtt QueueKmsKey.Arn
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
   
   SendEmailRequestToNotifyFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
@@ -448,7 +450,7 @@ Resources:
           SEND_EMAIL_QUEUE_URL: !GetAtt SqsResources.Outputs.SendEmailQueueUrl
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
-      KmsKeyArn: !GetAtt LambdaKmsKey.Arn
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
         - Statement:
           - Sid: WriteToResultsBucket
@@ -469,9 +471,9 @@ Resources:
             Action:
               - kms:Decrypt
             Resource:
-              - '{{resolve:ssm:DatabaseKmsKey.Arn}}'
-              - '{{resolve:ssm:SecretsKmsKey.Arn}}'
-              - '{{resolve:ssm:SqsKmsKey.Arn}}'
+              - '{{resolve:ssm:DatabaseKmsKeyArn}}'
+              - '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
           - Sid: Logs
             Effect: Allow
             Action:
@@ -515,7 +517,7 @@ Resources:
   SendQueryResultsNotificationLogs:
     Type: AWS::Logs::LogGroup
     Properties:
-      KmsKeyId: !GetAtt LogsKmsKey.Arn
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-query-results-notification'
       RetentionInDays: 30
 
