@@ -1,6 +1,7 @@
 import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
 import { when } from 'jest-when'
 import {
+  TEST_ANALYSIS_BUCKET,
   TEST_ANALYSIS_BUCKET_ARN,
   TEST_AWS_ACCOUNT_ID,
   TEST_BATCH_JOB_MANIFEST_BUCKET_ARN,
@@ -28,7 +29,7 @@ describe('startCopyJob', () => {
     await startCopyJob(fileList, ZENDESK_TICKET_ID)
     expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
       ConfirmationRequired: false,
-      ClientRequestToken: `s3-copy-job-for-ticket-id-${ZENDESK_TICKET_ID}`,
+      ClientRequestToken: `${TEST_ANALYSIS_BUCKET}-copy-job-for-ticket-id-${ZENDESK_TICKET_ID}`,
       AccountId: TEST_AWS_ACCOUNT_ID,
       RoleArn: TEST_BATCH_JOB_ROLE_ARN,
       Priority: 1,
@@ -46,7 +47,7 @@ describe('startCopyJob', () => {
           Fields: ['Bucket', 'Key']
         },
         Location: {
-          ObjectArn: `${TEST_BATCH_JOB_MANIFEST_BUCKET_ARN}/s3-copy-job-for-ticket-id-${ZENDESK_TICKET_ID}.csv`,
+          ObjectArn: `${TEST_BATCH_JOB_MANIFEST_BUCKET_ARN}/${TEST_ANALYSIS_BUCKET}-copy-job-for-ticket-id-${ZENDESK_TICKET_ID}.csv`,
           ETag: testEtag
         }
       }
