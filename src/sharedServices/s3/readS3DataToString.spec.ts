@@ -29,9 +29,6 @@ const createDataStream = () => {
 const givenRecipientEmailListAvailable = () => {
   s3Mock.on(GetObjectCommand).resolves({ Body: createDataStream() })
 }
-const givenRecipientEmailListUnavailable = () => {
-  s3Mock.on(GetObjectCommand).resolves({ Body: undefined })
-}
 
 describe('readS3DataToString', () => {
   it('returns a string read from the file', async () => {
@@ -47,20 +44,5 @@ describe('readS3DataToString', () => {
       getObjectCommandInput
     )
     expect(returnedRecipientList).toEqual(testRecipientEmailList)
-  })
-
-  it('throws an error if no recipient list was found', async () => {
-    givenRecipientEmailListUnavailable()
-
-    await expect(
-      readS3DataToString(
-        TEST_VALID_EMAIL_RECIPIENTS_BUCKET,
-        TEST_VALID_EMAIL_RECIPIENTS_BUCKET_KEY
-      )
-    ).rejects.toThrow('Valid recipient list not found')
-    expect(s3Mock).toHaveReceivedCommandWith(
-      GetObjectCommand,
-      getObjectCommandInput
-    )
   })
 })
