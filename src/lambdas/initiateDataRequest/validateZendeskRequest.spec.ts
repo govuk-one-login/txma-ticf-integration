@@ -321,16 +321,27 @@ describe('validateZendeskRequest', () => {
   it('should return a valid response with dataPaths set', () => {
     const validationResult = validateZendeskRequest(
       JSON.stringify(
-        buildValidRequestBodyWithDataPaths('myPath.path1 myPath.path2')
+        buildValidRequestBodyWithDataPaths('myPath.path1 myPath.path2[0].path2')
       )
     )
 
     expect(validationResult.isValid).toEqual(true)
     expect(validationResult.dataRequestParams?.dataPaths).toEqual([
       'myPath.path1',
-      'myPath.path2'
+      'myPath.path2[0].path2'
     ])
   })
+
+  const invalidDataPaths = ['badPath.', '.badPath2', 'badPath3[.path']
+  invalidDataPaths.forEach((dataPath) =>
+    it(`should return an invalid response if dataPaths contains an invalid dataPath of ${dataPath}`, () => {
+      const validationResult = validateZendeskRequest(
+        JSON.stringify(buildValidRequestBodyWithDataPaths(dataPath))
+      )
+      expect(validationResult.isValid).toEqual(false)
+      expect(validationResult.validationMessage).toEqual('Invalid Data Path')
+    })
+  )
 
   const invalidDates = ['', 'blah', '01-08-2021']
   invalidDates.forEach((date) =>
