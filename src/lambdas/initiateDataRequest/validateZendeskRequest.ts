@@ -38,6 +38,14 @@ export const validateZendeskRequest = async (
   const piiTypesAllValid = piiTypesList?.length
     ? piiTypesList.every((type) => VALID_PII_TYPES.includes(type))
     : true
+
+  const dataPathsList = mapSpaceSeparatedStringToList(data.dataPaths)
+  const dataPathsAllValid = dataPathsList.length
+    ? dataPathsList.every((dataPath) =>
+        /(\w+(\[\d+\])*\.)+\w+(\[\d+\])*[^,]/.test(dataPath)
+      )
+    : true
+
   const fieldValidation = [
     {
       message: 'Recipient email format invalid',
@@ -120,6 +128,10 @@ export const validateZendeskRequest = async (
     {
       message: 'PII types and/or Data Paths must be set',
       isValid: data.piiTypes?.length > 0 || data.dataPaths?.length > 0
+    },
+    {
+      message: 'Invalid Data Path',
+      isValid: dataPathsAllValid
     }
   ]
 

@@ -315,7 +315,7 @@ describe('validateZendeskRequest', () => {
     ])
   })
 
-  const validPiiTypes = [
+  it.each([
     'passport_number',
     'passport_expiry_date',
     'drivers_license',
@@ -323,15 +323,15 @@ describe('validateZendeskRequest', () => {
     'dob',
     'current_address',
     'previous_address'
-  ]
-  validPiiTypes.forEach((type) => {
-    it(`should return a valid response if piiTypes contains ${type}`, async () => {
+  ])(
+    `should return a valid response if piiTypes contains %p`,
+    async (type: string) => {
       const validationResult = await validateZendeskRequest(
         JSON.stringify(buildValidRequestBodyWithPiiTypes(type))
       )
       expect(validationResult.isValid).toEqual(true)
-    })
-  })
+    }
+  )
 
   it('should return an invalid response if piiTypes contains an invalid value', async () => {
     const validationResult = await validateZendeskRequest(
@@ -348,37 +348,51 @@ describe('validateZendeskRequest', () => {
   it('should return a valid response with dataPaths set', async () => {
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
-        buildValidRequestBodyWithDataPaths('myPath.path1 myPath.path2')
+        buildValidRequestBodyWithDataPaths('myPath.path1 myPath.path2[0].path2')
       )
     )
 
     expect(validationResult.isValid).toEqual(true)
     expect(validationResult.dataRequestParams?.dataPaths).toEqual([
       'myPath.path1',
-      'myPath.path2'
+      'myPath.path2[0].path2'
     ])
   })
 
+  it.each(['badPath.', '.badPath2', 'badPath3[.path'])(
+    `should return an invalid response if dataPaths contains an invalid dataPath of $p`,
+    async (dataPath: string) => {
+      const validationResult = await validateZendeskRequest(
+        JSON.stringify(buildValidRequestBodyWithDataPaths(dataPath))
+      )
+      expect(validationResult.isValid).toEqual(false)
+      expect(validationResult.validationMessage).toEqual('Invalid Data Path')
+    }
+  )
+
   const invalidDates = ['', 'blah', '01-08-2021']
-  invalidDates.forEach((date) =>
-    it(`should return an invalid response if an invalid fromDate of ${date} is passed`, async () => {
+
+  it.each(invalidDates)(
+    `should return an invalid response if an invalid fromDate of %p is passed`,
+    async (date: string) => {
       const validationResult = await validateZendeskRequest(
         JSON.stringify(buildRequestBodyWithDates(date, '2021-08-01'))
       )
       console.log(validationResult.validationMessage)
       expect(validationResult.isValid).toEqual(false)
       expect(validationResult.validationMessage).toEqual('From date is invalid')
-    })
+    }
   )
 
-  invalidDates.forEach((date) =>
-    it(`should return an invalid response if an invalid toDate of ${date} is passed`, async () => {
+  it.each(invalidDates)(
+    `should return an invalid response if an invalid toDate of %p is passed`,
+    async (date: string) => {
       const validationResult = await validateZendeskRequest(
         JSON.stringify(buildRequestBodyWithDates('2021-08-01', date))
       )
       expect(validationResult.isValid).toEqual(false)
       expect(validationResult.validationMessage).toEqual('To date is invalid')
-    })
+    }
   )
 
   const todayDateString = getTodayAsString()
