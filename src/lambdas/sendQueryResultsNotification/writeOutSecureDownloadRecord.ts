@@ -20,5 +20,7 @@ export const writeOutSecureDownloadRecord = async (
     }
   }
 
+  console.log(`Writing secure download record for zendeskId ${zendeskId}`)
+
   await ddbClient.send(new PutItemCommand(putCommand))
 }
