@@ -4,13 +4,13 @@ export const isEmailInValidRecipientList = async (
   recipientEmail: string
 ): Promise<boolean> => {
   console.log(
-    `Checking if recipient email ${recipientEmail} is in the pre-defined list of recipients`
+    `Loading S3 data to check if recipient email is in the pre-defined list of recipients`
   )
 
   const validRecipientList = await readS3DataToString(
     getEnv('VALID_EMAIL_RECIPIENTS_BUCKET'),
     'valid-email-recipients.txt'
   )
-  console.log('this is the list of recipients: ', validRecipientList)
+  console.log('Finished loading valid recipient list')
   return validRecipientList.includes(recipientEmail)
 }
