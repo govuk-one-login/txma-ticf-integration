@@ -48,7 +48,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.0"],\
             ["aws-testing-library", "npm:2.1.5"],\
             ["axios", "npm:0.27.2"],\
-            ["csv-parser", "npm:3.0.0"],\
             ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.15.12"],\
             ["eslint", "npm:8.25.0"],\
@@ -59,7 +58,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
-            ["neat-csv", "npm:7.0.0"],\
             ["node-html-parser", "npm:6.1.1"],\
             ["notifications-node-client", "npm:5.1.1"],\
             ["prettier", "npm:2.7.1"],\
@@ -5610,16 +5608,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["csv-parser", [\
-        ["npm:3.0.0", {\
-          "packageLocation": "./.yarn/cache/csv-parser-npm-3.0.0-b80672e147-adc9d67d9f.zip/node_modules/csv-parser/",\
-          "packageDependencies": [\
-            ["csv-parser", "npm:3.0.0"],\
-            ["minimist", "npm:1.2.7"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["csv-string", [\
         ["npm:4.1.1", {\
           "packageLocation": "./.yarn/cache/csv-string-npm-4.1.1-5cbe9cc480-5855d4a9a5.zip/node_modules/csv-string/",\
@@ -5751,7 +5739,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.0"],\
             ["aws-testing-library", "npm:2.1.5"],\
             ["axios", "npm:0.27.2"],\
-            ["csv-parser", "npm:3.0.0"],\
             ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.15.12"],\
             ["eslint", "npm:8.25.0"],\
@@ -5762,7 +5749,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
-            ["neat-csv", "npm:7.0.0"],\
             ["node-html-parser", "npm:6.1.1"],\
             ["notifications-node-client", "npm:5.1.1"],\
             ["prettier", "npm:2.7.1"],\
@@ -8767,15 +8753,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["minimist", [\
-        ["npm:1.2.7", {\
-          "packageLocation": "./.yarn/cache/minimist-npm-1.2.7-51d33b1371-7346574a10.zip/node_modules/minimist/",\
-          "packageDependencies": [\
-            ["minimist", "npm:1.2.7"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["minipass", [\
         ["npm:3.3.5", {\
           "packageLocation": "./.yarn/cache/minipass-npm-3.3.5-a555b091e7-f89f02bcaa.zip/node_modules/minipass/",\
@@ -8890,17 +8867,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/natural-compare-npm-1.4.0-97b75b362d-23ad088b08.zip/node_modules/natural-compare/",\
           "packageDependencies": [\
             ["natural-compare", "npm:1.4.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["neat-csv", [\
-        ["npm:7.0.0", {\
-          "packageLocation": "./.yarn/cache/neat-csv-npm-7.0.0-a9515d157d-5ac7669744.zip/node_modules/neat-csv/",\
-          "packageDependencies": [\
-            ["neat-csv", "npm:7.0.0"],\
-            ["csv-parser", "npm:3.0.0"],\
-            ["get-stream", "npm:6.0.1"]\
           ],\
           "linkType": "HARD"\
         }]\

@@ -31,7 +31,7 @@ describe('Query results generated', () => {
       })
       return response.data
     } catch (error) {
-      console.log(error)
+      console.error(error)
       throw 'Could not load secure download page'
     }
   }
@@ -56,6 +56,7 @@ describe('Query results generated', () => {
       const response = await axios({ url: s3Link, method: 'GET' })
       return response.data
     } catch (error) {
+      console.log(error)
       throw 'Error downloading results csv from S3 link'
     }
   }

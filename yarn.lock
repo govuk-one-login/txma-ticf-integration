@@ -4762,17 +4762,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parser@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "csv-parser@npm:3.0.0"
-  dependencies:
-    minimist: ^1.2.0
-  bin:
-    csv-parser: bin/csv-parser
-  checksum: adc9d67d9f185249825570778c24d13004625301655330f6b735a052b9fdfbe1a239a014afb1f89939e0626ee573718f71f9f14164db7c17e4bcb2f38d6a162b
-  languageName: node
-  linkType: hard
-
 "csv-string@npm:^4.1.1":
   version: 4.1.1
   resolution: "csv-string@npm:4.1.1"
@@ -4875,7 +4864,6 @@ __metadata:
     aws-sdk-client-mock-jest: 2.0.0
     aws-testing-library: 2.1.5
     axios: 0.27.2
-    csv-parser: ^3.0.0
     csv-string: ^4.1.1
     esbuild: 0.15.12
     eslint: 8.25.0
@@ -4886,7 +4874,6 @@ __metadata:
     jest-extended: 3.1.0
     jest-when: 3.5.1
     lint-staged: 13.0.3
-    neat-csv: ^7.0.0
     node-html-parser: ^6.1.1
     notifications-node-client: 5.1.1
     prettier: 2.7.1
@@ -7502,13 +7489,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0":
-  version: 1.2.7
-  resolution: "minimist@npm:1.2.7"
-  checksum: 7346574a1038ca23c32e02252f603801f09384dd1d78b69a943a4e8c2c28730b80e96193882d3d3b22a063445f460e48316b29b8a25addca2d7e5e8f75478bec
-  languageName: node
-  linkType: hard
-
 "minipass-collect@npm:^1.0.2":
   version: 1.0.2
   resolution: "minipass-collect@npm:1.0.2"
@@ -7615,16 +7595,6 @@ __metadata:
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
   checksum: 23ad088b08f898fc9b53011d7bb78ec48e79de7627e01ab5518e806033861bef68d5b0cd0e2205c2f36690ac9571ff6bcb05eb777ced2eeda8d4ac5b44592c3d
-  languageName: node
-  linkType: hard
-
-"neat-csv@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "neat-csv@npm:7.0.0"
-  dependencies:
-    csv-parser: ^3.0.0
-    get-stream: ^6.0.1
-  checksum: 5ac76697442cdd019e251944eec8c69964a397d4f9fc9b1c9144ddedd13917865fbc423f7b0bf09d29abe0d7d4d015e4ea75907b3c3fe5e4d1a9ede22fb9bff2
   languageName: node
   linkType: hard
 
