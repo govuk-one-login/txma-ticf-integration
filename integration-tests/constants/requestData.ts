@@ -9,7 +9,10 @@ import {
   INTEGRATION_TEST_DATE_GLACIER,
   TEST_DATA_EVENT_ID,
   INTEGRATION_TEST_DATE_MIX_DATA,
-  INTEGRATION_TEST_DATE_NO_DATA
+  INTEGRATION_TEST_DATE_NO_DATA,
+  END_TO_END_TEST_EVENT_ID,
+  END_TO_END_TEST_DATE,
+  END_TO_END_TEST_DATA_PATH
 } from './awsParameters'
 import {
   ZendeskFormFieldIDs,
@@ -277,6 +280,87 @@ export const validRequestNoData: ZendeskRequestData = {
     }
   }
 }
+
+export const endToEndTestRequestDataWithMatch: ZendeskRequestData = {
+  request: {
+    subject: `Integration Test Request - ` + generateRandomNumber(),
+    ticket_form_id: ZENDESK_PII_FORM_ID,
+    custom_fields: [
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID,
+        value: 'event_id'
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
+        value: END_TO_END_TEST_EVENT_ID
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+        value: END_TO_END_TEST_DATE
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
+        value: null
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
+        value: END_TO_END_TEST_DATA_PATH
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+        value: ZENDESK_END_USER_EMAIL
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
+        value: ZENDESK_END_USER_NAME
+      }
+    ],
+    comment: {
+      body: 'PII request created in integration test'
+    }
+  }
+}
+
+export const endToEndTestRequestDataNoMatch: ZendeskRequestData = {
+  request: {
+    subject: `Integration Test Request - ` + generateRandomNumber(),
+    ticket_form_id: ZENDESK_PII_FORM_ID,
+    custom_fields: [
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID,
+        value: 'event_id'
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
+        value: 'zzzzzzzz-yyyy-aaaa-bbbb-cccccccccccc'
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+        value: END_TO_END_TEST_DATE
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
+        value: null
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
+        value: END_TO_END_TEST_DATA_PATH
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+        value: ZENDESK_END_USER_EMAIL
+      },
+      {
+        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
+        value: ZENDESK_END_USER_NAME
+      }
+    ],
+    comment: {
+      body: 'PII request created in integration test'
+    }
+  }
+}
+
 export const ticketApprovalData = {
   ticket: {
     tags: ['process_started', 'approved'],

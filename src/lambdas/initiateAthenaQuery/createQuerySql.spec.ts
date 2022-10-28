@@ -18,7 +18,7 @@ describe('create Query SQL', () => {
       const idExtension = id.charAt(0)
       expect(createQuerySql(dataPathsTestDataRequest)).toEqual({
         sqlGenerated: true,
-        sql: `SELECT event_id, json_extract(restricted, '$.user.firstName') as user_firstname, json_extract(restricted, '$.user.lastName') as user_lastname FROM test_database.test_table WHERE ${id} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+        sql: `SELECT event_id, json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${id} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
         queryParameters: [
           `123${idExtension}`,
           `456${idExtension}`,
@@ -63,12 +63,12 @@ describe('create Query SQL', () => {
 
   test('returns a formatted SQL query handling dataPaths and piiTypes', () => {
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = [
-      'restricted.user.firstName'
+      'restricted.user[0].firstName'
     ]
     testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = ['passport_number']
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: true,
-      sql: `SELECT event_id, json_extract(restricted, '$.user.firstName') as user_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+      sql: `SELECT event_id, json_extract(restricted, '$.user[0].firstname') as user_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
       queryParameters: [
         '123',
         '456',
