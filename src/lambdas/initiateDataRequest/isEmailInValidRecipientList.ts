@@ -11,5 +11,6 @@ export const isEmailInValidRecipientList = async (
     getEnv('VALID_EMAIL_RECIPIENTS_BUCKET'),
     'valid-email-recipients.txt'
   )
+  console.log('this is the list of recipients: ', validRecipientList)
   return validRecipientList.includes(recipientEmail)
 }

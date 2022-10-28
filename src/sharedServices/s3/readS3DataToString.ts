@@ -1,4 +1,5 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { Readable, Stream } from 'stream'
 import { getEnv } from '../../utils/helpers'
 
 export const readS3DataToString = async (
@@ -12,19 +13,20 @@ export const readS3DataToString = async (
     Bucket: bucketName,
     Key: fileKey
   }
-  const returnedRecipientList = await s3Client.send(
-    new GetObjectCommand(commandInput)
-  )
+  const { Body } = await s3Client.send(new GetObjectCommand(commandInput))
 
-  console.log('Returned list of recipients pre handle', returnedRecipientList)
-
-  if (!returnedRecipientList.Body) {
+  if (Body instanceof Readable) {
+    return await streamToString(Body)
+  } else {
     throw new Error('Valid recipient list not found')
   }
+}
 
-  console.log(
-    'handled: ',
-    JSON.stringify((returnedRecipientList.Body as Buffer).toString('ascii'))
-  )
-  return (returnedRecipientList.Body as Buffer).toString('ascii')
+const streamToString = async (stream: Stream): Promise<string> => {
+  const chunks: Uint8Array[] = []
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)))
+    stream.on('error', (err) => reject(err))
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')))
+  })
 }

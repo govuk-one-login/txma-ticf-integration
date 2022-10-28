@@ -10,6 +10,7 @@ import {
 } from '../../utils/tests/testConstants'
 import { readS3DataToString } from './readS3DataToString'
 import 'aws-sdk-client-mock-jest'
+import { Readable } from 'stream'
 
 const s3Mock = mockClient(S3Client)
 const getObjectCommandInput: GetObjectCommandInput = {
@@ -18,13 +19,18 @@ const getObjectCommandInput: GetObjectCommandInput = {
 }
 const testRecipientEmailList =
   'recipient1@somedomain.gov.uk\nrecipient2@somedomain.gov.uk'
+
+const createDataStream = () => {
+  const dataStream = new Readable()
+  dataStream.push(testRecipientEmailList)
+  dataStream.push(null)
+  return dataStream
+}
 const givenRecipientEmailListAvailable = () => {
-  s3Mock
-    .on(GetObjectCommand)
-    .resolves({ Body: Buffer.from(testRecipientEmailList, 'ascii') })
+  s3Mock.on(GetObjectCommand).resolves({ Body: createDataStream() })
 }
 const givenRecipientEmailListUnavailable = () => {
-  s3Mock.on(GetObjectCommand).resolves({})
+  s3Mock.on(GetObjectCommand).resolves({ Body: undefined })
 }
 
 describe('readS3DataToString', () => {
