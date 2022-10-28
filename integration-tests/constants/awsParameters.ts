@@ -32,5 +32,13 @@ export const INTEGRATION_TEST_DATE_PREFIX_GLACIER = '2022/02/14'
 export const INTEGRATION_TEST_DATE_NO_DATA = '2022-01-07'
 export const INTEGRATION_TEST_DATE_PREFIX_NO_DATA = '2022/01/07'
 
+export const END_TO_END_TEST_EVENT_ID = 'c9e2bf44-b95e-4f9a-81c4-cf02d42c1552'
+export const END_TO_END_TEST_FILE_NAME =
+  'AuditFireHose-staging-62-2022-09-01-13-49-32-98935951-5374-4652-88a4-2ec3eadfc0cd.gz'
+export const END_TO_END_TEST_DATE_PREFIX = '2022/09/01'
+export const END_TO_END_TEST_DATE = '2022-09-01'
+export const END_TO_END_TEST_DATA_PATH =
+  'restricted.name restricted.address[0].postalCode restricted.address[0].validFrom restricted.birthDate[0].value'
+
 export const ATHENA_QUERY_TEST_FILE_NAME = 'athena-query-test-data.gz'
 export const ATHENA_QUERY_DATA_TEST_DATE_PREFIX = '2022/07/01'
