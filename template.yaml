@@ -243,7 +243,7 @@ Resources:
           AUDIT_BUCKET_NAME: !Ref AuditBucketName
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
-          VALID_EMAIL_RECIPIENTS_BUCKET: !Ref ValidEmailRecipientsBucket
+          VALID_EMAIL_RECIPIENTS_BUCKET: '{{resolve:ssm:ValidEmailRecipientsBucketName}}'
           ZENDESK_API_SECRETS_NAME: !Sub ${AWS::StackName}-ZendeskSecrets
           ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZENDESK_FIELD_ID_DATA_PATHS}}'
           ZENDESK_FIELD_ID_DATE_FROM: '{{resolve:ssm:ZENDESK_FIELD_ID_DATE_FROM}}'
