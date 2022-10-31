@@ -11,7 +11,8 @@ import {
   validGlacierRequestData,
   validRequestNoData,
   validRequestData,
-  validStandardAndGlacierTiersRequestData
+  validStandardAndGlacierTiersRequestData,
+  setCustomFieldValueForRequest
 } from './constants/requestData'
 import {
   ANALYSIS_BUCKET_NAME,
@@ -30,6 +31,7 @@ import { listZendeskTicketComments } from './utils/zendesk/listZendeskTicketComm
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 import { appendRandomIdToFilename } from './utils/helpers'
+import { ZendeskFormFieldIDs } from './constants/zendeskParameters'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(90000)
@@ -37,6 +39,7 @@ describe('Submit a PII request with approved ticket data', () => {
   const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'
   const CLOSE_ZENDESK_TICKET_COMMENT =
     'Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: From Date is in the future, To Date is in the future'
+
   const DATA_AVAILABLE_MESSAGE = 'All data available, queuing Athena query'
   const DATA_SENT_TO_QUEUE_MESSAGE = 'Sent data transfer queue message with id'
   const NOTHING_TO_COPY_MESSAGE =
@@ -384,6 +387,46 @@ describe('Submit a PII request with approved ticket data', () => {
       const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')
       await assertZendeskCommentPresent(ticketId, CLOSE_ZENDESK_TICKET_COMMENT)
+    })
+  })
+
+  describe('invalid recipient email', () => {
+    let ticketId: string
+
+    beforeEach(async () => {
+      const ticketData = { ...validRequestData }
+      setCustomFieldValueForRequest(
+        ticketData,
+        ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+        'txma-team2-bogus-ticf-analyst-dev@test.gov.uk'
+      )
+      ticketId = await createZendeskTicket(ticketData)
+      await approveZendeskTicket(ticketId)
+    })
+
+    afterEach(async () => {
+      await deleteZendeskTicket(ticketId)
+    })
+
+    test('recipient email not in approved list should not start data retrieval process, and should close ticket', async () => {
+      const initiateDataRequestEvents =
+        await getCloudWatchLogEventsGroupByMessagePattern(
+          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+        )
+
+      assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
+      assertEventNotPresent(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
+
+      const zendeskTicket = await getZendeskTicket(ticketId)
+      expect(zendeskTicket.status).toEqual('closed')
+      await assertZendeskCommentPresent(
+        ticketId,
+        'Recipient email not in valid recipient list'
+      )
     })
   })
 })

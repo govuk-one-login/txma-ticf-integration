@@ -81,6 +81,19 @@ export const validRequestData: ZendeskRequestData = {
   }
 }
 
+export const setCustomFieldValueForRequest = (
+  requestData: ZendeskRequestData,
+  fieldId: number,
+  fieldValue: string
+) => {
+  const customField = requestData.request.custom_fields.find(
+    (f) => f.id === fieldId
+  )
+  if (customField) {
+    customField.value = fieldValue
+  }
+}
+
 export const invalidRequestData: ZendeskRequestData = {
   request: {
     subject: `Integration Test Request - ` + generateRandomNumber(),
