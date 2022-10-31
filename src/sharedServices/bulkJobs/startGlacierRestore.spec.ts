@@ -2,6 +2,7 @@ import { startGlacierRestore } from './startGlacierRestore'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
 import {
+  TEST_ANALYSIS_BUCKET,
   TEST_AWS_ACCOUNT_ID,
   TEST_BATCH_JOB_MANIFEST_BUCKET_ARN,
   TEST_BATCH_JOB_ROLE_ARN,
@@ -26,7 +27,7 @@ describe('startGlacierRestore', () => {
     await startGlacierRestore(fileList, ZENDESK_TICKET_ID)
     expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
       ConfirmationRequired: false,
-      ClientRequestToken: `glacier-restore-for-ticket-id-${ZENDESK_TICKET_ID}`,
+      ClientRequestToken: `${TEST_ANALYSIS_BUCKET}-restore-${ZENDESK_TICKET_ID}`,
       AccountId: TEST_AWS_ACCOUNT_ID,
       RoleArn: TEST_BATCH_JOB_ROLE_ARN,
       Priority: 1,
@@ -45,7 +46,7 @@ describe('startGlacierRestore', () => {
           Fields: ['Bucket', 'Key']
         },
         Location: {
-          ObjectArn: `${TEST_BATCH_JOB_MANIFEST_BUCKET_ARN}/${`glacier-restore-for-ticket-id-${ZENDESK_TICKET_ID}.csv`}`,
+          ObjectArn: `${TEST_BATCH_JOB_MANIFEST_BUCKET_ARN}/${`${TEST_ANALYSIS_BUCKET}-glacier-restore-for-ticket-id-${ZENDESK_TICKET_ID}.csv`}`,
           ETag: testEtag
         }
       }

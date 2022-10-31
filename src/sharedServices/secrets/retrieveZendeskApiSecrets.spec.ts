@@ -2,7 +2,7 @@
 import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
 // Dependencies
 import { retrieveSecrets } from './retrieveSecrets'
-import { TEST_ZENDESK_SECRET_NAME } from '../../utils/tests/testConstants'
+import { TEST_ZENDESK_SECRET_ARN } from '../../utils/tests/testConstants'
 
 jest.mock('./retrieveSecrets', () => ({
   retrieveSecrets: jest.fn()
@@ -44,7 +44,7 @@ describe('retrieveZendeskApiSecrets', () => {
     expect(secrets.zendeskWebhookSecretKey).toEqual(
       TEST_ZENDESK_WEBHOOK_SECRET_KEY
     )
-    expect(retrieveSecrets).toHaveBeenCalledWith(TEST_ZENDESK_SECRET_NAME)
+    expect(retrieveSecrets).toHaveBeenCalledWith(TEST_ZENDESK_SECRET_ARN)
   })
 
   const keyList: string[] = [
@@ -67,7 +67,7 @@ describe('retrieveZendeskApiSecrets', () => {
       givenSecretKeysSet(secretCollection)
 
       expect(retrieveZendeskApiSecrets()).rejects.toThrow(
-        `Secret with key ${keyToOmit} not set in ${TEST_ZENDESK_SECRET_NAME}`
+        `Secret with key ${keyToOmit} not set in ${TEST_ZENDESK_SECRET_ARN}`
       )
     })
   })

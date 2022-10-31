@@ -1,0 +1,86 @@
+Parameters:
+  Environment:
+    Description: The environment type
+    Type: String
+    AllowedValues:
+      - dev
+      - build
+      - staging
+      - integration
+      - production
+
+Resources:
+  InitiateDataRequestQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
+        maxReceiveCount: 5
+
+  InitiateDataRequestDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+  TerminatedJobQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+  InitiateAthenaQueryQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
+        maxReceiveCount: 5
+
+  InitiateAthenaQueryDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+  SendEmailQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SendEmailDeadLetterQueue.Arn
+        maxReceiveCount: 5
+
+  SendEmailDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+Outputs:
+  InitiateDataRequestQueueArn:
+    Value: !GetAtt InitiateDataRequestQueue.Arn
+
+  InitiateDataRequestQueueUrl:
+    Value: !Ref InitiateDataRequestQueue
+
+  InitiateDataRequestDeadLetterQueueArn:
+    Value: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
+
+  TerminatedJobQueueArn:
+    Value: !GetAtt TerminatedJobQueue.Arn
+
+  TerminatedJobQueueUrl:
+    Value: !Ref TerminatedJobQueue
+
+  InitiateAthenaQueryQueueArn:
+    Value: !GetAtt InitiateAthenaQueryQueue.Arn
+
+  InitiateAthenaQueryQueueUrl:
+    Value: !Ref InitiateAthenaQueryQueue
+
+  InitiateAthenaQueryDeadLetterQueueArn:
+    Value: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
+
+  SendEmailQueueArn:
+    Value: !GetAtt SendEmailQueue.Arn
+
+  SendEmailQueueUrl:
+    Value: !Ref SendEmailQueue
