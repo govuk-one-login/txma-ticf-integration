@@ -402,8 +402,8 @@ Resources:
         Variables:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           QUERY_RESULTS_BUCKET_NAME: '{{resolve:ssm:QueryResultsBucketName}}'
-          SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME: '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME}}'
-          SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SECURE_DOWNLOAD_WEBSITE_BASE_PATH}}'
+          SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME: '{{resolve:ssm:SecureFraudSiteDataTableName}}'
+          SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SecureFraudSiteApiStageUrl}}/secure'
           SEND_EMAIL_QUEUE_URL: !GetAtt SqsResources.Outputs.SendEmailQueueUrl
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
@@ -457,7 +457,7 @@ Resources:
             Effect: Allow
             Action:
               - dynamodb:PutItem
-            Resource: '{{resolve:ssm:SECURE_DOWNLOAD_DYNAMODB_TABLE_ARN}}'
+            Resource: '{{resolve:ssm:SecureFraudSiteDataTableArn}}'
           - Sid: AllowSqsSend
             Effect: Allow
             Action:
@@ -513,18 +513,13 @@ Resources:
             Resource:
               - '{{resolve:ssm:NotifySecretSetArn}}'
               - '{{resolve:ssm:ZendeskSecretSetArn}}'
-          - Sid: DecryptSecrets
+          - Sid: DecryptKmsKeys
             Effect: Allow
             Action:
               - kms:Decrypt
-            Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
-          - Sid: UseSqsKmsKey
-            Effect: Allow
-            Action:
-              - kms:Decrypt
-              - kms:GenerateDataKey*
-              - kms:ReEncrypt*
-            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+            Resource:
+              - '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
 
   SendEmailRequestToNotifyLogs:
     Type: AWS::Logs::LogGroup

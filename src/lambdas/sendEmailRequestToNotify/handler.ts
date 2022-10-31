@@ -32,7 +32,7 @@ export const handler = async (event: SQSEvent) => {
         'requestNotSentToNotify',
         loggingCopy
       )}${formatNotifyErrors(error)}`,
-      error
+      JSON.stringify(error)
     )
     await closeZendeskTicket(
       requestDetails.zendeskId,
