@@ -56,7 +56,7 @@ describe('get zendesk ticket information', () => {
 
     expect(console.log).toHaveBeenLastCalledWith(
       'Zendesk ticket with matching id found',
-      successResponse.ticket
+      JSON.stringify(successResponse.ticket)
     )
   })
 
