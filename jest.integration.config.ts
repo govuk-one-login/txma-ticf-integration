@@ -5,7 +5,8 @@ const config: Config.InitialOptions = {
   testPathIgnorePatterns: ['/src/'],
   preset: 'ts-jest',
   setupFiles: ['<rootDir>/.integration.test.env'],
-  verbose: true
+  verbose: true,
+  reporters: ['default', 'jest-junit']
 }
 
 export default config
