@@ -126,6 +126,7 @@ Resources:
       Environment:
         Variables:
           INITIATE_DATA_REQUEST_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueUrl
+          VALID_EMAIL_RECIPIENTS_BUCKET: '{{resolve:ssm:ValidEmailRecipientsBucketName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZendeskFieldIdDataPaths}}'
           ZENDESK_FIELD_ID_DATE_FROM: '{{resolve:ssm:ZendeskFieldIdDateFrom}}'
@@ -178,7 +179,12 @@ Resources:
               - kms:GenerateDataKey*
               - kms:ReEncrypt*
             Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
-  
+          - Sid: S3ReadEmailRecipients
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - !Join ['/', ['{{resolve:ssm:ValidEmailRecipientsBucketArn}}', '*']]
   InitiateDataRequestLogs:
     Type: AWS::Logs::LogGroup
     Properties:

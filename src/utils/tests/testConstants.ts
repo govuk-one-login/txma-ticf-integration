@@ -64,3 +64,6 @@ export const TEST_SECURE_DOWNLOAD_WEBSITE_BASE_PATH =
   'http://my-download-website/secure'
 export const TEST_SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME = 'secureDownloadDynamoDb'
 export const TEST_ATHENA_QUERY_ID = 'abc123'
+export const TEST_VALID_EMAIL_RECIPIENTS_BUCKET = 'myEmailRecipientsBucket'
+export const TEST_VALID_EMAIL_RECIPIENTS_BUCKET_KEY =
+  'myEmailRecipientsBucketKey'

@@ -1,3 +1,4 @@
+import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
 import {
   getEpochDate,
@@ -18,9 +19,9 @@ const VALID_PII_TYPES = [
   'previous_address'
 ]
 
-export const validateZendeskRequest = (
+export const validateZendeskRequest = async (
   body: string | null
-): ValidatedDataRequestParamsResult => {
+): Promise<ValidatedDataRequestParamsResult> => {
   const data = tryParseJSON(body ?? '{}')
   if (isEmpty(data)) {
     return {
@@ -53,6 +54,12 @@ export const validateZendeskRequest = (
     {
       message: 'Requester email format invalid',
       isValid: isEmailValid(data.requesterEmail)
+    },
+    {
+      message: 'Recipient email not in valid recipient list',
+      isValid:
+        !isEmailValid(data.recipientEmail) ||
+        (await isEmailInValidRecipientList(data.recipientEmail))
     },
     {
       message: 'At least one session id should be provided',
