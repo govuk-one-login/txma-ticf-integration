@@ -49,7 +49,7 @@ Resources:
         StorageDescriptor:
           Columns:
             - { Name: 'event_id', Type: string }
-            - { Name: 'journey_id', Type: string }
+            - { Name: 'govuk_signin_journey_id', Type: string }
             - { Name: 'session_id', Type: string }
             - { Name: 'user_id', Type: string }
             - { Name: 'client_id', Type: string }
