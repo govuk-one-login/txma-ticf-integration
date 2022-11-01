@@ -21,7 +21,5 @@ node_modules/
 !.yarn/versions
 
 # Junit
-junit.xml
+*/junit.xml
 
-# Allure
-allure-results/
