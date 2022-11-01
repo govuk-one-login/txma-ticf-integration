@@ -116,6 +116,12 @@ Resources:
       LogGroupName: !Sub /aws/apigateway/${AWS::StackName}-zendesk-webhook-api-access-logs
       RetentionInDays: 30
 
+  ZendeskWebhookApiWafAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties: 
+      ResourceArn: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/restapis/${ZendeskWebhookApi}/stages/${ZendeskWebhookApi.Stage}
+      WebACLArn: '{{resolve:ssm:ZendeskWebhookApiWafAclArn}}'
+
   InitiateDataRequestFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
