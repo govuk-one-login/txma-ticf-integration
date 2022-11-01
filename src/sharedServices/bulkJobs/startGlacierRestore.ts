@@ -5,6 +5,9 @@ import {
 } from '@aws-sdk/client-s3-control'
 import { getEnv } from '../../utils/helpers'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
+
+const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
+
 export const startGlacierRestore = async (
   filesToRestore: string[],
   zendeskTicketId: string
@@ -16,7 +19,7 @@ export const startGlacierRestore = async (
     return
   }
 
-  const manifestFileName = `glacier-restore-for-ticket-id-${zendeskTicketId}.csv`
+  const manifestFileName = `${analysisBucketName}-glacier-restore-for-ticket-id-${zendeskTicketId}.csv`
   const manifestFileEtag = await writeJobManifestFileToJobBucket(
     getEnv('AUDIT_BUCKET_NAME'),
     filesToRestore,
@@ -43,8 +46,8 @@ const createBulkGlacierRestoreJob = async (
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     ConfirmationRequired: false,
-    ClientRequestToken: `glacier-restore-for-ticket-id-${zendeskTicketId}`,
-    AccountId: getEnv('ACCOUNT_ID'),
+    ClientRequestToken: `${analysisBucketName}-restore-${zendeskTicketId}`,
+    AccountId: getEnv('AWS_ACCOUNT_ID'),
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
     Operation: {

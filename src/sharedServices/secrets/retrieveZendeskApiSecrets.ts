@@ -5,7 +5,7 @@ import { retrieveSecrets } from './retrieveSecrets'
 
 export const retrieveZendeskApiSecrets =
   async (): Promise<ZendeskApiSecrets> => {
-    const secretName = getEnv('ZENDESK_API_SECRETS_NAME')
+    const secretName = getEnv('ZENDESK_API_SECRETS_ARN')
     const secrets = await retrieveSecrets(secretName)
     checkSecretsSet(secretName, secrets, [
       'ZENDESK_API_KEY',

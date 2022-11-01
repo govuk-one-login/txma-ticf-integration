@@ -17,5 +17,5 @@ export const queueSendResultsReadyEmail = async (parameters: {
   console.log(
     `Queueing email send for zendesk ticket id ${parameters.zendeskTicketId}`
   )
-  await sendSqsMessage(emailOptions, getEnv('EMAIL_SEND_QUEUE_URL'))
+  await sendSqsMessage(emailOptions, getEnv('SEND_EMAIL_QUEUE_URL'))
 }

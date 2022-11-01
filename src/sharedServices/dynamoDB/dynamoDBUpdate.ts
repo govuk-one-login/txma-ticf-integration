@@ -42,7 +42,7 @@ export const updateQueryByZendeskId = async (
     )
   }
 
-  console.log(`Updated item in db: ${responseObject}`)
+  console.log(`Updated item in db: ${JSON.stringify(responseObject)}`)
 
   return
 }

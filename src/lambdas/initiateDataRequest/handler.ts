@@ -22,7 +22,7 @@ export const handler = async (
     return await handleInvalidSignature()
   }
 
-  const validatedZendeskRequest = validateZendeskRequest(event.body)
+  const validatedZendeskRequest = await validateZendeskRequest(event.body)
 
   if (!validatedZendeskRequest.isValid) {
     return await handleInvalidRequest(event.body, validatedZendeskRequest)
@@ -68,6 +68,7 @@ const handleInvalidRequest = async (
   console.log(interpolateTemplate('requestInvalid', loggingCopy))
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
+  console.log('Validation message: ', validationMessage)
   const newTicketStatus = 'closed'
   await updateZendeskTicket(
     requestBody,

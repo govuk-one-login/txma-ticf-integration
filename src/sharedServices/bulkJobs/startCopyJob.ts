@@ -6,6 +6,8 @@ import {
 import { getEnv } from '../../utils/helpers'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 
+const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
+
 // currently no trigger for this function
 export const startCopyJob = async (
   filesToCopy: string[],
@@ -16,7 +18,7 @@ export const startCopyJob = async (
     return
   }
 
-  const manifestFileName = `s3-copy-job-for-ticket-id-${zendeskTicketId}.csv`
+  const manifestFileName = `${analysisBucketName}-copy-job-for-ticket-id-${zendeskTicketId}.csv`
   const manifestFileEtag = await writeJobManifestFileToJobBucket(
     getEnv('AUDIT_BUCKET_NAME'),
     filesToCopy,
@@ -43,8 +45,8 @@ const createS3CopyJob = async (
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     ConfirmationRequired: false,
-    ClientRequestToken: `s3-copy-job-for-ticket-id-${zendeskTicketId}`,
-    AccountId: getEnv('ACCOUNT_ID'),
+    AccountId: getEnv('AWS_ACCOUNT_ID'),
+    ClientRequestToken: `${analysisBucketName}-copy-${zendeskTicketId}`,
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
     Operation: {
