@@ -1,4 +1,5 @@
 import { PII_TYPES_DATA_PATHS_MAP } from '../../constants/piiTypesDataPathsMap'
+import { IDENTIFIER_TYPES_EVENT_FIELD_MAP } from '../../constants/identifierTypesEventFieldMap'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import {
   DataRequestParams,
@@ -27,6 +28,8 @@ export const createQuerySql = (
     }
   }
 
+  const sqlIdTypeStatement = formatIdTypeStatement(identifierType)
+
   const sqlSelectStatement = formatSelectStatement(
     requestData.dataPaths,
     requestData.piiTypes
@@ -41,7 +44,7 @@ export const createQuerySql = (
     'ATHENA_TABLE_NAME'
   )}`
 
-  const queryString = `SELECT event_id, ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
+  const queryString = `SELECT ${sqlIdTypeStatement} ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
 
   const queryParameters = generateQueryParameters(
     identifiers,
@@ -71,6 +74,18 @@ const getIdentifiers = (
   }
 
   return []
+}
+
+const formatIdTypeStatement = (identifierType: IdentifierTypes): string => {
+  const identifierTypeEventField = identifierTypeEventFieldMap(identifierType)
+  switch (identifierTypeEventField) {
+    case 'event_id': {
+      return 'event_id,'
+    }
+    default: {
+      return `event_id, ${identifierTypeEventField},`
+    }
+  }
 }
 
 const formatSelectStatement = (
@@ -105,6 +120,12 @@ const formatPiiType = (piiType: string): string => {
 
 const piiTypeDataPathMap = (piiType: string): string => {
   return PII_TYPES_DATA_PATHS_MAP[piiType]
+}
+
+const identifierTypeEventFieldMap = (
+  identfierType: IdentifierTypes
+): string => {
+  return IDENTIFIER_TYPES_EVENT_FIELD_MAP[identfierType]
 }
 
 const formatWhereStatment = (
