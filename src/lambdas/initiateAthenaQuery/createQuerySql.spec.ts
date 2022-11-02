@@ -9,6 +9,7 @@ import {
   TEST_FORMATTED_DATE_FROM,
   TEST_FORMATTED_DATE_TO
 } from '../../utils/tests/testConstants'
+import { IDENTIFIER_TYPES_EVENT_FIELD_MAP } from '../../constants/identifierTypesEventFieldMap'
 
 describe('create Query SQL', () => {
   it.each([
@@ -20,10 +21,11 @@ describe('create Query SQL', () => {
     `returns a formatted SQL query if dataPaths and requested id type of %p is present`,
     (id, idSelectStatement) => {
       dataPathsTestDataRequest.identifierType = id as IdentifierTypes
+      const identifierTypeEventField = IDENTIFIER_TYPES_EVENT_FIELD_MAP[id]
       const idExtension = id.charAt(0)
       expect(createQuerySql(dataPathsTestDataRequest)).toEqual({
         sqlGenerated: true,
-        sql: `SELECT ${idSelectStatement} json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${id} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+        sql: `SELECT ${idSelectStatement} json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${identifierTypeEventField} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
         queryParameters: [
           `123${idExtension}`,
           `456${idExtension}`,

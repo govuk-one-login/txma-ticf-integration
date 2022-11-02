@@ -12,7 +12,8 @@ export const createQuerySql = (
 ): CreateQuerySqlResult => {
   console.info('Generating Athena SQL query string')
   const identifierType = requestData.identifierType
-  const identifiers = getIdentifiers(identifierType, requestData)
+  const identifierTypeEventField = identifierTypeEventFieldMap(identifierType)
+  const identifiers = getIdentifiers(identifierTypeEventField, requestData)
 
   if (identifiers.length < 1) {
     return {
@@ -28,7 +29,7 @@ export const createQuerySql = (
     }
   }
 
-  const sqlIdTypeStatement = formatIdTypeStatement(identifierType)
+  const sqlIdTypeStatement = formatIdTypeStatement(identifierTypeEventField)
 
   const sqlSelectStatement = formatSelectStatement(
     requestData.dataPaths,
@@ -36,7 +37,7 @@ export const createQuerySql = (
   )
 
   const sqlWhereStatement = formatWhereStatment(
-    identifierType,
+    identifierTypeEventField,
     identifiers.length
   )
 
@@ -60,24 +61,32 @@ export const createQuerySql = (
 }
 
 const getIdentifiers = (
-  identifierType: IdentifierTypes,
+  identifierTypeEventField: string,
   requestData: DataRequestParams
 ): string[] => {
-  if (identifierType === 'event_id' && requestData.eventIds.length) {
+  if (identifierTypeEventField === 'event_id' && requestData.eventIds.length) {
     return requestData.eventIds
-  } else if (identifierType === 'journey_id' && requestData.journeyIds.length) {
+  } else if (
+    identifierTypeEventField === 'govuk_signin_journey_id' &&
+    requestData.journeyIds.length
+  ) {
     return requestData.journeyIds
-  } else if (identifierType === 'session_id' && requestData.sessionIds.length) {
+  } else if (
+    identifierTypeEventField === 'session_id' &&
+    requestData.sessionIds.length
+  ) {
     return requestData.sessionIds
-  } else if (identifierType === 'user_id' && requestData.userIds.length) {
+  } else if (
+    identifierTypeEventField === 'user_id' &&
+    requestData.userIds.length
+  ) {
     return requestData.userIds
   }
 
   return []
 }
 
-const formatIdTypeStatement = (identifierType: IdentifierTypes): string => {
-  const identifierTypeEventField = identifierTypeEventFieldMap(identifierType)
+const formatIdTypeStatement = (identifierTypeEventField: string): string => {
   switch (identifierTypeEventField) {
     case 'event_id': {
       return 'event_id,'
@@ -129,11 +138,11 @@ const identifierTypeEventFieldMap = (
 }
 
 const formatWhereStatment = (
-  identifierType: IdentifierTypes,
+  identifierTypeEventField: string,
   numberOfIdentifiers: number
 ): string => {
   if (numberOfIdentifiers == 1) {
-    return `${identifierType}=?`
+    return `${identifierTypeEventField}=?`
   }
 
   const whereStatementsArray = []
@@ -142,7 +151,7 @@ const formatWhereStatment = (
     whereStatementsArray.push('?')
   }
 
-  return `${identifierType} IN (${whereStatementsArray.join(', ')})`
+  return `${identifierTypeEventField} IN (${whereStatementsArray.join(', ')})`
 }
 
 const generateQueryParameters = (
