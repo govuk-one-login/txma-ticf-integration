@@ -359,6 +359,21 @@ describe('validateZendeskRequest', () => {
     ])
   })
 
+  it(`should handle dataPaths containing empty strings`, async () => {
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(
+        buildValidRequestBodyWithDataPaths(
+          'myPath.path1   myPath.path2[0].path2'
+        )
+      )
+    )
+    expect(validationResult.isValid).toEqual(true)
+    expect(validationResult.dataRequestParams?.dataPaths).toEqual([
+      'myPath.path1',
+      'myPath.path2[0].path2'
+    ])
+  })
+
   it.each(['badPath.', '.badPath2', 'badPath3[.path'])(
     `should return an invalid response if dataPaths contains an invalid dataPath of $p`,
     async (dataPath: string) => {

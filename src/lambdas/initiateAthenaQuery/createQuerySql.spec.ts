@@ -9,7 +9,7 @@ import {
   TEST_FORMATTED_DATE_FROM,
   TEST_FORMATTED_DATE_TO
 } from '../../utils/tests/testConstants'
-import { IDENTIFIER_TYPES_EVENT_FIELD_MAP } from '../../constants/identifierTypesEventFieldMap'
+import { IDENTIFIER_TYPES_EVENT_FIELD_MAP } from '../../constants/athenaSqlMapConstants'
 
 describe('create Query SQL', () => {
   it.each([
