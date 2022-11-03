@@ -5,7 +5,19 @@ const config: Config.InitialOptions = {
   testPathIgnorePatterns: ['/src/'],
   preset: 'ts-jest',
   setupFiles: ['<rootDir>/.integration.test.env'],
-  verbose: true
+  verbose: true,
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        suiteName: 'TxMA PII Data Tests',
+        outputDirectory: './jest-junit-results',
+        ancestorSeparator: ',',
+        includeConsoleOutput: true
+      }
+    ]
+  ]
 }
 
 export default config

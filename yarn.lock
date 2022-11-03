@@ -4762,7 +4762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-string@npm:^4.1.1":
+"csv-string@npm:4.1.1":
   version: 4.1.1
   resolution: "csv-string@npm:4.1.1"
   checksum: 5855d4a9a59c5d7ee93d0522a636a18be721085ff5be9e98a64c7002341130af107ff362c606d977eb3e7bff8872526d3e1994b4cb177c94bb171a5fd0a79859
@@ -4864,7 +4864,7 @@ __metadata:
     aws-sdk-client-mock-jest: 2.0.0
     aws-testing-library: 2.1.5
     axios: 0.27.2
-    csv-string: ^4.1.1
+    csv-string: 4.1.1
     esbuild: 0.15.12
     eslint: 8.25.0
     eslint-config-prettier: 8.5.0
@@ -4872,9 +4872,10 @@ __metadata:
     husky: 8.0.1
     jest: 28.1.3
     jest-extended: 3.1.0
+    jest-junit: 14.0.1
     jest-when: 3.5.1
     lint-staged: 13.0.3
-    node-html-parser: ^6.1.1
+    node-html-parser: 6.1.1
     notifications-node-client: 5.1.1
     prettier: 2.7.1
     ts-jest: 28.0.8
@@ -6730,6 +6731,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-junit@npm:14.0.1":
+  version: 14.0.1
+  resolution: "jest-junit@npm:14.0.1"
+  dependencies:
+    mkdirp: ^1.0.4
+    strip-ansi: ^6.0.1
+    uuid: ^8.3.2
+    xml: ^1.0.1
+  checksum: 2a9ccfecbe4c0df1be24e64b3e12a260356db999b3d821578c325bd34367d2f54b27e9560a8d5abe6c19412400268bf55dd41473565903cb8f616d998f7eb9ac
+  languageName: node
+  linkType: hard
+
 "jest-leak-detector@npm:^28.1.3":
   version: 28.1.3
   resolution: "jest-leak-detector@npm:28.1.3"
@@ -7638,7 +7651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-html-parser@npm:^6.1.1":
+"node-html-parser@npm:6.1.1":
   version: 6.1.1
   resolution: "node-html-parser@npm:6.1.1"
   dependencies:
@@ -9080,6 +9093,13 @@ __metadata:
     sax: ">=0.6.0"
     xmlbuilder: ~9.0.1
   checksum: ca8b2fee430d450a18947786bfd7cd1a353ee00fc6fd550acbc8a8e65f1b4df5e9786fcb2990c1a5514ecd554d445fb74e1d716b3a4fcfffc10554aeb5db482b
+  languageName: node
+  linkType: hard
+
+"xml@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "xml@npm:1.0.1"
+  checksum: 11b5545ef3f8fec3fa29ce251f50ad7b6c97c103ed4d851306ec23366f5fa4699dd6a942262df52313a0cd1840ab26256da253c023bad3309d8ce46fe6020ca0
   languageName: node
   linkType: hard
 
