@@ -18,7 +18,6 @@ import {
   INITIATE_ATHENA_QUERY_QUEUE_URL
 } from './constants/awsParameters'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
-import { generateRandomNumber } from './utils/helpers'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import {
   dynamoDBItemDataPathAndPIITypes,
@@ -31,9 +30,9 @@ describe('Athena Query SQL generation and execution', () => {
   jest.setTimeout(90000)
 
   describe('Query SQL generation and execution successful', () => {
-    const randomTicketId = (Number(generateRandomNumber()) * 1000).toString()
-
+    let randomTicketId: string
     beforeEach(async () => {
+      randomTicketId = Date.now().toString()
       await deleteAuditDataWithPrefix(
         ANALYSIS_BUCKET_NAME,
         `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}`
@@ -47,6 +46,10 @@ describe('Athena Query SQL generation and execution', () => {
 
     afterEach(async () => {
       await deleteDynamoDBTestItem(randomTicketId)
+      await deleteAuditDataWithPrefix(
+        ANALYSIS_BUCKET_NAME,
+        `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}`
+      )
     })
 
     it('Successful Athena processing - requests having only data paths', async () => {
@@ -136,6 +139,7 @@ describe('Athena Query SQL generation and execution', () => {
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
+      console.log(`VALUE FROM DYNAMODB: ${value?.athenaQueryId}`)
       expect(value?.athenaQueryId.S).toBeDefined()
     })
   })
