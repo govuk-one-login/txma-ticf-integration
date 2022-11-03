@@ -7,15 +7,14 @@ export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {
       { id: 5605352623260, value: 'event_id' },
       {
         id: 5605423021084,
-        value:
-          'd18c56de-1cf0-4641-bdab-3e4212a111cc 488b7ddf-afa7-40a3-8523-352414087f31'
+        value: '99cbfa88-5277-422f-af25-be0864adb7db'
       },
-      { id: 5641719421852, value: 'current_address name' },
-      { id: 5605700069916, value: '2022-07-01' },
+      { id: 5641719421852, value: 'current_address' },
+      { id: 5605700069916, value: '2022-04-01' },
       {
         id: 5698447116060,
         value:
-          'restricted.name restricted.birthDate.value restricted.address.buildingNumber'
+          'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
       },
       {
         id: 6202354485660,
@@ -36,13 +35,13 @@ export const dynamoDBItemPIITypesOnly: DynamoDBItem = {
       { id: 5605352623260, value: 'event_id' },
       {
         id: 5605423021084,
-        value: 'd18c56de-1cf0-4641-bdab-3e4212a111cc'
+        value: '99cbfa88-5277-422f-af25-be0864adb7db'
       },
       { id: 5641719421852, value: 'current_address name' },
-      { id: 5605700069916, value: '2022-07-01' },
+      { id: 5605700069916, value: '2022-04-01' },
       {
         id: 5698447116060,
-        value: ''
+        value: []
       },
       {
         id: 6202354485660,
@@ -63,14 +62,14 @@ export const dynamoDBItemDataPathsOnly: DynamoDBItem = {
       { id: 5605352623260, value: 'event_id' },
       {
         id: 5605423021084,
-        value: '488b7ddf-afa7-40a3-8523-352414087f31'
+        value: '99cbfa88-5277-422f-af25-be0864adb7db'
       },
       { id: 5641719421852, value: null },
-      { id: 5605700069916, value: '2022-07-01' },
+      { id: 5605700069916, value: '2022-04-01' },
       {
         id: 5698447116060,
         value:
-          'restricted.name restricted.birthDate.value restricted.address.buildingNumber'
+          'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
       },
       {
         id: 6202354485660,
