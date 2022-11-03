@@ -4762,7 +4762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-string@npm:^4.1.1":
+"csv-string@npm:4.1.1":
   version: 4.1.1
   resolution: "csv-string@npm:4.1.1"
   checksum: 5855d4a9a59c5d7ee93d0522a636a18be721085ff5be9e98a64c7002341130af107ff362c606d977eb3e7bff8872526d3e1994b4cb177c94bb171a5fd0a79859
@@ -4864,7 +4864,7 @@ __metadata:
     aws-sdk-client-mock-jest: 2.0.0
     aws-testing-library: 2.1.5
     axios: 0.27.2
-    csv-string: ^4.1.1
+    csv-string: 4.1.1
     esbuild: 0.15.12
     eslint: 8.25.0
     eslint-config-prettier: 8.5.0
@@ -4875,7 +4875,7 @@ __metadata:
     jest-junit: 14.0.1
     jest-when: 3.5.1
     lint-staged: 13.0.3
-    node-html-parser: ^6.1.1
+    node-html-parser: 6.1.1
     notifications-node-client: 5.1.1
     prettier: 2.7.1
     ts-jest: 28.0.8
@@ -7651,7 +7651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-html-parser@npm:^6.1.1":
+"node-html-parser@npm:6.1.1":
   version: 6.1.1
   resolution: "node-html-parser@npm:6.1.1"
   dependencies:
