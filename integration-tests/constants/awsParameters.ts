@@ -40,4 +40,4 @@ export const END_TO_END_TEST_DATA_PATH =
   'restricted.name restricted.address[0].postalCode restricted.address[0].validFrom restricted.birthDate[0].value'
 
 export const ATHENA_QUERY_TEST_FILE_NAME = 'athena-query-test-data.gz'
-export const ATHENA_QUERY_DATA_TEST_DATE_PREFIX = '2022/07/01'
+export const ATHENA_QUERY_DATA_TEST_DATE_PREFIX = '2022/04/01'

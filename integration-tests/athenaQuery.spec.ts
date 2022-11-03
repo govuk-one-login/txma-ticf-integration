@@ -18,7 +18,6 @@ import {
   INITIATE_ATHENA_QUERY_QUEUE_URL
 } from './constants/awsParameters'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
-import { generateRandomNumber } from './utils/helpers'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import {
   dynamoDBItemDataPathAndPIITypes,
@@ -26,14 +25,21 @@ import {
   dynamoDBItemPIITypesOnly
 } from './constants/dynamoDBItemDetails'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
+import { waitForDownloadHash } from './utils/aws/waitForDownloadHash'
+import {
+  downloadResultsCSVFromLink,
+  getSecureDownloadPageHTML,
+  retrieveS3LinkFromHtml
+} from './utils/secureDownload'
+import * as CSV from 'csv-string'
 
 describe('Athena Query SQL generation and execution', () => {
   jest.setTimeout(90000)
 
   describe('Query SQL generation and execution successful', () => {
-    const randomTicketId = (Number(generateRandomNumber()) * 1000).toString()
-
+    let randomTicketId: string
     beforeEach(async () => {
+      randomTicketId = Date.now().toString()
       await deleteAuditDataWithPrefix(
         ANALYSIS_BUCKET_NAME,
         `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}`
@@ -47,6 +53,10 @@ describe('Athena Query SQL generation and execution', () => {
 
     afterEach(async () => {
       await deleteDynamoDBTestItem(randomTicketId)
+      await deleteAuditDataWithPrefix(
+        ANALYSIS_BUCKET_NAME,
+        `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}`
+      )
     })
 
     it('Successful Athena processing - requests having only data paths', async () => {
@@ -58,10 +68,11 @@ describe('Athena Query SQL generation and execution', () => {
       await addMessageToQueue(randomTicketId, INITIATE_ATHENA_QUERY_QUEUE_URL)
 
       const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
-      const GENERATING_ATHENA_SQL_MESSAGE = 'Generating Athena SQL query string'
       const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
       const ATHENA_INITIATED_QUERY_MESSAGE =
         'Athena query execution initiated with QueryExecutionId'
+      const EXPECTED_RESULTS_BIRTHDATE = `"1981-07-28"`
+      const EXPECTED_BUILDING_NAME = `"PERIGARTH"`
 
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -71,12 +82,31 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(athenaQueryEvents, GENERATING_ATHENA_SQL_MESSAGE)
+
       assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
       expect(value?.athenaQueryId.S).toBeDefined()
+
+      const downloadHash = await waitForDownloadHash(randomTicketId)
+      expect(downloadHash).toBeDefined()
+      console.log('Download Hash: ' + downloadHash)
+
+      const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+      expect(downloadHash.startsWith('<html>')).toBeTrue
+
+      const linkToS3ResultsFile = await retrieveS3LinkFromHtml(downloadPageHTML)
+      expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
+
+      const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)
+      console.log('CSV data: ' + csvData)
+      const csvRows = CSV.parse(csvData, { output: 'objects' })
+      console.log(csvRows)
+
+      expect(csvRows.length).toEqual(1)
+      expect(csvRows[0].birthdate_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
+      expect(csvRows[0].address_buildingname).toEqual(EXPECTED_BUILDING_NAME)
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
@@ -88,10 +118,11 @@ describe('Athena Query SQL generation and execution', () => {
       await addMessageToQueue(randomTicketId, INITIATE_ATHENA_QUERY_QUEUE_URL)
 
       const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
-      const GENERATING_ATHENA_SQL_MESSAGE = 'Generating Athena SQL query string'
       const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
       const ATHENA_INITIATED_QUERY_MESSAGE =
         'Athena query execution initiated with QueryExecutionId'
+      const EXPECTED_NAME = `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`
+      const EXPECTED_CURRENT_ADDRESS = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
 
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -101,12 +132,30 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(athenaQueryEvents, GENERATING_ATHENA_SQL_MESSAGE)
       assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
       expect(value?.athenaQueryId.S).toBeDefined()
+
+      const downloadHash = await waitForDownloadHash(randomTicketId)
+      expect(downloadHash).toBeDefined()
+      console.log('Download Hash: ' + downloadHash)
+
+      const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+      expect(downloadHash.startsWith('<html>')).toBeTrue
+
+      const linkToS3ResultsFile = await retrieveS3LinkFromHtml(downloadPageHTML)
+      expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
+
+      const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)
+      console.log('CSV data: ' + csvData)
+      const csvRows = CSV.parse(csvData, { output: 'objects' })
+      console.log(csvRows)
+
+      expect(csvRows.length).toEqual(1)
+      expect(csvRows[0].name).toEqual(EXPECTED_NAME)
+      expect(csvRows[0].current_address).toEqual(EXPECTED_CURRENT_ADDRESS)
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
@@ -118,10 +167,13 @@ describe('Athena Query SQL generation and execution', () => {
       await addMessageToQueue(randomTicketId, INITIATE_ATHENA_QUERY_QUEUE_URL)
 
       const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
-      const GENERATING_ATHENA_SQL_MESSAGE = 'Generating Athena SQL query string'
       const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
       const ATHENA_INITIATED_QUERY_MESSAGE =
         'Athena query execution initiated with QueryExecutionId'
+      const EXPECTED_CURRENT_ADDRESS = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
+      const EXPECTED_NAME = `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`
+      const EXPECTED_BUILDING_NAME = `"PERIGARTH"`
+      const EXPECTED_RESULTS_BIRTHDATE = `"1981-07-28"`
 
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -131,12 +183,32 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(athenaQueryEvents, GENERATING_ATHENA_SQL_MESSAGE)
       assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
       expect(value?.athenaQueryId.S).toBeDefined()
+
+      const downloadHash = await waitForDownloadHash(randomTicketId)
+      expect(downloadHash).toBeDefined()
+      console.log('Download Hash: ' + downloadHash)
+
+      const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+      expect(downloadHash.startsWith('<html>')).toBeTrue
+
+      const linkToS3ResultsFile = await retrieveS3LinkFromHtml(downloadPageHTML)
+      expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
+
+      const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)
+      console.log('CSV data: ' + csvData)
+      const csvRows = CSV.parse(csvData, { output: 'objects' })
+      console.log(csvRows)
+
+      expect(csvRows.length).toEqual(1)
+      expect(csvRows[0].birthdate_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
+      expect(csvRows[0].address_buildingname).toEqual(EXPECTED_BUILDING_NAME)
+      expect(csvRows[0].name).toEqual(EXPECTED_NAME)
+      expect(csvRows[0].current_address).toEqual(EXPECTED_CURRENT_ADDRESS)
     })
   })
 
