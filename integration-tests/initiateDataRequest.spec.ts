@@ -288,50 +288,6 @@ describe('Submit a PII request with approved ticket data', () => {
       await deleteZendeskTicket(ticketId)
     })
 
-    describe('valid requests for no data copy - analysis bucket empty', () => {
-      let ticketId: string
-
-      beforeEach(async () => {
-        await deleteAuditDataWithPrefix(
-          AUDIT_BUCKET_NAME,
-          `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
-        )
-        await deleteAuditDataWithPrefix(
-          ANALYSIS_BUCKET_NAME,
-          `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
-        )
-        ticketId = await createZendeskTicket(validRequestNoData)
-        await approveZendeskTicket(ticketId)
-      })
-
-      test('request for valid data, no files present', async () => {
-        const initiateDataRequestEvents =
-          await getCloudWatchLogEventsGroupByMessagePattern(
-            INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-            [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
-          )
-        expect(initiateDataRequestEvents).not.toEqual([])
-
-        assertEventPresent(
-          initiateDataRequestEvents,
-          DATA_SENT_TO_QUEUE_MESSAGE
-        )
-
-        const messageId = getQueueMessageId(initiateDataRequestEvents)
-        console.log('messageId', messageId)
-
-        const processDataRequestEvents =
-          await getCloudWatchLogEventsGroupByMessagePattern(
-            PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
-            [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
-            50
-          )
-        expect(processDataRequestEvents).not.toEqual([])
-
-        assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
-      })
-    })
-
     test('request for valid data already in analysis bucket', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -356,6 +312,47 @@ describe('Submit a PII request with approved ticket data', () => {
 
       assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
       assertEventPresent(processDataRequestEvents, DATA_AVAILABLE_MESSAGE)
+    })
+  })
+
+  describe('valid requests for no data copy - analysis bucket empty', () => {
+    let ticketId: string
+
+    beforeEach(async () => {
+      await deleteAuditDataWithPrefix(
+        AUDIT_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
+      )
+      await deleteAuditDataWithPrefix(
+        ANALYSIS_BUCKET_NAME,
+        `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
+      )
+      ticketId = await createZendeskTicket(validRequestNoData)
+      await approveZendeskTicket(ticketId)
+    })
+
+    test('request for valid data, no files present', async () => {
+      const initiateDataRequestEvents =
+        await getCloudWatchLogEventsGroupByMessagePattern(
+          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+        )
+      expect(initiateDataRequestEvents).not.toEqual([])
+
+      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+
+      const messageId = getQueueMessageId(initiateDataRequestEvents)
+      console.log('messageId', messageId)
+
+      const processDataRequestEvents =
+        await getCloudWatchLogEventsGroupByMessagePattern(
+          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+          50
+        )
+      expect(processDataRequestEvents).not.toEqual([])
+
+      assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
     })
   })
 
