@@ -359,7 +359,7 @@ describe('validateZendeskRequest', () => {
     ])
   })
 
-  it(`should handle dataPaths containing empty strings`, async () => {
+  it(`should handle dataPaths containing multiple white space`, async () => {
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithDataPaths(
@@ -372,6 +372,21 @@ describe('validateZendeskRequest', () => {
       'myPath.path1',
       'myPath.path2[0].path2'
     ])
+  })
+
+  it(`should handle dataPaths containing empty strings`, async () => {
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(
+        buildValidRequestBodyWithIds(
+          'session_id',
+          'sessionId1 sessionId2 sessionId3',
+          'passport_number',
+          ''
+        )
+      )
+    )
+    expect(validationResult.isValid).toEqual(true)
+    expect(validationResult.dataRequestParams?.dataPaths).toEqual([])
   })
 
   it.each(['badPath.', '.badPath2', 'badPath3[.path'])(
