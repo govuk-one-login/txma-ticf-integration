@@ -14,7 +14,7 @@ export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {
       {
         id: 5698447116060,
         value:
-          'restricted.name restricted.birthDate.value restricted.address.buildingNumber'
+          'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
       },
       {
         id: 6202354485660,
@@ -41,7 +41,7 @@ export const dynamoDBItemPIITypesOnly: DynamoDBItem = {
       { id: 5605700069916, value: '2022-04-01' },
       {
         id: 5698447116060,
-        value: ''
+        value: []
       },
       {
         id: 6202354485660,
@@ -69,7 +69,7 @@ export const dynamoDBItemDataPathsOnly: DynamoDBItem = {
       {
         id: 5698447116060,
         value:
-          'restricted.name restricted.birthDate.value restricted.address.buildingNumber'
+          'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
       },
       {
         id: 6202354485660,

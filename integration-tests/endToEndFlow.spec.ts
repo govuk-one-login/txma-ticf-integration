@@ -1,5 +1,3 @@
-import axios from 'axios'
-import { parse } from 'node-html-parser'
 import * as CSV from 'csv-string'
 import {
   AUDIT_BUCKET_NAME,
@@ -11,75 +9,19 @@ import {
   endToEndTestRequestDataNoMatch,
   endToEndTestRequestDataWithMatch
 } from './constants/requestData'
-import { retrieveSecureDownloadDbRecord } from './utils/aws/retrieveSecureDownloadDbRecord'
+import { waitForDownloadHash } from './utils/aws/retrieveSecureDownloadDbRecord'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
-import { getEnv, pause } from './utils/helpers'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
+import {
+  downloadResultsCSVFromLink,
+  getSecureDownloadPageHTML,
+  retrieveS3LinkFromHtml
+} from './utils/secureDownload'
 
 describe('Query results generated', () => {
   jest.setTimeout(60000)
-
-  const getSecureDownloadPageHTML = async (
-    downloadHash: string
-  ): Promise<string> => {
-    try {
-      const response = await axios({
-        url: `${getEnv('QUERY_RESULTS_SECURE_DOWNLOAD_URL')}/${downloadHash}`,
-        method: 'POST'
-      })
-      return response.data
-    } catch (error) {
-      console.error(error)
-      throw 'Could not load secure download page'
-    }
-  }
-
-  const retrieveS3LinkFromHtml = (htmlBody: string): string => {
-    const htmlRoot = parse(htmlBody)
-    const metaTag = htmlRoot.querySelector('meta[http-equiv="refresh"]')
-    const contentAttribute = metaTag?.attributes['content'] as string
-    expect(contentAttribute).toBeDefined()
-
-    const urlMatch = contentAttribute.match(/url=(.*)/)
-    const url = urlMatch ? urlMatch[1] : undefined
-    expect(url).toBeDefined()
-    console.log('S3 URL: ' + url)
-    return url as string
-  }
-
-  const downloadResultsCSVFromLink = async (
-    s3Link: string
-  ): Promise<string> => {
-    try {
-      const response = await axios({ url: s3Link, method: 'GET' })
-      return response.data
-    } catch (error) {
-      console.log(error)
-      throw 'Error downloading results csv from S3 link'
-    }
-  }
-
-  const waitForDownloadHash = async (zendeskId: string): Promise<string> => {
-    let downloadHash = await retrieveSecureDownloadDbRecord(zendeskId)
-    const maxAttempts = 30
-    let attempts = 0
-    while (!downloadHash && attempts < maxAttempts) {
-      attempts++
-      await pause(2000)
-      downloadHash = await retrieveSecureDownloadDbRecord(zendeskId)
-    }
-
-    if (attempts == maxAttempts) {
-      throw Error(
-        'Download hash not populated within reasonable time. Please check logs to ensure that data retrieval and query execution were successful'
-      )
-    }
-    expect(downloadHash).toBeDefined()
-    console.log(`DOWNLOAD HASH: ${downloadHash}`)
-    return downloadHash ? downloadHash : ''
-  }
 
   beforeEach(async () => {
     await deleteAuditDataWithPrefix(

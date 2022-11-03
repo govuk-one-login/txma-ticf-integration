@@ -1,6 +1,6 @@
 import { dynamoDBClient } from './dynamoDBClient'
 import { QueryCommand } from '@aws-sdk/client-dynamodb'
-import { getEnv } from '../helpers'
+import { getEnv, pause } from '../helpers'
 export const retrieveSecureDownloadDbRecord = async (
   zendeskId: string
 ): Promise<string | undefined> => {
@@ -27,4 +27,26 @@ export const retrieveSecureDownloadDbRecord = async (
   }
 
   return result
+}
+
+export const waitForDownloadHash = async (
+  zendeskId: string
+): Promise<string> => {
+  let downloadHash = await retrieveSecureDownloadDbRecord(zendeskId)
+  const maxAttempts = 30
+  let attempts = 0
+  while (!downloadHash && attempts < maxAttempts) {
+    attempts++
+    await pause(2000)
+    downloadHash = await retrieveSecureDownloadDbRecord(zendeskId)
+  }
+
+  if (attempts == maxAttempts) {
+    throw Error(
+      'Download hash not populated within reasonable time. Please check logs to ensure that data retrieval and query execution were successful'
+    )
+  }
+  expect(downloadHash).toBeDefined()
+  console.log(`DOWNLOAD HASH: ${downloadHash}`)
+  return downloadHash ? downloadHash : ''
 }
