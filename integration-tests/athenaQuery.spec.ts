@@ -25,7 +25,7 @@ import {
   dynamoDBItemPIITypesOnly
 } from './constants/dynamoDBItemDetails'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
-import { waitForDownloadHash } from './utils/aws/retrieveSecureDownloadDbRecord'
+import { waitForDownloadHash } from './utils/aws/waitForDownloadHash'
 import {
   downloadResultsCSVFromLink,
   getSecureDownloadPageHTML,

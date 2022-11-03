@@ -9,7 +9,7 @@ import {
   endToEndTestRequestDataNoMatch,
   endToEndTestRequestDataWithMatch
 } from './constants/requestData'
-import { waitForDownloadHash } from './utils/aws/retrieveSecureDownloadDbRecord'
+import { waitForDownloadHash } from './utils/aws/waitForDownloadHash'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
