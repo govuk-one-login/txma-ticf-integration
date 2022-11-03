@@ -1,7 +1,7 @@
 import { dynamoDBClient } from './dynamoDBClient'
 import { QueryCommand } from '@aws-sdk/client-dynamodb'
 import { getEnv, pause } from '../helpers'
-export const retrieveSecureDownloadDbRecord = async (
+const retrieveSecureDownloadDbRecord = async (
   zendeskId: string
 ): Promise<string | undefined> => {
   const results = await dynamoDBClient.send(
