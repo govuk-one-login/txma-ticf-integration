@@ -321,8 +321,7 @@ describe('validateZendeskRequest', () => {
     'drivers_license',
     'name',
     'dob',
-    'current_address',
-    'previous_address'
+    'addresses'
   ])(
     `should return a valid response if piiTypes contains %p`,
     async (type: string) => {
