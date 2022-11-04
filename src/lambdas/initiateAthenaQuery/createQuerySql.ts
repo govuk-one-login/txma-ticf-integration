@@ -1,4 +1,7 @@
-import { PII_TYPES_DATA_PATHS_MAP } from '../../constants/piiTypesDataPathsMap'
+import {
+  IDENTIFIER_TYPES_EVENT_FIELD_MAP,
+  PII_TYPES_DATA_PATHS_MAP
+} from '../../constants/athenaSqlMapConstants'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import {
   DataRequestParams,
@@ -13,27 +16,34 @@ export const createQuerySql = (
   const identifierType = requestData.identifierType
   const identifiers = getIdentifiers(identifierType, requestData)
 
-  if (identifiers.length < 1) {
+  if (!identifiers.length) {
     return {
       sqlGenerated: false,
       error: `No ids of type: ${identifierType}`
     }
   }
 
-  if (!requestData.dataPaths.length && !requestData.piiTypes.length) {
+  const filteredDataPaths = filterPathArray(requestData.dataPaths)
+  const filteredPiiTypes = filterPathArray(requestData.piiTypes)
+
+  if (!filteredDataPaths.length && !filteredPiiTypes.length) {
     return {
       sqlGenerated: false,
       error: 'No dataPaths or piiTypes in request'
     }
   }
 
+  const identifierTypeEventField = identifierTypeEventFieldMap(identifierType)
+
+  const sqlIdTypeStatement = formatIdTypeStatement(identifierTypeEventField)
+
   const sqlSelectStatement = formatSelectStatement(
-    requestData.dataPaths,
-    requestData.piiTypes
+    filteredDataPaths,
+    filteredPiiTypes
   )
 
-  const sqlWhereStatement = formatWhereStatment(
-    identifierType,
+  const sqlWhereStatement = formatWhereStatement(
+    identifierTypeEventField,
     identifiers.length
   )
 
@@ -41,7 +51,7 @@ export const createQuerySql = (
     'ATHENA_TABLE_NAME'
   )}`
 
-  const queryString = `SELECT event_id, ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
+  const queryString = `SELECT ${sqlIdTypeStatement} ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
 
   const queryParameters = generateQueryParameters(
     identifiers,
@@ -73,14 +83,31 @@ const getIdentifiers = (
   return []
 }
 
+const filterPathArray = (pathArray: string[]): string[] => {
+  return pathArray.map((x) => x.replaceAll(' ', '')).filter((x) => x.length)
+}
+
+const formatIdTypeStatement = (identifierTypeEventField: string): string => {
+  switch (identifierTypeEventField) {
+    case 'event_id': {
+      return 'event_id,'
+    }
+    default: {
+      return `event_id, ${identifierTypeEventField},`
+    }
+  }
+}
+
 const formatSelectStatement = (
   dataPaths: string[],
   piiTypes: string[]
 ): string => {
-  const formattedDataPaths = dataPaths.map((dataPath) =>
-    formatDataPath(dataPath)
-  )
-  const formattedPiiTypes = piiTypes.map((piiType) => formatPiiType(piiType))
+  const formattedDataPaths = dataPaths.length
+    ? dataPaths.map((dataPath) => formatDataPath(dataPath))
+    : []
+  const formattedPiiTypes = piiTypes.length
+    ? piiTypes.map((piiType) => formatPiiType(piiType))
+    : []
 
   return formattedDataPaths.concat(formattedPiiTypes).join(', ')
 }
@@ -107,12 +134,18 @@ const piiTypeDataPathMap = (piiType: string): string => {
   return PII_TYPES_DATA_PATHS_MAP[piiType]
 }
 
-const formatWhereStatment = (
-  identifierType: IdentifierTypes,
+const identifierTypeEventFieldMap = (
+  identfierType: IdentifierTypes
+): string => {
+  return IDENTIFIER_TYPES_EVENT_FIELD_MAP[identfierType]
+}
+
+const formatWhereStatement = (
+  identifierTypeEventField: string,
   numberOfIdentifiers: number
 ): string => {
   if (numberOfIdentifiers == 1) {
-    return `${identifierType}=?`
+    return `${identifierTypeEventField}=?`
   }
 
   const whereStatementsArray = []
@@ -121,7 +154,7 @@ const formatWhereStatment = (
     whereStatementsArray.push('?')
   }
 
-  return `${identifierType} IN (${whereStatementsArray.join(', ')})`
+  return `${identifierTypeEventField} IN (${whereStatementsArray.join(', ')})`
 }
 
 const generateQueryParameters = (

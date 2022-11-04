@@ -45,5 +45,7 @@ export const mapSpaceSeparatedStringToList = (input: string): string[] => {
   if (!input) {
     return []
   }
-  return input.replace(/,/g, '').trim().split(' ')
+  const inputList = input.replace(/,/g, '').trim().split(' ')
+
+  return inputList.map((x) => x.replaceAll(' ', '')).filter((x) => x.length)
 }
