@@ -48,8 +48,7 @@ describe('create Query SQL', () => {
     ['drivers_license', `json_extract(restricted, '$.drivingpermit')`],
     ['dob', `json_extract(restricted, '$.birthdate[0].value')`],
     ['name', `json_extract(restricted, '$.name')`],
-    ['current_address', `json_extract(restricted, '$.address')`],
-    ['previous_address', `json_extract(restricted, '$.address')`]
+    ['addresses', `json_extract(restricted, '$.address')`]
   ])(
     `returns a formatted SQL query handling piiType of %p`,
     (piiType, piiSql) => {
