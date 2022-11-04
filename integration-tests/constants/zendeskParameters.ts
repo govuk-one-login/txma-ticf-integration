@@ -9,11 +9,6 @@ export const ZENDESK_BASE_URL = getEnv('ZENDESK_BASE_URL')
 export const ZENDESK_REQUESTS_ENDPOINT = '/api/v2/requests'
 export const ZENDESK_TICKETS_ENDPOINT = '/api/v2/tickets'
 
-export const ZENDESK_WEBHOOK_API_BASE_URL = getEnv(
-  'ZENDESK_WEBHOOK_API_BASE_URL'
-)
-export const ZENDESK_WEBHOOK_SECRET_KEY = getEnv('ZENDESK_WEBHOOK_SECRET_KEY')
-
 export const ZENDESK_PII_FORM_ID = 5603412248860
 
 export const ZendeskFormFieldIDs = {
