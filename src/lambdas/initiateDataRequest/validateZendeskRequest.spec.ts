@@ -374,20 +374,23 @@ describe('validateZendeskRequest', () => {
     ])
   })
 
-  it(`should handle dataPaths containing empty strings`, async () => {
-    const validationResult = await validateZendeskRequest(
-      JSON.stringify(
-        buildValidRequestBodyWithIds(
-          'session_id',
-          'sessionId1 sessionId2 sessionId3',
-          'passport_number',
-          ''
+  it.each(['', ' ', '  '])(
+    `should handle dataPaths containing empty string '%p'`,
+    async (dataPath: string) => {
+      const validationResult = await validateZendeskRequest(
+        JSON.stringify(
+          buildValidRequestBodyWithIds(
+            'session_id',
+            'sessionId1 sessionId2 sessionId3',
+            'passport_number',
+            dataPath
+          )
         )
       )
-    )
-    expect(validationResult.isValid).toEqual(true)
-    expect(validationResult.dataRequestParams?.dataPaths).toEqual([])
-  })
+      expect(validationResult.isValid).toEqual(true)
+      expect(validationResult.dataRequestParams?.dataPaths).toEqual([])
+    }
+  )
 
   it.each(['badPath.', '.badPath2', 'badPath3[.path'])(
     `should return an invalid response if dataPaths contains an invalid dataPath of $p`,
