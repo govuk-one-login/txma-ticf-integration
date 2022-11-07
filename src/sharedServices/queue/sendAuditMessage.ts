@@ -1,11 +1,12 @@
 import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRequestDetails'
-import { getEnv } from '../../utils/helpers'
+import { getEnv, tryParseJSON } from '../../utils/helpers'
 import { sendSqsMessage } from './sendSqsMessage'
 
-export const sendAuditDataRequestMessage = async (
-  auditQueryRequestDetails: AuditQueryDataRequestDetails
-) => {
+export const sendAuditDataRequestMessage = async (eventBody: string | null) => {
   try {
+    const auditQueryRequestDetails: AuditQueryDataRequestDetails = tryParseJSON(
+      eventBody ?? ''
+    )
     const auditDataRequestEvent = {
       event_name: 'TXMA_AUDIT_QUERY_DATA_REQUEST',
       ...createAuditMessageBaseObjectDetails(),
@@ -46,7 +47,9 @@ export const sendAuditDataRequestMessage = async (
   }
 }
 
-export const sendIllegalRequestAuditMessage = async (zendeskId: string) => {
+export const sendIllegalRequestAuditMessage = async (
+  zendeskId: string | undefined
+) => {
   try {
     const auditQueryIllegalRequestDetails = {
       event_name: 'TXMA_AUDIT_QUERY_ILLEGAL_REQUEST',

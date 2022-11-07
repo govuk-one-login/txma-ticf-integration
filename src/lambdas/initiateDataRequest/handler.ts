@@ -12,11 +12,17 @@ import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromReque
 import { zendeskCopy } from '../../constants/zendeskCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import {
+  sendAuditDataRequestMessage,
+  sendIllegalRequestAuditMessage
+} from '../../sharedServices/queue/sendAuditMessage'
 
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
+
+  await sendAuditDataRequestMessage(event.body)
 
   if (await isSignatureInvalid(event.headers, event.body)) {
     return await handleInvalidSignature()
@@ -25,6 +31,9 @@ export const handler = async (
   const validatedZendeskRequest = await validateZendeskRequest(event.body)
 
   if (!validatedZendeskRequest.isValid) {
+    await sendIllegalRequestAuditMessage(
+      validatedZendeskRequest.dataRequestParams?.zendeskId
+    )
     return await handleInvalidRequest(event.body, validatedZendeskRequest)
   }
 
@@ -33,10 +42,14 @@ export const handler = async (
 
   try {
     if (await zendeskTicketDiffersFromRequest(requestParams)) {
+      await sendIllegalRequestAuditMessage(requestParams.zendeskId)
+      // if error happens in handleUnmatchedRequest, sendIllegalRequestAudit
+      // will run twice. May need a rework
       return await handleUnmatchedRequest(requestParams.zendeskId)
     }
   } catch (error) {
     console.error(error)
+    await sendIllegalRequestAuditMessage(requestParams.zendeskId)
     return {
       statusCode: 404,
       body: JSON.stringify({

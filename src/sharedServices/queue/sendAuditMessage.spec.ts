@@ -52,10 +52,16 @@ describe('sendAuditMessage', () => {
       dateFrom: TEST_DATE_FROM,
       dateTo: TEST_DATE_TO,
       identifierType: 'event_id',
+      requested_sessionIds: '',
+      requested_journeyIds: '',
+      requested_userIds: '',
       requested_eventIds: '637783 3256',
       piiTypes: 'drivers_license',
       dataPaths: ''
     }
+    const stringTestAuditQueryRequestDetails = JSON.stringify(
+      testAuditQueryRequestDetails
+    )
     const testAuditDataRequestEvent = {
       timestamp: testTimeStamp,
       event_name: 'TXMA_AUDIT_QUERY_DATA_REQUEST',
@@ -83,7 +89,7 @@ describe('sendAuditMessage', () => {
     }
 
     it('calls the sendSqsMessage function with the correct parameters', async () => {
-      await sendAuditDataRequestMessage(testAuditQueryRequestDetails)
+      await sendAuditDataRequestMessage(stringTestAuditQueryRequestDetails)
 
       expect(console.log).toHaveBeenCalledWith(
         'sending audit data request message',
@@ -98,7 +104,7 @@ describe('sendAuditMessage', () => {
     it('logs an error message when an error occurs', async () => {
       givenSendSqsError()
 
-      await sendAuditDataRequestMessage(testAuditQueryRequestDetails)
+      await sendAuditDataRequestMessage(stringTestAuditQueryRequestDetails)
 
       expect(console.error).toHaveBeenCalledWith(
         errorPrefix,

@@ -11,6 +11,11 @@ import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { isSignatureInvalid } from './validateRequestSource'
 import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
+import {
+  sendAuditDataRequestMessage,
+  sendIllegalRequestAuditMessage
+} from '../../sharedServices/queue/sendAuditMessage'
+import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
 
 const mockValidateZendeskRequest = validateZendeskRequest as jest.Mock<
   Promise<ValidatedDataRequestParamsResult>
@@ -47,6 +52,11 @@ jest.mock('./zendeskTicketDiffersFromRequest', () => ({
 
 jest.mock('./sendInitiateDataTransferMessage', () => ({
   sendInitiateDataTransferMessage: jest.fn()
+}))
+
+jest.mock('../../sharedServices/queue/sendAuditMessage', () => ({
+  sendAuditDataRequestMessage: jest.fn(),
+  sendIllegalRequestAuditMessage: jest.fn()
 }))
 
 describe('initate data request handler', () => {
@@ -127,6 +137,10 @@ describe('initate data request handler', () => {
     expect(mockSendInitiateDataTransferMessage).toHaveBeenCalledWith(
       testDataRequest
     )
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(requestBody)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
+      mockIsSignatureInvalid
+    )
   })
 
   it('returns 400 response when request signature is invalid', async () => {
@@ -145,12 +159,17 @@ describe('initate data request handler', () => {
       'Request received with invalid webhook signature'
     )
     expect(sendInitiateDataTransferMessage).not.toHaveBeenCalled()
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(requestBody)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
+      mockIsSignatureInvalid
+    )
   })
 
-  it('returns 400 response when request body is invalid', async () => {
+  it('returns 400 response when request body is invalid (without ticket ID)', async () => {
     const validationMessage = 'my validation message'
     const newTicketStatus = 'closed'
-    givenRequestValidationResult(false, undefined, validationMessage)
+    const dataRequestParams = undefined
+    givenRequestValidationResult(false, dataRequestParams, validationMessage)
     givenSignatureIsValid()
 
     const handlerCallResult = await callHandlerWithBody()
@@ -166,6 +185,45 @@ describe('initate data request handler', () => {
       requestBody,
       `Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: ${validationMessage}`,
       newTicketStatus
+    )
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(requestBody)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
+      mockIsSignatureInvalid
+    )
+    expect(sendIllegalRequestAuditMessage).toHaveBeenCalledWith(
+      dataRequestParams
+    )
+  })
+
+  it('returns 400 response when request body is invalid (with ticket ID)', async () => {
+    const validationMessage = 'my validation message'
+    const newTicketStatus = 'closed'
+    const dataRequestParams = {
+      zendeskId: ZENDESK_TICKET_ID
+    } as DataRequestParams
+    givenRequestValidationResult(false, dataRequestParams, validationMessage)
+    givenSignatureIsValid()
+
+    const handlerCallResult = await callHandlerWithBody()
+
+    expect(handlerCallResult).toEqual({
+      statusCode: 400,
+      body: JSON.stringify({
+        message: validationMessage
+      })
+    })
+    expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
+    expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
+      requestBody,
+      `Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: ${validationMessage}`,
+      newTicketStatus
+    )
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(requestBody)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
+      mockIsSignatureInvalid
+    )
+    expect(sendIllegalRequestAuditMessage).toHaveBeenCalledWith(
+      dataRequestParams.zendeskId
     )
   })
 
@@ -191,9 +249,16 @@ describe('initate data request handler', () => {
       'Your ticket has been closed because a request was received for this ticket with details that do not match its current state.',
       newTicketStatus
     )
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(requestBody)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
+      mockIsSignatureInvalid
+    )
+    expect(sendIllegalRequestAuditMessage).toHaveBeenCalledWith(
+      testDataRequest.zendeskId
+    )
   })
 
-  it('returns 400 response when zendesk ticket does not exist', async () => {
+  it('returns 404 response when zendesk ticket does not exist', async () => {
     givenValidRequest()
     givenSignatureIsValid()
     givenZendeskTicketDoesNotExist()
@@ -206,5 +271,12 @@ describe('initate data request handler', () => {
         message: 'Zendesk ticket not found'
       })
     })
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(requestBody)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
+      mockIsSignatureInvalid
+    )
+    expect(sendIllegalRequestAuditMessage).toHaveBeenCalledWith(
+      testDataRequest.zendeskId
+    )
   })
 })
