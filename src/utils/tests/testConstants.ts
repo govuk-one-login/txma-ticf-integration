@@ -21,6 +21,8 @@ export const MOCK_INITIATE_ATHENA_QUERY_QUEUE_URL =
   'https://initiate_athena_query_queue_'
 export const MOCK_TERMINATED_JOB_QUEUE_URL = 'https://terminate_job_queue_'
 export const MOCK_SEND_EMAIL_QUEUE_URL = 'https://send_email_queue'
+export const MOCK_AUDIT_DATA_REQUEST_QUEUE_URL =
+  'https://audit_data_request_queue'
 
 export const TEST_ZENDESK_SECRET_ARN = 'myZendeskSecretName'
 export const TEST_NOTIFY_SECRET_ARN = 'myNotifySecretName'
