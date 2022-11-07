@@ -1,11 +1,6 @@
 name: Build, Test and Package
 
-on:
-  push:
-    branches:
-      - main
-      - feature**
-  workflow_dispatch: {}
+on: [push, workflow_dispatch]
 
 env:
   AWS_REGION: eu-west-2
