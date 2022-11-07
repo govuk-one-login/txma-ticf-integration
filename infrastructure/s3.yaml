@@ -38,7 +38,7 @@ Resources:
         Rules:
           - Id: AnalysisCleanupRule
             Status: Enabled
-            ExpirationInDays: 30
+            ExpirationInDays: 7
       LoggingConfiguration:
         DestinationBucketName: !Ref AnalysisLogsBucket
         LogFilePrefix: String
