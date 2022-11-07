@@ -41,7 +41,7 @@ export const dynamoDBItemPIITypesOnly: DynamoDBItem = {
       { id: 5605700069916, value: '2022-04-01' },
       {
         id: 5698447116060,
-        value: []
+        value: ''
       },
       {
         id: 6202354485660,
