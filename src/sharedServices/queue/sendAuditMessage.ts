@@ -37,7 +37,7 @@ export const sendAuditDataRequestMessage = async (
     console.log('sending audit data request message', auditQueryRequestDetails)
     await sendSqsMessage(
       auditDataRequestEvent,
-      getEnv('AUDIT_DATA_REQUEST_QUEUE_URL')
+      getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
   } catch (error) {
     console.error(
@@ -48,14 +48,61 @@ export const sendAuditDataRequestMessage = async (
 }
 
 export const sendIllegalRequestAuditMessage = async (zendeskId: string) => {
-  console.log('sending illegal request audit message for zendeskId ', zendeskId)
+  try {
+    const auditQueryIllegalRequestDetails = {
+      timestamp: Date.now(),
+      event_name: 'TXMA_AUDIT_QUERY_ILLEGAL_REQUEST',
+      component_id: 'TXMA',
+      extensions: {
+        ticket_details: {
+          zendeskId: zendeskId
+        }
+      }
+    }
+
+    console.log(
+      'sending illegal request audit message for zendeskId ',
+      zendeskId
+    )
+    await sendSqsMessage(
+      auditQueryIllegalRequestDetails,
+      getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
+    )
+  } catch (error) {
+    console.error(
+      'An error occurred while sending message to audit queue: ',
+      error
+    )
+  }
 }
 
 export const sendQueryOutputGeneratedAuditMessage = async (
   zendeskId: string
 ) => {
-  console.log(
-    'sending query output generated message for zendeskId ',
-    zendeskId
-  )
+  try {
+    const queryOutputGeneratedAuditMessageDetails = {
+      timestamp: Date.now(),
+      event_name: 'TXMA_AUDIT_QUERY_OUTPUT_GENERATED',
+      component_id: 'TXMA',
+      extensions: {
+        ticket_details: {
+          zendeskId: zendeskId
+        }
+      }
+    }
+
+    console.log(
+      'sending query output generated message for zendeskId ',
+      zendeskId
+    )
+    await sendSqsMessage(
+      queryOutputGeneratedAuditMessageDetails,
+      getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
+    )
+  } catch (error) {
+    console.error(
+      'An error occurred while sending message to audit queue: ',
+      error
+    )
+  }
 }
