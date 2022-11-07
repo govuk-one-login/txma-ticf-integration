@@ -12,7 +12,7 @@ export const writeOutSecureDownloadRecord = async (
     TableName: getEnv('SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME'),
     Item: {
       downloadHash: { S: downloadHash },
-      downloadsRemaining: { N: '3' },
+      downloadsRemaining: { N: '2' },
       s3ResultsKey: { S: `${athenaQueryId}.csv` },
       s3ResultsBucket: { S: getEnv('QUERY_RESULTS_BUCKET_NAME') },
       zendeskId: { S: zendeskId },

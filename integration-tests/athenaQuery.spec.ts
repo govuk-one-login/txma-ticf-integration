@@ -122,7 +122,7 @@ describe('Athena Query SQL generation and execution', () => {
       const ATHENA_INITIATED_QUERY_MESSAGE =
         'Athena query execution initiated with QueryExecutionId'
       const EXPECTED_NAME = `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`
-      const EXPECTED_CURRENT_ADDRESS = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
+      const EXPECTED_ADDRESSES = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
 
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -155,7 +155,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].name).toEqual(EXPECTED_NAME)
-      expect(csvRows[0].current_address).toEqual(EXPECTED_CURRENT_ADDRESS)
+      expect(csvRows[0].addresses).toEqual(EXPECTED_ADDRESSES)
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
@@ -170,7 +170,7 @@ describe('Athena Query SQL generation and execution', () => {
       const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
       const ATHENA_INITIATED_QUERY_MESSAGE =
         'Athena query execution initiated with QueryExecutionId'
-      const EXPECTED_CURRENT_ADDRESS = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
+      const EXPECTED_ADDRESSES = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
       const EXPECTED_NAME = `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`
       const EXPECTED_BUILDING_NAME = `"PERIGARTH"`
       const EXPECTED_RESULTS_BIRTHDATE = `"1981-07-28"`
@@ -208,7 +208,7 @@ describe('Athena Query SQL generation and execution', () => {
       expect(csvRows[0].birthdate_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
       expect(csvRows[0].address_buildingname).toEqual(EXPECTED_BUILDING_NAME)
       expect(csvRows[0].name).toEqual(EXPECTED_NAME)
-      expect(csvRows[0].current_address).toEqual(EXPECTED_CURRENT_ADDRESS)
+      expect(csvRows[0].addresses).toEqual(EXPECTED_ADDRESSES)
     })
   })
 

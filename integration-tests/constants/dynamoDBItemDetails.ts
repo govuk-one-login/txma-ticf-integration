@@ -9,7 +9,7 @@ export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {
         id: 5605423021084,
         value: '99cbfa88-5277-422f-af25-be0864adb7db'
       },
-      { id: 5641719421852, value: 'current_address' },
+      { id: 5641719421852, value: 'addresses' },
       { id: 5605700069916, value: '2022-04-01' },
       {
         id: 5698447116060,
@@ -37,7 +37,7 @@ export const dynamoDBItemPIITypesOnly: DynamoDBItem = {
         id: 5605423021084,
         value: '99cbfa88-5277-422f-af25-be0864adb7db'
       },
-      { id: 5641719421852, value: 'current_address name' },
+      { id: 5641719421852, value: 'addresses name' },
       { id: 5605700069916, value: '2022-04-01' },
       {
         id: 5698447116060,

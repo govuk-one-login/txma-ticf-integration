@@ -4,8 +4,7 @@ export const PII_TYPES_DATA_PATHS_MAP: { [key: string]: string } = {
   drivers_license: 'restricted.drivingpermit',
   dob: 'restricted.birthdate[0].value',
   name: 'restricted.name',
-  current_address: 'restricted.address',
-  previous_address: 'restricted.address'
+  addresses: 'restricted.address'
 }
 
 export const IDENTIFIER_TYPES_EVENT_PATH_MAP: { [key: string]: string } = {

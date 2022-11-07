@@ -2,17 +2,10 @@ version = 0.1
 
 [dev.deploy.parameters]
 region = "eu-west-2"
-stack_name = "ticf-integration"
-tags = "project=\"di-txma-ticf-integration\" stage=\"dev\""
+tags = "Product=\"GOV.UK Sign In\" System=\"TxMA\" Environment=\"dev\" Owner=\"di-txma-team-2@digital.cabinet-office.gov.uk\""
 capabilities = "CAPABILITY_NAMED_IAM"
 parameter_overrides=[
     "Environment=dev",
     "CodeSigningConfigArn=none",
     "PermissionsBoundary=none"
-]
-
-[build.validate.parameters]
-region = "eu-west-2"
-parameter_overrides=[
-    "Environment=build"
 ]
