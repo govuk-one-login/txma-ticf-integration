@@ -7,9 +7,8 @@ export const sendAuditDataRequestMessage = async (
 ) => {
   try {
     const auditDataRequestEvent = {
-      timestamp: Date.now(),
       event_name: 'TXMA_AUDIT_QUERY_DATA_REQUEST',
-      component_id: 'TXMA',
+      ...createAuditMessageBaseObjectDetails(),
       restricted: {
         requesterEmail: auditQueryRequestDetails.requesterEmail,
         requesterName: auditQueryRequestDetails.requesterName,
@@ -50,14 +49,8 @@ export const sendAuditDataRequestMessage = async (
 export const sendIllegalRequestAuditMessage = async (zendeskId: string) => {
   try {
     const auditQueryIllegalRequestDetails = {
-      timestamp: Date.now(),
       event_name: 'TXMA_AUDIT_QUERY_ILLEGAL_REQUEST',
-      component_id: 'TXMA',
-      extensions: {
-        ticket_details: {
-          zendeskId: zendeskId
-        }
-      }
+      ...createAuditMessageBaseObjectDetails(zendeskId)
     }
 
     console.log(
@@ -81,14 +74,8 @@ export const sendQueryOutputGeneratedAuditMessage = async (
 ) => {
   try {
     const queryOutputGeneratedAuditMessageDetails = {
-      timestamp: Date.now(),
       event_name: 'TXMA_AUDIT_QUERY_OUTPUT_GENERATED',
-      component_id: 'TXMA',
-      extensions: {
-        ticket_details: {
-          zendeskId: zendeskId
-        }
-      }
+      ...createAuditMessageBaseObjectDetails(zendeskId)
     }
 
     console.log(
@@ -105,4 +92,19 @@ export const sendQueryOutputGeneratedAuditMessage = async (
       error
     )
   }
+}
+
+const createAuditMessageBaseObjectDetails = (zendeskId?: string) => {
+  const baseObject = {
+    timestamp: Date.now(),
+    component_id: 'TXMA',
+    extensions: {
+      ticket_details: {
+        zendeskId: ''
+      }
+    }
+  }
+  if (zendeskId) baseObject.extensions.ticket_details.zendeskId = zendeskId
+
+  return baseObject
 }
