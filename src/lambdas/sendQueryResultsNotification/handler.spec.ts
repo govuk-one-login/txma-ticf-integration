@@ -15,6 +15,7 @@ import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { generateSecureDownloadHash } from './generateSecureDownloadHash'
 import { writeOutSecureDownloadRecord } from './writeOutSecureDownloadRecord'
 import { queueSendResultsReadyEmail } from './queueSendResultsReadyEmail'
+import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: jest.fn()
@@ -34,6 +35,10 @@ jest.mock('./writeOutSecureDownloadRecord', () => ({
 
 jest.mock('./queueSendResultsReadyEmail', () => ({
   queueSendResultsReadyEmail: jest.fn()
+}))
+
+jest.mock('../../sharedServices/queue/sendAuditMessage', () => ({
+  sendQueryOutputGeneratedAuditMessage: jest.fn()
 }))
 
 describe('sendQueryResultsNotification', () => {
@@ -107,7 +112,9 @@ describe('sendQueryResultsNotification', () => {
     expect(generateSecureDownloadHash).not.toHaveBeenCalled()
   })
 
-  it('should call the relevant function given a successful query state', async () => {
+  it('should call the relevant functions given a successful query state', async () => {
+    const mockGenerateSecureDownloadHash =
+      generateSecureDownloadHash as jest.Mock
     givenDbReturnsData()
     when(generateSecureDownloadHash).mockReturnValue(TEST_DOWNLOAD_HASH)
 
@@ -126,5 +133,11 @@ describe('sendQueryResultsNotification', () => {
       recipientName: TEST_RECIPIENT_NAME,
       zendeskTicketId: ZENDESK_TICKET_ID
     })
+    expect(sendQueryOutputGeneratedAuditMessage).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
+    expect(sendQueryOutputGeneratedAuditMessage).toHaveBeenCalledBefore(
+      mockGenerateSecureDownloadHash
+    )
   })
 })

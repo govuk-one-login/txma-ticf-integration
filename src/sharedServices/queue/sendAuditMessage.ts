@@ -1,4 +1,5 @@
 import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRequestDetails'
+import { currentDateEpochMilliseconds } from '../../utils/currentDateEpochMilliseconds'
 import { getEnv, tryParseJSON } from '../../utils/helpers'
 import { sendSqsMessage } from './sendSqsMessage'
 
@@ -99,7 +100,7 @@ export const sendQueryOutputGeneratedAuditMessage = async (
 
 const createAuditMessageBaseObjectDetails = (zendeskId?: string) => {
   const baseObject = {
-    timestamp: Date.now(),
+    timestamp: currentDateEpochMilliseconds(),
     component_id: 'TXMA',
     extensions: {
       ticket_details: {

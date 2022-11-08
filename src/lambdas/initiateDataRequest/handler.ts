@@ -43,8 +43,6 @@ export const handler = async (
   try {
     if (await zendeskTicketDiffersFromRequest(requestParams)) {
       await sendIllegalRequestAuditMessage(requestParams.zendeskId)
-      // if error happens in handleUnmatchedRequest, sendIllegalRequestAudit
-      // will run twice. May need a rework
       return await handleUnmatchedRequest(requestParams.zendeskId)
     }
   } catch (error) {

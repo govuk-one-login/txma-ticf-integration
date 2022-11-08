@@ -1,5 +1,6 @@
 import { when } from 'jest-when'
 import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRequestDetails'
+import { currentDateEpochMilliseconds } from '../../utils/currentDateEpochMilliseconds'
 import {
   MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL,
   TEST_DATE_FROM,
@@ -21,6 +22,10 @@ jest.mock('./sendSqsMessage', () => ({
   sendSqsMessage: jest.fn()
 }))
 
+jest.mock('../../utils/currentDateEpochMilliseconds', () => ({
+  currentDateEpochMilliseconds: jest.fn()
+}))
+
 const testTimeStamp = Date.now()
 
 const errorPrefix = 'An error occurred while sending message to audit queue: '
@@ -33,13 +38,11 @@ const givenSendSqsError = () => {
 
 describe('sendAuditMessage', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(testTimeStamp)
+    when(currentDateEpochMilliseconds).mockReturnValue(testTimeStamp)
     jest.spyOn(global.console, 'log')
     jest.spyOn(global.console, 'error')
   })
   afterEach(() => {
-    jest.useRealTimers()
     jest.resetAllMocks()
   })
   describe('sendAuditDataRequestMessage', () => {

@@ -1,5 +1,6 @@
 import { EventBridgeEvent } from 'aws-lambda'
 import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
 import { generateSecureDownloadHash } from './generateSecureDownloadHash'
@@ -23,6 +24,8 @@ export const handler = async (
     console.error(error)
     return
   }
+
+  await sendQueryOutputGeneratedAuditMessage(zendeskTicketId)
 
   const recipientName = requestData.requestInfo.recipientName
   const recipientEmail = requestData.requestInfo.recipientEmail
