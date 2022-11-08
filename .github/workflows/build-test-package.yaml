@@ -114,7 +114,7 @@ jobs:
 
   package-build:
     name: Package for deployment to build account
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: [validate-build, check-yarn-cache]
     runs-on: ubuntu-latest
     permissions:
