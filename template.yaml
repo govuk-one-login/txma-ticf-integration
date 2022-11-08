@@ -132,6 +132,7 @@ Resources:
       Environment:
         Variables:
           INITIATE_DATA_REQUEST_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueUrl
+          AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: !GetAtt SqsResources.Outputs.AuditDataRequestQueueArn
           VALID_EMAIL_RECIPIENTS_BUCKET: '{{resolve:ssm:ValidEmailRecipientsBucketName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZendeskFieldIdDataPaths}}'
@@ -177,7 +178,9 @@ Resources:
             Effect: Allow
             Action:
               - sqs:SendMessage
-            Resource: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueArn
+            Resource: 
+              - !GetAtt SqsResources.Outputs.InitiateDataRequestQueueArn
+              - !GetAtt SqsResources.Outputs.AuditDataRequestQueueArn
           - Sid: UseSqsKmsKey
             Effect: Allow
             Action:
@@ -418,6 +421,7 @@ Resources:
           SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SecureFraudSiteApiStageUrl}}/secure'
           SEND_EMAIL_QUEUE_URL: !GetAtt SqsResources.Outputs.SendEmailQueueUrl
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: SqsResources.Outputs.AuditDataRequestQueueUrl
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
@@ -474,7 +478,9 @@ Resources:
             Effect: Allow
             Action:
               - sqs:SendMessage
-            Resource: !GetAtt SqsResources.Outputs.SendEmailQueueArn
+            Resource: 
+              - !GetAtt SqsResources.Outputs.SendEmailQueueArn
+              - !GetAtt SqsResources.Outputs.AuditDataRequestQueueArn
           - Sid: UseSqsKmsKey
             Effect: Allow
             Action:
