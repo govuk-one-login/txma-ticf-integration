@@ -413,7 +413,7 @@ Resources:
       Environment:
         Variables:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
-          QUERY_RESULTS_BUCKET_NAME: '{{resolve:ssm:QueryResultsBucketName}}'
+          QUERY_RESULTS_BUCKET_NAME: !Sub txma-qr-infra-${Environment}-query-results-bucket
           SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME: '{{resolve:ssm:SecureFraudSiteDataTableName}}'
           SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SecureFraudSiteApiStageUrl}}/secure'
           SEND_EMAIL_QUEUE_URL: !GetAtt SqsResources.Outputs.SendEmailQueueUrl
@@ -433,8 +433,8 @@ Resources:
               - s3:ListMultipartUploadParts
               - s3:PutObject
             Resource:
-              - '{{resolve:ssm:QueryResultsBucketArn}}'
-              - '{{resolve:ssm:QueryResultsBucketArn}}/*'
+              - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket
+              - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket/*
           - Sid: DecryptKmsKeys
             Effect: Allow
             Action:
