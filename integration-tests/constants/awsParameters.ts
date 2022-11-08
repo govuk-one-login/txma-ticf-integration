@@ -32,12 +32,10 @@ export const INTEGRATION_TEST_DATE_PREFIX_GLACIER = '2022/02/14'
 export const INTEGRATION_TEST_DATE_NO_DATA = '2022-01-07'
 export const INTEGRATION_TEST_DATE_PREFIX_NO_DATA = '2022/01/07'
 
-export const END_TO_END_TEST_EVENT_ID = 'b122aa00-129b-46a9-b5f7-6b1bf07d427b'
 export const END_TO_END_TEST_FILE_NAME = 'endToEndTestData.txt.gz'
 export const END_TO_END_TEST_DATE_PREFIX = '2022/01/02'
 export const END_TO_END_TEST_DATE = '2022-01-02'
 export const END_TO_END_TEST_DATA_PATH =
   'restricted.name restricted.address[0].postalCode restricted.address[0].validFrom restricted.birthDate[0].value'
-
 export const ATHENA_QUERY_TEST_FILE_NAME = 'athena-query-test-data.gz'
 export const ATHENA_QUERY_DATA_TEST_DATE_PREFIX = '2022/04/01'

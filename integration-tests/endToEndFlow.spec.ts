@@ -2,13 +2,8 @@ import * as CSV from 'csv-string'
 import {
   AUDIT_BUCKET_NAME,
   END_TO_END_TEST_DATE_PREFIX,
-  END_TO_END_TEST_EVENT_ID,
   END_TO_END_TEST_FILE_NAME
 } from './constants/awsParameters'
-import {
-  endToEndTestRequestDataNoMatch,
-  endToEndTestRequestDataWithMatch
-} from './constants/requestData'
 import { waitForDownloadHash } from './utils/aws/waitForDownloadHash'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
@@ -19,6 +14,19 @@ import {
   getSecureDownloadPageHTML,
   retrieveS3LinkFromHtml
 } from './utils/secureDownload'
+import {
+  endToEndFlowRequestDataNoMatch,
+  endToEndFlowRequestDataWithEventId,
+  endToEndFlowRequestDataWithJourneyId,
+  endToEndFlowRequestDataWithSessionId,
+  endToEndFlowRequestDataWithUserId
+} from './constants/endToEndFlowRequestData'
+import {
+  END_TO_END_TEST_EVENT_ID,
+  END_TO_END_TEST_JOURNEY_ID,
+  END_TO_END_TEST_SESSION_ID,
+  END_TO_END_TEST_USER_ID
+} from './constants/zendeskParameters'
 
 describe('Query results generated', () => {
   jest.setTimeout(60000)
@@ -42,25 +50,11 @@ describe('Query results generated', () => {
     const EXPECTED_POSTALCODE = `"AB10 6QW"`
 
     const zendeskId: string = await createZendeskTicket(
-      endToEndTestRequestDataWithMatch
+      endToEndFlowRequestDataWithEventId
     )
     await approveZendeskTicket(zendeskId)
 
-    const downloadHash = await waitForDownloadHash(zendeskId)
-
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
-
-    console.log(secureDownloadPageHTML)
-    expect(secureDownloadPageHTML).toBeDefined()
-
-    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-    expect(resultsFileS3Link.startsWith('https')).toBeTrue
-
-    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-    console.log(csvData)
-
-    const rows = CSV.parse(csvData, { output: 'objects' })
-    console.log(rows)
+    const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
@@ -68,11 +62,53 @@ describe('Query results generated', () => {
     expect(rows[0].address_validfrom).toEqual(EXPECTED_ADDRESS_VALID_FROM_DATE)
     expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
     expect(rows[0].name).toBeDefined()
+    //TODO: asset updated pii types
+  })
+
+  it('Query matching data with user id', async () => {
+    const EXPECTED_PASSPORT_NUMBER = `"999999999"`
+    const zendeskId: string = await createZendeskTicket(
+      endToEndFlowRequestDataWithUserId
+    )
+    await approveZendeskTicket(zendeskId)
+
+    const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
+
+    expect(rows.length).toEqual(1)
+    expect(rows[0].event_id).toEqual(END_TO_END_TEST_USER_ID)
+    expect(rows[0].passport_number).toEqual(EXPECTED_PASSPORT_NUMBER)
+    //TODO: asset pii types
+  })
+
+  it('Query matching data with journey id', async () => {
+    const zendeskId: string = await createZendeskTicket(
+      endToEndFlowRequestDataWithJourneyId
+    )
+    await approveZendeskTicket(zendeskId)
+
+    const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
+
+    expect(rows.length).toEqual(1)
+    expect(rows[0].event_id).toEqual(END_TO_END_TEST_JOURNEY_ID)
+    //TODO: asset pii types
+  })
+
+  it('Query matching data with session id', async () => {
+    const zendeskId: string = await createZendeskTicket(
+      endToEndFlowRequestDataWithSessionId
+    )
+    await approveZendeskTicket(zendeskId)
+
+    const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
+
+    expect(rows.length).toEqual(1)
+    expect(rows[0].event_id).toEqual(END_TO_END_TEST_SESSION_ID)
+    //TODO: asset pii types
   })
 
   it('Query does not match data - Empty CSV file should be downloaded', async () => {
     const zendeskId: string = await createZendeskTicket(
-      endToEndTestRequestDataNoMatch
+      endToEndFlowRequestDataNoMatch
     )
     await approveZendeskTicket(zendeskId)
     const downloadHash = await waitForDownloadHash(zendeskId)
@@ -91,4 +127,21 @@ describe('Query results generated', () => {
     console.log(rows)
     expect(rows.length).toEqual(0)
   })
+
+  async function waitForDownloadHashAndDownloadResults(zendeskId: string) {
+    const downloadHash = await waitForDownloadHash(zendeskId)
+
+    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+    expect(secureDownloadPageHTML).toBeDefined()
+
+    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
+    expect(resultsFileS3Link.startsWith('https')).toBeTrue
+
+    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
+    console.log(csvData)
+
+    const rows = CSV.parse(csvData, { output: 'objects' })
+    console.log(rows)
+    return rows
+  }
 })

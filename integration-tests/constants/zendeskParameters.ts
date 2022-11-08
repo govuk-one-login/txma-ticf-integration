@@ -24,3 +24,9 @@ export const ZendeskFormFieldIDs = {
   PII_FORM_USER_ID_LIST_FIELD_ID: 5605546094108,
   PII_FORM_REQUEST_STATUS_FIELD_ID: 5605885870748
 }
+
+export const END_TO_END_TEST_USER_ID =
+  'urn:uuid:631857e6-da09-4350-aef7-4a7afdabe6d7'
+export const END_TO_END_TEST_SESSION_ID = '25bc52a5-3506-4d7a-8129-adc13a3152bf'
+export const END_TO_END_TEST_JOURNEY_ID = 'c35f6d3e-0be9-4f35-9558-3eaf9271366e'
+export const END_TO_END_TEST_EVENT_ID = 'b122aa00-129b-46a9-b5f7-6b1bf07d427b'
