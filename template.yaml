@@ -132,7 +132,7 @@ Resources:
       Environment:
         Variables:
           INITIATE_DATA_REQUEST_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueUrl
-          AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: !GetAtt SqsResources.Outputs.AuditDataRequestQueueArn
+          AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
           VALID_EMAIL_RECIPIENTS_BUCKET: '{{resolve:ssm:ValidEmailRecipientsBucketName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZendeskFieldIdDataPaths}}'
@@ -187,7 +187,9 @@ Resources:
               - kms:Decrypt
               - kms:GenerateDataKey*
               - kms:ReEncrypt*
-            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+            Resource: 
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
+              - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
           - Sid: S3ReadEmailRecipients
             Effect: Allow
             Action:
