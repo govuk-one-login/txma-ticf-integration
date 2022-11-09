@@ -1,14 +1,19 @@
+import {
+  AuditEventType,
+  ErrorType,
+  ErrorObject,
+  ComponentId
+} from '../../types/audit/auditEventDetails'
 import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRequestDetails'
 import { currentDateEpochMilliseconds } from '../../utils/currentDateEpochMilliseconds'
-import { getEnv, tryParseJSON } from '../../utils/helpers'
+import { getEnv } from '../../utils/helpers'
 import { sendSqsMessage } from './sendSqsMessage'
 
-export const sendAuditDataRequestMessage = async (eventBody: string | null) => {
+export const sendAuditDataRequestMessage = async (
+  auditQueryRequestDetails: AuditQueryDataRequestDetails
+) => {
   try {
-    const auditQueryRequestDetails: AuditQueryDataRequestDetails = tryParseJSON(
-      eventBody ?? ''
-    )
-    const auditDataRequestEvent = {
+    const auditDataRequestEvent: AuditEventType = {
       event_name: 'TXMA_AUDIT_QUERY_DATA_REQUEST',
       ...createAuditMessageBaseObjectDetails(),
       restricted: {
@@ -49,13 +54,15 @@ export const sendAuditDataRequestMessage = async (eventBody: string | null) => {
 }
 
 export const sendIllegalRequestAuditMessage = async (
-  zendeskId: string | undefined
+  zendeskId: string | undefined,
+  errorType: ErrorType
 ) => {
   try {
-    const auditQueryIllegalRequestDetails = {
+    const auditQueryIllegalRequestDetails: AuditEventType = {
       event_name: 'TXMA_AUDIT_QUERY_ILLEGAL_REQUEST',
       ...createAuditMessageBaseObjectDetails(zendeskId)
     }
+    auditQueryIllegalRequestDetails.extensions.error = getErrorObject(errorType)
 
     console.log(
       'sending illegal request audit message for zendeskId ',
@@ -77,7 +84,7 @@ export const sendQueryOutputGeneratedAuditMessage = async (
   zendeskId: string
 ) => {
   try {
-    const queryOutputGeneratedAuditMessageDetails = {
+    const queryOutputGeneratedAuditMessageDetails: AuditEventType = {
       event_name: 'TXMA_AUDIT_QUERY_OUTPUT_GENERATED',
       ...createAuditMessageBaseObjectDetails(zendeskId)
     }
@@ -101,7 +108,7 @@ export const sendQueryOutputGeneratedAuditMessage = async (
 const createAuditMessageBaseObjectDetails = (zendeskId?: string) => {
   const baseObject = {
     timestamp: currentDateEpochMilliseconds(),
-    component_id: 'TXMA',
+    component_id: 'TXMA' as ComponentId,
     extensions: {
       ticket_details: {
         zendeskId: ''
@@ -111,4 +118,25 @@ const createAuditMessageBaseObjectDetails = (zendeskId?: string) => {
   if (zendeskId) baseObject.extensions.ticket_details.zendeskId = zendeskId
 
   return baseObject
+}
+
+const getErrorObject = (errorType: ErrorType): ErrorObject => {
+  const errorDetails: Record<ErrorType, ErrorObject> = {
+    'invalid-signature': {
+      error_type: 'invalid-signature',
+      error_description: ''
+    },
+
+    'mismatched-ticket': {
+      error_type: 'mismatched-ticket',
+      error_description: ''
+    },
+
+    'non-existent-ticket': {
+      error_type: 'non-existent-ticket',
+      error_description: ''
+    }
+  }
+
+  return errorDetails[errorType]
 }

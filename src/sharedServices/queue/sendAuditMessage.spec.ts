@@ -1,4 +1,5 @@
 import { when } from 'jest-when'
+import { ErrorType } from '../../types/audit/auditEventDetails'
 import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRequestDetails'
 import { currentDateEpochMilliseconds } from '../../utils/currentDateEpochMilliseconds'
 import {
@@ -29,7 +30,7 @@ jest.mock('../../utils/currentDateEpochMilliseconds', () => ({
 const testTimeStamp = Date.now()
 
 const errorPrefix = 'An error occurred while sending message to audit queue: '
-const errorMessage = 'An error occurred sending a message to the Audit queue'
+const errorMessage = 'Error sending message to queue'
 const givenSendSqsError = () => {
   when(sendSqsMessage).mockImplementation(() => {
     throw new Error(errorMessage)
@@ -62,9 +63,6 @@ describe('sendAuditMessage', () => {
       piiTypes: 'drivers_license',
       dataPaths: ''
     }
-    const stringTestAuditQueryRequestDetails = JSON.stringify(
-      testAuditQueryRequestDetails
-    )
     const testAuditDataRequestEvent = {
       timestamp: testTimeStamp,
       event_name: 'TXMA_AUDIT_QUERY_DATA_REQUEST',
@@ -92,7 +90,7 @@ describe('sendAuditMessage', () => {
     }
 
     it('calls the sendSqsMessage function with the correct parameters', async () => {
-      await sendAuditDataRequestMessage(stringTestAuditQueryRequestDetails)
+      await sendAuditDataRequestMessage(testAuditQueryRequestDetails)
 
       expect(console.log).toHaveBeenCalledWith(
         'sending audit data request message',
@@ -107,7 +105,7 @@ describe('sendAuditMessage', () => {
     it('logs an error message when an error occurs', async () => {
       givenSendSqsError()
 
-      await sendAuditDataRequestMessage(stringTestAuditQueryRequestDetails)
+      await sendAuditDataRequestMessage(testAuditQueryRequestDetails)
 
       expect(console.error).toHaveBeenCalledWith(
         errorPrefix,
@@ -117,34 +115,54 @@ describe('sendAuditMessage', () => {
   })
 
   describe('sendIllegalRequestAuditMessage', () => {
-    const testAuditQueryIllegalRequestDetails = {
-      timestamp: testTimeStamp,
-      event_name: 'TXMA_AUDIT_QUERY_ILLEGAL_REQUEST',
-      component_id: 'TXMA',
-      extensions: {
-        ticket_details: {
-          zendeskId: ZENDESK_TICKET_ID
+    const createTestAuditQueryIllegalRequestDetails = (
+      errorType: string,
+      errorDescription: string
+    ) => {
+      return {
+        timestamp: testTimeStamp,
+        event_name: 'TXMA_AUDIT_QUERY_ILLEGAL_REQUEST',
+        component_id: 'TXMA',
+        extensions: {
+          error: {
+            error_type: errorType,
+            error_description: errorDescription
+          },
+          ticket_details: {
+            zendeskId: ZENDESK_TICKET_ID
+          }
         }
       }
     }
 
-    it('calls the sendSqsMessage function with the correct parameters', async () => {
-      await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID)
+    it.each([
+      ['invalid-signature' as ErrorType, ''],
+      ['mismatched-ticket' as ErrorType, ''],
+      ['non-existent-ticket' as ErrorType, '']
+    ])(
+      'calls the sendSqsMessage function with the correct parameters when errorType is %p',
+      async (errorType: ErrorType, errorDescription) => {
+        const testAuditQueryIllegalRequestDetails =
+          createTestAuditQueryIllegalRequestDetails(errorType, errorDescription)
 
-      expect(console.log).toHaveBeenCalledWith(
-        'sending illegal request audit message for zendeskId ',
-        ZENDESK_TICKET_ID
-      )
-      expect(sendSqsMessage).toHaveBeenCalledWith(
-        testAuditQueryIllegalRequestDetails,
-        MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL
-      )
-    })
+        await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID, errorType)
+
+        expect(console.log).toHaveBeenCalledWith(
+          'sending illegal request audit message for zendeskId ',
+          ZENDESK_TICKET_ID
+        )
+        expect(sendSqsMessage).toHaveBeenCalledWith(
+          testAuditQueryIllegalRequestDetails,
+          MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL
+        )
+      }
+    )
 
     it('logs an error message when an error occurs', async () => {
+      const exampleErrorType: ErrorType = 'invalid-signature'
       givenSendSqsError()
 
-      await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID)
+      await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID, exampleErrorType)
 
       expect(console.error).toHaveBeenCalledWith(
         errorPrefix,
