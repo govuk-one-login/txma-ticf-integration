@@ -417,6 +417,7 @@ Resources:
           SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME: '{{resolve:ssm:SecureFraudSiteDataTableName}}'
           SECURE_DOWNLOAD_WEBSITE_BASE_PATH: '{{resolve:ssm:SecureFraudSiteApiStageUrl}}/secure'
           SEND_EMAIL_QUEUE_URL: !GetAtt SqsResources.Outputs.SendEmailQueueUrl
+          QUERY_COMPLETED_QUEUE_URL: '{{resolve:ssm:QueryCompletedQueueUrl}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
@@ -474,14 +475,14 @@ Resources:
             Effect: Allow
             Action:
               - sqs:SendMessage
-            Resource: !GetAtt SqsResources.Outputs.SendEmailQueueArn
-          - Sid: UseSqsKmsKey
+            Resource: '{{resolve:ssm:QueryCompletedQueueArn}}'
+          - Sid: UseQueryCompletedQueueKmsKey
             Effect: Allow
             Action:
               - kms:Decrypt
               - kms:GenerateDataKey*
               - kms:ReEncrypt*
-            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+            Resource: '{{resolve:ssm:QueryCompletedQueueKmsKeyArn}}'
 
   SendQueryResultsNotificationLogs:
     Type: AWS::Logs::LogGroup

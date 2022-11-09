@@ -13,8 +13,7 @@ import {
 import { handler } from './handler'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { generateSecureDownloadHash } from './generateSecureDownloadHash'
-import { writeOutSecureDownloadRecord } from './writeOutSecureDownloadRecord'
-import { queueSendResultsReadyEmail } from './queueSendResultsReadyEmail'
+import { sendQueryCompleteMessage } from './sendQueryCompleteMessage'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: jest.fn()
@@ -34,6 +33,10 @@ jest.mock('./writeOutSecureDownloadRecord', () => ({
 
 jest.mock('./queueSendResultsReadyEmail', () => ({
   queueSendResultsReadyEmail: jest.fn()
+}))
+
+jest.mock('./sendQueryCompleteMessage', () => ({
+  sendQueryCompleteMessage: jest.fn()
 }))
 
 describe('sendQueryResultsNotification', () => {
@@ -87,7 +90,7 @@ describe('sendQueryResultsNotification', () => {
         message,
         'closed'
       )
-      expect(generateSecureDownloadHash).not.toHaveBeenCalled()
+      expect(sendQueryCompleteMessage).not.toHaveBeenCalled()
     }
   )
 
@@ -104,7 +107,7 @@ describe('sendQueryResultsNotification', () => {
       )
     )
 
-    expect(generateSecureDownloadHash).not.toHaveBeenCalled()
+    expect(sendQueryCompleteMessage).not.toHaveBeenCalled()
   })
 
   it('should call the relevant function given a successful query state', async () => {
@@ -114,14 +117,8 @@ describe('sendQueryResultsNotification', () => {
     await handler(generateAthenaEventBridgeEvent('SUCCEEDED'))
 
     expect(getQueryByAthenaQueryId).toHaveBeenCalledWith(TEST_ATHENA_QUERY_ID)
-    expect(generateSecureDownloadHash).toHaveBeenCalled()
-    expect(writeOutSecureDownloadRecord).toHaveBeenCalledWith(
-      TEST_ATHENA_QUERY_ID,
-      TEST_DOWNLOAD_HASH,
-      ZENDESK_TICKET_ID
-    )
-    expect(queueSendResultsReadyEmail).toHaveBeenCalledWith({
-      downloadHash: TEST_DOWNLOAD_HASH,
+    expect(sendQueryCompleteMessage).toHaveBeenCalledWith({
+      athenaQueryId: TEST_ATHENA_QUERY_ID,
       recipientEmail: TEST_RECIPIENT_EMAIL,
       recipientName: TEST_RECIPIENT_NAME,
       zendeskTicketId: ZENDESK_TICKET_ID
