@@ -47,7 +47,9 @@ describe('Query results generated', () => {
   it('Query matches data - CSV file containing query results can be downloaded', async () => {
     const EXPECTED_ADDRESS_VALID_FROM_DATE = `"2014-01-01"`
     const EXPECTED_BIRTH_DATE = `"1981-07-28"`
-    const EXPECTED_POSTALCODE = `"AB10 6QW"`
+    const EXPECTED_POSTALCODE = `"EH2 5BJ"`
+    const EXPECTED_FIRSTNAME = `"MICHELLE"`
+    const EXPECTED_LASTNAME = `"KABIR"`
 
     const zendeskId: string = await createZendeskTicket(
       endToEndFlowRequestDataWithEventId
@@ -58,11 +60,12 @@ describe('Query results generated', () => {
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
-    expect(rows[0].address_postalcode).toEqual(EXPECTED_POSTALCODE)
-    expect(rows[0].address_validfrom).toEqual(EXPECTED_ADDRESS_VALID_FROM_DATE)
-    expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
     expect(rows[0].name).toBeDefined()
-    //TODO: asset updated pii types
+    expect(rows[0].nameparts_value1).toEqual(EXPECTED_FIRSTNAME) //TODO: check against csv
+    expect(rows[0].nameparts_value2).toEqual(EXPECTED_LASTNAME) //TODO: check against csv
+    expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
+    expect(rows[0].address_validfrom).toEqual(EXPECTED_ADDRESS_VALID_FROM_DATE)
+    expect(rows[0].address_postalcode).toEqual(EXPECTED_POSTALCODE)
   })
 
   it('Query matching data with user id', async () => {
