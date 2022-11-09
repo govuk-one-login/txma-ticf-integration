@@ -5,15 +5,13 @@ import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZend
 import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
 import {
   TEST_ATHENA_QUERY_ID,
-  TEST_DOWNLOAD_HASH,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { handler } from './handler'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
-import { generateSecureDownloadHash } from './generateSecureDownloadHash'
-import { sendQueryCompleteMessage } from './sendQueryCompleteMessage'
+import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: jest.fn()
@@ -23,20 +21,8 @@ jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 
-jest.mock('./generateSecureDownloadHash', () => ({
-  generateSecureDownloadHash: jest.fn()
-}))
-
-jest.mock('./writeOutSecureDownloadRecord', () => ({
-  writeOutSecureDownloadRecord: jest.fn()
-}))
-
-jest.mock('./queueSendResultsReadyEmail', () => ({
-  queueSendResultsReadyEmail: jest.fn()
-}))
-
-jest.mock('./sendQueryCompleteMessage', () => ({
-  sendQueryCompleteMessage: jest.fn()
+jest.mock('./sendQueryCompleteQueueMessage', () => ({
+  sendQueryCompleteQueueMessage: jest.fn()
 }))
 
 describe('sendQueryResultsNotification', () => {
@@ -90,7 +76,7 @@ describe('sendQueryResultsNotification', () => {
         message,
         'closed'
       )
-      expect(sendQueryCompleteMessage).not.toHaveBeenCalled()
+      expect(sendQueryCompleteQueueMessage).not.toHaveBeenCalled()
     }
   )
 
@@ -107,17 +93,16 @@ describe('sendQueryResultsNotification', () => {
       )
     )
 
-    expect(sendQueryCompleteMessage).not.toHaveBeenCalled()
+    expect(sendQueryCompleteQueueMessage).not.toHaveBeenCalled()
   })
 
   it('should call the relevant function given a successful query state', async () => {
     givenDbReturnsData()
-    when(generateSecureDownloadHash).mockReturnValue(TEST_DOWNLOAD_HASH)
 
     await handler(generateAthenaEventBridgeEvent('SUCCEEDED'))
 
     expect(getQueryByAthenaQueryId).toHaveBeenCalledWith(TEST_ATHENA_QUERY_ID)
-    expect(sendQueryCompleteMessage).toHaveBeenCalledWith({
+    expect(sendQueryCompleteQueueMessage).toHaveBeenCalledWith({
       athenaQueryId: TEST_ATHENA_QUERY_ID,
       recipientEmail: TEST_RECIPIENT_EMAIL,
       recipientName: TEST_RECIPIENT_NAME,

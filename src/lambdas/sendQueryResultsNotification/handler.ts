@@ -2,7 +2,7 @@ import { EventBridgeEvent } from 'aws-lambda'
 import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
-import { sendQueryCompleteMessage } from './sendQueryCompleteMessage'
+import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 
 export const handler = async (
   event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>
@@ -25,7 +25,7 @@ export const handler = async (
   const recipientName = requestData.requestInfo.recipientName
   const recipientEmail = requestData.requestInfo.recipientEmail
 
-  await sendQueryCompleteMessage({
+  await sendQueryCompleteQueueMessage({
     athenaQueryId,
     recipientEmail,
     recipientName,
