@@ -6,18 +6,11 @@ import {
   isEmpty,
   mapSpaceSeparatedStringToList
 } from '../../utils/helpers'
+import { PII_TYPES_DATA_PATHS_MAP } from '../../constants/athenaSqlMapConstants'
 
 const IDENTIFIERS = ['event_id', 'session_id', 'journey_id', 'user_id']
 
-const VALID_PII_TYPES = [
-  'passport_number',
-  'passport_expiry_date',
-  'drivers_license',
-  'name',
-  'dob',
-  'current_address',
-  'previous_address'
-]
+const validPiiTypes = Object.keys(PII_TYPES_DATA_PATHS_MAP)
 
 export const validateZendeskRequest = async (
   body: string | null
@@ -35,8 +28,9 @@ export const validateZendeskRequest = async (
   const piiTypes = data.piiTypes.replace(/,/g, '')
   const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
   const piiTypesList = mapSpaceSeparatedStringToList(data.piiTypes)
+  console.log('hello these are the pii types', validPiiTypes)
   const piiTypesAllValid = piiTypesList?.length
-    ? piiTypesList.every((type) => VALID_PII_TYPES.includes(type))
+    ? piiTypesList.every((type) => validPiiTypes.includes(type))
     : true
 
   const dataPathsList = mapSpaceSeparatedStringToList(data.dataPaths)

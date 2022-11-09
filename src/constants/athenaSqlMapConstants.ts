@@ -4,13 +4,12 @@ export const PII_TYPES_DATA_PATHS_MAP: { [key: string]: string } = {
   drivers_license: 'restricted.drivingpermit',
   dob: 'restricted.birthdate[0].value',
   name: 'restricted.name',
-  current_address: 'restricted.address',
-  previous_address: 'restricted.address'
+  addresses: 'restricted.address'
 }
 
-export const IDENTIFIER_TYPES_EVENT_FIELD_MAP: { [key: string]: string } = {
+export const IDENTIFIER_TYPES_EVENT_PATH_MAP: { [key: string]: string } = {
   event_id: 'event_id',
-  journey_id: 'govuk_signin_journey_id',
-  user_id: 'user_id',
-  session_id: 'session_id'
+  journey_id: 'user.govuk_signin_journey_id',
+  user_id: 'user.user_id',
+  session_id: 'user.session_id'
 }

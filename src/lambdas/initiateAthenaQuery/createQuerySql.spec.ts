@@ -9,26 +9,36 @@ import {
   TEST_FORMATTED_DATE_FROM,
   TEST_FORMATTED_DATE_TO
 } from '../../utils/tests/testConstants'
-import { IDENTIFIER_TYPES_EVENT_FIELD_MAP } from '../../constants/athenaSqlMapConstants'
 
 describe('create Query SQL', () => {
   it.each([
-    ['event_id', 'event_id,'],
-    ['session_id', 'event_id, session_id,'],
-    ['journey_id', 'event_id, govuk_signin_journey_id,'],
-    ['user_id', 'event_id, user_id,']
+    ['event_id', 'event_id,', 'event_id'],
+    [
+      'session_id',
+      `event_id, json_extract(user, '$.session_id') as session_id,`,
+      `json_extract_scalar(user, '$.session_id')`
+    ],
+    [
+      'journey_id',
+      `event_id, json_extract(user, '$.govuk_signin_journey_id') as govuk_signin_journey_id,`,
+      `json_extract_scalar(user, '$.govuk_signin_journey_id')`
+    ],
+    [
+      'user_id',
+      `event_id, json_extract(user, '$.user_id') as user_id,`,
+      `json_extract_scalar(user, '$.user_id')`
+    ]
   ])(
     `returns a formatted SQL query if dataPaths and requested id type of %p is present`,
-    (id, idSelectStatement) => {
+    (id, idSelectStatement, idWhereStatement) => {
       dataPathsTestDataRequest.identifierType = id as IdentifierTypes
-      const identifierTypeEventField = IDENTIFIER_TYPES_EVENT_FIELD_MAP[id]
       const idExtension = id.charAt(0)
       expect(createQuerySql(dataPathsTestDataRequest)).toEqual({
         sqlGenerated: true,
-        sql: `SELECT ${idSelectStatement} json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${identifierTypeEventField} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+        sql: `SELECT ${idSelectStatement} json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${idWhereStatement} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
         queryParameters: [
-          `123${idExtension}`,
-          `456${idExtension}`,
+          `'123${idExtension}'`,
+          `'456${idExtension}'`,
           `'${TEST_FORMATTED_DATE_FROM}'`,
           `'${TEST_FORMATTED_DATE_TO}'`
         ]
@@ -48,8 +58,7 @@ describe('create Query SQL', () => {
     ['drivers_license', `json_extract(restricted, '$.drivingpermit')`],
     ['dob', `json_extract(restricted, '$.birthdate[0].value')`],
     ['name', `json_extract(restricted, '$.name')`],
-    ['current_address', `json_extract(restricted, '$.address')`],
-    ['previous_address', `json_extract(restricted, '$.address')`]
+    ['addresses', `json_extract(restricted, '$.address')`]
   ])(
     `returns a formatted SQL query handling piiType of %p`,
     (piiType, piiSql) => {
@@ -58,8 +67,8 @@ describe('create Query SQL', () => {
         sqlGenerated: true,
         sql: `SELECT event_id, ${piiSql} as ${piiType} FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
         queryParameters: [
-          '123',
-          '456',
+          `'123'`,
+          `'456'`,
           `'${TEST_FORMATTED_DATE_FROM}'`,
           `'${TEST_FORMATTED_DATE_TO}'`
         ]
@@ -77,8 +86,8 @@ describe('create Query SQL', () => {
       sqlGenerated: true,
       sql: `SELECT event_id, json_extract(restricted, '$.user[0].firstname') as user_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
       queryParameters: [
-        '123',
-        '456',
+        `'123'`,
+        `'456'`,
         `'${TEST_FORMATTED_DATE_FROM}'`,
         `'${TEST_FORMATTED_DATE_TO}'`
       ]

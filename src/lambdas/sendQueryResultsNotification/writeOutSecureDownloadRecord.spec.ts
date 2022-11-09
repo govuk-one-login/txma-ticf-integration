@@ -30,7 +30,7 @@ describe('writeOutSecureDownloadRecord', () => {
       TableName: TEST_SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME,
       Item: {
         downloadHash: { S: TEST_DOWNLOAD_HASH },
-        downloadsRemaining: { N: '3' },
+        downloadsRemaining: { N: '2' },
         s3ResultsBucket: { S: TEST_QUERY_RESULTS_BUCKET },
         s3ResultsKey: { S: `${TEST_ATHENA_QUERY_ID}.csv` },
         zendeskId: { S: ZENDESK_TICKET_ID },

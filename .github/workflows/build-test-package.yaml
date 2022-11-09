@@ -1,22 +1,13 @@
 name: Build, Test and Package
 
-on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-      - feature**
-  workflow_dispatch: {}
+on: [push, workflow_dispatch]
 
 env:
-  REGION: eu-west-2
+  AWS_REGION: eu-west-2
 
 jobs:
-  build-test-and-validate:
-    name: Run tests and validation
-    if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+  validate-build:
+    name: Validate build & run tests
     permissions:
       id-token: write
       contents: read
@@ -24,7 +15,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: Setup Python
+      - name: Setup Python 3.8
         uses: actions/setup-python@v3
         with:
           python-version: '3.8'
@@ -33,7 +24,7 @@ jobs:
       - name: Assume AWS Validate role
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: ${{ env.REGION }}
+          aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_VALIDATE_ROLE_ARN }}
       - name: Node - Enable Corepack
         run: corepack enable
@@ -45,19 +36,18 @@ jobs:
       - name: Run tests
         if: always()
         run: yarn test
-      - name: Build Lambda functions
-        if: always()
-        run: yarn build
       - name: Validate SAM template
         if: always()
-        run: sam validate --config-env build
+        run: sam validate
       - name: Run Checkov on SAM template
         if: always()
         uses: bridgecrewio/checkov-action@master
         with:
-          file: template.yaml
-          quiet: true
+          directory: '.'
           framework: cloudformation
+          quiet: true
+      - name: Build Lambda functions
+        run: yarn build
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -70,7 +60,6 @@ jobs:
 
   check-yarn-cache:
     name: Check Yarn cache
-    if: github.event_name == 'pull_request' || (github.ref == 'refs/heads/main' && github.event_name == 'push')
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -83,9 +72,9 @@ jobs:
         run: yarn install --immutable --immutable-cache --check-cache
 
   deploy-feature:
-    name: Deploy feature branch
-    if: startsWith(github.ref, 'refs/heads/feature') || github.event_name == 'workflow_dispatch'
-    needs: [build-test-and-validate]
+    name: Deploy feature branch to dev account
+    if: startsWith(github.ref, 'refs/heads/feature') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
+    needs: [validate-build]
     permissions:
       id-token: write
       contents: read
@@ -95,7 +84,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: sam-build
-      - name: Setup Python
+      - name: Setup Python 3.8
         uses: actions/setup-python@v3
         with:
           python-version: '3.8'
@@ -104,24 +93,29 @@ jobs:
       - name: Assume the dev account deployment role
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: ${{ env.REGION }}
+          aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
       - name: Deploy to feature stack in the dev account
         env:
-          DEV_ARTIFACT_BUCKET: ${{ secrets.DEV_ARTIFACT_BUCKET }}
           FEATURE_BRANCH_NAME: ${{ github.event.ref }}
         run: |
-          stack_name=$(echo ${FEATURE_BRANCH_NAME##*/} | tr -cd '[a-zA-Z0-9-]' | tr '[:upper:]' '[:lower:]')
+          stack_name=$(
+            echo ${FEATURE_BRANCH_NAME##*/} | \
+            tr -cd '[a-zA-Z0-9-]' | \
+            tr '[:upper:]' '[:lower:]' | \
+            cut -c -32
+          )
+
           sam deploy \
             --config-env dev \
-            --stack-name ${stack_name:0:32} \
+            --stack-name ${stack_name} \
             --no-fail-on-empty-changeset \
-            --s3-bucket ${DEV_ARTIFACT_BUCKET}
+            --resolve-s3
 
-  package-artifacts:
-    name: Package artifacts for deployment
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-    needs: [build-test-and-validate, check-yarn-cache]
+  package-build:
+    name: Package for deployment to build account
+    if: github.ref == 'refs/heads/main'
+    needs: [validate-build, check-yarn-cache]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -131,7 +125,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: sam-build
-      - name: Setup Python
+      - name: Setup Python 3.8
         uses: actions/setup-python@v3
         with:
           python-version: '3.8'
@@ -140,9 +134,9 @@ jobs:
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: ${{ env.REGION }}
+          aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
-      - name: Package SAM app
+      - name: Package SAM app and upload to S3
         uses: alphagov/di-devplatform-upload-action@v2
         with:
           artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
