@@ -357,8 +357,8 @@ Resources:
               - s3:AbortMultipartUpload
               - s3:PutObject
             Resource: 
-            - '{{resolve:ssm:QueryResultsBucketArn}}'
-            - '{{resolve:ssm:QueryResultsBucketArn}}/*'
+            - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
+            - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
           - Sid: Logs
             Effect: Allow
             Action:
@@ -386,6 +386,13 @@ Resources:
               - dynamodb:GetItem
               - dynamodb:UpdateItem
             Resource: '{{resolve:ssm:QueryRequestTableArn}}'
+          - Sid: AthenaOutputEncryptKmsKey
+            Effect: Allow
+            Action:
+              - kms:GenerateDataKey
+              - kms:Encrypt
+              - kms:Decrypt
+            Resource: '{{resolve:ssm:AthenaOutputQueryBucketKmsKeyArn}}' 
           - Sid: Events
             Effect: Allow
             Action: 
