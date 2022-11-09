@@ -34,8 +34,6 @@ export const getCloudWatchLogEventsGroupByMessagePattern = async (
   const logEvents = await findMatchingLogEvents(logGroupName, eventLogStream, [
     requestId
   ])
-  console.log(`Events for Request Id ${requestId}:`, logEvents)
-
   return logEvents
 }
 
@@ -103,10 +101,6 @@ const waitForEventWithPatterns = async (
     if (logEvents.length > 1) {
       throw Error('More than 1 event matched, check filter patterns')
     }
-
-    const message = logEvents[0]?.message as string
-    console.log(`Found event: ${message}`)
-
     return logEvents[0]
   }
 }
@@ -129,6 +123,5 @@ export const assertEventNotPresent = (
   const eventPresent = logEvents.some((event) =>
     event.message?.includes(message)
   )
-  console.log('message', message)
   expect(eventPresent).toEqual(false)
 }

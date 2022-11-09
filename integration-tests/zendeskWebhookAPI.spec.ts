@@ -59,7 +59,7 @@ const sendWebhook = async (
       if (error.response) {
         return error.response
       }
-      console.log(error)
+      console.log(error.status)
       throw 'No response recieved from gateway'
     })
 }
