@@ -114,7 +114,7 @@ export const endToEndFlowRequestDataWithSessionId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
-        value: ['drivers_license', 'addresses']
+        value: ['name', 'dob', 'addresses']
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,

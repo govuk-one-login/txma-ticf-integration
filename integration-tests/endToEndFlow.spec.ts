@@ -21,10 +21,7 @@ import {
   endToEndFlowRequestDataWithSessionId,
   endToEndFlowRequestDataWithUserId
 } from './constants/endToEndFlowRequestData'
-import {
-  END_TO_END_TEST_EVENT_ID,
-  END_TO_END_TEST_SESSION_ID
-} from './constants/zendeskParameters'
+import { END_TO_END_TEST_EVENT_ID } from './constants/zendeskParameters'
 
 describe('Query results generated', () => {
   jest.setTimeout(60000)
@@ -97,6 +94,8 @@ describe('Query results generated', () => {
   })
 
   it('Query matching data with session id', async () => {
+    const EXPECTED_BIRTH_DATE = `"1981-07-28"`
+
     const zendeskId: string = await createZendeskTicket(
       endToEndFlowRequestDataWithSessionId
     )
@@ -105,7 +104,9 @@ describe('Query results generated', () => {
     const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
 
     expect(rows.length).toEqual(1)
-    expect(rows[0].event_id).toEqual(END_TO_END_TEST_SESSION_ID)
+    expect(rows[0].name).toBeDefined()
+    expect(rows[0].address).toBeDefined() //TODO: check format against actual result
+    expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE) //TODO: check what dob is called when in pii type
   })
 
   it('Query does not match data - Empty CSV file should be downloaded', async () => {
