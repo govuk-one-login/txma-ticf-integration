@@ -23,9 +23,7 @@ import {
 } from './constants/endToEndFlowRequestData'
 import {
   END_TO_END_TEST_EVENT_ID,
-  END_TO_END_TEST_JOURNEY_ID,
-  END_TO_END_TEST_SESSION_ID,
-  END_TO_END_TEST_USER_ID
+  END_TO_END_TEST_SESSION_ID
 } from './constants/zendeskParameters'
 
 describe('Query results generated', () => {
@@ -69,7 +67,9 @@ describe('Query results generated', () => {
   })
 
   it('Query matching data with user id', async () => {
-    const EXPECTED_PASSPORT_NUMBER = `"999999999"`
+    const EXPECTED_PASSPORT_NUMBER = `"543543543"`
+    const EXPECTED_PASSPORT_EXPIRY_DATE = `"2030-01-01"`
+
     const zendeskId: string = await createZendeskTicket(
       endToEndFlowRequestDataWithUserId
     )
@@ -78,12 +78,13 @@ describe('Query results generated', () => {
     const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
 
     expect(rows.length).toEqual(1)
-    expect(rows[0].event_id).toEqual(END_TO_END_TEST_USER_ID)
     expect(rows[0].passport_number).toEqual(EXPECTED_PASSPORT_NUMBER)
-    //TODO: asset pii types
+    expect(rows[0].passport_expiry_date).toEqual(EXPECTED_PASSPORT_EXPIRY_DATE)
   })
 
   it('Query matching data with journey id', async () => {
+    const EXPECTED_DRIVERS_LICENSE_NUMBER = `"BINNS902235OW9TF"`
+
     const zendeskId: string = await createZendeskTicket(
       endToEndFlowRequestDataWithJourneyId
     )
@@ -92,8 +93,7 @@ describe('Query results generated', () => {
     const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
 
     expect(rows.length).toEqual(1)
-    expect(rows[0].event_id).toEqual(END_TO_END_TEST_JOURNEY_ID)
-    //TODO: asset pii types
+    expect(rows[0].drivers_license).toEqual(EXPECTED_DRIVERS_LICENSE_NUMBER) // TODO: check against actual results
   })
 
   it('Query matching data with session id', async () => {
@@ -106,7 +106,6 @@ describe('Query results generated', () => {
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_SESSION_ID)
-    //TODO: asset pii types
   })
 
   it('Query does not match data - Empty CSV file should be downloaded', async () => {

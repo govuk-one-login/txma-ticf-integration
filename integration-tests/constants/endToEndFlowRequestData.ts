@@ -154,7 +154,7 @@ export const endToEndFlowRequestDataWithJourneyId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
-        value: ['name']
+        value: ['drivers_license']
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
