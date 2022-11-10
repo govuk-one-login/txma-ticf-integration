@@ -102,7 +102,7 @@ const waitForEventWithPatterns = async (
       throw Error('More than 1 event matched, check filter patterns')
     }
 
-    console.log(`Found event: ${eventMessagePatterns}`)
+    console.log(`Found event with patterns: ${eventMessagePatterns}`)
     return logEvents[0]
   }
 }
