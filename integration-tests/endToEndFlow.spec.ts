@@ -114,18 +114,9 @@ describe('Query results generated', () => {
       endToEndFlowRequestDataNoMatch
     )
     await approveZendeskTicket(zendeskId)
-    const downloadHash = await waitForDownloadHash(zendeskId)
 
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+    const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
 
-    expect(secureDownloadPageHTML).toBeDefined()
-
-    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-    expect(resultsFileS3Link.startsWith('https')).toBeTrue
-
-    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-    console.log(csvData)
-    const rows = CSV.parse(csvData, { output: 'objects' })
     console.log(rows)
     expect(rows.length).toEqual(0)
   })
