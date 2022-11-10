@@ -20,7 +20,7 @@ import {
   endToEndFlowRequestDataWithJourneyId,
   endToEndFlowRequestDataWithSessionId,
   endToEndFlowRequestDataWithUserId
-} from './constants/endToEndFlowRequestData'
+} from './constants/requestData/endToEndFlowRequestData'
 import { END_TO_END_TEST_EVENT_ID } from './constants/zendeskParameters'
 
 describe('Query results generated', () => {

@@ -13,7 +13,7 @@ import {
   validRequestData,
   validStandardAndGlacierTiersRequestData,
   setCustomFieldValueForRequest
-} from './constants/requestData'
+} from './constants/requestData/dataCopyRequestData'
 import {
   ANALYSIS_BUCKET_NAME,
   AUDIT_BUCKET_NAME,
