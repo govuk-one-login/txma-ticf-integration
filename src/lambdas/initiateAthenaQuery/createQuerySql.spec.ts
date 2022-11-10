@@ -37,8 +37,8 @@ describe('create Query SQL', () => {
         sqlGenerated: true,
         sql: `SELECT ${idSelectStatement} json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${idWhereStatement} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
         queryParameters: [
-          `123${idExtension}`,
-          `456${idExtension}`,
+          `'123${idExtension}'`,
+          `'456${idExtension}'`,
           `'${TEST_FORMATTED_DATE_FROM}'`,
           `'${TEST_FORMATTED_DATE_TO}'`
         ]
@@ -67,8 +67,8 @@ describe('create Query SQL', () => {
         sqlGenerated: true,
         sql: `SELECT event_id, ${piiSql} as ${piiType} FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
         queryParameters: [
-          '123',
-          '456',
+          `'123'`,
+          `'456'`,
           `'${TEST_FORMATTED_DATE_FROM}'`,
           `'${TEST_FORMATTED_DATE_TO}'`
         ]
@@ -86,8 +86,8 @@ describe('create Query SQL', () => {
       sqlGenerated: true,
       sql: `SELECT event_id, json_extract(restricted, '$.user[0].firstname') as user_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
       queryParameters: [
-        '123',
-        '456',
+        `'123'`,
+        `'456'`,
         `'${TEST_FORMATTED_DATE_FROM}'`,
         `'${TEST_FORMATTED_DATE_TO}'`
       ]

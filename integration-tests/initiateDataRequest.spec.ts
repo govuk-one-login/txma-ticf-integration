@@ -66,7 +66,6 @@ describe('Submit a PII request with approved ticket data', () => {
     const commentPresent = ticketComments.some((comment) =>
       comment.body.includes(commentBody)
     )
-    console.log('commentBody', commentBody)
     expect(commentPresent).toEqual(true)
   }
 
@@ -103,9 +102,11 @@ describe('Submit a PII request with approved ticket data', () => {
 
     afterEach(async () => {
       await deleteZendeskTicket(ticketId)
+      console.log('request for valid data all in standard tier test ended')
     })
 
     test('request for valid data all in standard tier', async () => {
+      console.log('request for valid data all in standard tier test started')
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -169,7 +170,12 @@ describe('Submit a PII request with approved ticket data', () => {
       await approveZendeskTicket(ticketId)
     })
 
+    afterEach(async () => {
+      console.log('request for valid data all in glacier tier test ended')
+    })
+
     test('request for valid data all in glacier tier', async () => {
+      console.log('request for valid data all in glacier tier test started')
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -180,7 +186,6 @@ describe('Submit a PII request with approved ticket data', () => {
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
-      console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -230,7 +235,16 @@ describe('Submit a PII request with approved ticket data', () => {
       await approveZendeskTicket(ticketId)
     })
 
+    afterEach(async () => {
+      console.log(
+        'valid request with data in standard and glacier tier test ended'
+      )
+    })
+
     test('valid request with data in standard and glacier tier', async () => {
+      console.log(
+        'valid request with data in standard and glacier tier test started'
+      )
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -286,9 +300,15 @@ describe('Submit a PII request with approved ticket data', () => {
 
     afterEach(async () => {
       await deleteZendeskTicket(ticketId)
+      console.log(
+        'request for valid data already in analysis bucket test ended'
+      )
     })
 
     test('request for valid data already in analysis bucket', async () => {
+      console.log(
+        'request for valid data already in analysis bucket test started'
+      )
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -299,7 +319,6 @@ describe('Submit a PII request with approved ticket data', () => {
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
-
       console.log('messageId', messageId)
 
       const processDataRequestEvents =
@@ -331,7 +350,12 @@ describe('Submit a PII request with approved ticket data', () => {
       await approveZendeskTicket(ticketId)
     })
 
+    afterEach(async () => {
+      console.log('request for valid data, no files present test ended')
+    })
+
     test('request for valid data, no files present', async () => {
+      console.log('request for valid data, no files present test started')
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -342,7 +366,6 @@ describe('Submit a PII request with approved ticket data', () => {
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
-      console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -366,9 +389,15 @@ describe('Submit a PII request with approved ticket data', () => {
 
     afterEach(async () => {
       await deleteZendeskTicket(ticketId)
+      console.log(
+        'invalid data should not start data retrieval process, and should close ticket test ended'
+      )
     })
 
     test('invalid data should not start data retrieval process, and should close ticket', async () => {
+      console.log(
+        'invalid data should not start data retrieval process, and should close ticket test started'
+      )
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -403,9 +432,16 @@ describe('Submit a PII request with approved ticket data', () => {
 
     afterEach(async () => {
       await deleteZendeskTicket(ticketId)
+      console.log(
+        'recipient email not in approved list should not start data retrieval process, and should close ticket test ended'
+      )
     })
 
     test('recipient email not in approved list should not start data retrieval process, and should close ticket', async () => {
+      console.log(
+        'recipient email not in approved list should not start data retrieval process, and should close ticket test started'
+      )
+
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,

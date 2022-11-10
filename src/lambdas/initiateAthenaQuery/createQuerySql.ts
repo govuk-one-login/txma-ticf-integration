@@ -175,7 +175,7 @@ const generateQueryParameters = (
   dateFrom: string,
   dateTo: string
 ): string[] => {
-  const queryParameters = identifiers.map((identifier) => identifier)
+  const queryParameters = identifiers.map((identifier) => `'${identifier}'`)
   queryParameters.push(formatDateFrom(dateFrom))
   queryParameters.push(formatDateTo(dateTo))
   return queryParameters
