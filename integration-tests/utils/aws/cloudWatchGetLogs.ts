@@ -101,7 +101,9 @@ const waitForEventWithPatterns = async (
     if (logEvents.length > 1) {
       throw Error('More than 1 event matched, check filter patterns')
     }
-    return logEvents[0]
+
+    const message = logEvents[0]?.message as string
+    console.log(`Found event: ${message}`)
   }
 }
 
