@@ -56,8 +56,8 @@ describe('Query results generated', () => {
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
     expect(rows[0].name).toBeDefined()
-    expect(rows[0].nameparts_value1).toEqual(EXPECTED_FIRSTNAME) //TODO: check against csv
-    expect(rows[0].nameparts_value2).toEqual(EXPECTED_LASTNAME) //TODO: check against csv
+    expect(rows[0].name_nameparts_value).toEqual(EXPECTED_FIRSTNAME) //TODO: check against csv
+    expect(rows[0].name_nameparts_value).toEqual(EXPECTED_LASTNAME) //TODO: check against csv
     expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
     expect(rows[0].address_validfrom).toEqual(EXPECTED_ADDRESS_VALID_FROM_DATE)
     expect(rows[0].address_postalcode).toEqual(EXPECTED_POSTALCODE)
@@ -75,8 +75,8 @@ describe('Query results generated', () => {
     const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
 
     expect(rows.length).toEqual(1)
-    expect(rows[0].passport_number).toEqual(EXPECTED_PASSPORT_NUMBER)
-    expect(rows[0].passport_expiry_date).toEqual(EXPECTED_PASSPORT_EXPIRY_DATE)
+    expect(rows[0].passport_documentnumber).toEqual(EXPECTED_PASSPORT_NUMBER)
+    expect(rows[0].passport_expirydate).toEqual(EXPECTED_PASSPORT_EXPIRY_DATE)
   })
 
   it('Query matching data with journey id', async () => {
@@ -90,7 +90,7 @@ describe('Query results generated', () => {
     const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
 
     expect(rows.length).toEqual(1)
-    expect(rows[0].drivers_license).toEqual(EXPECTED_DRIVERS_LICENSE_NUMBER) // TODO: check against actual results
+    expect(rows[0].drivingpermit).toEqual(EXPECTED_DRIVERS_LICENSE_NUMBER) // TODO: check against actual results
   })
 
   it('Query matching data with session id', async () => {
