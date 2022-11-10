@@ -104,6 +104,7 @@ const waitForEventWithPatterns = async (
 
     const message = logEvents[0]?.message as string
     console.log(`Found event: ${message}`)
+    return logEvents[0]
   }
 }
 
