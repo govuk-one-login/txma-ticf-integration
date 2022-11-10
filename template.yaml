@@ -455,11 +455,6 @@ Resources:
             Resource:
               - '{{resolve:ssm:QueryRequestTableArn}}'
               - '{{resolve:ssm:QueryRequestTableArn}}/index/athenaQueryIdIndex'
-          - Sid: SecureDownloadTableWrite
-            Effect: Allow
-            Action:
-              - dynamodb:PutItem
-            Resource: '{{resolve:ssm:SecureFraudSiteDataTableArn}}'
           - Sid: AllowSqsSend
             Effect: Allow
             Action:
