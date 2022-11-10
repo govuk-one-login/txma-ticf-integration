@@ -20,7 +20,10 @@ node_modules/
 !.yarn/sdks
 !.yarn/versions
 
-# Junit
+# Test Results
 jest-junit-results/
+allure-reports/
+allure-report/
+allure-results/
 
 

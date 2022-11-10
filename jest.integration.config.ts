@@ -6,13 +6,15 @@ const config: Config.InitialOptions = {
   preset: 'ts-jest',
   setupFiles: ['<rootDir>/.integration.test.env'],
   verbose: true,
+  setupFilesAfterEnv: ['jest-allure/dist/setup'],
+  testRunner: 'jest-jasmine2',
   reporters: [
     'default',
     [
       'jest-junit',
       {
         suiteName: 'TxMA PII Data Tests',
-        outputDirectory: './jest-junit-results',
+        outputDirectory: './junit-results',
         ancestorSeparator: ',',
         includeConsoleOutput: true
       }
