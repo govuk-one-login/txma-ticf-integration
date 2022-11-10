@@ -64,6 +64,29 @@ process.env.QUERY_RESULTS_SECURE_DOWNLOAD_URL = '(get from AWS console)'
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
 
+#### Running the Integration Tests
+
+To run the entire pack:
+`yarn test:integration`
+
+To run an individual test (suite or test case):
+`yarn jest -c jest.integration.config.ts -t '<description_of_the_testcase_or_suite>'`
+
+#### Test Reports
+
+Running the tests would automatically generate results xml files under the `allure-results/`. To view the report locally, first clean results from any previous test run:
+`yarn test:cleanReports`
+
+then:
+
+`yarn test:showAllureReport`
+
+An emailable report format is currently being used to share the report. To generate this, first make sure any previous report containers are not being run:
+`yarn test:clearReportContainer`
+then:
+`yarn test:generateEmailReport`
+This will generate the html report file under `allure-reports/`
+
 ### Creating and approving a Zendesk ticket
 
 Obviously, you can use the Zendesk UI to do this, but it can be a bit clunky to do this manually, especially if you need to repeat the process a few times.
