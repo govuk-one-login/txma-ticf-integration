@@ -2,13 +2,13 @@ import { ZendeskRequestData } from '../../types/zendeskRequestData'
 import { generateRandomNumber } from '../../utils/helpers'
 import {
   END_TO_END_TEST_DATA_PATH,
-  END_TO_END_TEST_DATE
-} from '../awsParameters'
-import {
+  END_TO_END_TEST_DATE,
   END_TO_END_TEST_EVENT_ID,
   END_TO_END_TEST_JOURNEY_ID,
   END_TO_END_TEST_SESSION_ID,
-  END_TO_END_TEST_USER_ID,
+  END_TO_END_TEST_USER_ID
+} from '../awsParameters'
+import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME,

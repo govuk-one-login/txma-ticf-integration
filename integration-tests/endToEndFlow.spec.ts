@@ -2,6 +2,7 @@ import * as CSV from 'csv-string'
 import {
   AUDIT_BUCKET_NAME,
   END_TO_END_TEST_DATE_PREFIX,
+  END_TO_END_TEST_EVENT_ID,
   END_TO_END_TEST_FILE_NAME
 } from './constants/awsParameters'
 import { waitForDownloadHash } from './utils/aws/waitForDownloadHash'
@@ -21,7 +22,6 @@ import {
   endToEndFlowRequestDataWithSessionId,
   endToEndFlowRequestDataWithUserId
 } from './constants/requestData/endToEndFlowRequestData'
-import { END_TO_END_TEST_EVENT_ID } from './constants/zendeskParameters'
 
 describe('Query results generated', () => {
   jest.setTimeout(60000)

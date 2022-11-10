@@ -24,7 +24,6 @@ export const TEST_DATA_DATA_PATHS =
 
 export const INTEGRATION_TEST_DATE = '2022-01-01'
 export const INTEGRATION_TEST_DATE_PREFIX = '2022/01/01'
-
 export const INTEGRATION_TEST_DATE_MIX_DATA = '2022-01-05'
 export const INTEGRATION_TEST_DATE_PREFIX_MIX_DATA = '2022/01/05'
 export const INTEGRATION_TEST_DATE_GLACIER = '2022-02-14'
@@ -32,11 +31,16 @@ export const INTEGRATION_TEST_DATE_PREFIX_GLACIER = '2022/02/14'
 export const INTEGRATION_TEST_DATE_NO_DATA = '2022-01-07'
 export const INTEGRATION_TEST_DATE_PREFIX_NO_DATA = '2022/01/07'
 
+export const ATHENA_QUERY_TEST_FILE_NAME = 'athena-query-test-data.gz'
+export const ATHENA_QUERY_DATA_TEST_DATE_PREFIX = '2022/04/01'
+
 export const END_TO_END_TEST_FILE_NAME = 'endToEndTestData.txt.gz'
 export const END_TO_END_TEST_DATE_PREFIX = '2022/04/01'
 export const END_TO_END_TEST_DATE = '2022-04-01'
 export const END_TO_END_TEST_DATA_PATH =
   'restricted.name.nameParts[0].value restricted.name.nameParts[1].value restricted.birthDate[0].value restricted.address[0].validFrom restricted.address[1].postalCode'
-
-export const ATHENA_QUERY_TEST_FILE_NAME = 'athena-query-test-data.gz'
-export const ATHENA_QUERY_DATA_TEST_DATE_PREFIX = '2022/04/01'
+export const END_TO_END_TEST_USER_ID =
+  'urn:uuid:03d3c6d3-6d7c-41df-bf45-c94401c96a2e'
+export const END_TO_END_TEST_SESSION_ID = '25bc52a5-3506-4d7a-8129-adc13a3152bf'
+export const END_TO_END_TEST_JOURNEY_ID = '71b8300f-8f06-40e7-a53e-a194beacd33f'
+export const END_TO_END_TEST_EVENT_ID = 'b122aa00-129b-46a9-b5f7-6b1bf07d427b'
