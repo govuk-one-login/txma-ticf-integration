@@ -316,7 +316,7 @@ Resources:
               Resource:
                 - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
                 - '{{resolve:ssm:AuditAnalysisDatabaseArn}}'
-                - !GetAtt AuditAnalysisTable.Arn
+                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditAnalysisDatabaseName}}/${AuditAnalysisTable}
             - Sid: StartAthenaQuery
               Effect: Allow
               Action:
