@@ -540,7 +540,7 @@ Resources:
           !Join [
             '',
             [
-              !Join ['', !Split ['-', !Ref StackName]],
+              !Join ['', !Split ['-', !Ref AWS::StackName]],
               !Sub '_${Environment}_analysis_table'
             ]
           ]
@@ -553,10 +553,7 @@ Resources:
           projection.datetime.interval: 1
           projection.datetime.interval.unit: HOURS
           storage.location.template:
-            !Join [
-              '',
-              ['s3://', !Ref AnalysisBucketName, '/firehose/${datetime}/']
-            ]
+            !Join ['', ['s3://', !Ref AnalysisBucket, '/firehose/${datetime}/']]
         PartitionKeys:
           - Name: datetime
             Type: string
@@ -586,7 +583,7 @@ Resources:
               Type: string
           Compressed: true
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
-          Location: !Sub s3://${AnalysisBucketName}/firehose/
+          Location: !Sub s3://${AnalysisBucket}/firehose/
           OutputFormat: org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -629,7 +626,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
-      BucketName: !Sub ${StackName}-${Environment}-analysis-bucket
+      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-bucket
       LifecycleConfiguration:
         Rules:
           - Id: AnalysisCleanupRule
@@ -650,7 +647,7 @@ Resources:
     #checkov:skip=CKV_AWS_18:This is the logs bucket
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${StackName}-${Environment}-analysis-logs
+      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-logs
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
