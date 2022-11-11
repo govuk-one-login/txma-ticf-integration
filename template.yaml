@@ -406,6 +406,7 @@ Resources:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           QUERY_RESULTS_BUCKET_NAME: !Sub txma-qr-infra-${Environment}-query-results-bucket
           SEND_EMAIL_QUEUE_URL: !Ref SendEmailQueue
+          QUERY_COMPLETED_QUEUE_URL: '{{resolve:ssm:QueryCompletedQueueUrl}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
@@ -458,14 +459,14 @@ Resources:
               Effect: Allow
               Action:
                 - sqs:SendMessage
-              Resource: !GetAtt SendEmailQueue.Arn
+              Resource: '{{resolve:ssm:QueryCompletedQueueArn}}'
             - Sid: UseSqsKmsKey
               Effect: Allow
               Action:
                 - kms:Decrypt
                 - kms:GenerateDataKey*
                 - kms:ReEncrypt*
-              Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+              Resource: '{{resolve:ssm:QueryCompletedQueueKmsKeyArn}}'
 
   SendQueryResultsNotificationLogs:
     Type: AWS::Logs::LogGroup
