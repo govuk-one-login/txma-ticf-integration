@@ -376,7 +376,7 @@ Resources:
                 - kms:GenerateDataKey
                 - kms:Encrypt
                 - kms:Decrypt
-              Resource: '{{resolve:ssm:AthenaOutputQueryBucketKmsKeyArn}}'
+              Resource: '{{resolve:ssm:AthenaQueryOutputBucketKmsKeyArn}}'
             - Sid: Events
               Effect: Allow
               Action:
