@@ -63,17 +63,6 @@ Globals:
     OpenApiVersion: 3.0.1
 
 Resources:
-  S3Resources:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: ./infrastructure/s3.yaml
-      Parameters:
-        AuditBucketArn: '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
-        DeployDevResources: !FindInMap [ Environment, !Ref Environment, DeployDevResources ]
-        Environment: !Ref Environment
-        PermissionsBoundary: !Ref PermissionsBoundary
-        StackName: !Ref AWS::StackName
-
   SqsResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -199,11 +188,11 @@ Resources:
         Variables:
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
           AUDIT_BUCKET_NAME: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
-          ANALYSIS_BUCKET_ARN: !GetAtt S3Resources.Outputs.AnalysisBucketArn
-          ANALYSIS_BUCKET_NAME: !GetAtt S3Resources.Outputs.AnalysisBucketName
+          ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
+          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           BATCH_JOB_MANIFEST_BUCKET_ARN: '{{resolve:ssm:BatchJobManifestBucketArn}}'
           BATCH_JOB_MANIFEST_BUCKET_NAME: '{{resolve:ssm:BatchJobManifestBucketName}}'
-          BATCH_JOB_ROLE_ARN: !GetAtt S3Resources.Outputs.BatchJobsRoleArn
+          BATCH_JOB_ROLE_ARN: !GetAtt BatchJobsRole.Arn
           INITIATE_ATHENA_QUERY_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateAthenaQueryQueueUrl
           INITIATE_DATA_REQUEST_QUEUE_URL: !GetAtt SqsResources.Outputs.InitiateDataRequestQueueUrl
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
@@ -224,7 +213,7 @@ Resources:
               Action:
                 - s3:ListBucket
               Resource:
-                - !GetAtt S3Resources.Outputs.AnalysisBucketArn
+                - !GetAtt AnalysisBucket.Arn
                 - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
             - Sid: ManifestBucketWrite
               Effect: Allow
@@ -240,7 +229,7 @@ Resources:
               Effect: Allow
               Action:
                 - iam:PassRole
-              Resource: !GetAtt S3Resources.Outputs.BatchJobsRoleArn
+              Resource: !GetAtt BatchJobsRole.Arn
             - Sid: Logs
               Effect: Allow
               Action:
@@ -335,8 +324,8 @@ Resources:
               - s3:ListBucket
               - s3:GetObject
             Resource:
-              - !GetAtt S3Resources.Outputs.AnalysisBucketArn
-              - !Join ['/', [ !GetAtt S3Resources.Outputs.AnalysisBucketArn, '*' ] ]
+              - !GetAtt AnalysisBucket.Arn
+              - !Sub ${AnalysisBucket.Arn}/*
           # - Sid: WriteToResultsBucket
           #   Effect: Allow
           #   Action:
@@ -614,3 +603,114 @@ Resources:
       Targets:
         - Arn: !GetAtt SendQueryResultsNotificationFunction.Arn
           Id: AthenaEventTarget
+
+##############
+# S3 Resources
+##############
+
+  AnalysisBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${StackName}-${Environment}-analysis-bucket
+      LifecycleConfiguration:
+        Rules:
+          - Id: AnalysisCleanupRule
+            Status: Enabled
+            ExpirationInDays: 7
+      LoggingConfiguration:
+        DestinationBucketName: !Ref AnalysisLogsBucket
+        LogFilePrefix: String
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  AnalysisLogsBucket:
+    #checkov:skip=CKV_AWS_18:This is the logs bucket
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${StackName}-${Environment}-analysis-logs
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  BatchJobsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      PermissionsBoundary:
+        !If [
+          UsePermissionsBoundary,
+          !Ref PermissionsBoundary,
+          !Ref AWS::NoValue
+        ]
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - batchoperations.s3.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AllowS3GlacierRestore
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: AllowAuditBucketRestore
+                Effect: Allow
+                Action:
+                  - s3:RestoreObject
+                Resource:
+                  - !Sub ${AuditBucketArn}/*
+              - Sid: AllowManifestBucketRead
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Join [
+                      '/',
+                      ['{{resolve:ssm:BatchJobManifestBucketArn}}', '*']
+                    ]
+        - PolicyName: AllowS3Copy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: AllowAnalysisBucketWrite
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                  - s3:PutObjectTagging
+                Resource:
+                  - !Join ['/', [!GetAtt AnalysisBucket.Arn, '*']]
+              - Sid: AllowAuditBucketRead
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectAcl
+                  - s3:GetObjectTagging
+                  - s3:ListBucket
+                Resource:
+                  - !Sub ${AuditBucketArn}/*
+
+  EmptyS3Buckets:
+    Condition: DeployDevResources
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: '{{resolve:ssm:EmptyS3BucketsFunctionArn}}'
