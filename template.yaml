@@ -687,7 +687,7 @@ Resources:
                 Action:
                   - s3:RestoreObject
                 Resource:
-                  - !Sub ${AuditBucket.Arn}/*
+                  - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
               - Sid: AllowManifestBucketRead
                 Effect: Allow
                 Action:
@@ -713,7 +713,7 @@ Resources:
                   - s3:GetObjectTagging
                   - s3:ListBucket
                 Resource:
-                  - !Sub ${AuditBucket.Arn}/*
+                  - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
 
   EmptyS3Buckets:
     Condition: DeployDevResources
