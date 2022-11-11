@@ -330,19 +330,19 @@ Resources:
               Resource:
                 - !GetAtt AnalysisBucket.Arn
                 - !Sub ${AnalysisBucket.Arn}/*
-            # - Sid: WriteToResultsBucket
-            #   Effect: Allow
-            #   Action:
-            #     - s3:GetBucketLocation
-            #     - s3:GetObject
-            #     - s3:ListBucket
-            #     - s3:ListBucketMultipartUploads
-            #     - s3:ListMultipartUploadParts
-            #     - s3:AbortMultipartUpload
-            #     - s3:PutObject
-            #   Resource:
-            #   - '{{resolve:ssm:QueryResultsBucketArn}}'
-            #   - '{{resolve:ssm:QueryResultsBucketArn}}/*'
+            - Sid: WriteToResultsBucket
+              Effect: Allow
+              Action:
+                - s3:GetBucketLocation
+                - s3:GetObject
+                - s3:ListBucket
+                - s3:ListBucketMultipartUploads
+                - s3:ListMultipartUploadParts
+                - s3:AbortMultipartUpload
+                - s3:PutObject
+              Resource:
+                - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
+                - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
             - Sid: Logs
               Effect: Allow
               Action:
@@ -370,6 +370,13 @@ Resources:
                 - dynamodb:GetItem
                 - dynamodb:UpdateItem
               Resource: '{{resolve:ssm:QueryRequestTableArn}}'
+            - Sid: AthenaOutputEncryptKmsKey
+              Effect: Allow
+              Action:
+                - kms:GenerateDataKey
+                - kms:Encrypt
+                - kms:Decrypt
+              Resource: '{{resolve:ssm:AthenaQueryOutputBucketKmsKeyArn}}'
             - Sid: Events
               Effect: Allow
               Action:
