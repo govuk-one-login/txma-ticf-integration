@@ -47,7 +47,7 @@ Conditions:
   DeployDevResources:
     !Equals [
       true,
-      !FindInMap [Environment, !Ref Environment, !Ref DeployDevResources]
+      !FindInMap [Environment, !Ref Environment, DeployDevResources]
     ]
   DeployIntegrationTestResources:
     !Equals [
