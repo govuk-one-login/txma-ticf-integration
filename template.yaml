@@ -44,6 +44,11 @@ Mappings:
       DeployIntegrationTestResources: false
 
 Conditions:
+  DeployDevResources:
+    !Equals [
+      true,
+      !FindInMap [Environment, !Ref Environment, !Ref DeployDevResources]
+    ]
   DeployIntegrationTestResources:
     !Equals [
       true,
