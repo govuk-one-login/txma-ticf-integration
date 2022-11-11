@@ -3,14 +3,6 @@ Description: Integrate TxMA service with Zendesk in order to automate Athena que
 Transform: AWS::Serverless-2016-10-31
 
 Parameters:
-  AuditBucketArn:
-    Description: The ARN of the audit bucket
-    Type: String
-    Default: arn:aws:s3:::audit-sandbox-message-batch
-  AuditBucketName:
-    Description: The name of the audit bucket
-    Type: String
-    Default: audit-sandbox-message-batch
   CodeSigningConfigArn:
     Description: The ARN of the Code Signing Config to use, provided by the deployment pipeline
     Type: String
@@ -85,7 +77,7 @@ Resources:
     Properties:
       Location: ./infrastructure/s3.yaml
       Parameters:
-        AuditBucketArn: !Ref AuditBucketArn
+        AuditBucketArn: '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
         DeployDevResources: !FindInMap [ Environment, !Ref Environment, DeployDevResources ]
         Environment: !Ref Environment
         PermissionsBoundary: !Ref PermissionsBoundary
@@ -207,7 +199,7 @@ Resources:
       Environment:
         Variables:
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
-          AUDIT_BUCKET_NAME: !Ref AuditBucketName
+          AUDIT_BUCKET_NAME: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
           ANALYSIS_BUCKET_ARN: !GetAtt S3Resources.Outputs.AnalysisBucketArn
           ANALYSIS_BUCKET_NAME: !GetAtt S3Resources.Outputs.AnalysisBucketName
           BATCH_JOB_MANIFEST_BUCKET_ARN: '{{resolve:ssm:BatchJobManifestBucketArn}}'
@@ -234,7 +226,7 @@ Resources:
                 - s3:ListBucket
               Resource:
                 - !GetAtt S3Resources.Outputs.AnalysisBucketArn
-                - !Ref AuditBucketArn
+                - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
             - Sid: ManifestBucketWrite
               Effect: Allow
               Action:
@@ -346,6 +338,19 @@ Resources:
             Resource:
               - !GetAtt S3Resources.Outputs.AnalysisBucketArn
               - !Join ['/', [ !GetAtt S3Resources.Outputs.AnalysisBucketArn, '*' ] ]
+          # - Sid: WriteToResultsBucket
+          #   Effect: Allow
+          #   Action:
+          #     - s3:GetBucketLocation
+          #     - s3:GetObject
+          #     - s3:ListBucket
+          #     - s3:ListBucketMultipartUploads
+          #     - s3:ListMultipartUploadParts
+          #     - s3:AbortMultipartUpload
+          #     - s3:PutObject
+          #   Resource: 
+          #   - '{{resolve:ssm:QueryResultsBucketArn}}'
+          #   - '{{resolve:ssm:QueryResultsBucketArn}}/*'
           - Sid: Logs
             Effect: Allow
             Action:
