@@ -346,19 +346,6 @@ Resources:
             Resource:
               - !GetAtt S3Resources.Outputs.AnalysisBucketArn
               - !Join ['/', [ !GetAtt S3Resources.Outputs.AnalysisBucketArn, '*' ] ]
-          - Sid: WriteToResultsBucket
-            Effect: Allow
-            Action:
-              - s3:GetBucketLocation
-              - s3:GetObject
-              - s3:ListBucket
-              - s3:ListBucketMultipartUploads
-              - s3:ListMultipartUploadParts
-              - s3:AbortMultipartUpload
-              - s3:PutObject
-            Resource: 
-            - '{{resolve:ssm:QueryResultsBucketArn}}'
-            - '{{resolve:ssm:QueryResultsBucketArn}}/*'
           - Sid: Logs
             Effect: Allow
             Action:
