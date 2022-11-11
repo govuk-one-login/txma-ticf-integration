@@ -4,6 +4,8 @@ dist/
 # Jest
 coverage/
 .integration.test.env
+.integration.test-dev.env
+.integration.test-build.env
 
 # Miscellaneous
 .DS_Store
@@ -20,6 +22,9 @@ node_modules/
 !.yarn/sdks
 !.yarn/versions
 
-# Junit
+# Test Results
+jest-junit-results/
 */junit.xml
+allure-results/
+allure-reports/
 
