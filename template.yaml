@@ -525,6 +525,61 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-email-request-to-notify'
       RetentionInDays: 30
 
+  CloseZendeskTicketFunction:
+    #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: closeZendeskTicket.handler
+      Environment:
+        Variables:
+          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+      FunctionName: !Sub ${AWS::StackName}-close-zendesk-ticket
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Events:
+        CloseZendeskTicketEvent:
+          Type: SQS
+          Properties:
+            Queue: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
+            BatchSize: 1
+      Policies:
+        - Statement:
+            - Sid: Logs
+              Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt CloseZendeskTicketLogs.Arn
+            - Sid: ReadSecrets
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - '{{resolve:ssm:ZendeskSecretSetArn}}'
+            - Sid: AllowCloseZendeskTicketQueueRead
+              Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:GetQueueAttributes
+              Resource: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
+            - Sid: DecryptKmsKeys
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                - '{{resolve:ssm:SecretsKmsKeyArn}}'
+                - !Sub 'arn:aws:kms:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:*'
+
+  CloseZendeskTicketLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-close-zendesk-ticket'
+      RetentionInDays: 30
+
   PermissionForAthenaEventToInvokeLambda:
     Type: AWS::Lambda::Permission
     Properties:
