@@ -39,7 +39,7 @@ In order to ensure that dependencies cannot be altered by anything other than Ya
 
 ### Test setup
 
-To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test.env` and have the following entries (the values should be retrieved as indicated in the placeholders):
+To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test-<environment>.env` (where environment is one of `dev`, `build`, and `staging`) and have the following entries (the values should be retrieved as indicated in the placeholders):
 
 ```
 process.env.ANALYSIS_BUCKET_NAME = '(get from AWS console)'
