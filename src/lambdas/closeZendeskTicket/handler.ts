@@ -15,7 +15,7 @@ export const handler = async (event: SQSEvent) => {
 
   await closeZendeskTicket(
     requestDetails.zendeskId,
-    requestDetails.commentCopyReference
+    requestDetails.commentCopyText
   )
 }
 
@@ -33,8 +33,8 @@ const parseRequestDetails = (event: SQSEvent) => {
   if (!requestDetails.zendeskId) {
     throw Error(interpolateTemplate('zendeskTicketIdMissing', zendeskCopy))
   }
-  if (!requestDetails.commentCopyReference) {
-    throw Error(interpolateTemplate('commentCopyReferenceMissing', zendeskCopy))
+  if (!requestDetails.commentCopyText) {
+    throw Error(interpolateTemplate('commentCopyTextMissing', zendeskCopy))
   }
 
   return requestDetails
