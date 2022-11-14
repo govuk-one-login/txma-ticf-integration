@@ -64,6 +64,14 @@ process.env.QUERY_RESULTS_SECURE_DOWNLOAD_URL = '(get from AWS console)'
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
 
+#### Running integration tests against a specific test environment
+
+```ENV=<<environment>> yarn test:integration (where environment is one of dev, build, and staging).
+
+```
+
+`yarn test:integration` runs the integration against the build environment by default
+
 ### Creating and approving a Zendesk ticket
 
 Obviously, you can use the Zendesk UI to do this, but it can be a bit clunky to do this manually, especially if you need to repeat the process a few times.
