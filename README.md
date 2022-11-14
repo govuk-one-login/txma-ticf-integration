@@ -78,13 +78,17 @@ Running the tests would automatically generate allure results xml files under th
 
 `yarn test:cleanReports`
 
+then run the tests:
+
+`yarn test:integration`
+
 then:
 
 `yarn test:showAllureReport`
 
 An emailable report format is currently being used to share the report. To generate this, first remove any currently running report containers:
 
-`yarn test:clearReportContainer`
+`yarn test:stopReportContainer`
 
 then:
 

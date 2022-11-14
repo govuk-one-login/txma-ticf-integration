@@ -56,8 +56,8 @@ describe('Query results generated', () => {
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
     expect(rows[0].name).toBeDefined()
-    expect(rows[0].name_nameparts_value).toEqual(EXPECTED_FIRSTNAME) //TODO: check against csv
-    expect(rows[0].name_nameparts_value).toEqual(EXPECTED_LASTNAME) //TODO: check against csv
+    expect(rows[0].name_nameparts_value).toEqual(EXPECTED_FIRSTNAME)
+    expect(rows[0].name_nameparts_value).toEqual(EXPECTED_LASTNAME)
     expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
     expect(rows[0].address_validfrom).toEqual(EXPECTED_ADDRESS_VALID_FROM_DATE)
     expect(rows[0].address_postalcode).toEqual(EXPECTED_POSTALCODE)
@@ -90,7 +90,7 @@ describe('Query results generated', () => {
     const rows = await waitForDownloadHashAndDownloadResults(zendeskId)
 
     expect(rows.length).toEqual(1)
-    expect(rows[0].drivingpermit).toEqual(EXPECTED_DRIVERS_LICENSE_NUMBER) // TODO: check against actual results
+    expect(rows[0].drivingpermit).toEqual(EXPECTED_DRIVERS_LICENSE_NUMBER)
   })
 
   it('Query matching data with session id', async () => {
@@ -105,8 +105,8 @@ describe('Query results generated', () => {
 
     expect(rows.length).toEqual(1)
     expect(rows[0].name).toBeDefined()
-    expect(rows[0].address).toBeDefined() //TODO: check format against actual result
-    expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE) //TODO: check what dob is called when in pii type
+    expect(rows[0].address).toBeDefined()
+    expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
   })
 
   it('Query does not match data - Empty CSV file should be downloaded', async () => {
