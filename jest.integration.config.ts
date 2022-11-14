@@ -4,7 +4,7 @@ const config: Config.InitialOptions = {
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
   testPathIgnorePatterns: ['/src/'],
   preset: 'ts-jest',
-  setupFiles: ['<rootDir>/.integration.test.env'],
+  setupFiles: ['<rootDir>/.integration.test-dev.env'],
   verbose: true,
   reporters: [
     'default',
