@@ -42,6 +42,10 @@ export const zendeskCopy = [
     message: 'Zendesk ticket ID missing from event body'
   },
   {
+    name: 'commentCopyReferenceMissing',
+    message: 'Comment copy reference missing from event body'
+  },
+  {
     name: 'missingEventBody',
     message: 'Could not find event body'
   }

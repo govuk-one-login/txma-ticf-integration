@@ -18,7 +18,7 @@ const givenUnsuccessfulUpdateZendeskTicket = () => {
 }
 const validEventBody = `{
       "zendeskId": "${ZENDESK_TICKET_ID}",
-      "commentCopyReference": "${TEST_COMMENT_COPY}
+      "commentCopyReference": "${TEST_COMMENT_COPY}"
     }`
 const callHandlerWithBody = async (customBody: string) => {
   await handler(constructSqsEvent(customBody))
@@ -56,25 +56,44 @@ describe('initiate closeZendeskTicket handler', () => {
       'Could not find event body'
     )
   })
-  it('throws an error when zendeskId is missing from the event body', async () => {
-    const eventBodyParams = JSON.stringify({
-      commentCopyReference: 'blah'
-    })
 
-    await expect(callHandlerWithBody(eventBodyParams)).rejects.toThrow(
-      'Zendesk ticket ID missing from event body'
-    )
-  })
-  it('throws an error when zendeskId is an empty string', async () => {
-    const eventBodyParams = JSON.stringify({
-      zendeskId: '',
-      commentCopyReference: TEST_COMMENT_COPY
-    })
+  it.each([
+    ['zendeskId', 'Zendesk ticket ID'],
+    ['commentCopyReference', 'Comment copy reference']
+  ])(
+    'throws an error when %p is missing from the event body',
+    async (missingPropertyName: string, missingPropertyError: string) => {
+      const eventBodyParams = {
+        zendeskId: ZENDESK_TICKET_ID,
+        commentCopyReference: TEST_COMMENT_COPY
+      } as { [key: string]: string }
+      delete eventBodyParams[missingPropertyName]
 
-    await expect(callHandlerWithBody(eventBodyParams)).rejects.toThrow(
-      'Zendesk ticket ID missing from event body'
-    )
-  })
+      await expect(
+        callHandlerWithBody(JSON.stringify(eventBodyParams))
+      ).rejects.toThrow(`${missingPropertyError} missing from event body`)
+    }
+  )
+  it.each([
+    ['zendeskId', 'Zendesk ticket ID'],
+    ['commentCopyReference', 'Comment copy reference']
+  ])(
+    'throws an error when %p is an empty string',
+    async (
+      emptyStringPropertyName: string,
+      emptyStringPropertyError: string
+    ) => {
+      const eventBodyParams = {
+        zendeskId: ZENDESK_TICKET_ID,
+        commentCopyReference: TEST_COMMENT_COPY
+      } as { [key: string]: string }
+      eventBodyParams[emptyStringPropertyName] = ''
+
+      await expect(
+        callHandlerWithBody(JSON.stringify(eventBodyParams))
+      ).rejects.toThrow(`${emptyStringPropertyError} missing from event body`)
+    }
+  )
 
   it('given valid event body, it logs an error when updateZendeskTicketById fails', async () => {
     givenUnsuccessfulUpdateZendeskTicket()
@@ -83,7 +102,7 @@ describe('initiate closeZendeskTicket handler', () => {
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      'blah',
+      TEST_COMMENT_COPY,
       'closed'
     )
     expect(console.error).toHaveBeenCalledWith(

@@ -33,6 +33,9 @@ const parseRequestDetails = (event: SQSEvent) => {
   if (!requestDetails.zendeskId) {
     throw Error(interpolateTemplate('zendeskTicketIdMissing', zendeskCopy))
   }
+  if (!requestDetails.commentCopyReference) {
+    throw Error(interpolateTemplate('commentCopyReferenceMissing', zendeskCopy))
+  }
 
   return requestDetails
 }
