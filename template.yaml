@@ -569,7 +569,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
-      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-email-request-to-notify'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-close-zendesk-ticket'
       RetentionInDays: 30
 
   PermissionForAthenaEventToInvokeLambda:
