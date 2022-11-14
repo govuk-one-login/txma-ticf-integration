@@ -4,7 +4,6 @@ const config: Config.InitialOptions = {
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
   testPathIgnorePatterns: ['/src/'],
   preset: 'ts-jest',
-  setupFiles: ['<rootDir>/.integration.test.env'],
   verbose: true,
   setupFilesAfterEnv: ['jest-allure/dist/setup'],
   testRunner: 'jest-jasmine2',
@@ -14,7 +13,7 @@ const config: Config.InitialOptions = {
       'jest-junit',
       {
         suiteName: 'TxMA PII Data Tests',
-        outputDirectory: './junit-results',
+        outputDirectory: './jest-junit-results',
         ancestorSeparator: ',',
         includeConsoleOutput: true
       }

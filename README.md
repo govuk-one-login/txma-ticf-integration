@@ -39,7 +39,7 @@ In order to ensure that dependencies cannot be altered by anything other than Ya
 
 ### Test setup
 
-To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test.env` and have the following entries (the values should be retrieved as indicated in the placeholders):
+To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test-<environment>.env` (where environment is one of `dev`, `build`, and `staging`) and have the following entries (the values should be retrieved as indicated in the placeholders):
 
 ```
 process.env.ANALYSIS_BUCKET_NAME = '(get from AWS console)'
@@ -67,25 +67,30 @@ If you want to use a particular fixed date for your data request, set the enviro
 #### Running the Integration Tests
 
 To run the entire pack:
-`yarn test:integration`
+`ENV=<<environment>> yarn test:integration` where environment is one of `dev`, `build`, and `staging`
 
 To run an individual test (suite or test case):
-`yarn jest -c jest.integration.config.ts -t '<description_of_the_testcase_or_suite>'`
+`ENV=<<>environment> yarn test:integration -t '<description_of_the_testcase_or_suite>'`
 
 #### Test Reports
 
-Running the tests would automatically generate results xml files under the `allure-results/`. To view the report locally, first clean results from any previous test run:
+Running the tests would automatically generate allure results xml files under the `allure-results/` folder. To view the allure report locally, first clean results from any previous test run:
+
 `yarn test:cleanReports`
 
 then:
 
 `yarn test:showAllureReport`
 
-An emailable report format is currently being used to share the report. To generate this, first make sure any previous report containers are not being run:
+An emailable report format is currently being used to share the report. To generate this, first remove any currently running report containers:
+
 `yarn test:clearReportContainer`
+
 then:
+
 `yarn test:generateEmailReport`
-This will generate the html report file under `allure-reports/`
+
+This will generate the shareable html report file under `allure-reports/`
 
 ### Creating and approving a Zendesk ticket
 
