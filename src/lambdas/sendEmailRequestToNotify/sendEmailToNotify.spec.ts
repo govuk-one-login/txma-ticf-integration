@@ -66,7 +66,8 @@ describe('sendEmailToNotify', () => {
           firstName: TEST_NOTIFY_NAME,
           zendeskId: ZENDESK_TICKET_ID,
           secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL
-        }
+        },
+        reference: ZENDESK_TICKET_ID
       }
     )
     expect(console.log).toHaveBeenLastCalledWith({

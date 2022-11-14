@@ -3,6 +3,7 @@
 declare module 'notifications-node-client' {
   interface Options {
     personalisation: import('./personalisationOptions')
+    reference: string
   }
   export class NotifyClient {
     constructor(apiKey: string)
@@ -11,5 +12,12 @@ declare module 'notifications-node-client' {
       emailAddress: string,
       options: Options
     ): import('./customAxiosResponse')
+    getNotifications(
+      status?: string,
+      notificationType?: string,
+      reference?: string,
+      olderThan?: string
+    ): import('./customAxiosResponse')
+    getNotificationById(notificationId: string): import('./customAxiosResponse')
   }
 }
