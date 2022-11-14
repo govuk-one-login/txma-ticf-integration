@@ -533,7 +533,7 @@ Resources:
         CloseZendeskTicketEvent:
           Type: SQS
           Properties:
-            Queue: '{{resolve:ssm:CloseZendeskTicketQueueArn}}'
+            Queue: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
             BatchSize: 1
       Policies:
         - Statement:
@@ -556,14 +556,14 @@ Resources:
                 - sqs:ReceiveMessage
                 - sqs:DeleteMessage
                 - sqs:GetQueueAttributes
-              Resource: '{{resolve:ssm:CloseZendeskTicketQueueArn}}'
+              Resource: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
             - Sid: DecryptKmsKeys
               Effect: Allow
               Action:
                 - kms:Decrypt
               Resource:
                 - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                - '{{resolve:ssm:CloseZendeskTicketQueueKmsKeyArn}}'
+                - !Sub 'arn:aws:kms:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:*'
 
   CloseZendeskTicketLogs:
     Type: AWS::Logs::LogGroup

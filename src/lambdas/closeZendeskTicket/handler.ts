@@ -2,7 +2,7 @@ import { SQSEvent } from 'aws-lambda'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { tryParseJSON } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { notifyCopy } from '../../constants/notifyCopy'
+import { zendeskCopy } from '../../constants/zendeskCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
 
 export const handler = async (event: SQSEvent) => {
@@ -26,12 +26,12 @@ const parseRequestDetails = (event: SQSEvent) => {
 
   const eventBody = event.Records[0].body
   if (!eventBody) {
-    throw Error(interpolateTemplate('missingEventBody', notifyCopy))
+    throw Error(interpolateTemplate('missingEventBody', zendeskCopy))
   }
 
   const requestDetails = tryParseJSON(eventBody)
   if (!requestDetails.zendeskId) {
-    throw Error(interpolateTemplate('zendeskTicketIdMissing', notifyCopy))
+    throw Error(interpolateTemplate('zendeskTicketIdMissing', zendeskCopy))
   }
 
   return requestDetails

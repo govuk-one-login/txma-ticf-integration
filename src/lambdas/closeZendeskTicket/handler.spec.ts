@@ -1,4 +1,7 @@
-import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
+import {
+  ZENDESK_TICKET_ID,
+  TEST_COMMENT_COPY
+} from '../../utils/tests/testConstants'
 import { handler } from './handler'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { constructSqsEvent } from '../../utils/tests/events/sqsEvent'
@@ -15,7 +18,7 @@ const givenUnsuccessfulUpdateZendeskTicket = () => {
 }
 const validEventBody = `{
       "zendeskId": "${ZENDESK_TICKET_ID}",
-      "commentCopyReference": "blah"
+      "commentCopyReference": "${TEST_COMMENT_COPY}
     }`
 const callHandlerWithBody = async (customBody: string) => {
   await handler(constructSqsEvent(customBody))
@@ -35,7 +38,7 @@ describe('initiate closeZendeskTicket handler', () => {
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      'blah',
+      TEST_COMMENT_COPY,
       'closed'
     )
   })
@@ -50,7 +53,7 @@ describe('initiate closeZendeskTicket handler', () => {
     const invalidEventBody = ''
 
     await expect(callHandlerWithBody(invalidEventBody)).rejects.toThrow(
-      'Could not find event body. An email has not been sent'
+      'Could not find event body'
     )
   })
   it('throws an error when zendeskId is missing from the event body', async () => {
@@ -65,57 +68,13 @@ describe('initiate closeZendeskTicket handler', () => {
   it('throws an error when zendeskId is an empty string', async () => {
     const eventBodyParams = JSON.stringify({
       zendeskId: '',
-      commentCopyReference: 'blah'
+      commentCopyReference: TEST_COMMENT_COPY
     })
 
     await expect(callHandlerWithBody(eventBodyParams)).rejects.toThrow(
       'Zendesk ticket ID missing from event body'
     )
   })
-  // it.each(['firstName', 'email', 'secureDownloadUrl'])(
-  //   'updates Zendesk ticket, and throws an error when %p is missing from the event body',
-  //   async (missingPropertyName: string) => {
-  //     const eventBodyParams = {
-  //       email: TEST_NOTIFY_EMAIL,
-  //       firstName: TEST_NOTIFY_NAME,
-  //       secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL,
-  //       zendeskId: ZENDESK_TICKET_ID
-  //     } as { [key: string]: string }
-  //     delete eventBodyParams[missingPropertyName]
-
-  //     await expect(
-  //       callHandlerWithBody(JSON.stringify(eventBodyParams))
-  //     ).rejects.toThrow('Required details were not all present in event body')
-  //     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
-  //     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
-  //       ZENDESK_TICKET_ID,
-  //       'Your results could not be emailed.',
-  //       'closed'
-  //     )
-  //   }
-  // )
-  // it.each(['firstName', 'email', 'secureDownloadUrl'])(
-  //   'updates Zendesk ticket, and throws an error when %p is an empty string',
-  //   async (emptyStringPropertyName: string) => {
-  //     const eventBodyParams = {
-  //       email: TEST_NOTIFY_EMAIL,
-  //       firstName: TEST_NOTIFY_NAME,
-  //       secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL,
-  //       zendeskId: ZENDESK_TICKET_ID
-  //     } as { [key: string]: string }
-  //     eventBodyParams[emptyStringPropertyName] = ''
-
-  //     await expect(
-  //       callHandlerWithBody(JSON.stringify(eventBodyParams))
-  //     ).rejects.toThrow('Required details were not all present in event body')
-  //     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
-  //     expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
-  //       ZENDESK_TICKET_ID,
-  //       'Your results could not be emailed.',
-  //       'closed'
-  //     )
-  //   }
-  // )
 
   it('given valid event body, it logs an error when updateZendeskTicketById fails', async () => {
     givenUnsuccessfulUpdateZendeskTicket()

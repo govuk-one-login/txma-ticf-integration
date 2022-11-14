@@ -67,3 +67,4 @@ export const TEST_ATHENA_QUERY_ID = 'abc123'
 export const TEST_VALID_EMAIL_RECIPIENTS_BUCKET = 'myEmailRecipientsBucket'
 export const TEST_VALID_EMAIL_RECIPIENTS_BUCKET_KEY =
   'myEmailRecipientsBucketKey'
+export const TEST_COMMENT_COPY = 'test comment copy'
