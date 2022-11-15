@@ -9,7 +9,7 @@ export const getDownloadUrlFromNotifyEmail = async (zendeskId: string) => {
   return getUrlFromEmailBody(emailObject?.body ?? '')
 }
 
-export const getMostRecentEmailSent = async (
+const getMostRecentEmailSent = async (
   client: NotifyClient,
   zendeskId: string
 ) => {
@@ -38,5 +38,6 @@ const getUrlFromEmailBody = (emailBody: string) => {
     /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi
   const url = emailBody.match(urlRegex)
   if (!url) throw Error('No URL found in email body')
+
   return url
 }
