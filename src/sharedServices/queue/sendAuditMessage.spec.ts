@@ -136,9 +136,18 @@ describe('sendAuditMessage', () => {
     }
 
     it.each([
-      ['invalid-signature' as ErrorType, ''],
-      ['mismatched-ticket' as ErrorType, ''],
-      ['non-existent-ticket' as ErrorType, '']
+      [
+        'invalid-signature' as ErrorType,
+        'The webhook signature check failed, probably indicating that the request did not come from Zendesk'
+      ],
+      [
+        'mismatched-ticket' as ErrorType,
+        'There is a ticket for the given Zendesk ID, but some of its details are mismatched'
+      ],
+      [
+        'non-existent-ticket' as ErrorType,
+        'There is no ticket for the given Zendesk ID'
+      ]
     ])(
       'calls the sendSqsMessage function with the correct parameters when errorType is %p',
       async (errorType: ErrorType, errorDescription) => {

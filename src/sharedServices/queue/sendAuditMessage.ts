@@ -124,17 +124,19 @@ const getErrorObject = (errorType: ErrorType): ErrorObject => {
   const errorDetails: Record<ErrorType, ErrorObject> = {
     'invalid-signature': {
       error_type: 'invalid-signature',
-      error_description: ''
+      error_description:
+        'The webhook signature check failed, probably indicating that the request did not come from Zendesk'
     },
 
     'mismatched-ticket': {
       error_type: 'mismatched-ticket',
-      error_description: ''
+      error_description:
+        'There is a ticket for the given Zendesk ID, but some of its details are mismatched'
     },
 
     'non-existent-ticket': {
       error_type: 'non-existent-ticket',
-      error_description: ''
+      error_description: 'There is no ticket for the given Zendesk ID'
     }
   }
 
