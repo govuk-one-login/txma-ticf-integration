@@ -22,4 +22,5 @@ export type EnvironmentVar = {
     | 'FIXED_SUBJECT_LINE'
     | 'SECURE_DOWNLOAD_DYNAMODB_TABLE'
     | 'QUERY_RESULTS_SECURE_DOWNLOAD_URL'
+    | 'NOTIFY_API_KEY'
 }
