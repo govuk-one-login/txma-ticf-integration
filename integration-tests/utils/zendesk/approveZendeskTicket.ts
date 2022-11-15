@@ -1,6 +1,6 @@
 import axios, { AxiosPromise } from 'axios'
 import { authoriseAs } from './authoriseAs'
-import { ticketApprovalData } from '../../constants/requestData/dataCopyRequestData'
+import { ticketApprovalData } from '../../constants/requestData/ticketApprovalData'
 import {
   ZENDESK_AGENT_EMAIL,
   ZENDESK_BASE_URL,
