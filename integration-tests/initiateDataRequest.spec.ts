@@ -110,7 +110,7 @@ describe('Submit a PII request with approved ticket data', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
@@ -125,6 +125,7 @@ describe('Submit a PII request with approved ticket data', () => {
           [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
           50
         )
+
       expect(processDataRequestEvents).not.toEqual([])
 
       assertEventPresent(
@@ -132,6 +133,8 @@ describe('Submit a PII request with approved ticket data', () => {
         STANDARD_TIER_OBJECTS_TO_COPY_MESSAGE
       )
       assertEventPresent(processDataRequestEvents, S3_COPY_JOB_STARTED_MESSAGE)
+
+      //TODO: to wait before this check?
 
       const copyCompletedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -179,7 +182,7 @@ describe('Submit a PII request with approved ticket data', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
@@ -245,10 +248,11 @@ describe('Submit a PII request with approved ticket data', () => {
       console.log(
         'valid request with data in standard and glacier tier test started'
       )
+
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
@@ -312,7 +316,7 @@ describe('Submit a PII request with approved ticket data', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
@@ -359,7 +363,7 @@ describe('Submit a PII request with approved ticket data', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
@@ -401,7 +405,7 @@ describe('Submit a PII request with approved ticket data', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
 
       assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
@@ -445,7 +449,7 @@ describe('Submit a PII request with approved ticket data', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', ticketId]
+          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
 
       assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
