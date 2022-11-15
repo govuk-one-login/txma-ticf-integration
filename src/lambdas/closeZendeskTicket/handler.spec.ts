@@ -18,7 +18,7 @@ const givenUnsuccessfulUpdateZendeskTicket = () => {
 }
 const validEventBody = `{
       "zendeskId": "${ZENDESK_TICKET_ID}",
-      "commentCopyReference": "${TEST_COMMENT_COPY}"
+      "commentCopyText": "${TEST_COMMENT_COPY}"
     }`
 const callHandlerWithBody = async (customBody: string) => {
   await handler(constructSqsEvent(customBody))
@@ -59,13 +59,13 @@ describe('initiate closeZendeskTicket handler', () => {
 
   it.each([
     ['zendeskId', 'Zendesk ticket ID'],
-    ['commentCopyReference', 'Comment copy reference']
+    ['commentCopyText', 'Comment copy text']
   ])(
     'throws an error when %p is missing from the event body',
     async (missingPropertyName: string, missingPropertyError: string) => {
       const eventBodyParams = {
         zendeskId: ZENDESK_TICKET_ID,
-        commentCopyReference: TEST_COMMENT_COPY
+        commentCopyText: TEST_COMMENT_COPY
       } as { [key: string]: string }
       delete eventBodyParams[missingPropertyName]
 
@@ -76,7 +76,7 @@ describe('initiate closeZendeskTicket handler', () => {
   )
   it.each([
     ['zendeskId', 'Zendesk ticket ID'],
-    ['commentCopyReference', 'Comment copy reference']
+    ['commentCopyText', 'Comment copy text']
   ])(
     'throws an error when %p is an empty string',
     async (
@@ -85,7 +85,7 @@ describe('initiate closeZendeskTicket handler', () => {
     ) => {
       const eventBodyParams = {
         zendeskId: ZENDESK_TICKET_ID,
-        commentCopyReference: TEST_COMMENT_COPY
+        commentCopyText: TEST_COMMENT_COPY
       } as { [key: string]: string }
       eventBodyParams[emptyStringPropertyName] = ''
 
