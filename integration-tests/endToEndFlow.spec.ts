@@ -50,7 +50,6 @@ describe('Query results generated', () => {
 
     const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
 
-    console.log(secureDownloadPageHTML)
     expect(secureDownloadPageHTML).toBeDefined()
 
     const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
@@ -79,7 +78,6 @@ describe('Query results generated', () => {
 
     const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
 
-    console.log(secureDownloadPageHTML)
     expect(secureDownloadPageHTML).toBeDefined()
 
     const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)

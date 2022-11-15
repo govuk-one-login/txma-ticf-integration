@@ -23,7 +23,7 @@ export const MOCK_TERMINATED_JOB_QUEUE_URL = 'https://terminate_job_queue_'
 export const MOCK_SEND_EMAIL_QUEUE_URL = 'https://send_email_queue'
 export const MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL =
   'https://audit_data_request_queue'
-
+export const MOCK_QUERY_COMPLETED_QUEUE_URL = 'https://query_complete_queue'
 export const TEST_ZENDESK_SECRET_ARN = 'myZendeskSecretName'
 export const TEST_NOTIFY_SECRET_ARN = 'myNotifySecretName'
 export const TEST_NOTIFY_EMAIL = 'test@email.com'
@@ -69,3 +69,4 @@ export const TEST_ATHENA_QUERY_ID = 'abc123'
 export const TEST_VALID_EMAIL_RECIPIENTS_BUCKET = 'myEmailRecipientsBucket'
 export const TEST_VALID_EMAIL_RECIPIENTS_BUCKET_KEY =
   'myEmailRecipientsBucketKey'
+export const TEST_COMMENT_COPY = 'test comment copy'

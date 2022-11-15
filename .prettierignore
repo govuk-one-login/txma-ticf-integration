@@ -10,5 +10,4 @@
 CODEOWNERS
 coverage/
 dist/
-template.yaml
 yarn.lock

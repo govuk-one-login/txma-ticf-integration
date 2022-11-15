@@ -3,9 +3,7 @@ import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBG
 import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
-import { generateSecureDownloadHash } from './generateSecureDownloadHash'
-import { queueSendResultsReadyEmail } from './queueSendResultsReadyEmail'
-import { writeOutSecureDownloadRecord } from './writeOutSecureDownloadRecord'
+import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 
 export const handler = async (
   event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>
@@ -29,16 +27,9 @@ export const handler = async (
 
   const recipientName = requestData.requestInfo.recipientName
   const recipientEmail = requestData.requestInfo.recipientEmail
-  const downloadHash = generateSecureDownloadHash()
 
-  await writeOutSecureDownloadRecord(
+  await sendQueryCompleteQueueMessage({
     athenaQueryId,
-    downloadHash,
-    zendeskTicketId
-  )
-
-  await queueSendResultsReadyEmail({
-    downloadHash,
     recipientEmail,
     recipientName,
     zendeskTicketId

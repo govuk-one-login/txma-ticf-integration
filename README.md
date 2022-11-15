@@ -39,7 +39,7 @@ In order to ensure that dependencies cannot be altered by anything other than Ya
 
 ### Test setup
 
-To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test.env` and have the following entries (the values should be retrieved as indicated in the placeholders):
+To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test-<environment>.env` (where environment is one of `dev`, `build`, and `staging`) and have the following entries (the values should be retrieved as indicated in the placeholders):
 
 ```
 process.env.ANALYSIS_BUCKET_NAME = '(get from AWS console)'
@@ -53,7 +53,7 @@ process.env.TEST_DATA_BUCKET_NAME = '(get from AWS console)'
 process.env.ZENDESK_API_KEY = '(check with Test team/Tech lead)'
 process.env.ZENDESK_BASE_URL = '(value in Team Test Confluence)'
 process.env.ZENDESK_WEBHOOK_API_BASE_URL = '(get from AWS console)'
-process.enc.ZENDESK_WEBHOOK_SECRET_KEY = '(check with Test team/Tech lead)'
+process.env.ZENDESK_WEBHOOK_SECRET_KEY = '(check with Test team/Tech lead)'
 process.env.ZENDESK_END_USER_EMAIL = '(value in Team Test Confluence)'
 process.env.ZENDESK_END_USER_NAME = '(value in Team Test Confluence)'
 process.env.ZENDESK_AGENT_EMAIL = '(value in Team Test Confluence)'
@@ -63,6 +63,14 @@ process.env.QUERY_RESULTS_SECURE_DOWNLOAD_URL = '(get from AWS console)'
 ```
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
+
+#### Running integration tests against a specific test environment
+
+```ENV=<<environment>> yarn test:integration (where environment is one of dev, build, and staging).
+
+```
+
+`yarn test:integration` runs the integration against the build environment by default
 
 ### Creating and approving a Zendesk ticket
 
