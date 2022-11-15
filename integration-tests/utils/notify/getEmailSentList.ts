@@ -27,7 +27,7 @@ const getMostRecentEmailSent = async (
 
 const getMostRecentEmail = (listOfEmails: NotificationObject[]) => {
   return listOfEmails.reduce((prev, curr) =>
-    new Date(prev.created_at).getTime() < new Date(curr.created_at).getTime()
+    new Date(prev.created_at).getTime() > new Date(curr.created_at).getTime()
       ? prev
       : curr
   )
