@@ -25,7 +25,12 @@ export interface NotificationObject {
   subject?: string
   reference: string
   email_address: string
-  status: 'sending | delivered | permanent-failure | temporary-failure | technical-failure'
+  status:
+    | 'sending'
+    | 'delivered'
+    | 'permanent-failure'
+    | 'temporary-failure'
+    | 'technical-failure'
   template: {
     version: number
     id: number
