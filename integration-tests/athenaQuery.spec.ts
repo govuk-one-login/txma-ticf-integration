@@ -89,7 +89,9 @@ describe('Athena Query SQL generation and execution', () => {
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const downloadHash = await waitForDownloadHash(randomTicketId)
+      //TODO: REPLACE with: call link within email to download results
+
+      /*const downloadHash = await waitForDownloadHash(randomTicketId)
       expect(downloadHash).toBeDefined()
       console.log('Download Hash: ' + downloadHash)
 
@@ -106,7 +108,10 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
-      expect(csvRows[0].address_buildingname).toEqual(EXPECTED_BUILDING_NAME)
+      expect(csvRows[0].address_buildingname).toEqual(EXPECTED_BUILDING_NAME)*/
+
+      console.log(EXPECTED_RESULTS_BIRTHDATE)
+      console.log(EXPECTED_BUILDING_NAME)
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
