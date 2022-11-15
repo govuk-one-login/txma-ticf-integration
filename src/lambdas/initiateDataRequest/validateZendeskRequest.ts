@@ -28,7 +28,6 @@ export const validateZendeskRequest = async (
   const piiTypes = data.piiTypes.replace(/,/g, '')
   const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
   const piiTypesList = mapSpaceSeparatedStringToList(data.piiTypes)
-  console.log('hello these are the pii types', validPiiTypes)
   const piiTypesAllValid = piiTypesList?.length
     ? piiTypesList.every((type) => validPiiTypes.includes(type))
     : true

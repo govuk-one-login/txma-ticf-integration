@@ -19,6 +19,7 @@ import {
   getSecureDownloadPageHTML,
   retrieveS3LinkFromHtml
 } from './utils/secureDownload'
+import { waitForDownloadUrlFromNotifyEmail } from './utils/notify/getDownloadUrlFromNotifyEmail'
 
 describe('Query results generated', () => {
   jest.setTimeout(60000)
@@ -36,7 +37,7 @@ describe('Query results generated', () => {
     )
   })
 
-  it('Query matches data - CSV file containing query results can be downloaded', async () => {
+  it.only('Query matches data - CSV file containing query results can be downloaded', async () => {
     const EXPECTED_ADDRESS_VALID_FROM_DATE = `"2014-01-01"`
     const EXPECTED_BIRTH_DATE = `"1981-07-28"`
     const EXPECTED_POSTALCODE = `"AB10 6QW"`
@@ -44,15 +45,18 @@ describe('Query results generated', () => {
     const zendeskId: string = await createZendeskTicket(
       endToEndTestRequestDataWithMatch
     )
-    await approveZendeskTicket(zendeskId)
+    // await approveZendeskTicket(zendeskId)
 
-    const downloadHash = await waitForDownloadHash(zendeskId)
+    // const downloadHash = await waitForDownloadHash(zendeskId)
 
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+    // const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
 
-    expect(secureDownloadPageHTML).toBeDefined()
+    // expect(secureDownloadPageHTML).toBeDefined()
 
-    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
+    // const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
+
+    const resultsFileS3Link = await waitForDownloadUrlFromNotifyEmail(zendeskId)
+
     expect(resultsFileS3Link.startsWith('https')).toBeTrue
 
     const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)

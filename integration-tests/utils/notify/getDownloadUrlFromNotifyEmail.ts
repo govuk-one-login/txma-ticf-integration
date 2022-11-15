@@ -3,21 +3,37 @@ import {
   CustomAxiosResponse,
   NotificationObject
 } from '../../types/notify/customAxiosResponse'
-import { getEnv } from '../helpers'
+import { getEnv, pause } from '../helpers'
 
 // Email objects from Notify here are referred to as Notifications
+
+export const waitForDownloadUrlFromNotifyEmail = async (zendeskId: string) => {
+  const maxAttempts = 30
+  let attempts = 0
+  let url = undefined
+  while (!url && attempts < maxAttempts) {
+    console.log('Check attempt: ', attempts)
+    attempts++
+    url = await getDownloadUrlFromNotifyEmail(zendeskId)
+    await pause(2000)
+  }
+  return url ?? ''
+}
 
 export const getDownloadUrlFromNotifyEmail = async (
   zendeskId: string
 ): Promise<string | undefined> => {
   const emailList = await queryNotifyEmailRequests(zendeskId)
+
+  if (!emailList) return undefined
+
   const mostRecentEmail = await getMostRecentEmailSent(emailList)
-  return getUrlFromEmailBody(mostRecentEmail?.body ?? '')
+  return getUrlFromEmailBody(mostRecentEmail?.body ?? '') ?? ''
 }
 
 const queryNotifyEmailRequests = async (
   zendeskId: string
-): Promise<NotificationObject[]> => {
+): Promise<NotificationObject[] | undefined> => {
   const client = new NotifyClient(getEnv('NOTIFY_API_KEY'))
   const response: CustomAxiosResponse = await client.getNotifications(
     '',
@@ -31,9 +47,10 @@ const queryNotifyEmailRequests = async (
     !response?.data?.notifications ||
     !response?.data?.notifications?.length
   ) {
-    throw Error(
-      `No emails returned from Notify with Zendesk ticket reference: ${zendeskId}`
-    )
+    // throw Error(
+    //   `No emails returned from Notify with Zendesk ticket reference: ${zendeskId}`
+    // )
+    return undefined
   }
 
   console.log(
