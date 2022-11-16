@@ -1,7 +1,7 @@
-export interface NotifyError {
-  response: {
-    data: {
-      errors: string[]
-    }
-  }
-}
+// export interface NotifyError {
+//   response: {
+//     data: {
+//       errors: string[]
+//     }
+//   }
+// }

@@ -485,55 +485,55 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-query-results-notification'
       RetentionInDays: 30
 
-  SendEmailRequestToNotifyFunction:
-    #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
-    #checkov:skip=CKV_AWS_117:VPC not required
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: sendEmailRequestToNotify.handler
-      Environment:
-        Variables:
-          NOTIFY_API_SECRETS_ARN: '{{resolve:ssm:NotifySecretSetArn}}'
-          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
-      FunctionName: !Sub ${AWS::StackName}-send-email-request-to-notify
-      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Events:
-        SendEmailEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt SendEmailQueue.Arn
-            BatchSize: 1
-      Policies:
-        - Statement:
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt SendEmailRequestToNotifyLogs.Arn
-            - Sid: ReadSecrets
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource:
-                - '{{resolve:ssm:NotifySecretSetArn}}'
-                - '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: DecryptKmsKeys
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource:
-                - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                - '{{resolve:ssm:SqsKmsKeyArn}}'
+  # SendEmailRequestToNotifyFunction:
+  #   #checkov:skip=CKV_AWS_115:Defined in Globals section
+  #   #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
+  #   #checkov:skip=CKV_AWS_117:VPC not required
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Handler: sendEmailRequestToNotify.handler
+  #     Environment:
+  #       Variables:
+  #         NOTIFY_API_SECRETS_ARN: '{{resolve:ssm:NotifySecretSetArn}}'
+  #         ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+  #     FunctionName: !Sub ${AWS::StackName}-send-email-request-to-notify
+  #     KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+  #     Events:
+  #       SendEmailEvent:
+  #         Type: SQS
+  #         Properties:
+  #           Queue: !GetAtt SendEmailQueue.Arn
+  #           BatchSize: 1
+  #     Policies:
+  #       - Statement:
+  #           - Sid: Logs
+  #             Effect: Allow
+  #             Action:
+  #               - logs:CreateLogGroup
+  #               - logs:CreateLogStream
+  #               - logs:PutLogEvents
+  #             Resource: !GetAtt SendEmailRequestToNotifyLogs.Arn
+  #           - Sid: ReadSecrets
+  #             Effect: Allow
+  #             Action:
+  #               - secretsmanager:GetSecretValue
+  #             Resource:
+  #               - '{{resolve:ssm:NotifySecretSetArn}}'
+  #               - '{{resolve:ssm:ZendeskSecretSetArn}}'
+  #           - Sid: DecryptKmsKeys
+  #             Effect: Allow
+  #             Action:
+  #               - kms:Decrypt
+  #             Resource:
+  #               - '{{resolve:ssm:SecretsKmsKeyArn}}'
+  #               - '{{resolve:ssm:SqsKmsKeyArn}}'
 
-  SendEmailRequestToNotifyLogs:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
-      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-email-request-to-notify'
-      RetentionInDays: 30
+  # SendEmailRequestToNotifyLogs:
+  #   Type: AWS::Logs::LogGroup
+  #   Properties:
+  #     KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+  #     LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-email-request-to-notify'
+  #     RetentionInDays: 30
 
   CloseZendeskTicketFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section

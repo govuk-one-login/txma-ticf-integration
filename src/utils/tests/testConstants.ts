@@ -1,4 +1,4 @@
-import { NotifyApiSecrets } from '../../types/notifyApiSecrets'
+// import { NotifyApiSecrets } from '../../types/notifyApiSecrets'
 import { ZendeskApiSecrets } from '../../types/zendeskApiSecrets'
 
 export const ZENDESK_TICKET_ID = '123'
@@ -10,10 +10,10 @@ export const ALL_ZENDESK_SECRETS: ZendeskApiSecrets = {
   zendeskHostName: 'example-host.zendesk.com',
   zendeskWebhookSecretKey: 'testSecretKey123'
 }
-export const ALL_NOTIFY_SECRETS: NotifyApiSecrets = {
-  notifyApiKey: 'myNotifyApiKey',
-  notifyTemplateId: 'myNotifyTemplateId'
-}
+// export const ALL_NOTIFY_SECRETS: NotifyApiSecrets = {
+//   notifyApiKey: 'myNotifyApiKey',
+//   notifyTemplateId: 'myNotifyTemplateId'
+// }
 export const ENCODED_AUTH_VALUE = 'EncodedAuthValue'
 export const MOCK_INITIATE_DATA_REQUEST_QUEUE_URL =
   'https://initiate_data_request_queue_'
@@ -25,9 +25,9 @@ export const MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL =
   'https://audit_data_request_queue'
 export const MOCK_QUERY_COMPLETED_QUEUE_URL = 'https://query_complete_queue'
 export const TEST_ZENDESK_SECRET_ARN = 'myZendeskSecretName'
-export const TEST_NOTIFY_SECRET_ARN = 'myNotifySecretName'
-export const TEST_NOTIFY_EMAIL = 'test@email.com'
-export const TEST_NOTIFY_NAME = 'TestName'
+// export const TEST_NOTIFY_SECRET_ARN = 'myNotifySecretName'
+// export const TEST_NOTIFY_EMAIL = 'test@email.com'
+// export const TEST_NOTIFY_NAME = 'TestName'
 export const TEST_SECURE_DOWNLOAD_URL = 'secureDownload.url.com'
 export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
 export const TEST_ANALYSIS_BUCKET_ARN = 'myAnalysisBucketArn'

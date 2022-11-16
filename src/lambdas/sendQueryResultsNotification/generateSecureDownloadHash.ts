@@ -1,5 +1,5 @@
-import crypto from 'crypto'
+// import crypto from 'crypto'
 
-export const generateSecureDownloadHash = () => {
-  return crypto.randomUUID()
-}
+// export const generateSecureDownloadHash = () => {
+//   return crypto.randomUUID()
+// }

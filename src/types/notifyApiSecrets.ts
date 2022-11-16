@@ -1,4 +1,4 @@
-export interface NotifyApiSecrets {
-  notifyApiKey: string
-  notifyTemplateId: string
-}
+// export interface NotifyApiSecrets {
+//   notifyApiKey: string
+//   notifyTemplateId: string
+// }
