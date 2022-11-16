@@ -115,6 +115,7 @@ Resources:
       Handler: initiateDataRequest.handler
       Environment:
         Variables:
+          AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
           VALID_EMAIL_RECIPIENTS_BUCKET: '{{resolve:ssm:ValidEmailRecipientsBucketName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
@@ -161,14 +162,18 @@ Resources:
               Effect: Allow
               Action:
                 - sqs:SendMessage
-              Resource: !GetAtt InitiateDataRequestQueue.Arn
+              Resource:
+                - !GetAtt InitiateDataRequestQueue.Arn
+                - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
             - Sid: UseSqsKmsKey
               Effect: Allow
               Action:
                 - kms:Decrypt
                 - kms:GenerateDataKey*
                 - kms:ReEncrypt*
-              Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+              Resource:
+                - '{{resolve:ssm:SqsKmsKeyArn}}'
+                - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
             - Sid: S3ReadEmailRecipients
               Effect: Allow
               Action:
@@ -408,6 +413,7 @@ Resources:
           SEND_EMAIL_QUEUE_URL: !Ref SendEmailQueue
           QUERY_COMPLETED_QUEUE_URL: '{{resolve:ssm:QueryCompletedQueueUrl}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
@@ -459,14 +465,18 @@ Resources:
               Effect: Allow
               Action:
                 - sqs:SendMessage
-              Resource: '{{resolve:ssm:QueryCompletedQueueArn}}'
+              Resource:
+                - '{{resolve:ssm:QueryCompletedQueueArn}}'
+                - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
             - Sid: UseSqsKmsKey
               Effect: Allow
               Action:
                 - kms:Decrypt
                 - kms:GenerateDataKey*
                 - kms:ReEncrypt*
-              Resource: '{{resolve:ssm:QueryCompletedQueueKmsKeyArn}}'
+              Resource:
+                - '{{resolve:ssm:QueryCompletedQueueKmsKeyArn}}'
+                - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
 
   SendQueryResultsNotificationLogs:
     Type: AWS::Logs::LogGroup

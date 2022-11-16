@@ -12,6 +12,7 @@ import {
 import { handler } from './handler'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
+import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: jest.fn()
@@ -23,6 +24,10 @@ jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
 
 jest.mock('./sendQueryCompleteQueueMessage', () => ({
   sendQueryCompleteQueueMessage: jest.fn()
+}))
+
+jest.mock('../../sharedServices/queue/sendAuditMessage', () => ({
+  sendQueryOutputGeneratedAuditMessage: jest.fn()
 }))
 
 describe('sendQueryResultsNotification', () => {
@@ -96,7 +101,9 @@ describe('sendQueryResultsNotification', () => {
     expect(sendQueryCompleteQueueMessage).not.toHaveBeenCalled()
   })
 
-  it('should call the relevant function given a successful query state', async () => {
+  it('should call the relevant functions given a successful query state', async () => {
+    const mockSendQueryCompleteQueueMessage =
+      sendQueryCompleteQueueMessage as jest.Mock
     givenDbReturnsData()
 
     await handler(generateAthenaEventBridgeEvent('SUCCEEDED'))
@@ -108,5 +115,11 @@ describe('sendQueryResultsNotification', () => {
       recipientName: TEST_RECIPIENT_NAME,
       zendeskTicketId: ZENDESK_TICKET_ID
     })
+    expect(sendQueryOutputGeneratedAuditMessage).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
+    expect(sendQueryOutputGeneratedAuditMessage).toHaveBeenCalledBefore(
+      mockSendQueryCompleteQueueMessage
+    )
   })
 })
