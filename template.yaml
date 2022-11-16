@@ -77,16 +77,16 @@ Resources:
         DestinationArn: !GetAtt ZendeskWebhookAccessLogGroup.Arn
         Format: >-
           {
-            "requestId": "$context.requestId",
-            "ip": "$context.identity.sourceIp",
-            "requestTime": "$context.requestTime",
-            "httpMethod": "$context.httpMethod",
-            "path": "$context.path",
-            "routeKey": "$context.routeKey",
-            "status": "$context.status",
-            "protocol": "$context.protocol",
-            "responseLatency": "$context.responseLatency",
-            "responseLength": "$context.responseLength"
+          "requestId": "$context.requestId",
+          "ip": "$context.identity.sourceIp",
+          "requestTime": "$context.requestTime",
+          "httpMethod": "$context.httpMethod",
+          "path": "$context.path",
+          "routeKey": "$context.routeKey",
+          "status": "$context.status",
+          "protocol": "$context.protocol",
+          "responseLatency": "$context.responseLatency",
+          "responseLength": "$context.responseLength"
           }
       Description: API called by Zendesk webhooks to begin automated Athena queries
       DisableExecuteApiEndpoint: !If [ApiCustomDomain, true, false]
