@@ -1,3 +1,4 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 import { sendEmailToNotify } from './sendEmailToNotify'
 import { NotifyClient } from 'notifications-node-client'
 import { retrieveNotifySecrets } from '../../sharedServices/secrets/retrieveNotifyApiSecrets'
@@ -66,7 +67,8 @@ describe('sendEmailToNotify', () => {
           firstName: TEST_NOTIFY_NAME,
           zendeskId: ZENDESK_TICKET_ID,
           secureDownloadUrl: TEST_SECURE_DOWNLOAD_URL
-        }
+        },
+        reference: ZENDESK_TICKET_ID
       }
     )
     expect(console.log).toHaveBeenLastCalledWith({

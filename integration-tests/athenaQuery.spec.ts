@@ -96,7 +96,7 @@ describe('Athena Query SQL generation and execution', () => {
       const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
       expect(downloadHash.startsWith('<html>')).toBeTrue
 
-      const linkToS3ResultsFile = await retrieveS3LinkFromHtml(downloadPageHTML)
+      const linkToS3ResultsFile = retrieveS3LinkFromHtml(downloadPageHTML)
       expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
 
       const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)
@@ -145,7 +145,7 @@ describe('Athena Query SQL generation and execution', () => {
       const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
       expect(downloadHash.startsWith('<html>')).toBeTrue
 
-      const linkToS3ResultsFile = await retrieveS3LinkFromHtml(downloadPageHTML)
+      const linkToS3ResultsFile = retrieveS3LinkFromHtml(downloadPageHTML)
       expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
 
       const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)
@@ -196,7 +196,7 @@ describe('Athena Query SQL generation and execution', () => {
       const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
       expect(downloadHash.startsWith('<html>')).toBeTrue
 
-      const linkToS3ResultsFile = await retrieveS3LinkFromHtml(downloadPageHTML)
+      const linkToS3ResultsFile = retrieveS3LinkFromHtml(downloadPageHTML)
       expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
 
       const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)

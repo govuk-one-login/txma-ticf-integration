@@ -1,3 +1,4 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 import { SQSEvent } from 'aws-lambda'
 import { sendEmailToNotify } from './sendEmailToNotify'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'

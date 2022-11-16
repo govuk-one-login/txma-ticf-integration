@@ -16,8 +16,8 @@ import {
 } from './awsParameters'
 import {
   ZendeskFormFieldIDs,
-  ZENDESK_END_USER_EMAIL,
-  ZENDESK_END_USER_NAME,
+  ZENDESK_RECIPIENT_EMAIL,
+  ZENDESK_RECIPIENT_NAME,
   ZENDESK_PII_FORM_ID
 } from './zendeskParameters'
 
@@ -68,11 +68,11 @@ export const validRequestData: ZendeskRequestData = {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
         value: process.env.FIXED_RECIPIENT_EMAIL
           ? process.env.FIXED_RECIPIENT_EMAIL
-          : ZENDESK_END_USER_EMAIL
+          : ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -121,11 +121,11 @@ export const invalidRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -161,11 +161,11 @@ export const validApiTestRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -201,11 +201,11 @@ export const validGlacierRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -241,11 +241,11 @@ export const validStandardAndGlacierTiersRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -281,11 +281,11 @@ export const validRequestNoData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -321,11 +321,11 @@ export const endToEndTestRequestDataWithMatch: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -361,11 +361,11 @@ export const endToEndTestRequestDataNoMatch: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {

@@ -1,5 +1,3 @@
-// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
-
 export interface CustomAxiosResponse {
   status: number
   statusText: string
@@ -8,16 +6,9 @@ export interface CustomAxiosResponse {
     url: string
     data: string
   }
-  data:
-    | {
-        notifications?: NotificationObject[]
-      }
-    | NotificationObject
-    | {
-        content: {
-          subject: string
-        }
-      }
+  data: {
+    notifications?: NotificationObject[]
+  }
 }
 
 export interface NotificationObject {

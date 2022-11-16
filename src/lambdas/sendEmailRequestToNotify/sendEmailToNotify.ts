@@ -1,3 +1,4 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 import { NotifyClient } from 'notifications-node-client'
 import { notifyCopy } from '../../constants/notifyCopy'
 import { retrieveNotifySecrets } from '../../sharedServices/secrets/retrieveNotifyApiSecrets'
@@ -17,7 +18,8 @@ export const sendEmailToNotify = async (
         firstName: requestDetails.firstName,
         zendeskId: requestDetails.zendeskId,
         secureDownloadUrl: requestDetails.secureDownloadUrl
-      }
+      },
+      reference: requestDetails.zendeskId
     })
   )
 
