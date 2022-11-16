@@ -1,3 +1,4 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 import { sendEmailToNotify } from './sendEmailToNotify'
 import { NotifyClient } from 'notifications-node-client'
 import { retrieveNotifySecrets } from '../../sharedServices/secrets/retrieveNotifyApiSecrets'

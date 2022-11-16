@@ -1,3 +1,5 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
+
 export interface CustomAxiosResponse {
   status: number
   statusText: string

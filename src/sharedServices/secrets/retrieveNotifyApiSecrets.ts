@@ -1,3 +1,4 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 import { NotifyApiSecrets } from '../../types/notifyApiSecrets'
 import { checkSecretsSet } from './checkSecrets'
 import { getEnv } from '../../utils/helpers'

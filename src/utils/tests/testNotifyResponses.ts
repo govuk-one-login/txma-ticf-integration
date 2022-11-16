@@ -1,3 +1,4 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 import { CustomAxiosResponse } from '../../types/notify/customAxiosResponse'
 import {
   ALL_NOTIFY_SECRETS,

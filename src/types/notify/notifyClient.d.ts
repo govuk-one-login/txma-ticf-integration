@@ -1,5 +1,5 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 /* eslint-disable no-unused-vars */
-
 declare module 'notifications-node-client' {
   interface Options {
     personalisation: import('./personalisationOptions')
