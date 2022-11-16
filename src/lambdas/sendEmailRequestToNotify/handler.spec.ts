@@ -37,6 +37,17 @@
 //   await handler(constructSqsEvent(customBody))
 // }
 
+describe('sendEmail handlee', () => {
+  it('should have aplaceholder', () => {
+    expect(true).toBeTrue
+  })
+
+  // it('should create a link with the correct details', () => {
+  //   expect(createSecureDownloadLink(TEST_DOWNLOAD_HASH)).toEqual(
+  //     `${TEST_SECURE_DOWNLOAD_WEBSITE_BASE_PATH}/${TEST_DOWNLOAD_HASH}`
+  //   )
+  // })
+})
 // describe('initiate sendEmailRequest handler', () => {
 //   beforeEach(() => {
 //     jest.spyOn(global.console, 'error')
