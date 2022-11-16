@@ -15,7 +15,7 @@ export const waitForDownloadUrlFromNotifyEmail = async (zendeskId: string) => {
     console.log('Check attempt: ', attempts)
     attempts++
     url = await getDownloadUrlFromNotifyEmail(zendeskId)
-    await pause(2000)
+    await pause(3000)
   }
   return url ?? ''
 }
@@ -47,9 +47,7 @@ const queryNotifyEmailRequests = async (
     !response?.data?.notifications ||
     !response?.data?.notifications?.length
   ) {
-    // throw Error(
-    //   `No emails returned from Notify with Zendesk ticket reference: ${zendeskId}`
-    // )
+    console.log('No email data returned from Notify')
     return undefined
   }
 

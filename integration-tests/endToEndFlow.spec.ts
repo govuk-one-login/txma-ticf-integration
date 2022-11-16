@@ -9,7 +9,6 @@ import {
   endToEndTestRequestDataNoMatch,
   endToEndTestRequestDataWithMatch
 } from './constants/requestData'
-import { waitForDownloadHash } from './utils/aws/waitForDownloadHash'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
@@ -37,7 +36,7 @@ describe('Query results generated', () => {
     )
   })
 
-  it.only('Query matches data - CSV file containing query results can be downloaded', async () => {
+  it('Query matches data - CSV file containing query results can be downloaded', async () => {
     const EXPECTED_ADDRESS_VALID_FROM_DATE = `"2014-01-01"`
     const EXPECTED_BIRTH_DATE = `"1981-07-28"`
     const EXPECTED_POSTALCODE = `"AB10 6QW"`
@@ -45,18 +44,18 @@ describe('Query results generated', () => {
     const zendeskId: string = await createZendeskTicket(
       endToEndTestRequestDataWithMatch
     )
-    // await approveZendeskTicket(zendeskId)
+    await approveZendeskTicket(zendeskId)
 
-    // const downloadHash = await waitForDownloadHash(zendeskId)
+    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
+      zendeskId
+    )
+    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
 
-    // const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
+      secureDownloadPageUrl
+    )
 
-    // expect(secureDownloadPageHTML).toBeDefined()
-
-    // const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-
-    const resultsFileS3Link = await waitForDownloadUrlFromNotifyEmail(zendeskId)
-
+    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
     expect(resultsFileS3Link.startsWith('https')).toBeTrue
 
     const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
@@ -78,9 +77,14 @@ describe('Query results generated', () => {
       endToEndTestRequestDataNoMatch
     )
     await approveZendeskTicket(zendeskId)
-    const downloadHash = await waitForDownloadHash(zendeskId)
 
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
+      zendeskId
+    )
+    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
+    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
+      secureDownloadPageUrl
+    )
 
     expect(secureDownloadPageHTML).toBeDefined()
 
