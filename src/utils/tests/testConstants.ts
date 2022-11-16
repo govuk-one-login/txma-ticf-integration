@@ -10,10 +10,12 @@ export const ALL_ZENDESK_SECRETS: ZendeskApiSecrets = {
   zendeskHostName: 'example-host.zendesk.com',
   zendeskWebhookSecretKey: 'testSecretKey123'
 }
+// LEGACY CONSTANT - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 export const ALL_NOTIFY_SECRETS: NotifyApiSecrets = {
   notifyApiKey: 'myNotifyApiKey',
   notifyTemplateId: 'myNotifyTemplateId'
 }
+//
 export const ENCODED_AUTH_VALUE = 'EncodedAuthValue'
 export const MOCK_INITIATE_DATA_REQUEST_QUEUE_URL =
   'https://initiate_data_request_queue_'
@@ -21,11 +23,16 @@ export const MOCK_INITIATE_ATHENA_QUERY_QUEUE_URL =
   'https://initiate_athena_query_queue_'
 export const MOCK_TERMINATED_JOB_QUEUE_URL = 'https://terminate_job_queue_'
 export const MOCK_SEND_EMAIL_QUEUE_URL = 'https://send_email_queue'
+export const MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL =
+  'https://audit_data_request_queue'
 export const MOCK_QUERY_COMPLETED_QUEUE_URL = 'https://query_complete_queue'
 export const TEST_ZENDESK_SECRET_ARN = 'myZendeskSecretName'
+
+// LEGACY CONSTANTS - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 export const TEST_NOTIFY_SECRET_ARN = 'myNotifySecretName'
 export const TEST_NOTIFY_EMAIL = 'test@email.com'
 export const TEST_NOTIFY_NAME = 'TestName'
+//
 export const TEST_SECURE_DOWNLOAD_URL = 'secureDownload.url.com'
 export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
 export const TEST_ANALYSIS_BUCKET_ARN = 'myAnalysisBucketArn'

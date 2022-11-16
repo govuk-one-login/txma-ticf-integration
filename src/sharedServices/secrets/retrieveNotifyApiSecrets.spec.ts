@@ -1,3 +1,4 @@
+// LEGACY FILE - CODE HAS MOVED TO RESULTS_DELIVERY REPO
 // Under test
 import { retrieveNotifySecrets } from './retrieveNotifyApiSecrets'
 // Dependencies

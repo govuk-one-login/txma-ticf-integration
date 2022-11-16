@@ -1,13 +1,12 @@
 import axios from 'axios'
 import parse from 'node-html-parser'
-import { getEnv } from './helpers'
 
 export const getSecureDownloadPageHTML = async (
-  downloadHash: string
+  secureDownloadPageUrl: string
 ): Promise<string> => {
   try {
     const response = await axios({
-      url: `${getEnv('QUERY_RESULTS_SECURE_DOWNLOAD_URL')}/${downloadHash}`,
+      url: secureDownloadPageUrl,
       method: 'POST'
     })
     return response.data
