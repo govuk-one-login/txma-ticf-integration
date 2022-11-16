@@ -25,34 +25,25 @@ Mappings:
   Environment:
     dev:
       DeployDevResources: true
-      DeployIntegrationTestResources: true
 
     build:
       DeployDevResources: false
-      DeployIntegrationTestResources: false
 
     staging:
       DeployDevResources: false
-      DeployIntegrationTestResources: true
 
     integration:
       DeployDevResources: false
-      DeployIntegrationTestResources: false
 
     production:
       DeployDevResources: false
-      DeployIntegrationTestResources: false
 
 Conditions:
+  ApiCustomDomain: !Not [!Equals [!Ref Environment, dev]]
   DeployDevResources:
     !Equals [
       true,
       !FindInMap [Environment, !Ref Environment, DeployDevResources]
-    ]
-  DeployIntegrationTestResources:
-    !Equals [
-      true,
-      !FindInMap [Environment, !Ref Environment, DeployIntegrationTestResources]
     ]
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
@@ -84,10 +75,34 @@ Resources:
     Properties:
       AccessLogSetting:
         DestinationArn: !GetAtt ZendeskWebhookAccessLogGroup.Arn
-        Format: $context.requestId
+        Format: >-
+          {
+            "requestId": "$context.requestId",
+            "ip": "$context.identity.sourceIp",
+            "requestTime": "$context.requestTime",
+            "httpMethod": "$context.httpMethod",
+            "path": "$context.path",
+            "routeKey": "$context.routeKey",
+            "status": "$context.status",
+            "protocol": "$context.protocol",
+            "responseLatency": "$context.responseLatency",
+            "responseLength": "$context.responseLength"
+          }
+      Description: API called by Zendesk webhooks to begin automated Athena queries
+      DisableExecuteApiEndpoint: !If [ApiCustomDomain, true, false]
+      EndpointConfiguration:
+        Type: REGIONAL
       Name: !Sub ${AWS::StackName}-zendesk-webhook-api
-      StageName: default
       TracingEnabled: true
+      StageName: !Ref Environment
+
+  ZendeskWebhookApiBasePathMapping:
+    Condition: ApiCustomDomain
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      DomainName: '{{resolve:ssm:ZendeskWebhookApiDomainName}}'
+      RestApiId: !Ref ZendeskWebhookApi
+      Stage: !Ref ZendeskWebhookApi.Stage
 
   ZendeskWebhookAccessLogGroup:
     Type: AWS::Logs::LogGroup
