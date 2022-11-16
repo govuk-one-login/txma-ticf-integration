@@ -13,7 +13,6 @@ export interface CustomAxiosResponse {
         notifications?: NotificationObject[]
       }
     | NotificationObject
-    // below only needed for sendEmail which is now redundant here
     | {
         content: {
           subject: string

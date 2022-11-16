@@ -32,7 +32,6 @@ import {
   retrieveS3LinkFromHtml
 } from './utils/secureDownload'
 import * as CSV from 'csv-string'
-// import { getDownloadUrlFromNotifyEmail } from './utils/notify/getDownloadUrlFromNotifyEmail'
 
 describe('Athena Query SQL generation and execution', () => {
   jest.setTimeout(90000)
