@@ -9,7 +9,6 @@ import {
   endToEndTestRequestDataNoMatch,
   endToEndTestRequestDataWithMatch
 } from './constants/requestData'
-import { waitForDownloadHash } from './utils/aws/waitForDownloadHash'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
@@ -19,6 +18,7 @@ import {
   getSecureDownloadPageHTML,
   retrieveS3LinkFromHtml
 } from './utils/secureDownload'
+import { waitForDownloadUrlFromNotifyEmail } from './utils/notify/getDownloadUrlFromNotifyEmail'
 
 describe('Query results generated', () => {
   jest.setTimeout(60000)
@@ -46,11 +46,14 @@ describe('Query results generated', () => {
     )
     await approveZendeskTicket(zendeskId)
 
-    const downloadHash = await waitForDownloadHash(zendeskId)
+    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
+      zendeskId
+    )
+    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
 
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
-
-    expect(secureDownloadPageHTML).toBeDefined()
+    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
+      secureDownloadPageUrl
+    )
 
     const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
     expect(resultsFileS3Link.startsWith('https')).toBeTrue
@@ -74,9 +77,14 @@ describe('Query results generated', () => {
       endToEndTestRequestDataNoMatch
     )
     await approveZendeskTicket(zendeskId)
-    const downloadHash = await waitForDownloadHash(zendeskId)
 
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
+    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
+      zendeskId
+    )
+    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
+    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
+      secureDownloadPageUrl
+    )
 
     expect(secureDownloadPageHTML).toBeDefined()
 
