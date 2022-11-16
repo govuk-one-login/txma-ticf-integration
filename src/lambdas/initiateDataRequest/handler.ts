@@ -12,13 +12,25 @@ import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromReque
 import { zendeskCopy } from '../../constants/zendeskCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import {
+  sendAuditDataRequestMessage,
+  sendIllegalRequestAuditMessage
+} from '../../sharedServices/queue/sendAuditMessage'
+import { tryParseJSON } from '../../utils/helpers'
 
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
 
+  const parsedEventBody = tryParseJSON(event.body ?? '')
+  await sendAuditDataRequestMessage(parsedEventBody)
+
   if (await isSignatureInvalid(event.headers, event.body)) {
+    await sendIllegalRequestAuditMessage(
+      parsedEventBody.zendeskId,
+      'invalid-signature'
+    )
     return await handleInvalidSignature()
   }
 
@@ -33,10 +45,18 @@ export const handler = async (
 
   try {
     if (await zendeskTicketDiffersFromRequest(requestParams)) {
+      await sendIllegalRequestAuditMessage(
+        requestParams.zendeskId,
+        'mismatched-ticket'
+      )
       return await handleUnmatchedRequest(requestParams.zendeskId)
     }
   } catch (error) {
     console.error(error)
+    await sendIllegalRequestAuditMessage(
+      requestParams.zendeskId,
+      'non-existent-ticket'
+    )
     return {
       statusCode: 404,
       body: JSON.stringify({
