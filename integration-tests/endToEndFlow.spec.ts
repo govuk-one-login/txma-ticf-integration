@@ -16,12 +16,12 @@ import {
   endToEndFlowRequestDataWithSessionId,
   endToEndFlowRequestDataWithUserId
 } from './constants/requestData/endToEndFlowRequestData'
-import { waitForDownloadUrlFromNotifyEmail } from './utils/notify/getDownloadUrlFromNotifyEmail'
+import { waitForDownloadUrlFromNotifyEmail } from './utils/queryResults/getDownloadUrlFromNotifyEmail'
 import {
   downloadResultsCSVFromLink,
   getSecureDownloadPageHTML,
   retrieveS3LinkFromHtml
-} from './utils/secureDownload'
+} from './utils/queryResults/downloadAndParseResults'
 
 describe('Query results generated', () => {
   jest.setTimeout(60000)

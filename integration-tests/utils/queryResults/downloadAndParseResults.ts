@@ -1,5 +1,7 @@
 import axios from 'axios'
 import parse from 'node-html-parser'
+import * as CSV from 'csv-string'
+import { waitForDownloadUrlFromNotifyEmail } from './getDownloadUrlFromNotifyEmail'
 
 export const getSecureDownloadPageHTML = async (
   secureDownloadPageUrl: string
@@ -39,4 +41,31 @@ export const downloadResultsCSVFromLink = async (
     console.log(error)
     throw 'Error downloading results csv from S3 link'
   }
+}
+
+export async function downloadResultsFileAndParseData(
+  ticketId: string
+): Promise<
+  {
+    [k: string]: string
+  }[]
+> {
+  const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
+    ticketId
+  )
+  expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
+
+  const secureDownloadPageHTML = await getSecureDownloadPageHTML(
+    secureDownloadPageUrl
+  )
+
+  const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
+  expect(resultsFileS3Link.startsWith('https')).toBeTrue
+
+  const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
+  console.log(csvData)
+
+  const csvRows = CSV.parse(csvData, { output: 'objects' })
+  console.log(csvRows)
+  return csvRows
 }
