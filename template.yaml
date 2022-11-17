@@ -527,7 +527,7 @@ Resources:
   CloseZendeskTicketFunctionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${AWS::StackName}-close-zendesk-ticket-role
+      RoleName: !Sub ${AWS::StackName}-${Environment}-close-zendesk-ticket-role
       PermissionsBoundary:
         !If [
           UsePermissionsBoundary,
