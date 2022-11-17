@@ -44,3 +44,10 @@ export const END_TO_END_TEST_USER_ID =
 export const END_TO_END_TEST_SESSION_ID = '25bc52a5-3506-4d7a-8129-adc13a3152bf'
 export const END_TO_END_TEST_JOURNEY_ID = '71b8300f-8f06-40e7-a53e-a194beacd33f'
 export const END_TO_END_TEST_EVENT_ID = 'b122aa00-129b-46a9-b5f7-6b1bf07d427b'
+
+export const WEBHOOK_RECEIVED_MESSAGE = 'received Zendesk webhook'
+export const WEBHOOK_INVALID_MESSAGE = 'Zendesk request was invalid'
+export const DATA_SENT_TO_QUEUE_MESSAGE =
+  'Sent data transfer queue message with id'
+export const CLOSE_ZENDESK_TICKET_COMMENT =
+  'Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: From Date is in the future, To Date is in the future'

@@ -1,5 +1,4 @@
 import {
-  assertEventNotPresent,
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern
 } from './utils/aws/cloudWatchGetLogs'
@@ -7,41 +6,36 @@ import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import {
-  invalidRequestData,
   validGlacierRequestData,
   validRequestNoData,
   validRequestData,
-  validStandardAndGlacierTiersRequestData,
-  setCustomFieldValueForRequest
+  validStandardAndGlacierTiersRequestData
 } from './constants/requestData/dataCopyRequestData'
 import {
   ANALYSIS_BUCKET_NAME,
   AUDIT_BUCKET_NAME,
+  DATA_SENT_TO_QUEUE_MESSAGE,
   INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
   INTEGRATION_TEST_DATE_PREFIX,
   INTEGRATION_TEST_DATE_PREFIX_GLACIER,
   INTEGRATION_TEST_DATE_PREFIX_MIX_DATA,
   INTEGRATION_TEST_DATE_PREFIX_NO_DATA,
   PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
-  TEST_FILE_NAME
+  TEST_FILE_NAME,
+  WEBHOOK_RECEIVED_MESSAGE
 } from './constants/awsParameters'
 import { FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs'
-import { getZendeskTicket } from './utils/zendesk/getZendeskTicket'
-import { listZendeskTicketComments } from './utils/zendesk/listZendeskTicketComments'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 import { appendRandomIdToFilename } from './utils/helpers'
-import { ZendeskFormFieldIDs } from './constants/zendeskParameters'
 
 describe('Submit a PII request with approved ticket data', () => {
   jest.setTimeout(90000)
 
   const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'
-  const CLOSE_ZENDESK_TICKET_COMMENT =
-    'Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: From Date is in the future, To Date is in the future'
 
   const DATA_AVAILABLE_MESSAGE = 'All data available, queuing Athena query'
-  const DATA_SENT_TO_QUEUE_MESSAGE = 'Sent data transfer queue message with id'
+
   const NOTHING_TO_COPY_MESSAGE =
     'Number of standard tier files to copy was 0, glacier tier files to copy was 0'
   const STANDARD_TIER_OBJECTS_TO_COPY_MESSAGE =
@@ -55,19 +49,6 @@ describe('Submit a PII request with approved ticket data', () => {
   const S3_GLACIER_RESTORE_STARTED_MESSAGE =
     'Started Glacier restore for zendesk ticket with id'
   const SQS_EVENT_RECEIVED_MESSAGE = 'Handling data request SQS event'
-  const WEBHOOK_INVALID_MESSAGE = 'Zendesk request was invalid'
-  const WEBHOOK_RECEIVED_MESSAGE = 'received Zendesk webhook'
-
-  const assertZendeskCommentPresent = async (
-    ticketId: string,
-    commentBody: string
-  ) => {
-    const ticketComments = await listZendeskTicketComments(ticketId)
-    const commentPresent = ticketComments.some((comment) =>
-      comment.body.includes(commentBody)
-    )
-    expect(commentPresent).toEqual(true)
-  }
 
   const getQueueMessageId = (logEvents: FilteredLogEvent[]) => {
     const event = logEvents.find((event) =>
@@ -383,87 +364,87 @@ describe('Submit a PII request with approved ticket data', () => {
     })
   })
 
-  describe('invalid requests', () => {
-    let ticketId: string
+  // describe('invalid requests', () => {
+  //   let ticketId: string
 
-    beforeEach(async () => {
-      ticketId = await createZendeskTicket(invalidRequestData)
-      await approveZendeskTicket(ticketId)
-    })
+  //   beforeEach(async () => {
+  //     ticketId = await createZendeskTicket(invalidRequestData)
+  //     await approveZendeskTicket(ticketId)
+  //   })
 
-    afterEach(async () => {
-      await deleteZendeskTicket(ticketId)
-      console.log(
-        'invalid data should not start data retrieval process, and should close ticket test ended'
-      )
-    })
+  //   afterEach(async () => {
+  //     await deleteZendeskTicket(ticketId)
+  //     console.log(
+  //       'invalid data should not start data retrieval process, and should close ticket test ended'
+  //     )
+  //   })
 
-    test('invalid data should not start data retrieval process, and should close ticket', async () => {
-      console.log(
-        'invalid data should not start data retrieval process, and should close ticket test started'
-      )
-      const initiateDataRequestEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
-        )
+  //   test('invalid data should not start data retrieval process, and should close ticket', async () => {
+  //     console.log(
+  //       'invalid data should not start data retrieval process, and should close ticket test started'
+  //     )
+  //     const initiateDataRequestEvents =
+  //       await getCloudWatchLogEventsGroupByMessagePattern(
+  //         INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+  //         [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+  //       )
 
-      assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
-      assertEventNotPresent(
-        initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
-      )
+  //     assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
+  //     assertEventNotPresent(
+  //       initiateDataRequestEvents,
+  //       DATA_SENT_TO_QUEUE_MESSAGE
+  //     )
 
-      const zendeskTicket = await getZendeskTicket(ticketId)
-      expect(zendeskTicket.status).toEqual('closed')
-      await assertZendeskCommentPresent(ticketId, CLOSE_ZENDESK_TICKET_COMMENT)
-    })
-  })
+  //     const zendeskTicket = await getZendeskTicket(ticketId)
+  //     expect(zendeskTicket.status).toEqual('closed')
+  //     await assertZendeskCommentPresent(ticketId, CLOSE_ZENDESK_TICKET_COMMENT)
+  //   })
+  // })
 
-  describe('invalid recipient email', () => {
-    let ticketId: string
+  // describe('invalid recipient email', () => {
+  //   let ticketId: string
 
-    beforeEach(async () => {
-      const ticketData = { ...validRequestData }
-      setCustomFieldValueForRequest(
-        ticketData,
-        ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        'txma-team2-bogus-ticf-analyst-dev@test.gov.uk'
-      )
-      ticketId = await createZendeskTicket(ticketData)
-      await approveZendeskTicket(ticketId)
-    })
+  //   beforeEach(async () => {
+  //     const ticketData = { ...validRequestData }
+  //     setCustomFieldValueForRequest(
+  //       ticketData,
+  //       ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+  //       'txma-team2-bogus-ticf-analyst-dev@test.gov.uk'
+  //     )
+  //     ticketId = await createZendeskTicket(ticketData)
+  //     await approveZendeskTicket(ticketId)
+  //   })
 
-    afterEach(async () => {
-      await deleteZendeskTicket(ticketId)
-      console.log(
-        'recipient email not in approved list should not start data retrieval process, and should close ticket test ended'
-      )
-    })
+  //   afterEach(async () => {
+  //     await deleteZendeskTicket(ticketId)
+  //     console.log(
+  //       'recipient email not in approved list should not start data retrieval process, and should close ticket test ended'
+  //     )
+  //   })
 
-    test('recipient email not in approved list should not start data retrieval process, and should close ticket', async () => {
-      console.log(
-        'recipient email not in approved list should not start data retrieval process, and should close ticket test started'
-      )
+  //   test('recipient email not in approved list should not start data retrieval process, and should close ticket', async () => {
+  //     console.log(
+  //       'recipient email not in approved list should not start data retrieval process, and should close ticket test started'
+  //     )
 
-      const initiateDataRequestEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
-        )
+  //     const initiateDataRequestEvents =
+  //       await getCloudWatchLogEventsGroupByMessagePattern(
+  //         INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+  //         [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+  //       )
 
-      assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
-      assertEventNotPresent(
-        initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
-      )
+  //     assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
+  //     assertEventNotPresent(
+  //       initiateDataRequestEvents,
+  //       DATA_SENT_TO_QUEUE_MESSAGE
+  //     )
 
-      const zendeskTicket = await getZendeskTicket(ticketId)
-      expect(zendeskTicket.status).toEqual('closed')
-      await assertZendeskCommentPresent(
-        ticketId,
-        'Recipient email not in valid recipient list'
-      )
-    })
-  })
+  //     const zendeskTicket = await getZendeskTicket(ticketId)
+  //     expect(zendeskTicket.status).toEqual('closed')
+  //     await assertZendeskCommentPresent(
+  //       ticketId,
+  //       'Recipient email not in valid recipient list'
+  //     )
+  //   })
+  // })
 })

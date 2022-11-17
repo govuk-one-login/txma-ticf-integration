@@ -26,3 +26,14 @@ export const listZendeskTicketComments = async (
     throw 'Error getting Zendesk ticket comments'
   }
 }
+
+export const assertZendeskCommentPresent = async (
+  ticketId: string,
+  commentBody: string
+) => {
+  const ticketComments = await listZendeskTicketComments(ticketId)
+  const commentPresent = ticketComments.some((comment) =>
+    comment.body.includes(commentBody)
+  )
+  expect(commentPresent).toEqual(true)
+}
