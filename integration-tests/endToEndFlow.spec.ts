@@ -1,4 +1,3 @@
-import * as CSV from 'csv-string'
 import {
   AUDIT_BUCKET_NAME,
   END_TO_END_TEST_DATE_PREFIX,
@@ -16,12 +15,7 @@ import {
   endToEndFlowRequestDataWithSessionId,
   endToEndFlowRequestDataWithUserId
 } from './constants/requestData/endToEndFlowRequestData'
-import { waitForDownloadUrlFromNotifyEmail } from './utils/queryResults/getDownloadUrlFromNotifyEmail'
-import {
-  downloadResultsCSVFromLink,
-  getSecureDownloadPageHTML,
-  retrieveS3LinkFromHtml
-} from './utils/queryResults/downloadAndParseResults'
+import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
 
 describe('Query results generated', () => {
   jest.setTimeout(60000)
@@ -51,23 +45,7 @@ describe('Query results generated', () => {
     )
     await approveZendeskTicket(zendeskId)
 
-    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
-      zendeskId
-    )
-    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
-
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
-      secureDownloadPageUrl
-    )
-
-    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-    expect(resultsFileS3Link.startsWith('https')).toBeTrue
-
-    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-    console.log(csvData)
-
-    const rows = CSV.parse(csvData, { output: 'objects' })
-    console.log(rows)
+    const rows = await downloadResultsFileAndParseData(zendeskId)
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
@@ -88,22 +66,7 @@ describe('Query results generated', () => {
     )
     await approveZendeskTicket(zendeskId)
 
-    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
-      zendeskId
-    )
-    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
-
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
-      secureDownloadPageUrl
-    )
-
-    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-    expect(resultsFileS3Link.startsWith('https')).toBeTrue
-
-    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-    console.log(csvData)
-
-    const rows = CSV.parse(csvData, { output: 'objects' })
+    const rows = await downloadResultsFileAndParseData(zendeskId)
     expect(rows.length).toEqual(1)
     expect(rows[0].passport_documentnumber).toEqual(EXPECTED_PASSPORT_NUMBER)
     expect(rows[0].passport_expirydate).toEqual(EXPECTED_PASSPORT_EXPIRY_DATE)
@@ -117,23 +80,7 @@ describe('Query results generated', () => {
     )
     await approveZendeskTicket(zendeskId)
 
-    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
-      zendeskId
-    )
-    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
-
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
-      secureDownloadPageUrl
-    )
-
-    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-    expect(resultsFileS3Link.startsWith('https')).toBeTrue
-
-    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-    console.log(csvData)
-
-    const rows = CSV.parse(csvData, { output: 'objects' })
-
+    const rows = await downloadResultsFileAndParseData(zendeskId)
     expect(rows.length).toEqual(1)
     expect(rows[0].drivingpermit).toEqual(EXPECTED_DRIVERS_LICENSE_NUMBER)
   })
@@ -146,23 +93,7 @@ describe('Query results generated', () => {
     )
     await approveZendeskTicket(zendeskId)
 
-    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
-      zendeskId
-    )
-    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
-
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
-      secureDownloadPageUrl
-    )
-
-    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-    expect(resultsFileS3Link.startsWith('https')).toBeTrue
-
-    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-    console.log(csvData)
-
-    const rows = CSV.parse(csvData, { output: 'objects' })
-
+    const rows = await downloadResultsFileAndParseData(zendeskId)
     expect(rows.length).toEqual(1)
     expect(rows[0].name).toBeDefined()
     expect(rows[0].address).toBeDefined()
@@ -175,24 +106,7 @@ describe('Query results generated', () => {
     )
     await approveZendeskTicket(zendeskId)
 
-    const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
-      zendeskId
-    )
-    expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
-
-    const secureDownloadPageHTML = await getSecureDownloadPageHTML(
-      secureDownloadPageUrl
-    )
-
-    expect(secureDownloadPageHTML).toBeDefined()
-
-    const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-    expect(resultsFileS3Link.startsWith('https')).toBeTrue
-
-    const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-    console.log(csvData)
-
-    const rows = CSV.parse(csvData, { output: 'objects' })
-    console.log(rows)
+    const rows = await downloadResultsFileAndParseData(zendeskId)
+    expect(rows.length).toEqual(0)
   })
 })

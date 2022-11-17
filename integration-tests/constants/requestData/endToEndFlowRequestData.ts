@@ -10,9 +10,9 @@ import {
 } from '../awsParameters'
 import {
   ZendeskFormFieldIDs,
-  ZENDESK_END_USER_EMAIL,
-  ZENDESK_END_USER_NAME,
-  ZENDESK_PII_FORM_ID
+  ZENDESK_PII_FORM_ID,
+  ZENDESK_RECIPIENT_EMAIL,
+  ZENDESK_RECIPIENT_NAME
 } from '../zendeskParameters'
 
 export const endToEndFlowRequestDataWithEventId: ZendeskRequestData = {
@@ -42,11 +42,11 @@ export const endToEndFlowRequestDataWithEventId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -82,11 +82,11 @@ export const endToEndFlowRequestDataWithUserId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -122,11 +122,11 @@ export const endToEndFlowRequestDataWithSessionId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -162,11 +162,11 @@ export const endToEndFlowRequestDataWithJourneyId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
@@ -202,11 +202,11 @@ export const endToEndFlowRequestDataNoMatch: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {

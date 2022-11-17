@@ -201,29 +201,4 @@ describe('Athena Query SQL generation and execution', () => {
       assertEventPresent(athenaQueryEvents, ATHENA_HANDLER_INVOKE_ERROR)
     })
   })
-
-  // async function downloadResultsFileAndParseData(ticketId: string): Promise<
-  //   {
-  //     [k: string]: string
-  //   }[]
-  // > {
-  //   const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
-  //     ticketId
-  //   )
-  //   expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
-
-  //   const secureDownloadPageHTML = await getSecureDownloadPageHTML(
-  //     secureDownloadPageUrl
-  //   )
-
-  //   const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-  //   expect(resultsFileS3Link.startsWith('https')).toBeTrue
-
-  //   const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-  //   console.log(csvData)
-
-  //   const csvRows = CSV.parse(csvData, { output: 'objects' })
-  //   console.log(csvRows)
-  //   return csvRows
-  // }
 })
