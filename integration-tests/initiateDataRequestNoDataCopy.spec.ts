@@ -29,7 +29,7 @@ const NOTHING_TO_COPY_MESSAGE =
   'Number of standard tier files to copy was 0, glacier tier files to copy was 0'
 const DATA_AVAILABLE_MESSAGE = 'All data available, queuing Athena query'
 
-describe('No data copy tests', () => {
+describe('Data should not be copied to analysis bucket', () => {
   jest.setTimeout(60000)
 
   describe('valid requests for no data copy - analysis bucket empty', () => {
