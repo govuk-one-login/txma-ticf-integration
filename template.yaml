@@ -20,6 +20,10 @@ Parameters:
     Description: The ARN of the permissions boundary to apply to any role created by the template
     Type: String
     Default: none
+  TestRoleArn:
+    Type: String
+    Description: The ARN of the role that will used for integration tests
+    Default: none
 
 Mappings:
   Environment:
@@ -47,6 +51,7 @@ Conditions:
     ]
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
+  TestRolePolicy: !Not [!Equals [!Ref TestRoleArn, none]]
 
 Globals:
   Function:
