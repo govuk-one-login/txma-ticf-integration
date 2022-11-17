@@ -1,4 +1,5 @@
 import {
+  ANALYSIS_BUCKET_NAME,
   AUDIT_BUCKET_NAME,
   END_TO_END_TEST_DATE_PREFIX,
   END_TO_END_TEST_EVENT_ID,
@@ -18,7 +19,7 @@ import {
 import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
 
 describe('Query results generated', () => {
-  jest.setTimeout(60000)
+  jest.setTimeout(90000)
 
   beforeEach(async () => {
     await deleteAuditDataWithPrefix(
@@ -33,11 +34,18 @@ describe('Query results generated', () => {
     )
   })
 
-  it('Query matches data - CSV file containing query results can be downloaded', async () => {
+  afterEach(async () => {
+    await deleteAuditDataWithPrefix(
+      ANALYSIS_BUCKET_NAME,
+      `firehose/${END_TO_END_TEST_DATE_PREFIX}`
+    )
+  })
+
+  it('Query matching data with event id and data paths', async () => {
     const EXPECTED_ADDRESS_VALID_FROM_DATE = `"2014-01-01"`
     const EXPECTED_BIRTH_DATE = `"1981-07-28"`
     const EXPECTED_POSTALCODE = `"EH2 5BJ"`
-    const EXPECTED_FIRSTNAME = `"MICHELLE"`
+    // const EXPECTED_FIRSTNAME = `"MICHELLE"`
     const EXPECTED_LASTNAME = `"KABIR"`
 
     const zendeskId: string = await createZendeskTicket(
@@ -49,8 +57,7 @@ describe('Query results generated', () => {
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
-    expect(rows[0].name).toBeDefined()
-    expect(rows[0].name_nameparts_value).toEqual(EXPECTED_FIRSTNAME)
+    // expect(rows[0].name_nameparts_value).toEqual(EXPECTED_FIRSTNAME)
     expect(rows[0].name_nameparts_value).toEqual(EXPECTED_LASTNAME)
     expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
     expect(rows[0].address_validfrom).toEqual(EXPECTED_ADDRESS_VALID_FROM_DATE)
@@ -68,12 +75,20 @@ describe('Query results generated', () => {
 
     const rows = await downloadResultsFileAndParseData(zendeskId)
     expect(rows.length).toEqual(1)
-    expect(rows[0].passport_documentnumber).toEqual(EXPECTED_PASSPORT_NUMBER)
-    expect(rows[0].passport_expirydate).toEqual(EXPECTED_PASSPORT_EXPIRY_DATE)
+    expect(rows[0].passport_number).toEqual(EXPECTED_PASSPORT_NUMBER)
+    expect(rows[0].passport_expiry_date).toEqual(EXPECTED_PASSPORT_EXPIRY_DATE)
   })
 
   it('Query matching data with journey id', async () => {
-    const EXPECTED_DRIVERS_LICENSE_NUMBER = `"BINNS902235OW9TF"`
+    const EXPECTED_DRIVERS_LICENSE = [
+      {
+        expirydate: '2024-06-19',
+        issuenumber: '96',
+        personalnumber: 'BINNS902235OW9TF',
+        issuedby: 'DVLA',
+        issuedate: '2014-06-20'
+      }
+    ]
 
     const zendeskId: string = await createZendeskTicket(
       endToEndFlowRequestDataWithJourneyId
@@ -82,7 +97,7 @@ describe('Query results generated', () => {
 
     const rows = await downloadResultsFileAndParseData(zendeskId)
     expect(rows.length).toEqual(1)
-    expect(rows[0].drivingpermit).toEqual(EXPECTED_DRIVERS_LICENSE_NUMBER)
+    expect.arrayContaining(EXPECTED_DRIVERS_LICENSE)
   })
 
   it('Query matching data with session id', async () => {
@@ -94,10 +109,11 @@ describe('Query results generated', () => {
     await approveZendeskTicket(zendeskId)
 
     const rows = await downloadResultsFileAndParseData(zendeskId)
+
     expect(rows.length).toEqual(1)
     expect(rows[0].name).toBeDefined()
-    expect(rows[0].address).toBeDefined()
-    expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
+    expect(rows[0].addresses).toBeDefined()
+    expect(rows[0].dob).toEqual(EXPECTED_BIRTH_DATE)
   })
 
   it('Query does not match data - Empty CSV file should be downloaded', async () => {
