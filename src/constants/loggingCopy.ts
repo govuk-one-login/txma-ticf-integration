@@ -61,10 +61,6 @@ export const loggingCopy = [
     message: 'Request details match existing Zendesk ticket'
   },
   {
-    name: 'requestNotSentToNotify',
-    message: 'Could not send a request to Notify: '
-  },
-  {
     name: 'ticketNotUpdated',
     message: 'Could not update Zendesk ticket: '
   },

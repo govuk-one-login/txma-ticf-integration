@@ -637,7 +637,7 @@ Resources:
   AthenaEBRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: The rule listening for Athena Status Change Events and triggering the sendEmailRequestToNotify lambda
+      Description: The rule listening for Athena Status Change Events and triggering the sendQueryResultsNotification lambda
       EventPattern:
         source:
           - 'aws.athena'
