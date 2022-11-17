@@ -506,11 +506,12 @@ Resources:
 
   CloseZendeskTicketFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_116:Unsure of what will call the function currently - need revision at a later point
+    #checkov:skip=CKV_AWS_116:The SQS queue itself will be responsible for its own DLQ
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       Handler: closeZendeskTicket.handler
+      Role: !GetAtt CloseZendeskTicketFunctionRole.Arn
       Environment:
         Variables:
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
@@ -522,35 +523,57 @@ Resources:
           Properties:
             Queue: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
             BatchSize: 1
+
+  CloseZendeskTicketFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-close-zendesk-ticket-role
+      PermissionsBoundary:
+        !If [
+          UsePermissionsBoundary,
+          !Ref PermissionsBoundary,
+          !Ref AWS::NoValue
+        ]
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
-        - Statement:
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt CloseZendeskTicketLogs.Arn
-            - Sid: ReadSecrets
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource:
-                - '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: AllowCloseZendeskTicketQueueRead
-              Effect: Allow
-              Action:
-                - sqs:ReceiveMessage
-                - sqs:DeleteMessage
-                - sqs:GetQueueAttributes
-              Resource: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
-            - Sid: DecryptKmsKeys
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource:
-                - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                - !Sub 'arn:aws:kms:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:*'
+        - PolicyName: AllowCloseZendeskActions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: Logs
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CloseZendeskTicketLogs.Arn
+              - Sid: ReadSecrets
+                Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - '{{resolve:ssm:ZendeskSecretSetArn}}'
+              - Sid: AllowCloseZendeskTicketQueueRead
+                Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                Resource: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
+              - Sid: DecryptKmsKeys
+                Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource:
+                  - '{{resolve:ssm:SecretsKmsKeyArn}}'
+                  - !Sub 'arn:aws:kms:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:*'
 
   CloseZendeskTicketLogs:
     Type: AWS::Logs::LogGroup
