@@ -425,7 +425,6 @@ Resources:
         Variables:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           QUERY_RESULTS_BUCKET_NAME: !Sub txma-qr-infra-${Environment}-query-results-bucket
-          SEND_EMAIL_QUEUE_URL: !Ref SendEmailQueue
           QUERY_COMPLETED_QUEUE_URL: '{{resolve:ssm:QueryCompletedQueueUrl}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
@@ -790,19 +789,6 @@ Resources:
         maxReceiveCount: 5
 
   InitiateAthenaQueryDeadLetterQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
-
-  SendEmailQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
-      RedrivePolicy:
-        deadLetterTargetArn: !GetAtt SendEmailDeadLetterQueue.Arn
-        maxReceiveCount: 5
-
-  SendEmailDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
