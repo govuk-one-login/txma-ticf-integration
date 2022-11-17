@@ -11,3 +11,6 @@ CODEOWNERS
 coverage/
 dist/
 yarn.lock
+allure-results/
+allure-reports/
+allure-report/
