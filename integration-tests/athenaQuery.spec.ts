@@ -9,7 +9,7 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern
 } from './utils/aws/cloudWatchGetLogs'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
-import { validRequestData } from './constants/requestData'
+import { validRequestData } from './constants/requestData/dataCopyRequestData'
 import {
   ANALYSIS_BUCKET_NAME,
   ATHENA_QUERY_DATA_TEST_DATE_PREFIX,
@@ -25,13 +25,7 @@ import {
   dynamoDBItemPIITypesOnly
 } from './constants/dynamoDBItemDetails'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
-import { waitForDownloadHash } from './utils/aws/waitForDownloadHash'
-import {
-  downloadResultsCSVFromLink,
-  getSecureDownloadPageHTML,
-  retrieveS3LinkFromHtml
-} from './utils/secureDownload'
-import * as CSV from 'csv-string'
+import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
 
 describe('Athena Query SQL generation and execution', () => {
   jest.setTimeout(90000)
@@ -89,20 +83,7 @@ describe('Athena Query SQL generation and execution', () => {
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const downloadHash = await waitForDownloadHash(randomTicketId)
-      expect(downloadHash).toBeDefined()
-      console.log('Download Hash: ' + downloadHash)
-
-      const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
-      expect(downloadHash.startsWith('<html>')).toBeTrue
-
-      const linkToS3ResultsFile = retrieveS3LinkFromHtml(downloadPageHTML)
-      expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
-
-      const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)
-      console.log('CSV data: ' + csvData)
-      const csvRows = CSV.parse(csvData, { output: 'objects' })
-      console.log(csvRows)
+      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
@@ -138,20 +119,7 @@ describe('Athena Query SQL generation and execution', () => {
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const downloadHash = await waitForDownloadHash(randomTicketId)
-      expect(downloadHash).toBeDefined()
-      console.log('Download Hash: ' + downloadHash)
-
-      const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
-      expect(downloadHash.startsWith('<html>')).toBeTrue
-
-      const linkToS3ResultsFile = retrieveS3LinkFromHtml(downloadPageHTML)
-      expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
-
-      const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)
-      console.log('CSV data: ' + csvData)
-      const csvRows = CSV.parse(csvData, { output: 'objects' })
-      console.log(csvRows)
+      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].name).toEqual(EXPECTED_NAME)
@@ -189,20 +157,7 @@ describe('Athena Query SQL generation and execution', () => {
       const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const downloadHash = await waitForDownloadHash(randomTicketId)
-      expect(downloadHash).toBeDefined()
-      console.log('Download Hash: ' + downloadHash)
-
-      const downloadPageHTML = await getSecureDownloadPageHTML(downloadHash)
-      expect(downloadHash.startsWith('<html>')).toBeTrue
-
-      const linkToS3ResultsFile = retrieveS3LinkFromHtml(downloadPageHTML)
-      expect(linkToS3ResultsFile.startsWith('https')).toBeTrue
-
-      const csvData = await downloadResultsCSVFromLink(linkToS3ResultsFile)
-      console.log('CSV data: ' + csvData)
-      const csvRows = CSV.parse(csvData, { output: 'objects' })
-      console.log(csvRows)
+      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)

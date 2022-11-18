@@ -4,8 +4,9 @@ const config: Config.InitialOptions = {
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
   testPathIgnorePatterns: ['/src/'],
   preset: 'ts-jest',
-  setupFiles: ['<rootDir>/.integration.test-build.env'],
   verbose: true,
+  setupFilesAfterEnv: ['jest-allure/dist/setup'],
+  testRunner: 'jest-jasmine2',
   reporters: [
     'default',
     [

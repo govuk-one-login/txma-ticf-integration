@@ -1,4 +1,5 @@
 import { DynamoDBItem } from '../types/dynamoDBItem'
+import { ZENDESK_RECIPIENT_EMAIL } from './zendeskParameters'
 
 export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {
   ticket: {
@@ -18,7 +19,7 @@ export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {
       },
       {
         id: 6202354485660,
-        value: 'txma-team2-ticf-analyst-dev@test.gov.uk'
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       { id: 6202301182364, value: 'Integration test person' },
       { id: 5605588962460, value: null },
@@ -41,11 +42,11 @@ export const dynamoDBItemPIITypesOnly: DynamoDBItem = {
       { id: 5605700069916, value: '2022-04-01' },
       {
         id: 5698447116060,
-        value: []
+        value: ''
       },
       {
         id: 6202354485660,
-        value: 'txma-team2-ticf-analyst-dev@test.gov.uk'
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       { id: 6202301182364, value: 'Integration test person' },
       { id: 5605588962460, value: null },
@@ -73,7 +74,7 @@ export const dynamoDBItemDataPathsOnly: DynamoDBItem = {
       },
       {
         id: 6202354485660,
-        value: 'txma-team2-ticf-analyst-dev@test.gov.uk'
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       { id: 6202301182364, value: 'Integration test person' },
       { id: 5605588962460, value: null },

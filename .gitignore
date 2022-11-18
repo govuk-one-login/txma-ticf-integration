@@ -25,7 +25,8 @@ node_modules/
 
 # Test Results
 jest-junit-results/
-*/junit.xml
-allure-results/
 allure-reports/
+allure-report/
+allure-results/
+
 
