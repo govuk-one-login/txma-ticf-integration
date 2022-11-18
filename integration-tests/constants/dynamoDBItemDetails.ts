@@ -1,6 +1,5 @@
 import { DynamoDBItem } from '../types/dynamoDBItem'
 import { ZENDESK_RECIPIENT_EMAIL } from './zendeskParameters'
-const recipientEmail: string = ZENDESK_RECIPIENT_EMAIL
 
 export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {
   ticket: {
@@ -20,7 +19,7 @@ export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {
       },
       {
         id: 6202354485660,
-        value: recipientEmail
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       { id: 6202301182364, value: 'Integration test person' },
       { id: 5605588962460, value: null },
@@ -47,7 +46,7 @@ export const dynamoDBItemPIITypesOnly: DynamoDBItem = {
       },
       {
         id: 6202354485660,
-        value: recipientEmail
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       { id: 6202301182364, value: 'Integration test person' },
       { id: 5605588962460, value: null },
@@ -75,7 +74,7 @@ export const dynamoDBItemDataPathsOnly: DynamoDBItem = {
       },
       {
         id: 6202354485660,
-        value: recipientEmail
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       { id: 6202301182364, value: 'Integration test person' },
       { id: 5605588962460, value: null },

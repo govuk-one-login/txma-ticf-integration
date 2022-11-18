@@ -19,7 +19,7 @@ import {
 import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
 
 describe('Query results generated', () => {
-  jest.setTimeout(90000)
+  jest.setTimeout(120000)
 
   beforeEach(async () => {
     await deleteAuditDataWithPrefix(
@@ -45,7 +45,6 @@ describe('Query results generated', () => {
     const EXPECTED_ADDRESS_VALID_FROM_DATE = `"2014-01-01"`
     const EXPECTED_BIRTH_DATE = `"1981-07-28"`
     const EXPECTED_POSTALCODE = `"EH2 5BJ"`
-    // const EXPECTED_FIRSTNAME = `"MICHELLE"`
     const EXPECTED_LASTNAME = `"KABIR"`
 
     const zendeskId: string = await createZendeskTicket(
@@ -57,7 +56,6 @@ describe('Query results generated', () => {
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(END_TO_END_TEST_EVENT_ID)
-    // expect(rows[0].name_nameparts_value).toEqual(EXPECTED_FIRSTNAME)
     expect(rows[0].name_nameparts_value).toEqual(EXPECTED_LASTNAME)
     expect(rows[0].birthdate_value).toEqual(EXPECTED_BIRTH_DATE)
     expect(rows[0].address_validfrom).toEqual(EXPECTED_ADDRESS_VALID_FROM_DATE)
