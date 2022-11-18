@@ -86,8 +86,8 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await downloadResultsFileAndParseData(randomTicketId)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
-      expect(csvRows[0].address_buildingname).toEqual(EXPECTED_BUILDING_NAME)
+      expect(csvRows[0].birthdate0_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
+      expect(csvRows[0].address0_buildingname).toEqual(EXPECTED_BUILDING_NAME)
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
@@ -160,8 +160,8 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await downloadResultsFileAndParseData(randomTicketId)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
-      expect(csvRows[0].address_buildingname).toEqual(EXPECTED_BUILDING_NAME)
+      expect(csvRows[0].birthdate0_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
+      expect(csvRows[0].address0_buildingname).toEqual(EXPECTED_BUILDING_NAME)
       expect(csvRows[0].name).toEqual(EXPECTED_NAME)
       expect(csvRows[0].addresses).toEqual(EXPECTED_ADDRESSES)
     })
