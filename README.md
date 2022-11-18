@@ -76,11 +76,7 @@ To run an individual test (suite or test case):
 
 #### Test Reports
 
-Running the tests would automatically generate allure results xml files under the `allure-results/` folder. To view the allure report locally, first clean results from any previous test run:
-
-`yarn test:cleanReports`
-
-then run the tests:
+Running the tests would automatically generate allure results xml files under the `allure-results/` folder. To view the allure report locally, first run the tests:
 
 `yarn test:integration`
 
@@ -88,11 +84,7 @@ then:
 
 `yarn test:showAllureReport`
 
-An emailable report format is currently being used to share the report. To generate this, first remove any currently running report containers:
-
-`yarn test:stopReportContainer`
-
-then:
+An emailable report format is currently being used to share the report. To generate this:
 
 `yarn test:generateEmailReport`
 

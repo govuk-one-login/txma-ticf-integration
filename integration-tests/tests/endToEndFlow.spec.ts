@@ -17,9 +17,11 @@ import {
   endToEndFlowRequestDataWithUserId
 } from './constants/requestData/endToEndFlowRequestData'
 import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
+import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 
 describe('Query results generated', () => {
   jest.setTimeout(120000)
+  let zendeskId: string
 
   beforeEach(async () => {
     await deleteAuditDataWithPrefix(
@@ -39,6 +41,7 @@ describe('Query results generated', () => {
       ANALYSIS_BUCKET_NAME,
       `firehose/${END_TO_END_TEST_DATE_PREFIX}`
     )
+    await deleteZendeskTicket(zendeskId)
   })
 
   it('Query matching data with event id and data paths', async () => {
@@ -48,9 +51,7 @@ describe('Query results generated', () => {
     const EXPECTED_FIRSTNAME = `"MICHELLE"`
     const EXPECTED_LASTNAME = `"KABIR"`
 
-    const zendeskId: string = await createZendeskTicket(
-      endToEndFlowRequestDataWithEventId
-    )
+    zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithEventId)
     await approveZendeskTicket(zendeskId)
 
     const rows = await downloadResultsFileAndParseData(zendeskId)
@@ -68,9 +69,7 @@ describe('Query results generated', () => {
     const EXPECTED_PASSPORT_NUMBER = `"543543543"`
     const EXPECTED_PASSPORT_EXPIRY_DATE = `"2030-01-01"`
 
-    const zendeskId: string = await createZendeskTicket(
-      endToEndFlowRequestDataWithUserId
-    )
+    zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithUserId)
     await approveZendeskTicket(zendeskId)
 
     const rows = await downloadResultsFileAndParseData(zendeskId)
@@ -90,9 +89,7 @@ describe('Query results generated', () => {
       }
     ]
 
-    const zendeskId: string = await createZendeskTicket(
-      endToEndFlowRequestDataWithJourneyId
-    )
+    zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithJourneyId)
     await approveZendeskTicket(zendeskId)
 
     const rows = await downloadResultsFileAndParseData(zendeskId)
@@ -103,9 +100,7 @@ describe('Query results generated', () => {
   it('Query matching data with session id', async () => {
     const EXPECTED_BIRTH_DATE = `"1981-07-28"`
 
-    const zendeskId: string = await createZendeskTicket(
-      endToEndFlowRequestDataWithSessionId
-    )
+    zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithSessionId)
     await approveZendeskTicket(zendeskId)
 
     const rows = await downloadResultsFileAndParseData(zendeskId)
@@ -117,9 +112,7 @@ describe('Query results generated', () => {
   })
 
   it('Query does not match data - Empty CSV file should be downloaded', async () => {
-    const zendeskId: string = await createZendeskTicket(
-      endToEndFlowRequestDataNoMatch
-    )
+    zendeskId = await createZendeskTicket(endToEndFlowRequestDataNoMatch)
     await approveZendeskTicket(zendeskId)
 
     const rows = await downloadResultsFileAndParseData(zendeskId)
