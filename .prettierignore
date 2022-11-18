@@ -1,5 +1,6 @@
 *.sh
 *.toml
+.dockerignore
 .editorconfig
 .eslintignore
 .gitignore
@@ -9,6 +10,7 @@
 .yarn
 CODEOWNERS
 coverage/
+Dockerfile
 dist/
 yarn.lock
 allure-results/
