@@ -5,9 +5,9 @@ import {
 import { TEST_DATA_DATA_PATHS, TEST_DATA_EVENT_ID } from '../awsParameters'
 import {
   ZendeskFormFieldIDs,
-  ZENDESK_END_USER_EMAIL,
-  ZENDESK_END_USER_NAME,
-  ZENDESK_PII_FORM_ID
+  ZENDESK_PII_FORM_ID,
+  ZENDESK_RECIPIENT_EMAIL,
+  ZENDESK_RECIPIENT_NAME
 } from '../zendeskParameters'
 
 export const validApiTestRequestData = {
@@ -37,11 +37,11 @@ export const validApiTestRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_END_USER_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: ZENDESK_RECIPIENT_NAME
       }
     ],
     comment: {
