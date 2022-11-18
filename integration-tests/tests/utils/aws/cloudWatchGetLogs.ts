@@ -6,6 +6,7 @@ import {
   FilteredLogEvent
 } from '@aws-sdk/client-cloudwatch-logs'
 import { pause } from '../helpers'
+import { DATA_SENT_TO_QUEUE_MESSAGE } from '../../constants/awsParameters'
 
 export const getCloudWatchLogEventsGroupByMessagePattern = async (
   logGroupName: string,
@@ -18,7 +19,12 @@ export const getCloudWatchLogEventsGroupByMessagePattern = async (
     maxAttempts
   )
 
-  if (!event || !event.message) return []
+  if (!event || !event.message) {
+    console.log(
+      `After ${maxAttempts} attempts, could not find event matching pattern ${eventMessagePatterns}`
+    )
+    return []
+  }
 
   const requestId = extractRequestIdFromEventMessage(event.message)
   const eventLogStream = [{ logStreamName: event.logStreamName }]
@@ -34,6 +40,9 @@ export const getCloudWatchLogEventsGroupByMessagePattern = async (
   const logEvents = await findMatchingLogEvents(logGroupName, eventLogStream, [
     requestId
   ])
+  console.log(
+    `Found ${logEvents.length} events for request id ${requestId} in log stream ${eventLogStream[0].logStreamName}`
+  )
   return logEvents
 }
 
@@ -126,4 +135,14 @@ export const assertEventNotPresent = (
     event.message?.includes(message)
   )
   expect(eventPresent).toEqual(false)
+}
+
+export const getQueueMessageId = (logEvents: FilteredLogEvent[]) => {
+  const event = logEvents.find((event) =>
+    event.message?.includes(DATA_SENT_TO_QUEUE_MESSAGE)
+  )
+
+  if (!event || !event.message) throw Error('Message not added to queue')
+
+  return event.message?.split('id')[1].trim()
 }

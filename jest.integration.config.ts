@@ -5,6 +5,8 @@ const config: Config.InitialOptions = {
   testPathIgnorePatterns: ['/src/'],
   preset: 'ts-jest',
   verbose: true,
+  setupFilesAfterEnv: ['jest-allure/dist/setup'],
+  testRunner: 'jest-jasmine2',
   reporters: [
     'default',
     [

@@ -2,10 +2,11 @@ import axios from 'axios'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import { generateZendeskRequestDate, getEnv } from './utils/helpers'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
-import { validApiTestRequestData } from './constants/requestData'
 import {
   ZENDESK_END_USER_EMAIL,
-  ZENDESK_END_USER_NAME
+  ZENDESK_END_USER_NAME,
+  ZENDESK_RECIPIENT_EMAIL,
+  ZENDESK_RECIPIENT_NAME
 } from './constants/zendeskParameters'
 import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
 import { generateSignatureHeaders } from './utils/zendesk/generateSignatureHeaders'
@@ -13,13 +14,14 @@ import {
   TEST_DATA_DATA_PATHS,
   TEST_DATA_EVENT_ID
 } from './constants/awsParameters'
+import { validApiTestRequestData } from './constants/requestData/webhookAPIRequestData'
 
 const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
 
 const defaultWebhookRequestData: ZendeskWebhookRequest = {
   zendeskId: '1',
-  recipientEmail: ZENDESK_END_USER_EMAIL,
-  recipientName: ZENDESK_END_USER_NAME,
+  recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+  recipientName: ZENDESK_RECIPIENT_NAME,
   requesterEmail: ZENDESK_END_USER_EMAIL,
   requesterName: ZENDESK_END_USER_NAME,
   dateFrom: generateZendeskRequestDate(-60),
