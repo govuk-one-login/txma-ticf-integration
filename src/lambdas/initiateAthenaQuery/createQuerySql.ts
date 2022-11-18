@@ -117,7 +117,7 @@ const formatDataPath = (dataPath: string): string => {
   const splitDataPath = dataPath.toLowerCase().split('.')
   const dataColumn = splitDataPath.shift()
   const dataTarget = splitDataPath.join('.')
-  const newResultName = splitDataPath.join('_').replaceAll(/[0-9[\]]/g, '')
+  const newResultName = splitDataPath.join('_').replaceAll(/[[\]]/g, '')
 
   return `json_extract(${dataColumn}, '$.${dataTarget}') as ${newResultName}`
 }
