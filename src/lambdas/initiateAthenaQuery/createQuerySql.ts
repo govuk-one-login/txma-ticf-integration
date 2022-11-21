@@ -115,6 +115,11 @@ const formatSelectStatement = (
 
 const formatDataPath = (dataPath: string): string => {
   const splitDataPath = dataPath.toLowerCase().split('.')
+
+  if (splitDataPath.length == 1) {
+    return dataPath
+  }
+
   const dataColumn = splitDataPath.shift()
   const dataTarget = splitDataPath.join('.')
   const newResultName = splitDataPath.join('_').replaceAll(/[[\]]/g, '')
