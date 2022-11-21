@@ -17,8 +17,8 @@
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
     "test": "jest -c jest.config.ts",
     "test:cov": "jest -c jest.config.ts --coverage",
-    "test:integration": "yarn test:cleanReports && jest --setupFiles ./.integration.test-${ENV:-build}.env -c jest.integration.config.ts -i",
-    "test:generateEmailReport": "yarn test:stopReportContainer && docker run -d --rm --name allure -p 5050:5050 -v ${PWD}/allure-results:/app/allure-results -v ${PWD}/allure-reports:/app/default-reports frankescobar/allure-docker-service && mv ${PWD}/allure-reports/emailable-report-allure-docker-service.html ${PWD}/allure-reports/TxMA-Team2-Test_Report-$(date +%d-%m-%Y).html",
+    "test:integration": "yarn test:cleanReports && jest -c integration-tests/jest.integration.config.ts -i",
+    "test:integration:report": "yarn test:stopReportContainer && docker run -d --rm --name allure -p 5050:5050 -v ${PWD}/allure-results:/app/allure-results -v ${PWD}/allure-reports:/app/default-reports frankescobar/allure-docker-service && mv ${PWD}/allure-reports/emailable-report-allure-docker-service.html ${PWD}/allure-reports/TxMA-Team2-Test_Report-$(date +%d-%m-%Y).html",
     "test:stopReportContainer": "docker stop allure",
     "test:showAllureReport": "allure serve",
     "test:cleanReports": "rm -f -r allure-results/ && rm -f -r allure-report/ && rm -f -r allure-reports",
@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-athena": "3.163.0",
-    "@aws-sdk/client-cloudformation": "3.163.0",
     "@aws-sdk/client-dynamodb": "3.163.0",
     "@aws-sdk/client-glue": "3.163.0",
     "@aws-sdk/client-s3": "3.163.0",
@@ -36,7 +35,9 @@
     "notifications-node-client": "5.1.1"
   },
   "devDependencies": {
-    "@aws-sdk/client-cloudwatch-logs": "3.171.0",
+    "@aws-sdk/client-cloudformation": "3.163.0",
+    "@aws-sdk/client-cloudwatch-logs": "3.163.0",
+    "@aws-sdk/client-ssm": "3.163.0",
     "@jest/types": "28.1.3",
     "@types/aws-lambda": "8.10.102",
     "@types/jest": "28.1.7",

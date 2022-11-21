@@ -3,6 +3,7 @@ dist/
 
 # Jest
 coverage/
+integration-tests/reports/
 
 # Environment files
 .integration.*.env
@@ -22,9 +23,3 @@ node_modules/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-# Test Results
-jest-junit-results/
-allure-reports/
-allure-report/
-allure-results/
