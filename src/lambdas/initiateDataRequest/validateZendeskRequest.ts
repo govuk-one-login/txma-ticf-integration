@@ -34,9 +34,7 @@ export const validateZendeskRequest = async (
 
   const dataPathsList = mapSpaceSeparatedStringToList(data.dataPaths)
   const dataPathsAllValid = dataPathsList.length
-    ? dataPathsList.every((dataPath) =>
-        /(\w+(\[\d+\])*\.)+\w+(\[\d+\])*[^,]/.test(dataPath)
-      )
+    ? dataPathsList.every((dataPath) => dataPathFormatCorrect(dataPath))
     : true
 
   const fieldValidation = [
@@ -175,4 +173,11 @@ const dateIsOnOrBeforeToday = (dateString: string) => {
 const getTodayUtc = (): number => {
   const today = new Date()
   return Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+}
+
+const dataPathFormatCorrect = (dataPath: string): boolean => {
+  return (
+    /(\w+(\[\d+\])*\.)+\w+(\[\d+\])*[^,]/.test(dataPath) ||
+    (/(\w+(\[\d+\])*)[^,.]/.test(dataPath) && !dataPath.includes('.'))
+  )
 }
