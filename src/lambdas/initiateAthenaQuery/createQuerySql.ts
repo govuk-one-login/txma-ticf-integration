@@ -117,7 +117,7 @@ const formatDataPath = (dataPath: string): string => {
   const splitDataPath = dataPath.toLowerCase().split('.')
 
   if (splitDataPath.length == 1) {
-    return dataPath
+    return dataPath.toLowerCase()
   }
 
   const dataColumn = splitDataPath.shift()
