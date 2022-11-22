@@ -4,7 +4,6 @@ import {
   PutItemCommand
 } from '@aws-sdk/client-dynamodb'
 
-import { AUDIT_REQUEST_DYNAMODB } from '../../constants/awsParameters'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
@@ -12,6 +11,7 @@ import {
 } from '../../constants/zendeskParameters'
 import { dynamoDBClient } from './dynamoDBClient'
 import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
+import { getEnv } from '../helpers'
 
 export const populateDynamoDBWithTestItemDetails = async (
   ticketID: string,
@@ -20,7 +20,7 @@ export const populateDynamoDBWithTestItemDetails = async (
   const ticketDetails = itemDetails.ticket
 
   const populateTableParams = {
-    TableName: AUDIT_REQUEST_DYNAMODB,
+    TableName: getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
     ReturnValues: 'ALL_OLD',
     Item: {
       zendeskId: { S: `${ticketID}` },
@@ -144,7 +144,7 @@ export const getValueFromDynamoDB = async (
   let getAttributeValueParams
   if (attributeName) {
     getAttributeValueParams = {
-      TableName: AUDIT_REQUEST_DYNAMODB,
+      TableName: getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
       Key: {
         zendeskId: { S: `${ticketId}` }
       },
@@ -152,7 +152,7 @@ export const getValueFromDynamoDB = async (
     }
   } else {
     getAttributeValueParams = {
-      TableName: AUDIT_REQUEST_DYNAMODB,
+      TableName: getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
       Key: {
         zendeskId: { S: `${ticketId}` }
       }
@@ -174,7 +174,7 @@ export const getValueFromDynamoDB = async (
 
 export const deleteDynamoDBTestItem = async (ticketID: string) => {
   const deleteItemParams = {
-    TableName: AUDIT_REQUEST_DYNAMODB,
+    TableName: getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
     Key: {
       zendeskId: { S: ticketID }
     }

@@ -56,14 +56,17 @@ module.exports = async () => {
   process.env.ZENDESK_AGENT_EMAIL = global.ZENDESK_AGENT_EMAIL
   process.env.ZENDESK_END_USER_EMAIL = global.ZENDESK_END_USER_EMAIL
   process.env.ZENDESK_END_USER_NAME = global.ZENDESK_END_USER_NAME
-  process.env.ZENDESK_RECIPIENT_EMAIL = await retrieveSecretValue(
-    'TxMATestingEmail',
-    region
-  )
   process.env.ZENDESK_WEBHOOK_API_BASE_URL = getOutputValue(
     stackOutputs,
     'ZendeskWebhookApiUrl'
   )
+
+  if (!process.env.ZENDESK_RECIPIENT_EMAIL) {
+    process.env.ZENDESK_RECIPIENT_EMAIL = await retrieveSsmParameterValue(
+      'IntegrationTestsRecipientEmail',
+      region
+    )
+  }
 }
 
 const setZendeskEnvVars = async (
@@ -79,15 +82,17 @@ const setZendeskEnvVars = async (
 
   checkSecretsSet(secretId, secrets, [
     'ZENDESK_API_KEY',
-    'ZENDESK_API_USER_EMAIL',
     'ZENDESK_HOSTNAME',
     'ZENDESK_WEBHOOK_SECRET_KEY'
   ])
 
   process.env.ZENDESK_API_KEY = secrets['ZENDESK_API_KEY']
-  process.env.ZENDESK_API_USER_EMAIL = secrets['ZENDESK_API_USER_EMAIL']
   process.env.ZENDESK_HOSTNAME = secrets['ZENDESK_HOSTNAME']
-  process.env.ZENDESK_WEBHOOK_SECRET_KEY = secrets['ZENDESK_WEBHOOK_SECRET_KEY']
+
+  if (!process.env.ZENDESK_WEBHOOK_SECRET_KEY) {
+    process.env.ZENDESK_WEBHOOK_SECRET_KEY =
+      secrets['ZENDESK_WEBHOOK_SECRET_KEY']
+  }
 }
 
 const setNotifyEnvVars = async (

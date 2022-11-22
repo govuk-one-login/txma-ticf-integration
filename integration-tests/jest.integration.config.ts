@@ -24,9 +24,7 @@ const config: Config.InitialOptions = {
     ]
   ],
   setupFiles: ['<rootDir>/setup/setup.ts'],
-  setupFilesAfterEnv: ['jest-allure/dist/setup'],
   testPathIgnorePatterns: ['/src/'],
-  testRunner: 'jest-jasmine2',
   verbose: true
 }
 

@@ -14,8 +14,7 @@ import {
   ANALYSIS_BUCKET_NAME,
   ATHENA_QUERY_DATA_TEST_DATE_PREFIX,
   ATHENA_QUERY_TEST_FILE_NAME,
-  INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP,
-  INITIATE_ATHENA_QUERY_QUEUE_URL
+  INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP
 } from './constants/awsParameters'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
@@ -26,8 +25,9 @@ import {
 } from './constants/dynamoDBItemDetails'
 import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
+import { getEnv } from './utils/helpers'
 
-describe('Athena Query SQL generation and execution', () => {
+describe.skip('Athena Query SQL generation and execution', () => {
   jest.setTimeout(90000)
 
   describe('Query SQL generation and execution successful', () => {
@@ -59,7 +59,10 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         dynamoDBItemDataPathsOnly
       )
-      await addMessageToQueue(randomTicketId, INITIATE_ATHENA_QUERY_QUEUE_URL)
+      await addMessageToQueue(
+        randomTicketId,
+        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
+      )
 
       const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
       const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
@@ -96,7 +99,10 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         dynamoDBItemPIITypesOnly
       )
-      await addMessageToQueue(randomTicketId, INITIATE_ATHENA_QUERY_QUEUE_URL)
+      await addMessageToQueue(
+        randomTicketId,
+        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
+      )
 
       const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
       const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
@@ -132,7 +138,10 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         dynamoDBItemDataPathAndPIITypes
       )
-      await addMessageToQueue(randomTicketId, INITIATE_ATHENA_QUERY_QUEUE_URL)
+      await addMessageToQueue(
+        randomTicketId,
+        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
+      )
 
       const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
       const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
@@ -179,7 +188,10 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
-      await addMessageToQueue(`${ticketId}`, INITIATE_ATHENA_QUERY_QUEUE_URL)
+      await addMessageToQueue(
+        `${ticketId}`,
+        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
+      )
 
       const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
       const ATHENA_HANDLER_INVOKE_ERROR =
