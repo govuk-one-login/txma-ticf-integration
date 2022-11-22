@@ -26,7 +26,7 @@ module.exports = async () => {
   const stackOutputs = await retrieveStackOutputs(stack, region)
 
   await setZendeskEnvVars('ZendeskSecretSetArn', region)
-  await setNotifyEnvVars('NotifySecretSetArn', region)
+  await setNotifyEnvVars('IntegrationTestsNotifySecretSetArn', region)
 
   process.env.ANALYSIS_BUCKET_NAME = getOutputValue(
     stackOutputs,

@@ -8,11 +8,10 @@ export const retrieveSsmParameterValue = async (
     region: region
   })
   const command = new GetParameterCommand({ Name: name })
-  const value = (await client.send(command)).Parameter?.Value
 
-  if (!value) {
-    throw new Error(`SSM parameter with name ${name} not found.`)
+  try {
+    return (await client.send(command)).Parameter?.Value as string
+  } catch (error) {
+    throw new Error(`SSM parameter with name ${name} not found. \n${error}`)
   }
-
-  return value
 }

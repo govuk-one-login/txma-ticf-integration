@@ -11,8 +11,12 @@ export const retrieveSecretValue = async (secretId: string, region: string) => {
   const command: GetSecretValueCommandInput = {
     SecretId: secretId
   }
-  const data = await client.send(new GetSecretValueCommand(command))
-  return JSON.parse(data.SecretString as string)
+  try {
+    const data = await client.send(new GetSecretValueCommand(command))
+    return JSON.parse(data.SecretString as string)
+  } catch (error) {
+    throw new Error(`Secret with ARN ${secretId} not found \n${error}`)
+  }
 }
 
 export const checkSecretsSet = (
