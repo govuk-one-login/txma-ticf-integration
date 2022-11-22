@@ -347,12 +347,15 @@ describe('validateZendeskRequest', () => {
   it('should return a valid response with dataPaths set', async () => {
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
-        buildValidRequestBodyWithDataPaths('myPath.path1 myPath.path2[0].path2')
+        buildValidRequestBodyWithDataPaths(
+          'myPath myPath.path1 myPath.path2[0].path2'
+        )
       )
     )
 
     expect(validationResult.isValid).toEqual(true)
     expect(validationResult.dataRequestParams?.dataPaths).toEqual([
+      'myPath',
       'myPath.path1',
       'myPath.path2[0].path2'
     ])
