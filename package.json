@@ -22,7 +22,7 @@
     "test:stopReportContainer": "docker stop allure",
     "test:showAllureReport": "allure serve",
     "test:cleanReports": "rm -f -r allure-results/ && rm -f -r allure-report/ && rm -f -r allure-reports",
-    "createTestTicket": "FIXED_RECIPIENT_EMAIL=$0 FIXED_DATA_REQUEST_DATE=$1 FIXED_SUBJECT_LINE=$2 OVERRIDE_EVENT_IDS=$3 DATA_PATHS=$4 ts-node scripts/createAndApproveZendeskTicket.ts"
+    "createTestTicket": "ZENDESK_RECIPIENT_EMAIL=$0 FIXED_DATA_REQUEST_DATE=$1 FIXED_SUBJECT_LINE=$2 OVERRIDE_EVENT_IDS=$3 DATA_PATHS=$4 ts-node scripts/createAndApproveZendeskTicket.ts"
   },
   "dependencies": {
     "@aws-sdk/client-athena": "3.163.0",

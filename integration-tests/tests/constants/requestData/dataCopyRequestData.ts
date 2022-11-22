@@ -63,9 +63,7 @@ export const validRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: process.env.FIXED_RECIPIENT_EMAIL
-          ? process.env.FIXED_RECIPIENT_EMAIL
-          : ZENDESK_RECIPIENT_EMAIL
+        value: ZENDESK_RECIPIENT_EMAIL
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
