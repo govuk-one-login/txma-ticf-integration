@@ -87,7 +87,7 @@ const setZendeskEnvVars = async (
   ])
 
   process.env.ZENDESK_API_KEY = secrets['ZENDESK_API_KEY']
-  process.env.ZENDESK_HOSTNAME = secrets['ZENDESK_HOSTNAME']
+  process.env.ZENDESK_BASE_URL = `https://${secrets['ZENDESK_HOSTNAME']}`
 
   if (!process.env.ZENDESK_WEBHOOK_SECRET_KEY) {
     process.env.ZENDESK_WEBHOOK_SECRET_KEY =
