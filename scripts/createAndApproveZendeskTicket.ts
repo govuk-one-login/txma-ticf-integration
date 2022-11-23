@@ -1,12 +1,12 @@
-import { makeApproveZendeskTicketRequest } from '../integration-tests/utils/zendesk/approveZendeskTicket'
-import { createZendeskTicket } from '../integration-tests/utils/zendesk/createZendeskTicket'
-import { ZendeskRequestData } from '../integration-tests/types/zendeskRequestData'
+import { makeApproveZendeskTicketRequest } from '../integration-tests/tests/utils/zendesk/approveZendeskTicket'
+import { createZendeskTicket } from '../integration-tests/tests/utils/zendesk/createZendeskTicket'
+import { ZendeskRequestData } from '../integration-tests/tests/types/zendeskRequestData'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_NAME,
   ZENDESK_PII_FORM_ID
-} from '../integration-tests/constants/zendeskParameters'
-import { getEnv } from '../integration-tests/utils/helpers'
+} from '../integration-tests/tests/constants/zendeskParameters'
+import { getEnv } from '../integration-tests/tests/utils/helpers'
 
 const generateTicketData = (): ZendeskRequestData => ({
   request: {
@@ -35,7 +35,7 @@ const generateTicketData = (): ZendeskRequestData => ({
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnv('FIXED_RECIPIENT_EMAIL')
+        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
@@ -51,7 +51,7 @@ const generateTicketData = (): ZendeskRequestData => ({
 const createAndApproveTicket = async () => {
   checkEnvironmentVariablesSet([
     'FIXED_SUBJECT_LINE',
-    'FIXED_RECIPIENT_EMAIL',
+    'ZENDESK_RECIPIENT_EMAIL',
     'DATA_PATHS',
     'FIXED_DATA_REQUEST_DATE',
     'OVERRIDE_EVENT_IDS'

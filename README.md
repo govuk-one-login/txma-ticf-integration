@@ -66,13 +66,29 @@ process.env.NOTIFY_API_KEY = '(get from AWS console)'
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
 
-#### Running integration tests against a specific test environment
+#### Running the Integration Tests
 
-```ENV=<<environment>> yarn test:integration (where environment is one of dev, build, and staging).
+To run the entire pack:
+`ENV=<<environment>> yarn test:integration` where environment is one of `dev`, `build`, and `staging`
 
-```
+To run an individual test (suite or test case):
+`ENV=<<>environment> yarn test:integration -t '<description_of_the_testcase_or_suite>'`
 
-`yarn test:integration` runs the integration against the build environment by default
+#### Test Reports
+
+Running the tests would automatically generate allure results xml files under the `allure-results/` folder. To view the allure report locally, first run the tests:
+
+`yarn test:integration`
+
+then:
+
+`yarn test:showAllureReport`
+
+An emailable report format is currently being used to share the report. To generate this:
+
+`yarn test:generateEmailReport`
+
+This will generate the shareable html report file under `allure-reports/`
 
 ### Creating and approving a Zendesk ticket
 
