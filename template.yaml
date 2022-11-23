@@ -834,6 +834,6 @@ Outputs:
     Value:
       !If [
         ApiCustomDomain,
-        '{{resolve:ssm:ZendeskWebhookApiDomainName}}',
+        'https://{{resolve:ssm:ZendeskWebhookApiDomainName}}',
         !Sub 'https://${ZendeskWebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${ZendeskWebhookApi.Stage}'
       ]
