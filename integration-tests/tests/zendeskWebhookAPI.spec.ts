@@ -16,7 +16,6 @@ import {
 import { validApiTestRequestData } from './constants/requestData/webhookAPIRequestData'
 
 const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
-console.log(webhookUrl)
 
 const defaultWebhookRequestData: ZendeskWebhookRequest = {
   zendeskId: '1',
