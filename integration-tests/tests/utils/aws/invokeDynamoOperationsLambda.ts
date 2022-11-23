@@ -12,8 +12,7 @@ export const invokeDynamoOperationsLambda = async (
     Payload: jsonToUint8Array(payload)
   }
   const result = await lambdaClient.send(new InvokeCommand(lambdaInvokeCommand))
-  result.Payload = uint8ArrayToJson(result.Payload)
-  return result
+  return uint8ArrayToJson(result.Payload)
 }
 
 const jsonToUint8Array = (json: DynamoDbOperation) => {
