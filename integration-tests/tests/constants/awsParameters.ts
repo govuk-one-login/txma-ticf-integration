@@ -52,3 +52,6 @@ export const DATA_SENT_TO_QUEUE_MESSAGE =
 export const CLOSE_ZENDESK_TICKET_COMMENT =
   'Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: From Date is in the future, To Date is in the future'
 export const SQS_EVENT_RECEIVED_MESSAGE = 'Handling data request SQS event'
+export const DYNAMO_OPERATIONS_FUNCTION_NAME = getEnv(
+  'DYNAMO_OPERATIONS_FUNCTION_NAME'
+)
