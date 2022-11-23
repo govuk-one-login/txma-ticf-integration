@@ -13,7 +13,11 @@ export const retrieveSecretValue = async (secretId: string, region: string) => {
   }
   try {
     const data = await client.send(new GetSecretValueCommand(command))
-    return JSON.parse(data.SecretString as string)
+    if (typeof data.SecretString === 'string') {
+      return JSON.parse(data.SecretString)
+    } else {
+      throw new Error(`Secret ${secretId} has no value`)
+    }
   } catch (error) {
     throw new Error(`Secret with ARN ${secretId} not found \n${error}`)
   }

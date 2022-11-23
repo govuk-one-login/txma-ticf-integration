@@ -23,6 +23,12 @@ export const retrieveStackOutputs = async (stack: string, region: string) => {
 }
 
 export const getOutputValue = (outputs: Output[], name: string) => {
-  return outputs.find((output) => output.OutputKey === name)
-    ?.OutputValue as string
+  const outputValue = outputs.find(
+    (output) => output.OutputKey === name
+  )?.OutputValue
+  if (typeof outputValue === 'string') {
+    return outputValue
+  } else {
+    throw new Error(`Output ${name} has no value`)
+  }
 }

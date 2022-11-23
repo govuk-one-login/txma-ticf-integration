@@ -11,7 +11,12 @@ export const retrieveSsmParameterValue = async (
 
   try {
     const response = await client.send(command)
-    return response.Parameter?.Value as string
+
+    if (typeof response.Parameter?.Value === 'string') {
+      return response.Parameter?.Value
+    } else {
+      throw new Error(`Parameter ${name} has no value`)
+    }
   } catch (error) {
     throw new Error(`SSM parameter with name ${name} not found. \n${error}`)
   }
