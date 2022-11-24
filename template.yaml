@@ -725,6 +725,50 @@ Resources:
       VersioningConfiguration:
         Status: Enabled
 
+  AnalysisBucketTestPolicy:
+    Type: AWS::S3::BucketPolicy
+    Condition: TestRolePolicy
+    Properties:
+      Bucket: !Ref AnalysisBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Test role S3 access
+            Effect: 'Allow'
+            Action:
+              - s3:DeleteObject*
+              - s3:GetObject*
+              - s3:ListBucket
+              - s3:PutObject*
+            Resource:
+              - !GetAtt AnalysisBucket.Arn
+              - !Sub ${AnalysisBucket.Arn}/*
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+
+  AuditBucketTestPolicy:
+    Type: AWS::S3::BucketPolicy
+    Condition: TestRolePolicy
+    Properties:
+      Bucket: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Test role S3 access
+            Effect: 'Allow'
+            Action:
+              - s3:DeleteObject*
+              - s3:GetObject*
+              - s3:ListBucket
+              - s3:PutObject*
+            Resource:
+              - '{{resolve:ssm:MessageBatchBucketTXMA2Arn}}'
+              - '{{resolve:ssm:MessageBatchBucketTXMA2Arn}}/*'
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
@@ -820,6 +864,23 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+  InitiateAthenaQueryQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Condition: TestRolePolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Sid: Allow
+            Action:
+              - sqs:SendMessage
+            Effect: Allow
+            Resource: !GetAtt InitiateAthenaQueryQueue.Arn
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+      Queues:
+        - !Ref InitiateAthenaQueryQueue
 
 Outputs:
   AnalysisBucketName:
