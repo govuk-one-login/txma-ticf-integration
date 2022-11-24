@@ -7,34 +7,34 @@ import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
 import { invokeDynamoOperationsLambda } from './invokeDynamoOperationsLambda'
 
 export const getValueFromDynamoDB = async (
-  ticketId: string,
+  zendeskId: string,
   attributeName?: string
 ) => {
   return await invokeDynamoOperationsLambda({
     operation: 'GET',
     params: {
-      zendeskId: ticketId,
+      zendeskId,
       ...(attributeName && { attributeName })
     }
   })
 }
 
 export const populateDynamoDBWithTestItemDetails = async (
-  ticketID: string,
+  zendeskId: string,
   itemDetails: DynamoDBItem
 ) => {
   return await invokeDynamoOperationsLambda({
     operation: 'PUT',
     params: {
-      itemToPut: generateDynamoTableEntry(ticketID, itemDetails.ticket)
+      itemToPut: generateDynamoTableEntry(zendeskId, itemDetails.ticket)
     }
   })
 }
 
-export const deleteDynamoDBTestItem = async (ticketID: string) => {
+export const deleteDynamoDBTestItem = async (zendeskId: string) => {
   return await invokeDynamoOperationsLambda({
     operation: 'DELETE',
-    params: { zendeskId: ticketID }
+    params: { zendeskId }
   })
 }
 
@@ -61,87 +61,85 @@ const getFieldValue = (ticketDetails: ItemDetails, fieldID: number) => {
 }
 
 const generateDynamoTableEntry = (
-  ticketId: string,
+  zendeskId: string,
   ticketDetails: ItemDetails
-) => {
-  return {
-    zendeskId: { S: `${ticketId}` },
-    requestInfo: {
-      M: {
-        zendeskId: { S: `${ticketId}` },
-        dateFrom: {
-          S: `${getFieldValue(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
-          )}`
-        },
-        dateTo: {
-          S: `${getFieldValue(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
-          )}`
-        },
-        identifierType: {
-          S: `${getFieldValue(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID
-          )}`
-        },
-        recipientEmail: {
-          S: `${getFieldValue(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL
-          )}`
-        },
-        recipientName: {
-          S: `${getFieldValue(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME
-          )}`
-        },
-        requesterEmail: {
-          S: `${ZENDESK_END_USER_EMAIL}`
-        },
-        requesterName: {
-          S: `${ZENDESK_END_USER_NAME}`
-        },
-        dataPaths: {
-          L: getFieldListValues(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID
-          )
-        },
-        eventIds: {
-          L: getFieldListValues(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID
-          )
-        },
-        sessionIds: {
-          L: getFieldListValues(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_SESSION_ID_LIST_FIELD_ID
-          )
-        },
-        journeyIds: {
-          L: getFieldListValues(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_JOURNEY_ID_LIST_FIELD_ID
-          )
-        },
-        userIds: {
-          L: getFieldListValues(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_USER_ID_LIST_FIELD_ID
-          )
-        },
-        piiTypes: {
-          L: getFieldListValues(
-            ticketDetails,
-            ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID
-          )
-        }
+) => ({
+  zendeskId: { S: `${zendeskId}` },
+  requestInfo: {
+    M: {
+      zendeskId: { S: `${zendeskId}` },
+      dateFrom: {
+        S: `${getFieldValue(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
+        )}`
+      },
+      dateTo: {
+        S: `${getFieldValue(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
+        )}`
+      },
+      identifierType: {
+        S: `${getFieldValue(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID
+        )}`
+      },
+      recipientEmail: {
+        S: `${getFieldValue(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL
+        )}`
+      },
+      recipientName: {
+        S: `${getFieldValue(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME
+        )}`
+      },
+      requesterEmail: {
+        S: `${ZENDESK_END_USER_EMAIL}`
+      },
+      requesterName: {
+        S: `${ZENDESK_END_USER_NAME}`
+      },
+      dataPaths: {
+        L: getFieldListValues(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID
+        )
+      },
+      eventIds: {
+        L: getFieldListValues(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID
+        )
+      },
+      sessionIds: {
+        L: getFieldListValues(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_SESSION_ID_LIST_FIELD_ID
+        )
+      },
+      journeyIds: {
+        L: getFieldListValues(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_JOURNEY_ID_LIST_FIELD_ID
+        )
+      },
+      userIds: {
+        L: getFieldListValues(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_USER_ID_LIST_FIELD_ID
+        )
+      },
+      piiTypes: {
+        L: getFieldListValues(
+          ticketDetails,
+          ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID
+        )
       }
     }
   }
-}
+})
