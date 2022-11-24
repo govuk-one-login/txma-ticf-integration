@@ -33,6 +33,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.163.0"],\
             ["@aws-sdk/client-dynamodb", "npm:3.163.0"],\
             ["@aws-sdk/client-glue", "npm:3.163.0"],\
+            ["@aws-sdk/client-lambda", "npm:3.163.0"],\
             ["@aws-sdk/client-s3", "npm:3.163.0"],\
             ["@aws-sdk/client-s3-control", "npm:3.163.0"],\
             ["@aws-sdk/client-secrets-manager", "npm:3.163.0"],\
@@ -451,6 +452,50 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/util-user-agent-node", "virtual:e8847fa6c93fa12574425aa2fe66729e460ae3df5ebbf6f8e33a7e324c20413213976ccdede71a000c324447e8c4b05c5037424166f87420d602a00b5b18ba3e#npm:3.162.0"],\
             ["@aws-sdk/util-utf8-browser", "npm:3.109.0"],\
             ["@aws-sdk/util-utf8-node", "npm:3.109.0"],\
+            ["tslib", "npm:2.4.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-sdk/client-lambda", [\
+        ["npm:3.163.0", {\
+          "packageLocation": "./.yarn/cache/@aws-sdk-client-lambda-npm-3.163.0-283ca1dbb2-bcf585f44e.zip/node_modules/@aws-sdk/client-lambda/",\
+          "packageDependencies": [\
+            ["@aws-sdk/client-lambda", "npm:3.163.0"],\
+            ["@aws-crypto/sha256-browser", "npm:2.0.0"],\
+            ["@aws-crypto/sha256-js", "npm:2.0.0"],\
+            ["@aws-sdk/client-sts", "npm:3.163.0"],\
+            ["@aws-sdk/config-resolver", "npm:3.163.0"],\
+            ["@aws-sdk/credential-provider-node", "npm:3.163.0"],\
+            ["@aws-sdk/fetch-http-handler", "npm:3.162.0"],\
+            ["@aws-sdk/hash-node", "npm:3.162.0"],\
+            ["@aws-sdk/invalid-dependency", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-content-length", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-host-header", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-logger", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-recursion-detection", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-retry", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-serde", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-signing", "npm:3.163.0"],\
+            ["@aws-sdk/middleware-stack", "npm:3.162.0"],\
+            ["@aws-sdk/middleware-user-agent", "npm:3.162.0"],\
+            ["@aws-sdk/node-config-provider", "npm:3.162.0"],\
+            ["@aws-sdk/node-http-handler", "npm:3.162.0"],\
+            ["@aws-sdk/protocol-http", "npm:3.162.0"],\
+            ["@aws-sdk/smithy-client", "npm:3.162.0"],\
+            ["@aws-sdk/types", "npm:3.162.0"],\
+            ["@aws-sdk/url-parser", "npm:3.162.0"],\
+            ["@aws-sdk/util-base64-browser", "npm:3.109.0"],\
+            ["@aws-sdk/util-base64-node", "npm:3.55.0"],\
+            ["@aws-sdk/util-body-length-browser", "npm:3.154.0"],\
+            ["@aws-sdk/util-body-length-node", "npm:3.55.0"],\
+            ["@aws-sdk/util-defaults-mode-browser", "npm:3.162.0"],\
+            ["@aws-sdk/util-defaults-mode-node", "npm:3.163.0"],\
+            ["@aws-sdk/util-user-agent-browser", "npm:3.162.0"],\
+            ["@aws-sdk/util-user-agent-node", "virtual:e8847fa6c93fa12574425aa2fe66729e460ae3df5ebbf6f8e33a7e324c20413213976ccdede71a000c324447e8c4b05c5037424166f87420d602a00b5b18ba3e#npm:3.162.0"],\
+            ["@aws-sdk/util-utf8-browser", "npm:3.109.0"],\
+            ["@aws-sdk/util-utf8-node", "npm:3.109.0"],\
+            ["@aws-sdk/util-waiter", "npm:3.162.0"],\
             ["tslib", "npm:2.4.0"]\
           ],\
           "linkType": "HARD"\
@@ -5267,6 +5312,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.163.0"],\
             ["@aws-sdk/client-dynamodb", "npm:3.163.0"],\
             ["@aws-sdk/client-glue", "npm:3.163.0"],\
+            ["@aws-sdk/client-lambda", "npm:3.163.0"],\
             ["@aws-sdk/client-s3", "npm:3.163.0"],\
             ["@aws-sdk/client-s3-control", "npm:3.163.0"],\
             ["@aws-sdk/client-secrets-manager", "npm:3.163.0"],\
