@@ -1,6 +1,5 @@
 .yarn/
+.env*
 coverage/
 dist/
-allure-reports/*
-allure-results/*
-allure-report/
+reports/

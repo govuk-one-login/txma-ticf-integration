@@ -4,7 +4,6 @@ export const ZENDESK_ADMIN_EMAIL = getEnv('ZENDESK_ADMIN_EMAIL')
 export const ZENDESK_AGENT_EMAIL = getEnv('ZENDESK_AGENT_EMAIL')
 export const ZENDESK_END_USER_EMAIL = getEnv('ZENDESK_END_USER_EMAIL')
 export const ZENDESK_END_USER_NAME = 'Txma-team2-ticf-analyst-dev'
-export const ZENDESK_RECIPIENT_EMAIL = getEnv('ZENDESK_RECIPIENT_EMAIL')
 export const ZENDESK_RECIPIENT_NAME = 'Test User'
 
 export const ZENDESK_BASE_URL = getEnv('ZENDESK_BASE_URL')

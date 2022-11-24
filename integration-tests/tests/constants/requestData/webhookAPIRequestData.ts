@@ -1,12 +1,12 @@
 import {
   generateRandomNumber,
-  generateZendeskRequestDate
+  generateZendeskRequestDate,
+  getEnv
 } from '../../utils/helpers'
 import { TEST_DATA_DATA_PATHS, TEST_DATA_EVENT_ID } from '../awsParameters'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_PII_FORM_ID,
-  ZENDESK_RECIPIENT_EMAIL,
   ZENDESK_RECIPIENT_NAME
 } from '../zendeskParameters'
 
@@ -37,7 +37,7 @@ export const validApiTestRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_RECIPIENT_EMAIL
+        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,

@@ -5,7 +5,6 @@ import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME,
-  ZENDESK_RECIPIENT_EMAIL,
   ZENDESK_RECIPIENT_NAME
 } from './constants/zendeskParameters'
 import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
@@ -20,7 +19,7 @@ const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
 
 const defaultWebhookRequestData: ZendeskWebhookRequest = {
   zendeskId: '1',
-  recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+  recipientEmail: getEnv('ZENDESK_RECIPIENT_EMAIL'),
   recipientName: ZENDESK_RECIPIENT_NAME,
   requesterEmail: ZENDESK_END_USER_EMAIL,
   requesterName: ZENDESK_END_USER_NAME,

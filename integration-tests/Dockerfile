@@ -32,6 +32,12 @@ COPY --from=builder /usr/local/lib/ /usr/local/lib/
 COPY --from=builder /usr/local/aws-cli/ /usr/local/aws-cli/
 COPY --from=builder /aws-cli-bin/ /usr/local/bin/
 
+RUN apk update && \
+      apk upgrade \
+      apk add bash \
+      apk add --no-cache \
+      bash
+
 WORKDIR /app
 
 COPY package.json yarn.lock  jest.integration.config.ts ./

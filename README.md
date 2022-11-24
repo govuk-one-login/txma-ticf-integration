@@ -37,59 +37,94 @@ Zero installs works because the dependencies are committed via the `.yarn` folde
 
 In order to ensure that dependencies cannot be altered by anything other than Yarn itself, we run `yarn install --check-cache` in the pipeline. This avoids the possibility of malicous users altering any dependency code.
 
-### Test setup
+## Testing
 
-To be able to run the integration tests, an environment file is needed at the root of the project. This should be named `.integration.test-<environment>.env` (where environment is one of `dev`, `build`, and `staging`) and have the following entries (the values should be retrieved as indicated in the placeholders):
+### Setup
+
+The tests can be run against any of the following environments:
+
+- dev
+- build
+- staging
+
+The variables required to run the test are stored in AWS in the following places:
+
+- SSM
+- Secrets Manager
+- Stack Outputs
+
+The following variables can be overriden by setting them as environment variables:
+
+- `STACK_NAME`
+- `ZENDESK_WEBHOOK_SECRET_KEY`
+- `RECIPIENT_EMAIL`
+- `FIXED_DATA_REQUEST_DATE`
+
+Overriding the `STACK_NAME` parameter, which is set in the config file (`integration-tests/jest.integtation.config.ts`), will allow you to point at a dev stack with different stack outputs. SSM parameters and Secrets will remain unchanged. Changing stack may also require you to override the `ZENDESK_WEBHOOK_SECRET_KEY` as well.
+
+If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`.
+
+Additionally, the tests can be run by getting all of their values from a local file. To do this, create a `.env` file in the `integration-tests` folder. There is an example `.env.template` file in the folder that can be copied, but sensitive values will need to be filled in.
+
+If you are unsure of any values ask the tech lead/dev team.
+
+### Running the Integration Tests
+
+To run tests against the environment you will need to be authenticated against the environment you wish to run the tests.
+
+To run the entire pack and pull variables from AWS run the following:
 
 ```
-process.env.ANALYSIS_BUCKET_NAME = '(get from AWS console)'
-process.env.AUDIT_BUCKET_NAME = '(get from AWS console)'
-process.env.AUDIT_REQUEST_DYNAMODB_TABLE = '(get from AWS console)'
-process.env.INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME = '(get from AWS console)'
-process.env.INITIATE_ATHENA_QUERY_QUEUE_URL = '(get from AWS console)'
-process.env.INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME = '(get from AWS console)'
-process.env.PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME = '(get from AWS console)'
-process.env.TEST_DATA_BUCKET_NAME = '(get from AWS console)'
-process.env.ZENDESK_API_KEY = '(check with Test team/Tech lead)'
-process.env.ZENDESK_BASE_URL = '(value in Team Test Confluence)'
-process.env.ZENDESK_WEBHOOK_API_BASE_URL = '(get from AWS console)'
-process.env.ZENDESK_WEBHOOK_SECRET_KEY = '(check with Test team/Tech lead)'
-process.env.ZENDESK_END_USER_EMAIL = '(value in Team Test Confluence)'
-process.env.ZENDESK_END_USER_NAME = '(value in Team Test Confluence)'
-process.env.ZENDESK_RECIPIENT_EMAIL = '(value in Team Test Confluence)'
-process.env.ZENDESK_AGENT_EMAIL = '(value in Team Test Confluence)'
-process.env.ZENDESK_ADMIN_EMAIL = '(value in Team Test Confluence)'
-process.env.SECURE_DOWNLOAD_DYNAMODB_TABLE ='(look in SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME in send-query-results-notification Lambda)'
-process.env.QUERY_RESULTS_SECURE_DOWNLOAD_URL = '(get from AWS console)'
-process.env.NOTIFY_API_KEY = '(get from AWS console)'
-process.env.DYNAMO_OPERATIONS_FUNCTION_NAME = '(get from AWS console)'
+yarn test:integration
 ```
-
-If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
-
-#### Running the Integration Tests
-
-To run the entire pack:
-`ENV=<<environment>> yarn test:integration` where environment is one of `dev`, `build`, and `staging`
 
 To run an individual test (suite or test case):
-`ENV=<<>environment> yarn test:integration -t '<description_of_the_testcase_or_suite>'`
 
-#### Test Reports
+```
+yarn test:integration -t '<description_of_the_testcase_or_suite>'
+```
 
-Running the tests would automatically generate allure results xml files under the `allure-results/` folder. To view the allure report locally, first run the tests:
+To run an individual test file:
 
-`yarn test:integration`
+```
+yarn test:integration /path/to/file.spec.ts
+```
 
-then:
+To override certain variables run:
 
-`yarn test:showAllureReport`
+```
+STACK_NAME=<ANOTHER_STACK> ZENDESK_WEBHOOK_SECRET_KEY=<ANOTHER_SECRET> yarn test:integration
+```
 
-An emailable report format is currently being used to share the report. To generate this:
+If you wish to run the tests with locally defined variables instead of pulling them from AWS, create an `integration-tests/.env` file and run:
 
-`yarn test:generateEmailReport`
+```
+yarn test:integration:dev
+```
 
-This will generate the shareable html report file under `allure-reports/`
+### Test Reports
+
+Running the tests creates a results file in JUnit format at `integration-tests/reports/allure-results`. This file is used to create a report using [Allure](https://docs.qameta.io/allure).
+
+In order to create the report run:
+
+```
+yarn allure
+```
+
+This command uses a Docker Compose file to spin up a local Allure server and generate the report. The server willl detect any changes to the `junit.xml` file (i.e. a new test run) and generate a new version.
+
+To view the report locally, while the server is running, in your browser open:
+
+```
+http://localhost:5252
+```
+
+An emailable version of the report is generated at the following location:
+
+```
+integration-tests/reports/allure-reports/emailable-report-allure-docker-service.html
+```
 
 ### Creating and approving a Zendesk ticket
 

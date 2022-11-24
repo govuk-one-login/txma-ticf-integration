@@ -35,7 +35,7 @@ const generateTicketData = (): ZendeskRequestData => ({
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
+        value: getEnv('FIXED_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
@@ -51,7 +51,7 @@ const generateTicketData = (): ZendeskRequestData => ({
 const createAndApproveTicket = async () => {
   checkEnvironmentVariablesSet([
     'FIXED_SUBJECT_LINE',
-    'ZENDESK_RECIPIENT_EMAIL',
+    'FIXED_RECIPIENT_EMAIL',
     'DATA_PATHS',
     'FIXED_DATA_REQUEST_DATE',
     'OVERRIDE_EVENT_IDS'
