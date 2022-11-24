@@ -27,7 +27,7 @@ import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPref
 import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
 import { getEnv } from './utils/helpers'
 
-describe.skip('Athena Query SQL generation and execution', () => {
+describe('Athena Query SQL generation and execution', () => {
   jest.setTimeout(90000)
 
   describe('Query SQL generation and execution successful', () => {
