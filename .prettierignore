@@ -2,6 +2,7 @@
 *.toml
 .dockerignore
 .editorconfig
+.env*
 .eslintignore
 .gitignore
 .husky
@@ -12,7 +13,5 @@ CODEOWNERS
 coverage/
 Dockerfile
 dist/
+reports/
 yarn.lock
-allure-results/
-allure-reports/
-allure-report/

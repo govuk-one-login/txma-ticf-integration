@@ -1,5 +1,5 @@
 import { ZendeskRequestData } from '../../types/zendeskRequestData'
-import { generateRandomNumber } from '../../utils/helpers'
+import { generateRandomNumber, getEnv } from '../../utils/helpers'
 import {
   END_TO_END_TEST_DATA_PATH,
   END_TO_END_TEST_DATE,
@@ -11,7 +11,6 @@ import {
 import {
   ZendeskFormFieldIDs,
   ZENDESK_PII_FORM_ID,
-  ZENDESK_RECIPIENT_EMAIL,
   ZENDESK_RECIPIENT_NAME
 } from '../zendeskParameters'
 
@@ -42,7 +41,7 @@ export const endToEndFlowRequestDataWithEventId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_RECIPIENT_EMAIL
+        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
@@ -82,7 +81,7 @@ export const endToEndFlowRequestDataWithUserId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_RECIPIENT_EMAIL
+        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
@@ -122,7 +121,7 @@ export const endToEndFlowRequestDataWithSessionId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_RECIPIENT_EMAIL
+        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
@@ -162,7 +161,7 @@ export const endToEndFlowRequestDataWithJourneyId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_RECIPIENT_EMAIL
+        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
@@ -202,7 +201,7 @@ export const endToEndFlowRequestDataNoMatch: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: ZENDESK_RECIPIENT_EMAIL
+        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
