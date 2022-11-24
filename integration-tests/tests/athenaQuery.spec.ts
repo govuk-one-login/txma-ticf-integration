@@ -138,7 +138,7 @@ describe('Athena Query SQL generation and execution', () => {
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
       console.log('Test ticket id: ' + randomTicketId)
       await populateDynamoDBWithTestItemDetails(
-        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
+        AUDIT_REQUEST_DYNAMODB_TABLE,
         randomTicketId,
         dynamoDBItemDataPathAndPIITypes
       )
