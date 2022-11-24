@@ -12,6 +12,7 @@
   "scripts": {
     "allure": "./integration-tests/run-allure.sh",
     "allure:stop": "docker-compose -f integration-tests/docker-compose.allure.yaml down",
+    "allure:report": "cp integration-tests/reports/allure-reports/emailable-report-allure-docker-service.html integration-tests/reports/TxMA-Team2-Test-Report-$(date +%d-%m-%Y).html",
     "build": "tsc --noEmit && ts-node ./esbuild.config.ts",
     "lint": "prettier . --check || exit 1 ; eslint . --max-warnings=0",
     "lint:fix": "prettier . --write ; eslint . --fix",
