@@ -62,6 +62,7 @@ process.env.ZENDESK_ADMIN_EMAIL = '(value in Team Test Confluence)'
 process.env.SECURE_DOWNLOAD_DYNAMODB_TABLE ='(look in SECURE_DOWNLOAD_DYNAMODB_TABLE_NAME in send-query-results-notification Lambda)'
 process.env.QUERY_RESULTS_SECURE_DOWNLOAD_URL = '(get from AWS console)'
 process.env.NOTIFY_API_KEY = '(get from AWS console)'
+process.env.DYNAMO_OPERATIONS_FUNCTION_NAME = '(get from AWS console)'
 ```
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`
