@@ -746,6 +746,9 @@ Resources:
             Principal:
               AWS:
                 - !Ref TestRoleArn
+            Condition:
+              Bool:
+                'aws:SecureTransport': 'true'
 
   AuditBucketTestPolicy:
     Type: AWS::S3::BucketPolicy
@@ -763,11 +766,14 @@ Resources:
               - s3:ListBucket
               - s3:PutObject*
             Resource:
-              - '{{resolve:ssm:MessageBatchBucketTXMA2Arn}}'
-              - '{{resolve:ssm:MessageBatchBucketTXMA2Arn}}/*'
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
             Principal:
               AWS:
                 - !Ref TestRoleArn
+            Condition:
+              Bool:
+                'aws:SecureTransport': 'true'
 
   BatchJobsRole:
     Type: AWS::IAM::Role
@@ -871,7 +877,7 @@ Resources:
     Properties:
       PolicyDocument:
         Statement:
-          - Sid: Allow
+          - Sid: Allow test role send message
             Action:
               - sqs:SendMessage
             Effect: Allow
