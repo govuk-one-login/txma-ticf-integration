@@ -14,6 +14,7 @@ import {
   ANALYSIS_BUCKET_NAME,
   ATHENA_QUERY_DATA_TEST_DATE_PREFIX,
   ATHENA_QUERY_TEST_FILE_NAME,
+  AUDIT_REQUEST_DYNAMODB_TABLE,
   INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP
 } from './constants/awsParameters'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
@@ -46,7 +47,7 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     afterEach(async () => {
-      await deleteDynamoDBTestItem(randomTicketId)
+      await deleteDynamoDBTestItem(AUDIT_REQUEST_DYNAMODB_TABLE, randomTicketId)
       await deleteAuditDataWithPrefix(
         ANALYSIS_BUCKET_NAME,
         `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}`
@@ -56,6 +57,7 @@ describe('Athena Query SQL generation and execution', () => {
     it('Successful Athena processing - requests having only data paths', async () => {
       console.log('Test ticket id: ' + randomTicketId)
       await populateDynamoDBWithTestItemDetails(
+        AUDIT_REQUEST_DYNAMODB_TABLE,
         randomTicketId,
         dynamoDBItemDataPathsOnly
       )
@@ -96,6 +98,7 @@ describe('Athena Query SQL generation and execution', () => {
     it('Successful Athena processing - requests having only PII type', async () => {
       console.log('Test ticket id: ' + randomTicketId)
       await populateDynamoDBWithTestItemDetails(
+        AUDIT_REQUEST_DYNAMODB_TABLE,
         randomTicketId,
         dynamoDBItemPIITypesOnly
       )
@@ -135,6 +138,7 @@ describe('Athena Query SQL generation and execution', () => {
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
       console.log('Test ticket id: ' + randomTicketId)
       await populateDynamoDBWithTestItemDetails(
+        AUDIT_REQUEST_DYNAMODB_TABLE,
         randomTicketId,
         dynamoDBItemDataPathAndPIITypes
       )
