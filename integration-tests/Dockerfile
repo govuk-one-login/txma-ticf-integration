@@ -48,6 +48,7 @@ RUN yarn unplug
 
 WORKDIR /app/integration-tests
 
-RUN chmod +x run-tests.sh
+RUN mv ./run-tests.sh /run-tests.sh
+RUN chmod +x /run-tests.sh
 
-ENTRYPOINT ["./run-tests.sh"]
+ENTRYPOINT ["/run-tests.sh"]
