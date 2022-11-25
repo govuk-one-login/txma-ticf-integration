@@ -2,6 +2,9 @@ import { getEnv } from '../utils/helpers'
 
 export const ANALYSIS_BUCKET_NAME = getEnv('ANALYSIS_BUCKET_NAME')
 export const AUDIT_BUCKET_NAME = getEnv('AUDIT_BUCKET_NAME')
+export const AUDIT_REQUEST_DYNAMODB_TABLE = getEnv(
+  'AUDIT_REQUEST_DYNAMODB_TABLE'
+)
 export const AWS_REGION = 'eu-west-2'
 export const INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP = getEnv(
   'INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'

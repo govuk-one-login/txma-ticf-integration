@@ -7,12 +7,14 @@ import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
 import { invokeDynamoOperationsLambda } from './invokeDynamoOperationsLambda'
 
 export const getValueFromDynamoDB = async (
+  tableName: string,
   zendeskId: string,
   attributeName?: string
 ) => {
   return await invokeDynamoOperationsLambda({
     operation: 'GET',
     params: {
+      tableName,
       zendeskId,
       ...(attributeName && { attributeName })
     }
@@ -20,21 +22,26 @@ export const getValueFromDynamoDB = async (
 }
 
 export const populateDynamoDBWithTestItemDetails = async (
+  tableName: string,
   zendeskId: string,
   itemDetails: DynamoDBItem
 ) => {
   return await invokeDynamoOperationsLambda({
     operation: 'PUT',
     params: {
+      tableName,
       itemToPut: generateDynamoTableEntry(zendeskId, itemDetails.ticket)
     }
   })
 }
 
-export const deleteDynamoDBTestItem = async (zendeskId: string) => {
+export const deleteDynamoDBTestItem = async (
+  tableName: string,
+  zendeskId: string
+) => {
   return await invokeDynamoOperationsLambda({
     operation: 'DELETE',
-    params: { zendeskId }
+    params: { tableName, zendeskId }
   })
 }
 
