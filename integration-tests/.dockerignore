@@ -1,3 +1,4 @@
+.env*
 .yarn/
 !.yarn/cache
 !.yarn/patches
@@ -5,5 +6,7 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
+docker-compose.allure.yaml
 Dockerfile
+reports/
+run-allure.sh
