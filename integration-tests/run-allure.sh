@@ -10,6 +10,7 @@ while ! curl --fail --silent --head http://localhost:5252; do
   sleep 1
 done
 
+# Wait a bit longer so browser doesn't start before JS and CSS ready
 sleep 10
 
 # Open browser at latest report
