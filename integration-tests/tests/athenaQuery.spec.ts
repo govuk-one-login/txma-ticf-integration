@@ -85,7 +85,11 @@ describe('Athena Query SQL generation and execution', () => {
       assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
-      const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
+      const value = await getValueFromDynamoDB(
+        AUDIT_REQUEST_DYNAMODB_TABLE,
+        randomTicketId,
+        'athenaQueryId'
+      )
       expect(value?.athenaQueryId.S).toBeDefined()
 
       const csvRows = await downloadResultsFileAndParseData(randomTicketId)
@@ -125,7 +129,11 @@ describe('Athena Query SQL generation and execution', () => {
       assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
-      const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
+      const value = await getValueFromDynamoDB(
+        AUDIT_REQUEST_DYNAMODB_TABLE,
+        randomTicketId,
+        'athenaQueryId'
+      )
       expect(value?.athenaQueryId.S).toBeDefined()
 
       const csvRows = await downloadResultsFileAndParseData(randomTicketId)
@@ -167,7 +175,11 @@ describe('Athena Query SQL generation and execution', () => {
       assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
-      const value = await getValueFromDynamoDB(randomTicketId, 'athenaQueryId')
+      const value = await getValueFromDynamoDB(
+        AUDIT_REQUEST_DYNAMODB_TABLE,
+        randomTicketId,
+        'athenaQueryId'
+      )
       expect(value?.athenaQueryId.S).toBeDefined()
 
       const csvRows = await downloadResultsFileAndParseData(randomTicketId)
