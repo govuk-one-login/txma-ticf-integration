@@ -36,6 +36,18 @@ module.exports = async () => {
     'MessageBatchBucketTXMA2Name',
     region
   )
+  process.env.AUDIT_REQUEST_DYNAMODB_TABLE = await retrieveSsmParameterValue(
+    'QueryRequestTableName',
+    region
+  )
+  process.env.DYNAMO_OPERATIONS_FUNCTION_NAME = await retrieveSsmParameterValue(
+    'DynamoOperationsFunctionName',
+    region
+  )
+  process.env.INITIATE_ATHENA_QUERY_QUEUE_URL = getOutputValue(
+    stackOutputs,
+    'InitiateAthenaQueryQueueUrl'
+  )
   process.env.INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME = getOutputValue(
     stackOutputs,
     'InitiateAthenaQueryLambdaLogGroupName'
