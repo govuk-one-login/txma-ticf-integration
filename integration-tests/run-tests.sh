@@ -6,10 +6,15 @@
 # TEST_REPORT_DIR - Relative path from current directory to where the test report file should be placed
 # TEST_ENVIRONMENT - The environment the pipeline is running the tests in
 
+# This file needs to be located at the root when running in the container. The path /tests is defined
+# in the Dockerfile.
+cd /test-app || exit 1
+
 yarn test:integration
 
 TESTS_EXIT_CODE=$?
 
+ls -a
 cp reports/allure-results/junit.xml $TEST_REPORT_ABSOLUTE_DIR/junit.xml
 
 if [ $TESTS_EXIT_CODE -ne 0 ]; then

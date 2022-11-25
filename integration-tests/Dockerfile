@@ -37,16 +37,16 @@ RUN apk update && \
       apk add --no-cache \
       bash
 
-WORKDIR /app
+WORKDIR /test-app
 
-COPY package.json yarn.lock tsconfig.json ./
+COPY package.json yarn.lock tsconfig.json .pnp* ./
 COPY integration-tests ./integration-tests
 COPY .yarn ./.yarn
 
 RUN corepack enable
 RUN yarn unplug
 
-WORKDIR /app/integration-tests
+WORKDIR /test-app/integration-tests
 
 RUN mv ./run-tests.sh /run-tests.sh
 RUN chmod +x /run-tests.sh
