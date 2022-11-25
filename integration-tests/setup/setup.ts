@@ -44,6 +44,10 @@ module.exports = async () => {
     'DynamoOperationsFunctionName',
     region
   )
+  process.env.INITIATE_ATHENA_QUERY_QUEUE_URL = getOutputValue(
+    stackOutputs,
+    'InitiateAthenaQueryQueueUrl'
+  )
   process.env.INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME = getOutputValue(
     stackOutputs,
     'InitiateAthenaQueryLambdaLogGroupName'

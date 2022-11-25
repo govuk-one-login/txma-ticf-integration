@@ -891,6 +891,8 @@ Resources:
 Outputs:
   AnalysisBucketName:
     Value: !Ref AnalysisBucket
+  InitiateAthenaQueryQueueUrl:
+    Value: !Ref InitiateAthenaQueryQueue
   InitiateAthenaQueryLambdaLogGroupName:
     Value: !Ref InitiateAthenaQueryLogs
   InitiateDataRequestLambdaLogGroupName:
