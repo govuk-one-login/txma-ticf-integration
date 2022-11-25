@@ -53,14 +53,14 @@ export async function downloadResultsFileAndParseData(
   const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
     ticketId
   )
-  expect(secureDownloadPageUrl.startsWith('https')).toBeTrue
+  expect(secureDownloadPageUrl.startsWith('https')).toBe(true)
 
   const secureDownloadPageHTML = await getSecureDownloadPageHTML(
     secureDownloadPageUrl
   )
 
   const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-  expect(resultsFileS3Link.startsWith('https')).toBeTrue
+  expect(resultsFileS3Link.startsWith('https')).toBe(true)
 
   const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
   console.log(csvData)
