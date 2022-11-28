@@ -36,7 +36,7 @@ Conditions:
       ]
     ]
   TestRoleResources:
-    !And [!Condition TestEnvironment, !Not [!Equals [!Ref TestRoleArn, none]]]
+    !And [Condition: TestEnvironment, !Not [!Equals [!Ref TestRoleArn, none]]]
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
 
