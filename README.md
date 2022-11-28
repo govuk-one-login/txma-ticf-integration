@@ -53,14 +53,11 @@ The variables required to run the test are stored in AWS in the following places
 - Secrets Manager
 - Stack Outputs
 
-The following variables can be overriden by setting them as environment variables:
+Any variables can be overriden by setting them as environment variables when running the tests:
 
-- `STACK_NAME`
-- `ZENDESK_WEBHOOK_SECRET_KEY`
-- `RECIPIENT_EMAIL`
-- `FIXED_DATA_REQUEST_DATE`
+Overriding the `STACK_NAME` parameter, which is set in the config file (`integration-tests/jest.integtation.config.ts`), will allow you to point at a dev stack with different stack outputs. SSM parameters and Secrets defined in other stacks will remain unchanged. However, these can be overriden using environmet variables if they need to change.
 
-Overriding the `STACK_NAME` parameter, which is set in the config file (`integration-tests/jest.integtation.config.ts`), will allow you to point at a dev stack with different stack outputs. SSM parameters and Secrets will remain unchanged. Changing stack may also require you to override the `ZENDESK_WEBHOOK_SECRET_KEY` as well.
+Note: For the dev environment some Secrets or SSM Parameters may be missing since there is no main stack.
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`.
 

@@ -25,33 +25,20 @@ Parameters:
     Description: The ARN of the role that will used for integration tests
     Default: none
 
-Mappings:
-  Environment:
-    dev:
-      DeployDevResources: true
-
-    build:
-      DeployDevResources: false
-
-    staging:
-      DeployDevResources: false
-
-    integration:
-      DeployDevResources: false
-
-    production:
-      DeployDevResources: false
-
 Conditions:
   ApiCustomDomain: !Not [!Equals [!Ref Environment, dev]]
-  DeployDevResources:
-    !Equals [
-      true,
-      !FindInMap [Environment, !Ref Environment, DeployDevResources]
+  DevEnvironment: !Equals [!Ref Environment, dev]
+  TestEnvironment:
+    !Not [
+      !Or [
+        !Equals [!Ref Environment, production],
+        !Equals [!Ref Environment, dev]
+      ]
     ]
+  TestRoleResources:
+    !And [!Condition TestEnvironment, !Not [!Equals [!Ref TestRoleArn, none]]]
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
-  TestRolePolicy: !Not [!Equals [!Ref TestRoleArn, none]]
 
 Globals:
   Function:
@@ -94,7 +81,7 @@ Resources:
           "responseLength": "$context.responseLength"
           }
       Description: API called by Zendesk webhooks to begin automated Athena queries
-      DisableExecuteApiEndpoint: !If [ApiCustomDomain, true, false]
+      DisableExecuteApiEndpoint: !Condition ApiCustomDomain
       EndpointConfiguration:
         Type: REGIONAL
       Name: !Sub ${AWS::StackName}-zendesk-webhook-api
@@ -725,56 +712,6 @@ Resources:
       VersioningConfiguration:
         Status: Enabled
 
-  AnalysisBucketTestPolicy:
-    Type: AWS::S3::BucketPolicy
-    Condition: TestRolePolicy
-    Properties:
-      Bucket: !Ref AnalysisBucket
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: Test role S3 access
-            Effect: 'Allow'
-            Action:
-              - s3:DeleteObject*
-              - s3:GetObject*
-              - s3:ListBucket
-              - s3:PutObject*
-            Resource:
-              - !GetAtt AnalysisBucket.Arn
-              - !Sub ${AnalysisBucket.Arn}/*
-            Principal:
-              AWS:
-                - !Ref TestRoleArn
-            Condition:
-              Bool:
-                'aws:SecureTransport': 'true'
-
-  AuditBucketTestPolicy:
-    Type: AWS::S3::BucketPolicy
-    Condition: TestRolePolicy
-    Properties:
-      Bucket: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: Test role S3 access
-            Effect: 'Allow'
-            Action:
-              - s3:DeleteObject*
-              - s3:GetObject*
-              - s3:ListBucket
-              - s3:PutObject*
-            Resource:
-              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
-              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
-            Principal:
-              AWS:
-                - !Ref TestRoleArn
-            Condition:
-              Bool:
-                'aws:SecureTransport': 'true'
-
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
@@ -831,7 +768,7 @@ Resources:
                   - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
 
   EmptyS3Buckets:
-    Condition: DeployDevResources
+    Condition: DevEnvironment
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: '{{resolve:ssm:EmptyS3BucketsFunctionArn}}'
@@ -871,9 +808,63 @@ Resources:
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
 
+  ############################
+  # Integration Test Resources
+  ############################
+
+  AnalysisBucketTestPolicy:
+    Condition: TestRoleResources
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AnalysisBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Test role S3 access
+            Effect: 'Allow'
+            Action:
+              - s3:DeleteObject*
+              - s3:GetObject*
+              - s3:ListBucket
+              - s3:PutObject*
+            Resource:
+              - !GetAtt AnalysisBucket.Arn
+              - !Sub ${AnalysisBucket.Arn}/*
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+            Condition:
+              Bool:
+                'aws:SecureTransport': 'true'
+
+  AuditBucketTestPolicy:
+    Condition: TestRoleResources
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Test role S3 access
+            Effect: 'Allow'
+            Action:
+              - s3:DeleteObject*
+              - s3:GetObject*
+              - s3:ListBucket
+              - s3:PutObject*
+            Resource:
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+            Condition:
+              Bool:
+                'aws:SecureTransport': 'true'
+
   InitiateAthenaQueryQueuePolicy:
+    Condition: TestRoleResources
     Type: AWS::SQS::QueuePolicy
-    Condition: TestRolePolicy
     Properties:
       PolicyDocument:
         Statement:
@@ -887,6 +878,36 @@ Resources:
                 - !Ref TestRoleArn
       Queues:
         - !Ref InitiateAthenaQueryQueue
+
+  IntegrationTestsAuditBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: tests/AuditBucketName
+      Type: String
+      Value: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
+
+  IntegrationTestsAuditRequestTableNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: tests/QueryRequestTableName
+      Type: String
+      Value: '{{resolve:ssm:QueryRequestTableName}}'
+
+  IntegrationTestsNotifySecretSet:
+    Condition: TestEnvironment
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: tests/NotifySecrets
+      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+
+  IntegrationTestsZendeskecretSet:
+    Condition: TestEnvironment
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: tests/ZendeskSecrets
+      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
 Outputs:
   AnalysisBucketName:
