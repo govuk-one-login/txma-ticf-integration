@@ -883,7 +883,7 @@ Resources:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
     Properties:
-      Name: tests/AuditBucketName
+      Name: /tests/AuditBucketName
       Type: String
       Value: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
 
@@ -891,7 +891,7 @@ Resources:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
     Properties:
-      Name: tests/QueryRequestTableName
+      Name: /tests/QueryRequestTableName
       Type: String
       Value: '{{resolve:ssm:QueryRequestTableName}}'
 
