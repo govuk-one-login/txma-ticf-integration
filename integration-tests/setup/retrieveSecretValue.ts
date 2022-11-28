@@ -19,7 +19,7 @@ export const retrieveSecretValue = async (secretId: string, region: string) => {
       throw new Error(`Secret ${secretId} has no value`)
     }
   } catch (error) {
-    throw new Error(`Secret with ARN ${secretId} not found \n${error}`)
+    throw new Error(`Secret with id ${secretId} not found \n${error}`)
   }
 }
 

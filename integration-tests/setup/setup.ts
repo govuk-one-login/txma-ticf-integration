@@ -12,112 +12,95 @@ declare module global {
   const ZENDESK_END_USER_NAME: string
 }
 
+const region = global.AWS_REGION
+
 module.exports = async () => {
-  const region = global.AWS_REGION
-
-  let stack
-
-  if (process.env.STACK_NAME) {
-    stack = process.env.STACK_NAME
-  } else {
-    stack = global.STACK_NAME
+  const secretMappings = {
+    'tests/ZendeskSecrets': [
+      'ZENDESK_API_KEY',
+      'ZENDESK_HOSTNAME',
+      'ZENDESK_RECIPIENT_EMAIL',
+      'ZENDESK_WEBHOOK_SECRET_KEY'
+    ],
+    'tests/NotifySecrets': ['NOTIFY_API_KEY']
   }
 
-  const stackOutputs = await retrieveStackOutputs(stack, region)
+  const ssmMappings = {
+    AUDIT_BUCKET_NAME: '/tests/AuditBucketName',
+    AUDIT_REQUEST_DYNAMODB_TABLE: '/tests/QueryRequestTableName',
+    DYNAMO_OPERATIONS_FUNCTION_NAME: '/tests/DynamoOperationsFunctionName',
+    TEST_DATA_BUCKET_NAME: '/tests/IntegrationTestDataBucketName'
+  }
 
-  await setZendeskEnvVars('ZendeskSecretSetArn', region)
-  await setNotifyEnvVars('IntegrationTestsNotifySecretSetArn', region)
+  const stackOutputMappings = {
+    ANALYSIS_BUCKET_NAME: 'AnalysisBucketName',
+    INITIATE_ATHENA_QUERY_QUEUE_URL: 'InitiateAthenaQueryQueueUrl',
+    INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME:
+      'InitiateAthenaQueryLambdaLogGroupName',
+    INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME:
+      'InitiateDataRequestLambdaLogGroupName',
+    PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME:
+      'ProcessDataRequestLambdaLogGroupName',
+    ZENDESK_WEBHOOK_API_BASE_URL: 'ZendeskWebhookApiUrl'
+  }
 
-  process.env.ANALYSIS_BUCKET_NAME = getOutputValue(
-    stackOutputs,
-    'AnalysisBucketName'
-  )
-  process.env.AUDIT_BUCKET_NAME = await retrieveSsmParameterValue(
-    'MessageBatchBucketTXMA2Name',
-    region
-  )
-  process.env.AUDIT_REQUEST_DYNAMODB_TABLE = await retrieveSsmParameterValue(
-    'QueryRequestTableName',
-    region
-  )
-  process.env.DYNAMO_OPERATIONS_FUNCTION_NAME = await retrieveSsmParameterValue(
-    'DynamoOperationsFunctionName',
-    region
-  )
-  process.env.INITIATE_ATHENA_QUERY_QUEUE_URL = getOutputValue(
-    stackOutputs,
-    'InitiateAthenaQueryQueueUrl'
-  )
-  process.env.INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME = getOutputValue(
-    stackOutputs,
-    'InitiateAthenaQueryLambdaLogGroupName'
-  )
-  process.env.INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME = getOutputValue(
-    stackOutputs,
-    'InitiateDataRequestLambdaLogGroupName'
-  )
-  process.env.PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME = getOutputValue(
-    stackOutputs,
-    'ProcessDataRequestLambdaLogGroupName'
-  )
-  process.env.TEST_DATA_BUCKET_NAME = await retrieveSsmParameterValue(
-    'IntegrationTestDataBucketName',
-    region
-  )
-  process.env.ZENDESK_ADMIN_EMAIL = global.ZENDESK_ADMIN_EMAIL
-  process.env.ZENDESK_AGENT_EMAIL = global.ZENDESK_AGENT_EMAIL
-  process.env.ZENDESK_END_USER_EMAIL = global.ZENDESK_END_USER_EMAIL
-  process.env.ZENDESK_END_USER_NAME = global.ZENDESK_END_USER_NAME
-  process.env.ZENDESK_WEBHOOK_API_BASE_URL = getOutputValue(
-    stackOutputs,
-    'ZendeskWebhookApiUrl'
-  )
+  const globals = [
+    'ZENDESK_ADMIN_EMAIL',
+    'ZENDESK_AGENT_EMAIL',
+    'ZENDESK_END_USER_EMAIL',
+    'ZENDESK_END_USER_NAME'
+  ]
 
-  if (!process.env.ZENDESK_RECIPIENT_EMAIL) {
-    process.env.ZENDESK_RECIPIENT_EMAIL = await retrieveSsmParameterValue(
-      'IntegrationTestsRecipientEmail',
-      region
+  await setEnvVarsFromSecretsManager(secretMappings)
+  await setEnvVarsFromSsm(ssmMappings)
+  await setEnvVarsFromStackOutputs(stackOutputMappings)
+  setEnvVarsFromJestGlobals(globals)
+}
+
+const setEnvVarsFromSecretsManager = async (secretMappings: {
+  [key: string]: string[]
+}) => {
+  for (const [secretSet, secrets] of Object.entries(secretMappings)) {
+    const secretValues = await retrieveSecretValue(secretSet, region)
+    checkSecretsSet(secretSet, secretValues, secrets)
+
+    secrets.forEach(
+      (secret) =>
+        (process.env[secret] = process.env[secret]
+          ? process.env[secret]
+          : secretValues[secret])
     )
   }
 }
 
-const setZendeskEnvVars = async (
-  zendeskSecretSetArnParameter: string,
-  region: string
-) => {
-  const secretId = await retrieveSsmParameterValue(
-    zendeskSecretSetArnParameter,
-    region
-  )
-
-  const secrets = await retrieveSecretValue(secretId, region)
-
-  checkSecretsSet(secretId, secrets, [
-    'ZENDESK_API_KEY',
-    'ZENDESK_HOSTNAME',
-    'ZENDESK_WEBHOOK_SECRET_KEY'
-  ])
-
-  process.env.ZENDESK_API_KEY = secrets['ZENDESK_API_KEY']
-  process.env.ZENDESK_BASE_URL = `https://${secrets['ZENDESK_HOSTNAME']}`
-
-  if (!process.env.ZENDESK_WEBHOOK_SECRET_KEY) {
-    process.env.ZENDESK_WEBHOOK_SECRET_KEY =
-      secrets['ZENDESK_WEBHOOK_SECRET_KEY']
+const setEnvVarsFromSsm = async (ssmMappings: { [key: string]: string }) => {
+  for (const [k, v] of Object.entries(ssmMappings)) {
+    process.env[k] = process.env[k]
+      ? process.env[k]
+      : await retrieveSsmParameterValue(v, region)
   }
 }
 
-const setNotifyEnvVars = async (
-  zendeskSecretSetArnParameter: string,
-  region: string
-) => {
-  const secretId = await retrieveSsmParameterValue(
-    zendeskSecretSetArnParameter,
-    region
+const setEnvVarsFromStackOutputs = async (stackOutputMappings: {
+  [key: string]: string
+}) => {
+  const stack = process.env.STACK_NAME
+    ? process.env.STACK_NAME
+    : global.STACK_NAME
+  const stackOutputs = await retrieveStackOutputs(stack, region)
+
+  for (const [k, v] of Object.entries(stackOutputMappings)) {
+    process.env[k] = process.env[k]
+      ? process.env[k]
+      : getOutputValue(stackOutputs, v)
+  }
+}
+
+const setEnvVarsFromJestGlobals = (globals: string[]) => {
+  globals.forEach(
+    (v) =>
+      (process.env[v] = process.env[v]
+        ? process.env[v]
+        : global[v as keyof typeof global])
   )
-  const secrets = await retrieveSecretValue(secretId, region)
-
-  checkSecretsSet(secretId, secrets, ['NOTIFY_API_KEY'])
-
-  process.env.NOTIFY_API_KEY = secrets['NOTIFY_API_KEY']
 }
