@@ -81,7 +81,7 @@ Resources:
           "responseLength": "$context.responseLength"
           }
       Description: API called by Zendesk webhooks to begin automated Athena queries
-      DisableExecuteApiEndpoint: !Condition ApiCustomDomain
+      DisableExecuteApiEndpoint: !If [ApiCustomDomain, true, false]
       EndpointConfiguration:
         Type: REGIONAL
       Name: !Sub ${AWS::StackName}-zendesk-webhook-api
