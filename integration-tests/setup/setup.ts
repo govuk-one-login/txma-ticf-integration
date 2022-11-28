@@ -13,23 +13,26 @@ declare module global {
 }
 
 const region = global.AWS_REGION
+const stack = process.env.STACK_NAME
+  ? process.env.STACK_NAME
+  : global.STACK_NAME
 
 module.exports = async () => {
   const secretMappings = {
-    'tests/ZendeskSecrets': [
+    [`tests/${stack}/ZendeskSecrets`]: [
       'ZENDESK_API_KEY',
       'ZENDESK_HOSTNAME',
       'ZENDESK_RECIPIENT_EMAIL',
       'ZENDESK_WEBHOOK_SECRET_KEY'
     ],
-    'tests/NotifySecrets': ['NOTIFY_API_KEY']
+    [`tests/${stack}/NotifySecrets`]: ['NOTIFY_API_KEY']
   }
 
   const ssmMappings = {
-    AUDIT_BUCKET_NAME: '/tests/AuditBucketName',
-    AUDIT_REQUEST_DYNAMODB_TABLE: '/tests/QueryRequestTableName',
-    DYNAMO_OPERATIONS_FUNCTION_NAME: '/tests/DynamoOperationsFunctionName',
-    TEST_DATA_BUCKET_NAME: '/tests/IntegrationTestDataBucketName'
+    AUDIT_BUCKET_NAME: `/tests/${stack}/AuditBucketName`,
+    AUDIT_REQUEST_DYNAMODB_TABLE: `/tests/${stack}/QueryRequestTableName`,
+    DYNAMO_OPERATIONS_FUNCTION_NAME: `/tests/${stack}/DynamoOperationsFunctionName`,
+    TEST_DATA_BUCKET_NAME: `/tests/${stack}/IntegrationTestDataBucketName`
   }
 
   const stackOutputMappings = {
@@ -53,7 +56,7 @@ module.exports = async () => {
 
   await setEnvVarsFromSecretsManager(secretMappings)
   await setEnvVarsFromSsm(ssmMappings)
-  await setEnvVarsFromStackOutputs(stackOutputMappings)
+  await setEnvVarsFromStackOutputs(stack, stackOutputMappings)
   setEnvVarsFromJestGlobals(globals)
 }
 
@@ -81,12 +84,12 @@ const setEnvVarsFromSsm = async (ssmMappings: { [key: string]: string }) => {
   }
 }
 
-const setEnvVarsFromStackOutputs = async (stackOutputMappings: {
-  [key: string]: string
-}) => {
-  const stack = process.env.STACK_NAME
-    ? process.env.STACK_NAME
-    : global.STACK_NAME
+const setEnvVarsFromStackOutputs = async (
+  stack: string,
+  stackOutputMappings: {
+    [key: string]: string
+  }
+) => {
   const stackOutputs = await retrieveStackOutputs(stack, region)
 
   for (const [k, v] of Object.entries(stackOutputMappings)) {

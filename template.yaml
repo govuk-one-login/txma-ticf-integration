@@ -883,7 +883,7 @@ Resources:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
     Properties:
-      Name: /tests/AuditBucketName
+      Name: !Sub /tests/${AWS::StackName}/AuditBucketName
       Type: String
       Value: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
 
@@ -891,22 +891,38 @@ Resources:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
     Properties:
-      Name: /tests/QueryRequestTableName
+      Name: !Sub /tests/${AWS::StackName}/QueryRequestTableName
       Type: String
       Value: '{{resolve:ssm:QueryRequestTableName}}'
+
+  IntegrationTestsDynamoOperationsFunctionNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/DynamoOperationsFunctionName
+      Type: String
+      Value: '{{resolve:ssm:/tests/DynamoOperationsFunctionName}}'
+
+  IntegrationTestDataBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/IntegrationTestDataBucketName
+      Type: String
+      Value: '{{resolve:ssm:/tests/IntegrationTestDataBucketName}}'
 
   IntegrationTestsNotifySecretSet:
     Condition: TestEnvironment
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: tests/NotifySecrets
+      Name: !Sub tests/${AWS::StackName}/NotifySecrets
       KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
   IntegrationTestsZendeskecretSet:
     Condition: TestEnvironment
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: tests/ZendeskSecrets
+      Name: !Sub tests/${AWS::StackName}/ZendeskSecrets
       KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
 Outputs:
