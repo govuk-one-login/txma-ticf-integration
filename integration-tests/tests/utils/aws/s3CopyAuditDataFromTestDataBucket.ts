@@ -17,7 +17,7 @@ export const copyAuditDataFromTestDataBucket = async (
   const command = new CopyObjectCommand(input)
 
   try {
-    return s3Client.send(command)
+    return await s3Client.send(command)
   } catch (error) {
     throw new Error(
       `Failed to copy from ${input.CopySource} to bucket ${targetBucket}\n${error}`

@@ -40,7 +40,7 @@ export const deleteAuditDataWithPrefix = async (
   const deleteObjectsCommand = new DeleteObjectsCommand(deleteObjectsInput)
 
   try {
-    return s3Client.send(deleteObjectsCommand)
+    return await s3Client.send(deleteObjectsCommand)
   } catch (error) {
     throw new Error(`Failed to delete data in bucket ${bucket}\n${error}`)
   }
