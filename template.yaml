@@ -912,14 +912,6 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/DynamoOperationsFunctionName}}'
 
-  IntegrationTestsDynamoOperationsFunctionRoleNameParameter:
-    Condition: TestEnvironment
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: !Sub /tests/${AWS::StackName}/DynamoOperationsFunctionRoleName
-      Type: String
-      Value: '{{resolve:ssm:/tests/DynamoOperationsFunctionRoleName}}'
-
   IntegrationTestDataBucketNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
