@@ -868,7 +868,6 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt IntegrationTestsDynamoOperationsFunctionNameParameter.Value
-      FunctionUrlAuthType: AWS_IAM
       Principal: !Ref TestRoleArn
 
   InitiateAthenaQueryQueuePolicy:
