@@ -14,10 +14,17 @@ export const deleteAuditDataWithPrefix = async (
     Prefix: prefix
   }
   const listObjectsCommand = new ListObjectsV2Command(listObjectsInput)
-  const listObjectsResponse = await s3Client.send(listObjectsCommand)
-  const objects = listObjectsResponse.Contents
 
-  if (!objects || objects?.length === 0) return
+  let objects
+
+  try {
+    const listObjectsResponse = await s3Client.send(listObjectsCommand)
+    objects = listObjectsResponse.Contents
+
+    if (!objects || objects?.length === 0) return
+  } catch (error) {
+    throw new Error(`Failed to list objects in bucket ${bucket}\n${error}`)
+  }
 
   const deleteObjectsInput = {
     Bucket: bucket,
@@ -30,6 +37,11 @@ export const deleteAuditDataWithPrefix = async (
     deleteObjectsInput.Delete?.Objects?.push({ Key })
   })
 
-  const deleteObjectscommand = new DeleteObjectsCommand(deleteObjectsInput)
-  return await s3Client.send(deleteObjectscommand)
+  const deleteObjectsCommand = new DeleteObjectsCommand(deleteObjectsInput)
+
+  try {
+    return await s3Client.send(deleteObjectsCommand)
+  } catch (error) {
+    throw new Error(`Failed to delete data in bucket ${bucket}\n${error}`)
+  }
 }
