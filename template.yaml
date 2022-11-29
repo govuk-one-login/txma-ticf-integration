@@ -862,6 +862,15 @@ Resources:
               Bool:
                 'aws:SecureTransport': 'true'
 
+  DynamoOperationsLambdaPolicy:
+    Condition: TestRoleResources
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt IntegrationTestsDynamoOperationsFunctionNameParameter.Value
+      FunctionUrlAuthType: AWS_IAM
+      Principal: !Ref TestRoleArn
+
   InitiateAthenaQueryQueuePolicy:
     Condition: TestRoleResources
     Type: AWS::SQS::QueuePolicy
@@ -911,6 +920,14 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/IntegrationTestDataBucketName}}'
 
+  IntegrationTestDataBucketArnParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/IntegrationTestDataBucketArn
+      Type: String
+      Value: '{{resolve:ssm:/tests/IntegrationTestDataBucketArn}}'
+
   IntegrationTestsNotifySecretSet:
     Condition: TestEnvironment
     Type: AWS::SecretsManager::Secret
@@ -924,6 +941,29 @@ Resources:
     Properties:
       Name: !Sub tests/${AWS::StackName}/ZendeskSecrets
       KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+
+  TestDataBucketTestPolicy:
+    Condition: TestRoleResources
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AnalysisBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Test role S3 access
+            Effect: 'Allow'
+            Action:
+              - s3:GetObject*
+              - s3:ListBucket
+            Resource:
+              - !GetAtt IntegrationTestDataBucketArnParameter.Value
+              - !Sub ${IntegrationTestDataBucketArnParameter.Value}/*
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+            Condition:
+              Bool:
+                'aws:SecureTransport': 'true'
 
 Outputs:
   AnalysisBucketName:
