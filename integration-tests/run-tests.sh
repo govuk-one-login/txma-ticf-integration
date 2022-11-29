@@ -14,7 +14,7 @@ yarn test:integration
 
 TESTS_EXIT_CODE=$?
 
-cp reports/allure-results/junit.xml $TEST_REPORT_ABSOLUTE_DIR/junit.xml
+cp integration-tests/reports/allure-results/junit.xml $TEST_REPORT_ABSOLUTE_DIR/junit.xml
 
 if [ $TESTS_EXIT_CODE -ne 0 ]; then
   exit 1
