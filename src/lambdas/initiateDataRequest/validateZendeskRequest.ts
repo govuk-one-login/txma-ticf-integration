@@ -7,6 +7,7 @@ import {
   mapSpaceSeparatedStringToList
 } from '../../utils/helpers'
 import { PII_TYPES_DATA_PATHS_MAP } from '../../constants/athenaSqlMapConstants'
+import { IdentifierTypes } from '../../types/dataRequestParams'
 
 const IDENTIFIERS = ['event_id', 'session_id', 'journey_id', 'user_id']
 
@@ -37,6 +38,9 @@ export const validateZendeskRequest = async (
     ? dataPathsList.every((dataPath) => dataPathFormatCorrect(dataPath))
     : true
 
+  const sanitisedIdentifierType: IdentifierTypes = sanitiseIdentifierType(
+    data.identifierType
+  )
   const fieldValidation = [
     {
       message: 'Recipient email format invalid',
@@ -55,20 +59,21 @@ export const validateZendeskRequest = async (
     {
       message: 'At least one session id should be provided',
       isValid:
-        data.identifierType != 'session_id' || data.sessionIds?.length > 0
+        sanitisedIdentifierType != 'session_id' || data.sessionIds?.length > 0
     },
     {
       message: 'At least one journey id should be provided',
       isValid:
-        data.identifierType != 'journey_id' || data.journeyIds?.length > 0
+        sanitisedIdentifierType != 'journey_id' || data.journeyIds?.length > 0
     },
     {
       message: 'At least one event id should be provided',
-      isValid: data.identifierType != 'event_id' || data.eventIds?.length > 0
+      isValid:
+        sanitisedIdentifierType != 'event_id' || data.eventIds?.length > 0
     },
     {
       message: 'At least one user id should be provided',
-      isValid: data.identifierType != 'user_id' || data.userIds?.length > 0
+      isValid: sanitisedIdentifierType != 'user_id' || data.userIds?.length > 0
     },
     {
       message: 'Recipient name is missing',
@@ -106,7 +111,7 @@ export const validateZendeskRequest = async (
     },
     {
       message: 'Identifier type is invalid',
-      isValid: IDENTIFIERS.includes(data.identifierType)
+      isValid: IDENTIFIERS.includes(sanitisedIdentifierType)
     },
     {
       message: 'Invalid data in PiiTypes',
@@ -148,7 +153,7 @@ export const validateZendeskRequest = async (
       userIds: mapSpaceSeparatedStringToList(data.userIds),
       piiTypes: mapSpaceSeparatedStringToList(data.piiTypes),
       dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
-      identifierType: data.identifierType,
+      identifierType: sanitisedIdentifierType,
       recipientEmail: data.recipientEmail,
       recipientName: data.recipientName,
       requesterEmail: data.requesterEmail,
@@ -156,6 +161,13 @@ export const validateZendeskRequest = async (
     },
     isValid
   }
+}
+
+const sanitiseIdentifierType = (rawIdentifierType: string): IdentifierTypes => {
+  return (rawIdentifierType ?? '').replace(
+    'pii_identifier_',
+    ''
+  ) as IdentifierTypes
 }
 
 const dateFormatCorrect = (dateString: string) => {

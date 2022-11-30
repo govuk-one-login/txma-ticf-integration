@@ -345,7 +345,6 @@ describe('match zendesk ticket details', () => {
     ['recipientName', 'not my name'],
     ['requesterEmail', 'notmyemail@example.gov.uk'],
     ['requesterName', 'not my name'],
-    ['identifierType', '123456789'],
     ['dataPaths', ['123456789']],
     ['dateFrom', '123456789'],
     ['dateTo', '123456789'],

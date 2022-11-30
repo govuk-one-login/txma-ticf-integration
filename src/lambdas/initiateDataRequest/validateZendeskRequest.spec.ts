@@ -158,6 +158,62 @@ describe('validateZendeskRequest', () => {
     runValidationWithInvalidRequestBody('hello')
   })
 
+  it.each([
+    {
+      rawIdentifierType: 'pii_identifier_event_id',
+      identifierType: 'event_id'
+    },
+    {
+      rawIdentifierType: 'pii_identifier_session_id',
+      identifierType: 'session_id'
+    },
+    {
+      rawIdentifierType: 'pii_identifier_journey_id',
+      identifierType: 'journey_id'
+    },
+    { rawIdentifierType: 'pii_identifier_user_id', identifierType: 'user_id' }
+  ])(
+    'should accept %p as identifierType',
+    async (parameters: {
+      rawIdentifierType: string
+      identifierType: string
+    }) => {
+      const testRequest = {
+        zendeskId: '123',
+        recipientEmail: 'myname@somedomain.gov.uk',
+        recipientName: 'my resultsname',
+        requesterEmail: 'myname@somedomain.gov.uk',
+        requesterName: 'my resultsname',
+        dateFrom: '2021-08-01',
+        dateTo: '2021-08-01',
+        eventIds: '',
+        sessionIds: '',
+        journeyIds: '',
+        userIds: '',
+        piiTypes: 'dob name passport_number',
+        dataPaths: 'myPath1.path',
+        identifierType: parameters.rawIdentifierType
+      }
+
+      const identifierTypeToObjectKeyMapping: { [key: string]: string } = {
+        pii_identifier_event_id: 'eventIds',
+        pii_identifier_journey_id: 'journeyIds',
+        pii_identifier_session_id: 'sessionIds',
+        pii_identifier_user_id: 'userIds'
+      }
+      const identifierObjectKey =
+        identifierTypeToObjectKeyMapping[parameters.rawIdentifierType]
+
+      const validationResult = await validateZendeskRequest(
+        JSON.stringify({ ...testRequest, [identifierObjectKey]: 'id1 id2 id3' })
+      )
+      expect(validationResult.isValid).toBe(true)
+      expect(validationResult.dataRequestParams?.identifierType).toEqual(
+        parameters.identifierType
+      )
+    }
+  )
+
   it('should parse data into response if request data is valid', async () => {
     const request = buildValidRequestBodyWithIds(
       'session_id',
@@ -229,6 +285,22 @@ describe('validateZendeskRequest', () => {
       'At least one session id should be provided'
     )
   })
+
+  it.each([undefined, '', 'some_type'])(
+    'should return an invalid response if request contains an invalid identifierType',
+    async (identifierType: string | undefined) => {
+      const requestBody = buildValidRequestBody()
+      requestBody.identifierType = identifierType as IdentifierTypes
+      requestBody.sessionIds = ''
+      const validationResult = await validateZendeskRequest(
+        JSON.stringify(requestBody)
+      )
+      expect(validationResult.isValid).toEqual(false)
+      expect(validationResult.validationMessage).toContain(
+        'Identifier type is invalid'
+      )
+    }
+  )
 
   it('should return an invalid response if request does not contain journeyIds when required', async () => {
     const requestBody = buildValidRequestBody()

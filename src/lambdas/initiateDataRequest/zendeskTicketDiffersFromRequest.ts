@@ -90,10 +90,6 @@ const ticketAndRequestDetailsDiffer = (
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_EVENT_IDS')
   ) as string[]
-  const ticketIdentifierType = getZendeskCustomFieldValue(
-    ticketDetails,
-    getEnvAsNumber('ZENDESK_FIELD_ID_IDENTIFIER_TYPE')
-  ) as string | null
   const ticketJourneyIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_JOURNEY_IDS')
@@ -138,8 +134,6 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('dateTo')
   if (!matchArrayParams(ticketEventIds, requestParams.eventIds))
     unmatchedParameters.push('eventIds')
-  if (!matchStringParams(ticketIdentifierType, requestParams.identifierType))
-    unmatchedParameters.push('identifierType')
   if (!matchArrayParams(ticketJourneyIds, requestParams.journeyIds))
     unmatchedParameters.push('journeyIds')
   if (!matchArrayParams(ticketPiiTypes, requestParams.piiTypes))
