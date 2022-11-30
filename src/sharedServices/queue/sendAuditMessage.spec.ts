@@ -1,7 +1,7 @@
 import { when } from 'jest-when'
 import { ErrorType } from '../../types/audit/auditEventDetails'
 import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRequestDetails'
-import { currentDateEpochMilliseconds } from '../../utils/currentDateEpochMilliseconds'
+import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import {
   MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL,
   TEST_DATE_FROM,
@@ -23,11 +23,11 @@ jest.mock('./sendSqsMessage', () => ({
   sendSqsMessage: jest.fn()
 }))
 
-jest.mock('../../utils/currentDateEpochMilliseconds', () => ({
-  currentDateEpochMilliseconds: jest.fn()
+jest.mock('../../utils/currentDateEpochSeconds', () => ({
+  currentDateEpochSeconds: jest.fn()
 }))
 
-const testTimeStamp = Date.now()
+const TEST_TIMESTAMP = 1669811435
 
 const errorPrefix = 'An error occurred while sending message to audit queue: '
 const errorMessage = 'Error sending message to queue'
@@ -39,7 +39,7 @@ const givenSendSqsError = () => {
 
 describe('sendAuditMessage', () => {
   beforeEach(() => {
-    when(currentDateEpochMilliseconds).mockReturnValue(testTimeStamp)
+    when(currentDateEpochSeconds).mockReturnValue(TEST_TIMESTAMP)
     jest.spyOn(global.console, 'log')
     jest.spyOn(global.console, 'error')
   })
@@ -64,7 +64,7 @@ describe('sendAuditMessage', () => {
       dataPaths: ''
     }
     const testAuditDataRequestEvent = {
-      timestamp: testTimeStamp,
+      timestamp: TEST_TIMESTAMP,
       event_name: 'TXMA_AUDIT_QUERY_DATA_REQUEST',
       component_id: 'TXMA',
       restricted: {
@@ -120,7 +120,7 @@ describe('sendAuditMessage', () => {
       errorDescription: string
     ) => {
       return {
-        timestamp: testTimeStamp,
+        timestamp: TEST_TIMESTAMP,
         event_name: 'TXMA_AUDIT_QUERY_ILLEGAL_REQUEST',
         component_id: 'TXMA',
         extensions: {
@@ -182,7 +182,7 @@ describe('sendAuditMessage', () => {
 
   describe('sendQueryOutputGeneratedAuditMessage', () => {
     const testQueryOutputGeneratedAuditMessageDetails = {
-      timestamp: testTimeStamp,
+      timestamp: TEST_TIMESTAMP,
       event_name: 'TXMA_AUDIT_QUERY_OUTPUT_GENERATED',
       component_id: 'TXMA',
       extensions: {
