@@ -207,7 +207,6 @@ describe('validateZendeskRequest', () => {
       const validationResult = await validateZendeskRequest(
         JSON.stringify({ ...testRequest, [identifierObjectKey]: 'id1 id2 id3' })
       )
-      console.log(validationResult)
       expect(validationResult.isValid).toBe(true)
       expect(validationResult.dataRequestParams?.identifierType).toEqual(
         parameters.identifierType
