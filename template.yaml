@@ -32,7 +32,7 @@ Conditions:
     !Not [
       !Or [
         !Equals [!Ref Environment, production],
-        !Equals [!Ref Environment, dev]
+        !Equals [!Ref Environment, integration]
       ]
     ]
   TestRoleResources:
