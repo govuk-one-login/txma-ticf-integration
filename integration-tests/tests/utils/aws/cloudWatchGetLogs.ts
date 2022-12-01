@@ -51,7 +51,7 @@ const getLogStreams = async (logGroupName: string) => {
     logGroupName: logGroupName,
     orderBy: 'LastEventTime',
     descending: true,
-    limit: 5
+    limit: 15
   }
   const command = new DescribeLogStreamsCommand(input)
   const response = await cloudWatchLogsClient.send(command)
