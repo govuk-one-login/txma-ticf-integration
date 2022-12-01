@@ -25,6 +25,7 @@ const config: Config.InitialOptions = {
   ],
   setupFiles: ['<rootDir>/setup/setup.ts'],
   testPathIgnorePatterns: ['/src/'],
+  testTimeout: 120000,
   verbose: true
 }
 

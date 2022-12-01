@@ -23,8 +23,6 @@ import { getZendeskTicket } from './utils/zendesk/getZendeskTicket'
 import { assertZendeskCommentPresent } from './utils/zendesk/zendeskTicketComments'
 
 describe('Invalid requests should not start a data copy', () => {
-  jest.setTimeout(30000)
-
   describe('invalid recipient email', () => {
     let ticketId: string
 

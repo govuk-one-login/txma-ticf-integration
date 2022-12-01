@@ -29,8 +29,6 @@ import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPref
 import { appendRandomIdToFilename } from './utils/helpers'
 
 describe('Data should be copied to analysis bucket', () => {
-  jest.setTimeout(90000)
-
   const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'
 
   const STANDARD_TIER_OBJECTS_TO_COPY_MESSAGE =

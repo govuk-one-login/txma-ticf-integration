@@ -30,8 +30,6 @@ const NOTHING_TO_COPY_MESSAGE =
 const DATA_AVAILABLE_MESSAGE = 'All data available, queuing Athena query'
 
 describe('Data should not be copied to analysis bucket', () => {
-  jest.setTimeout(60000)
-
   describe('valid requests for no data copy - analysis bucket empty', () => {
     let ticketId: string
 
