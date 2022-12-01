@@ -29,8 +29,6 @@ import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAn
 import { getEnv } from './utils/helpers'
 
 describe('Athena Query SQL generation and execution', () => {
-  jest.setTimeout(90000)
-
   describe('Query SQL generation and execution successful', () => {
     let randomTicketId: string
     beforeEach(async () => {

@@ -20,7 +20,6 @@ import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAn
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 
 describe('Query results generated', () => {
-  jest.setTimeout(120000)
   let zendeskId: string
 
   beforeEach(async () => {
