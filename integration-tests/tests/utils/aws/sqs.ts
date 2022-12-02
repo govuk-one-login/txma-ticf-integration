@@ -1,14 +1,9 @@
-import { SendMessageCommand } from '@aws-sdk/client-sqs'
-import { sqsClient } from './sqsClient'
+import { getEnv } from '../helpers'
+import { invokeLambdaFunction } from './invokeLambdaFunction'
 
-export const addMessageToQueue = async (message: string, queueURL: string) => {
-  const queueMessageParams = {
-    MessageBody: message,
-    QueueUrl: queueURL
-  }
-
-  const response = await sqsClient.send(
-    new SendMessageCommand(queueMessageParams)
-  )
-  expect(response.MessageId).toBeDefined()
+export const addMessageToQueue = async (message: string, queueUrl: string) => {
+  return invokeLambdaFunction(getEnv('SQS_OPERATIONS_FUNCTION_NAME'), {
+    message: message,
+    queueUrl: queueUrl
+  })
 }
