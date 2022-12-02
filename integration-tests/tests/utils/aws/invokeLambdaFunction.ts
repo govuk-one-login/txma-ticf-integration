@@ -1,21 +1,22 @@
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda'
 import { AWS_REGION } from '../../constants/awsParameters'
 import { DynamoDbOperation } from '../../types/dynamoDbOperations'
-import { getEnv } from '../helpers'
+import { SqsMessage } from '../../types/sqsMessage'
 
-export const invokeDynamoOperationsLambda = async (
-  payload: DynamoDbOperation
+export const invokeLambdaFunction = async (
+  functionName: string,
+  payload: DynamoDbOperation | SqsMessage
 ) => {
-  const lambdaClient = new LambdaClient({ region: AWS_REGION })
-  const lambdaInvokeCommand = {
-    FunctionName: getEnv('DYNAMO_OPERATIONS_FUNCTION_NAME'),
+  const client = new LambdaClient({ region: AWS_REGION })
+  const input = {
+    FunctionName: functionName,
     Payload: jsonToUint8Array(payload)
   }
-  const result = await lambdaClient.send(new InvokeCommand(lambdaInvokeCommand))
+  const result = await client.send(new InvokeCommand(input))
   return uint8ArrayToJson(result.Payload)
 }
 
-const jsonToUint8Array = (json: DynamoDbOperation) => {
+const jsonToUint8Array = (json: DynamoDbOperation | SqsMessage) => {
   const str = JSON.stringify(json, null, 0)
   const ret = new Uint8Array(str.length)
 

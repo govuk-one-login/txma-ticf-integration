@@ -4,14 +4,15 @@ import {
   ZENDESK_END_USER_NAME
 } from '../../constants/zendeskParameters'
 import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
-import { invokeDynamoOperationsLambda } from './invokeDynamoOperationsLambda'
+import { getEnv } from '../helpers'
+import { invokeLambdaFunction } from './invokeLambdaFunction'
 
 export const getValueFromDynamoDB = async (
   tableName: string,
   zendeskId: string,
   attributeName?: string
 ) => {
-  return await invokeDynamoOperationsLambda({
+  return await invokeLambdaFunction(getEnv('DYNAMO_OPERATIONS_FUNCTION_NAME'), {
     operation: 'GET',
     params: {
       tableName,
@@ -26,7 +27,7 @@ export const populateDynamoDBWithTestItemDetails = async (
   zendeskId: string,
   itemDetails: DynamoDBItem
 ) => {
-  return await invokeDynamoOperationsLambda({
+  return await invokeLambdaFunction(getEnv('DYNAMO_OPERATIONS_FUNCTION_NAME'), {
     operation: 'PUT',
     params: {
       tableName,
@@ -39,7 +40,7 @@ export const deleteDynamoDBTestItem = async (
   tableName: string,
   zendeskId: string
 ) => {
-  return await invokeDynamoOperationsLambda({
+  return await invokeLambdaFunction(getEnv('DYNAMO_OPERATIONS_FUNCTION_NAME'), {
     operation: 'DELETE',
     params: { tableName, zendeskId }
   })
