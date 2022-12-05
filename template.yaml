@@ -949,6 +949,14 @@ Resources:
       Name: !Sub tests/${AWS::StackName}/ZendeskSecrets
       KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
+  SqsOperationsLambdaPolicy:
+    Condition: TestRoleResources
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt IntegrationTestsSqsOperationsFunctionNameParameter.Value
+      Principal: !Ref TestRoleArn
+
   TestDataBucketTestPolicy:
     Condition: TestRoleResources
     Type: AWS::S3::BucketPolicy
