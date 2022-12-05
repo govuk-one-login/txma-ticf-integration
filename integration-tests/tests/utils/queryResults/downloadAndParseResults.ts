@@ -27,20 +27,8 @@ export const retrieveS3LinkFromHtml = (htmlBody: string): string => {
   const urlMatch = contentAttribute.match(/url=(.*)/)
   const url = urlMatch ? urlMatch[1] : undefined
   expect(url).toBeDefined()
-  console.log('S3 URL: ' + url)
-  return url as string
-}
 
-export const downloadResultsCSVFromLink = async (
-  s3Link: string
-): Promise<string> => {
-  try {
-    const response = await axios({ url: s3Link, method: 'GET' })
-    return response.data
-  } catch (error) {
-    console.log(error)
-    throw 'Error downloading results csv from S3 link'
-  }
+  return url as string
 }
 
 export async function downloadResultsFileAndParseData(
@@ -63,9 +51,17 @@ export async function downloadResultsFileAndParseData(
   expect(resultsFileS3Link.startsWith('https')).toBe(true)
 
   const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-  console.log(csvData)
-
   const csvRows = CSV.parse(csvData, { output: 'objects' })
-  console.log(csvRows)
+
   return csvRows
+}
+
+const downloadResultsCSVFromLink = async (s3Link: string): Promise<string> => {
+  try {
+    const response = await axios({ url: s3Link, method: 'GET' })
+    return response.data
+  } catch (error) {
+    console.log(error)
+    throw 'Error downloading results csv from S3 link'
+  }
 }
