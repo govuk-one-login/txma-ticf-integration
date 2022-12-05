@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - integration-tests/*
+      - integration-tests/**
   workflow_dispatch:
     branches:
       - main
