@@ -3,7 +3,8 @@ import {
   DescribeLogStreamsCommand,
   LogStream,
   FilterLogEventsCommand,
-  FilteredLogEvent
+  FilteredLogEvent,
+  FilterLogEventsCommandInput
 } from '@aws-sdk/client-cloudwatch-logs'
 import { pause } from '../helpers'
 import { DATA_SENT_TO_QUEUE_MESSAGE } from '../../constants/awsParameters'
@@ -65,17 +66,32 @@ const findMatchingLogEvents = async (
   logStreams: LogStream[],
   filterPatterns: string[]
 ) => {
-  const input = {
+  return filterLogEvents({
     logGroupName: logGroupName,
     logStreamNames: logStreams.map(
       (logStream) => logStream?.logStreamName
     ) as string[],
     filterPattern: filterPatterns.map((pattern) => `"${pattern}"`).join(' ')
-  }
+  })
+}
+
+const filterLogEvents = async (
+  input: FilterLogEventsCommandInput,
+  events: FilteredLogEvent[] = []
+) => {
   const command = new FilterLogEventsCommand(input)
   const response = await cloudWatchLogsClient.send(command)
 
-  return response.events ?? []
+  if (!response.events) return []
+
+  response.events.forEach((event) => events.push(event))
+
+  if (response.nextToken) {
+    input.nextToken = response.nextToken
+    await filterLogEvents(input, events)
+  }
+
+  return events
 }
 
 const extractRequestIdFromEventMessage = (message: string) => {
