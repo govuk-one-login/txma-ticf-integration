@@ -11,8 +11,8 @@ export const waitForDownloadUrlFromNotifyEmail = async (zendeskId: string) => {
   const maxAttempts = 30
   let attempts = 0
   let url = undefined
+
   while (!url && attempts < maxAttempts) {
-    console.log('Check attempt: ', attempts)
     attempts++
     url = await getDownloadUrlFromNotifyEmail(zendeskId)
     await pause(3000)
@@ -28,7 +28,13 @@ export const getDownloadUrlFromNotifyEmail = async (
   if (!emailList) return undefined
 
   const mostRecentEmail = await getMostRecentEmailSent(emailList)
-  return getUrlFromEmailBody(mostRecentEmail?.body ?? '') ?? ''
+  const url = getUrlFromEmailBody(mostRecentEmail?.body ?? '') ?? ''
+
+  if (url) {
+    console.log(`Found URL for Zendesk ID: ${zendeskId}`)
+  }
+
+  return url
 }
 
 const queryNotifyEmailRequests = async (
@@ -47,14 +53,8 @@ const queryNotifyEmailRequests = async (
     !response?.data?.notifications ||
     !response?.data?.notifications?.length
   ) {
-    console.log('No email data returned from Notify')
     return undefined
   }
-
-  console.log(
-    'List of emails returned from Notify: ',
-    response.data.notifications
-  )
 
   return response.data.notifications
 }
@@ -77,7 +77,6 @@ const extractMostRecentEmail = (
 }
 
 const getUrlFromEmailBody = (emailBody: string) => {
-  console.log(emailBody)
   const urlRegex =
     /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi
   const extractedUrlList = emailBody.match(urlRegex)
