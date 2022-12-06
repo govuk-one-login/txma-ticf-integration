@@ -1,5 +1,6 @@
 import { AttributeValue, PutItemCommand } from '@aws-sdk/client-dynamodb'
 import { DataRequestParams } from '../../types/dataRequestParams'
+import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import { getEnv } from '../../utils/helpers'
 import { ddbClient } from './dynamoDBClient'
 
@@ -8,10 +9,13 @@ export const addNewDataRequestRecord = (
   glacierRestoreInitiated: boolean,
   copyFromAuditBucketInitiated: boolean
 ): Promise<unknown> => {
+  const recordExpiryTimeSeconds =
+    currentDateEpochSeconds() + parseInt(getEnv('DATABASE_TTL_HOURS')) * 60 * 60
   const newRecord: Record<string, AttributeValue> = {
     zendeskId: { S: dataRequestParams.zendeskId },
     requestInfo: {
       M: {
+        ttl: { N: recordExpiryTimeSeconds.toString() },
         zendeskId: { S: dataRequestParams.zendeskId },
         recipientEmail: { S: dataRequestParams.recipientEmail },
         recipientName: { S: dataRequestParams.recipientName },

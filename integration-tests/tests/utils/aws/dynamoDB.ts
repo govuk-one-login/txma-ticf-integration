@@ -1,3 +1,4 @@
+import { currentDateEpochSeconds } from '../../../../src/utils/currentDateEpochSeconds'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
@@ -68,10 +69,14 @@ const getFieldValue = (ticketDetails: ItemDetails, fieldID: number) => {
   return field.pop()?.value
 }
 
+const calculateDatabaseExpiryTime = () =>
+  currentDateEpochSeconds() + 5 * 24 * 60 * 60
+
 const generateDynamoTableEntry = (
   zendeskId: string,
   ticketDetails: ItemDetails
 ) => ({
+  ttl: { N: calculateDatabaseExpiryTime().toString() },
   zendeskId: { S: `${zendeskId}` },
   requestInfo: {
     M: {
