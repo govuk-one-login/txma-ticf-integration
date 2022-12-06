@@ -61,7 +61,7 @@ Note: For the dev environment some Secrets or SSM Parameters may be missing sinc
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`.
 
-Additionally, the tests can be run by getting all of their values from a local file. To do this, create a `.env` file in the `integration-tests` folder. There is an example `.env.template` file in the folder that can be copied, but sensitive values will need to be filled in.
+Additionally, the tests can be run by getting all of their values from a local file. To do this, create a `.env` file in the `tests/e2e-tests` folder. There is an example `.env.template` file in the folder that can be copied, but sensitive values will need to be filled in.
 
 If you are unsure of any values ask the tech lead/dev team.
 
