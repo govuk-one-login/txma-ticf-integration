@@ -13,9 +13,9 @@ export const addNewDataRequestRecord = (
     currentDateEpochSeconds() + parseInt(getEnv('DATABASE_TTL_HOURS')) * 60 * 60
   const newRecord: Record<string, AttributeValue> = {
     zendeskId: { S: dataRequestParams.zendeskId },
+    ttl: { N: recordExpiryTimeSeconds.toString() },
     requestInfo: {
       M: {
-        ttl: { N: recordExpiryTimeSeconds.toString() },
         zendeskId: { S: dataRequestParams.zendeskId },
         recipientEmail: { S: dataRequestParams.recipientEmail },
         recipientName: { S: dataRequestParams.recipientName },
