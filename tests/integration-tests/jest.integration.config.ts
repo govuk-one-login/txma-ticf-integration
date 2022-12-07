@@ -16,7 +16,7 @@ const config: Config.InitialOptions = {
     [
       'jest-junit',
       {
-        suiteName: 'TxMA PII Data Tests',
+        suiteName: 'TxMA data retrieval integration tests',
         outputDirectory: '<rootDir>/../reports/allure-results',
         ancestorSeparator: ',',
         includeConsoleOutput: true
