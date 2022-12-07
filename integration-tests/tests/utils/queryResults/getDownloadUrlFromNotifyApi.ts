@@ -7,20 +7,19 @@ import { getEnv, pause } from '../helpers'
 
 // Email objects from Notify here are referred to as Notifications
 
-export const waitForDownloadUrlFromNotifyEmail = async (zendeskId: string) => {
+export const pollNotifyApiForDownloadUrl = async (zendeskId: string) => {
   const maxAttempts = 30
   let attempts = 0
   let url = undefined
-
   while (!url && attempts < maxAttempts) {
     attempts++
-    url = await getDownloadUrlFromNotifyEmail(zendeskId)
+    url = await getDownloadUrlFromNotifyApi(zendeskId)
     await pause(3000)
   }
   return url ?? ''
 }
 
-export const getDownloadUrlFromNotifyEmail = async (
+const getDownloadUrlFromNotifyApi = async (
   zendeskId: string
 ): Promise<string | undefined> => {
   const emailList = await queryNotifyEmailRequests(zendeskId)

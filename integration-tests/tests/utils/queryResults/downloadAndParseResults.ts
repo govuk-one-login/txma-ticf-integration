@@ -1,9 +1,28 @@
 import axios from 'axios'
 import parse from 'node-html-parser'
 import * as CSV from 'csv-string'
-import { waitForDownloadUrlFromNotifyEmail } from './getDownloadUrlFromNotifyEmail'
 
-export const getSecureDownloadPageHTML = async (
+export async function downloadResultsFileAndParseData(
+  secureDownloadPageUrl: string
+): Promise<
+  {
+    [k: string]: string
+  }[]
+> {
+  const secureDownloadPageHTML = await getSecureDownloadPageHTML(
+    secureDownloadPageUrl
+  )
+
+  const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
+  expect(resultsFileS3Link.startsWith('https')).toBe(true)
+
+  const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
+  const csvRows = CSV.parse(csvData, { output: 'objects' })
+
+  return csvRows
+}
+
+const getSecureDownloadPageHTML = async (
   secureDownloadPageUrl: string
 ): Promise<string> => {
   try {
@@ -18,7 +37,7 @@ export const getSecureDownloadPageHTML = async (
   }
 }
 
-export const retrieveS3LinkFromHtml = (htmlBody: string): string => {
+const retrieveS3LinkFromHtml = (htmlBody: string): string => {
   const htmlRoot = parse(htmlBody)
   const metaTag = htmlRoot.querySelector('meta[http-equiv="refresh"]')
   const contentAttribute = metaTag?.attributes['content'] as string
@@ -29,31 +48,6 @@ export const retrieveS3LinkFromHtml = (htmlBody: string): string => {
   expect(url).toBeDefined()
 
   return url as string
-}
-
-export async function downloadResultsFileAndParseData(
-  ticketId: string
-): Promise<
-  {
-    [k: string]: string
-  }[]
-> {
-  const secureDownloadPageUrl = await waitForDownloadUrlFromNotifyEmail(
-    ticketId
-  )
-  expect(secureDownloadPageUrl.startsWith('https')).toBe(true)
-
-  const secureDownloadPageHTML = await getSecureDownloadPageHTML(
-    secureDownloadPageUrl
-  )
-
-  const resultsFileS3Link = retrieveS3LinkFromHtml(secureDownloadPageHTML)
-  expect(resultsFileS3Link.startsWith('https')).toBe(true)
-
-  const csvData = await downloadResultsCSVFromLink(resultsFileS3Link)
-  const csvRows = CSV.parse(csvData, { output: 'objects' })
-
-  return csvRows
 }
 
 const downloadResultsCSVFromLink = async (s3Link: string): Promise<string> => {
