@@ -1,21 +1,20 @@
 import axios from 'axios'
 import { authoriseAs } from './authoriseAs'
-import {
-  ZENDESK_AGENT_EMAIL,
-  ZENDESK_BASE_URL,
-  ZENDESK_TICKETS_ENDPOINT
-} from '../../constants/zendeskParameters'
-import { ZendeskComment } from '../../../integration-tests/types/zendeskComment'
+import { ZENDESK_TICKETS_ENDPOINT } from '../../constants/zendeskParameters'
+import { ZendeskComment } from '../../types/zendeskComment'
+import { getEnv } from '../helpers'
 
 export const listZendeskTicketComments = async (
   ticketId: string
 ): Promise<ZendeskComment[]> => {
   try {
     const response = await axios({
-      url: `${ZENDESK_BASE_URL}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}/comments`,
+      url: `https://${getEnv(
+        'ZENDESK_HOSTNAME'
+      )}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}/comments`,
       method: 'GET',
       headers: {
-        Authorization: authoriseAs(ZENDESK_AGENT_EMAIL),
+        Authorization: authoriseAs(getEnv('ZENDESK_AGENT_EMAIL')),
         Accept: 'application/json'
       }
     })

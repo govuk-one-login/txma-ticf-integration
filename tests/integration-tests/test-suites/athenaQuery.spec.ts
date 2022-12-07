@@ -9,14 +9,7 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
-import { validRequestData } from '../../shared-test-code/constants/requestData/dataCopyRequestData'
-import {
-  ANALYSIS_BUCKET_NAME,
-  ATHENA_QUERY_DATA_TEST_DATE_PREFIX,
-  ATHENA_QUERY_TEST_FILE_NAME,
-  AUDIT_REQUEST_DYNAMODB_TABLE,
-  INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP
-} from '../../shared-test-code/constants/awsParameters'
+import { validRequestData } from '../constants/dataCopyRequestData'
 import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import {
@@ -26,6 +19,10 @@ import {
 } from '../constants/dynamoDBItemDetails'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
 import { getEnv } from '../../shared-test-code/utils/helpers'
+import {
+  ATHENA_QUERY_DATA_TEST_DATE_PREFIX,
+  ATHENA_QUERY_TEST_FILE_NAME
+} from '../constants/testData'
 
 describe('Athena Query SQL generation and execution', () => {
   describe('Query SQL generation and execution successful', () => {
@@ -34,20 +31,23 @@ describe('Athena Query SQL generation and execution', () => {
     beforeEach(async () => {
       randomTicketId = Date.now().toString()
       await copyAuditDataFromTestDataBucket(
-        ANALYSIS_BUCKET_NAME,
+        getEnv('ANALYSIS_BUCKET_NAME'),
         `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}/01/${ATHENA_QUERY_TEST_FILE_NAME}`,
         ATHENA_QUERY_TEST_FILE_NAME
       )
     })
 
     afterEach(async () => {
-      await deleteDynamoDBTestItem(AUDIT_REQUEST_DYNAMODB_TABLE, randomTicketId)
+      await deleteDynamoDBTestItem(
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
+        randomTicketId
+      )
     })
 
     it('Successful Athena processing - requests having only data paths', async () => {
       console.log('Test ticket id: ' + randomTicketId)
       await populateDynamoDBWithTestItemDetails(
-        AUDIT_REQUEST_DYNAMODB_TABLE,
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
         dynamoDBItemDataPathsOnly
       )
@@ -65,7 +65,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
           [ATHENA_EVENT_HANDLER_MESSAGE, 'body', randomTicketId]
         )
 
@@ -76,7 +76,7 @@ describe('Athena Query SQL generation and execution', () => {
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
       const value = await getValueFromDynamoDB(
-        AUDIT_REQUEST_DYNAMODB_TABLE,
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
         'athenaQueryId'
       )
@@ -92,7 +92,7 @@ describe('Athena Query SQL generation and execution', () => {
     it('Successful Athena processing - requests having only PII type', async () => {
       console.log('Test ticket id: ' + randomTicketId)
       await populateDynamoDBWithTestItemDetails(
-        AUDIT_REQUEST_DYNAMODB_TABLE,
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
         dynamoDBItemPIITypesOnly
       )
@@ -110,7 +110,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
           [ATHENA_EVENT_HANDLER_MESSAGE, 'body', randomTicketId]
         )
 
@@ -120,7 +120,7 @@ describe('Athena Query SQL generation and execution', () => {
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
       const value = await getValueFromDynamoDB(
-        AUDIT_REQUEST_DYNAMODB_TABLE,
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
         'athenaQueryId'
       )
@@ -136,7 +136,7 @@ describe('Athena Query SQL generation and execution', () => {
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
       console.log('Test ticket id: ' + randomTicketId)
       await populateDynamoDBWithTestItemDetails(
-        AUDIT_REQUEST_DYNAMODB_TABLE,
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
         dynamoDBItemDataPathAndPIITypes
       )
@@ -156,7 +156,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
           [ATHENA_EVENT_HANDLER_MESSAGE, 'body', randomTicketId]
         )
 
@@ -166,7 +166,7 @@ describe('Athena Query SQL generation and execution', () => {
       assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
 
       const value = await getValueFromDynamoDB(
-        AUDIT_REQUEST_DYNAMODB_TABLE,
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
         'athenaQueryId'
       )
@@ -204,7 +204,7 @@ describe('Athena Query SQL generation and execution', () => {
         'Cannot find database entry for zendesk ticket'
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
           [
             ATHENA_EVENT_HANDLER_MESSAGE,
             'body',

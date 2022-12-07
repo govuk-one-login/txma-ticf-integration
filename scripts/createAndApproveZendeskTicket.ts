@@ -6,7 +6,7 @@ import {
   ZENDESK_PII_FORM_ID
 } from '../tests/shared-test-code/constants/zendeskParameters'
 import { getEnv } from '../tests/shared-test-code/utils/helpers'
-import { ZendeskRequestData } from '../tests/integration-tests/types/zendeskRequestData'
+import { ZendeskRequestData } from '../tests/shared-test-code/types/zendeskRequestData'
 
 const generateTicketData = (): ZendeskRequestData => ({
   request: {

@@ -7,7 +7,6 @@ import {
   FilterLogEventsCommandInput
 } from '@aws-sdk/client-cloudwatch-logs'
 import { pause } from '../helpers'
-import { DATA_SENT_TO_QUEUE_MESSAGE } from '../../constants/awsParameters'
 
 export const getCloudWatchLogEventsGroupByMessagePattern = async (
   logGroupName: string,
@@ -153,10 +152,11 @@ export const assertEventNotPresent = (
   expect(eventPresent).toEqual(false)
 }
 
-export const getQueueMessageId = (logEvents: FilteredLogEvent[]) => {
-  const event = logEvents.find((event) =>
-    event.message?.includes(DATA_SENT_TO_QUEUE_MESSAGE)
-  )
+export const getQueueMessageId = (
+  logEvents: FilteredLogEvent[],
+  message: string
+) => {
+  const event = logEvents.find((event) => event.message?.includes(message))
 
   if (!event || !event.message) throw Error('Message not added to queue')
 

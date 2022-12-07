@@ -10,6 +10,7 @@ declare module global {
   const ZENDESK_AGENT_EMAIL: string
   const ZENDESK_END_USER_EMAIL: string
   const ZENDESK_END_USER_NAME: string
+  const ZENDESK_RECIPIENT_NAME: string
 }
 
 const region = global.AWS_REGION
@@ -49,10 +50,12 @@ module.exports = async () => {
   }
 
   const globals = [
+    'AWS_REGION',
     'ZENDESK_ADMIN_EMAIL',
     'ZENDESK_AGENT_EMAIL',
     'ZENDESK_END_USER_EMAIL',
-    'ZENDESK_END_USER_NAME'
+    'ZENDESK_END_USER_NAME',
+    'ZENDESK_RECIPIENT_NAME'
   ]
 
   await setEnvVarsFromSecretsManager(secretMappings)

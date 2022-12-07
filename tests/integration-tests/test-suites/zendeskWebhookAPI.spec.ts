@@ -5,27 +5,19 @@ import {
   getEnv
 } from '../../shared-test-code/utils/helpers'
 import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
-import {
-  ZENDESK_END_USER_EMAIL,
-  ZENDESK_END_USER_NAME,
-  ZENDESK_RECIPIENT_NAME
-} from '../../shared-test-code/constants/zendeskParameters'
-import { ZendeskWebhookRequest } from '../types/zendeskWebhookRequest'
+import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
 import { generateSignatureHeaders } from '../../shared-test-code/utils/zendesk/generateSignatureHeaders'
-import {
-  TEST_DATA_DATA_PATHS,
-  TEST_DATA_EVENT_ID
-} from '../../shared-test-code/constants/awsParameters'
-import { validApiTestRequestData } from '../../shared-test-code/constants/requestData/webhookAPIRequestData'
+import { validApiTestRequestData } from '../constants/webhookAPIRequestData'
+import { TEST_DATA_DATA_PATHS, TEST_DATA_EVENT_ID } from '../constants/testData'
 
 const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
 
 const defaultWebhookRequestData: ZendeskWebhookRequest = {
   zendeskId: '1',
   recipientEmail: getEnv('ZENDESK_RECIPIENT_EMAIL'),
-  recipientName: ZENDESK_RECIPIENT_NAME,
-  requesterEmail: ZENDESK_END_USER_EMAIL,
-  requesterName: ZENDESK_END_USER_NAME,
+  recipientName: getEnv('ZENDESK_RECIPIENT_NAME'),
+  requesterEmail: getEnv('ZENDESK_END_USER_EMAIL'),
+  requesterName: getEnv('ZENDESK_END_USER_NAME'),
   dateFrom: generateZendeskRequestDate(-60),
   dateTo: generateZendeskRequestDate(-60),
   identifierType: 'event_id',

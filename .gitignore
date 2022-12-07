@@ -3,7 +3,7 @@ dist/
 
 # Jest
 coverage/
-tests/.env
+tests/**/.env
 tests/reports/
 
 # Miscellaneous

@@ -1,6 +1,6 @@
 import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs'
-import { AWS_REGION } from '../../constants/awsParameters'
+import { getEnv } from '../helpers'
 
 export const cloudWatchLogsClient = new CloudWatchLogsClient({
-  region: AWS_REGION
+  region: getEnv('AWS_REGION')
 })

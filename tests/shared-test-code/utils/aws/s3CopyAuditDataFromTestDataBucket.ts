@@ -1,5 +1,5 @@
 import { CopyObjectCommand } from '@aws-sdk/client-s3'
-import { TEST_DATA_BUCKET_NAME } from '../../constants/awsParameters'
+import { getEnv } from '../helpers'
 import { s3Client } from './s3Client'
 
 export const copyAuditDataFromTestDataBucket = async (
@@ -11,7 +11,7 @@ export const copyAuditDataFromTestDataBucket = async (
 ) => {
   const input = {
     Bucket: targetBucket,
-    CopySource: `${TEST_DATA_BUCKET_NAME}/${testfileName}`,
+    CopySource: `${getEnv('TEST_DATA_BUCKET_NAME')}/${testfileName}`,
     Key: key,
     StorageClass: storageClass,
     ...(cleanup && { Tagging: 'autoTest=true' }),

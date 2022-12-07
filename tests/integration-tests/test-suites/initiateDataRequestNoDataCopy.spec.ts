@@ -1,17 +1,7 @@
 import {
-  ANALYSIS_BUCKET_NAME,
-  AUDIT_BUCKET_NAME,
-  DATA_SENT_TO_QUEUE_MESSAGE,
-  INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-  PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
-  SQS_EVENT_RECEIVED_MESSAGE,
-  TEST_FILE_NAME,
-  WEBHOOK_RECEIVED_MESSAGE
-} from '../../shared-test-code/constants/awsParameters'
-import {
   setCustomFieldValueForRequest,
   validRequestData
-} from '../../shared-test-code/constants/requestData/dataCopyRequestData'
+} from '../constants/dataCopyRequestData'
 import { ZendeskFormFieldIDs } from '../../shared-test-code/constants/zendeskParameters'
 import {
   assertEventPresent,
@@ -23,6 +13,13 @@ import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvai
 import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
 import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
 import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
+import { getEnv } from '../../shared-test-code/utils/helpers'
+import {
+  DATA_SENT_TO_QUEUE_MESSAGE,
+  SQS_EVENT_RECEIVED_MESSAGE,
+  WEBHOOK_RECEIVED_MESSAGE
+} from '../constants/cloudWatchLogMessages'
+import { TEST_FILE_NAME } from '../constants/testData'
 
 const NOTHING_TO_COPY_MESSAGE =
   'Number of standard tier files to copy was 0, glacier tier files to copy was 0'
@@ -60,18 +57,21 @@ describe('Data should not be copied to analysis bucket', () => {
       console.log('request for valid data, no files present test started')
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
-      const messageId = getQueueMessageId(initiateDataRequestEvents)
+      const messageId = getQueueMessageId(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
           50
         )
@@ -88,15 +88,15 @@ describe('Data should not be copied to analysis bucket', () => {
       const availableDate = await getAvailableTestDate()
 
       await copyAuditDataFromTestDataBucket(
-        AUDIT_BUCKET_NAME,
-        `${availableDate.prefix}}/01/${TEST_FILE_NAME}`,
+        getEnv('AUDIT_BUCKET_NAME'),
+        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
         TEST_FILE_NAME,
         'STANDARD',
         true
       )
       await copyAuditDataFromTestDataBucket(
-        ANALYSIS_BUCKET_NAME,
-        `${availableDate.prefix}}/01/${TEST_FILE_NAME}`,
+        getEnv('ANALYSIS_BUCKET_NAME'),
+        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
         TEST_FILE_NAME,
         'STANDARD',
         true
@@ -120,19 +120,22 @@ describe('Data should not be copied to analysis bucket', () => {
       )
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
-      const messageId = getQueueMessageId(initiateDataRequestEvents)
+      const messageId = getQueueMessageId(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
       console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
           70
         )

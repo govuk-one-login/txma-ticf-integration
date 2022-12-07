@@ -1,4 +1,4 @@
-import { EnvironmentVar } from '../../integration-tests/types/environmentVar'
+import { EnvironmentVar } from '../types/environmentVar'
 
 export const generateRandomNumber = () => {
   return Math.floor(Math.random() * 100).toString()
