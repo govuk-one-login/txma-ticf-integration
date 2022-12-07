@@ -685,6 +685,8 @@ Resources:
           - Id: AnalysisCleanupRule
             Status: Enabled
             ExpirationInDays: 7
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
       LoggingConfiguration:
         DestinationBucketName: !Ref AnalysisLogsBucket
         LogFilePrefix: String
