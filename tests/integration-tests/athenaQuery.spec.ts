@@ -8,8 +8,6 @@ import {
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../shared-test-code/utils/aws/cloudWatchGetLogs'
-import { createZendeskTicket } from '../shared-test-code/utils/zendesk/createZendeskTicket'
-import { validRequestData } from '../shared-test-code/constants/requestData/dataCopyRequestData'
 import {
   ANALYSIS_BUCKET_NAME,
   ATHENA_QUERY_DATA_TEST_DATE_PREFIX,
@@ -17,7 +15,6 @@ import {
   AUDIT_REQUEST_DYNAMODB_TABLE,
   INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP
 } from '../shared-test-code/constants/awsParameters'
-import { deleteZendeskTicket } from '../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import { copyAuditDataFromTestDataBucket } from '../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import {
   dynamoDBItemDataPathAndPIITypes,
@@ -27,6 +24,10 @@ import {
 import { deleteAuditDataWithPrefix } from '../shared-test-code/utils/aws/s3DeleteAuditDataWithPrefix'
 import { downloadResultsFileAndParseData } from '../shared-test-code/utils/queryResults/downloadAndParseResults'
 import { getEnv } from '../shared-test-code/utils/helpers'
+import { pollNotifyMockForDownloadUrl } from '../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
+import { sendWebhookRequest } from '../shared-test-code/utils/zendesk/sendWebhookRequest'
+import { generateSignatureHeaders } from '../shared-test-code/utils/zendesk/generateSignatureHeaders'
+import { validRequestData } from '../shared-test-code/constants/requestData/dataCopyRequestData'
 
 describe('Athena Query SQL generation and execution', () => {
   describe('Query SQL generation and execution successful', () => {
@@ -90,7 +91,9 @@ describe('Athena Query SQL generation and execution', () => {
       )
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
+      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
+      expect(downloadUrl.startsWith('https')).toBe(true)
+      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate0_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
@@ -134,7 +137,9 @@ describe('Athena Query SQL generation and execution', () => {
       )
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
+      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
+      expect(downloadUrl.startsWith('https')).toBe(true)
+      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].name).toEqual(EXPECTED_NAME)
@@ -180,7 +185,9 @@ describe('Athena Query SQL generation and execution', () => {
       )
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
+      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
+      expect(downloadUrl.startsWith('https')).toBe(true)
+      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate0_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
@@ -191,15 +198,19 @@ describe('Athena Query SQL generation and execution', () => {
   })
 
   describe('Query execution unsuccessful', () => {
-    let ticketId: string
+    const ticketId = '1'
 
     beforeAll(async () => {
-      ticketId = await createZendeskTicket(validRequestData)
+      // ticketId = await createZendeskTicket(validRequestData)
+      await sendWebhookRequest(
+        ...generateSignatureHeaders(validRequestData),
+        validRequestData
+      )
     })
 
-    afterAll(async () => {
-      await deleteZendeskTicket(ticketId)
-    })
+    // afterAll(async () => {
+    //   await deleteZendeskTicket(ticketId)
+    // })
 
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
       await addMessageToQueue(

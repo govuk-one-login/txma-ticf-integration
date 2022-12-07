@@ -1,5 +1,6 @@
 import {
   ZENDESK_END_USER_NAME,
+  ZENDESK_RECIPIENT_EMAIL,
   ZENDESK_RECIPIENT_NAME
 } from '../shared-test-code/constants/zendeskParameters'
 import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
@@ -12,7 +13,7 @@ import { sendWebhookRequest } from '../shared-test-code/utils/zendesk/sendWebhoo
 
 const defaultWebhookRequestData: ZendeskWebhookRequest = {
   zendeskId: '1',
-  recipientEmail: 'fake-ticf-recipient@test.gov.uk', // make constant
+  recipientEmail: ZENDESK_RECIPIENT_EMAIL,
   recipientName: ZENDESK_RECIPIENT_NAME,
   requesterEmail: 'fake-ticf-analyst@test.gov.uk',
   requesterName: ZENDESK_END_USER_NAME,
