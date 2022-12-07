@@ -2,7 +2,6 @@ import { makeApproveZendeskTicketRequest } from '../tests/shared-test-code/utils
 import { createZendeskTicket } from '../tests/shared-test-code/utils/zendesk/createZendeskTicket'
 import {
   ZendeskFormFieldIDs,
-  ZENDESK_END_USER_NAME,
   ZENDESK_PII_FORM_ID
 } from '../tests/shared-test-code/constants/zendeskParameters'
 import { getEnv } from '../tests/shared-test-code/utils/helpers'
@@ -39,7 +38,7 @@ const generateTicketData = (): ZendeskRequestData => ({
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_END_USER_NAME
+        value: 'Test User'
       }
     ],
     comment: {
