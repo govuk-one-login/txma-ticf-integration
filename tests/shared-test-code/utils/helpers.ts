@@ -36,3 +36,7 @@ export const appendRandomIdToFilename = (fileName: string) => {
     fileName.replace('.gz', '') + Math.round(Math.random() * 100000) + '.gz'
   )
 }
+
+export const currentDateEpochSeconds = (): number => {
+  return Math.round(Date.now() / 1000)
+}
