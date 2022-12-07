@@ -10,10 +10,10 @@
 # in the Dockerfile.
 cd /test-app || exit 1
 
-if [ $TEST_ENVIRONMENT = "build"]; then
+if [ "$TEST_ENVIRONMENT" == "build" ]; then
   yarn test:integration
   TESTS_EXIT_CODE=$?
-elif [ $TEST_ENVIRONMENT = "staging" ]; then
+elif [ "$TEST_ENVIRONMENT" == "staging" ]; then
   yarn test:e2e
   TESTS_EXIT_CODE=$?
 else
@@ -22,7 +22,6 @@ else
 fi
 
 cp tests/reports/allure-results/junit.xml $TEST_REPORT_ABSOLUTE_DIR/junit.xml
-
-if [ $TESTS_EXIT_CODE -ne 0 ]; then
+if [[ $TESTS_EXIT_CODE -ne 0 ]]; then
   exit 1
 fi
