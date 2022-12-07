@@ -25,9 +25,6 @@ import { deleteAuditDataWithPrefix } from '../shared-test-code/utils/aws/s3Delet
 import { downloadResultsFileAndParseData } from '../shared-test-code/utils/queryResults/downloadAndParseResults'
 import { getEnv } from '../shared-test-code/utils/helpers'
 import { pollNotifyMockForDownloadUrl } from '../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
-import { sendWebhookRequest } from '../shared-test-code/utils/zendesk/sendWebhookRequest'
-import { generateSignatureHeaders } from '../shared-test-code/utils/zendesk/generateSignatureHeaders'
-import { validRequestData } from '../shared-test-code/constants/requestData/dataCopyRequestData'
 
 describe('Athena Query SQL generation and execution', () => {
   describe('Query SQL generation and execution successful', () => {
@@ -198,26 +195,17 @@ describe('Athena Query SQL generation and execution', () => {
   })
 
   describe('Query execution unsuccessful', () => {
-    const ticketId = '1'
+    let ticketId: string
 
     beforeAll(async () => {
-      // ticketId = await createZendeskTicket(validRequestData)
-      await sendWebhookRequest(
-        ...generateSignatureHeaders(validRequestData),
-        validRequestData
+      ticketId = Date.now().toString()
+      await addMessageToQueue(
+        ticketId,
+        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
     })
 
-    // afterAll(async () => {
-    //   await deleteZendeskTicket(ticketId)
-    // })
-
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
-      await addMessageToQueue(
-        `${ticketId}`,
-        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
-      )
-
       const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
       const ATHENA_HANDLER_INVOKE_ERROR =
         'Cannot find database entry for zendesk ticket'
@@ -232,7 +220,7 @@ describe('Athena Query SQL generation and execution', () => {
             `\\"2\\"`
           ]
         )
-
+      console.log('this is athenaQueryEvents: ', athenaQueryEvents)
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
       assertEventPresent(athenaQueryEvents, ATHENA_HANDLER_INVOKE_ERROR)

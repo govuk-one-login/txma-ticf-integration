@@ -1,4 +1,5 @@
-// constants are WIP
+import { ZendeskWebhookRequest } from '../../../integration-tests/types/zendeskWebhookRequest'
+import { generateZendeskRequestDate } from '../../utils/helpers'
 import {
   END_TO_END_TEST_DATA_PATH,
   END_TO_END_TEST_DATE,
@@ -11,18 +12,16 @@ import {
   INTEGRATION_TEST_DATE_NO_DATA,
   TEST_DATA_DATA_PATHS,
   TEST_DATA_EVENT_ID
-} from '../../../../utils/constants/generalConstants'
+} from '../awsParameters'
 import {
-  RECIPIENT_EMAIL,
-  RECIPIENT_NAME,
-  REQUESTER_EMAIL,
-  ZENDESK_END_USER_NAME
-} from '../../../../utils/constants/userConstants'
-import { ZendeskWebhookRequest } from '../../../integration-tests/types/zendeskWebhookRequest'
-import { generateZendeskRequestDate } from '../../utils/helpers'
+  ZENDESK_RECIPIENT_EMAIL,
+  ZENDESK_RECIPIENT_NAME,
+  ZENDESK_REQUESTER_EMAIL,
+  ZENDESK_REQUESTER_NAME
+} from '../zendeskParameters'
 
 const createUniqueTicketIdWithMappingSuffix = (mappingId: number) => {
-  return Date.now().toString() + mappingId
+  return Date.now().toString() + 0 + mappingId
 }
 
 export const ticketIdToResponseMapping: {
@@ -31,10 +30,10 @@ export const ticketIdToResponseMapping: {
   // dataCopyRequestData.validRequestData
   1: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(1),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: '2022-01-01',
     dateTo: '2022-01-01',
     identifierType: 'event_id',
@@ -43,16 +42,15 @@ export const ticketIdToResponseMapping: {
     userIds: '',
     eventIds: TEST_DATA_EVENT_ID,
     piiTypes: 'drivers_license',
-    dataPaths:
-      'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3'
+    dataPaths: TEST_DATA_DATA_PATHS
   },
   // invalidRequestData: Date in future
   2: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(2),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: generateZendeskRequestDate(1),
     dateTo: generateZendeskRequestDate(1),
     identifierType: 'event_id',
@@ -66,10 +64,10 @@ export const ticketIdToResponseMapping: {
   // validGlacierRequestData
   3: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(3),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: INTEGRATION_TEST_DATE_GLACIER,
     dateTo: INTEGRATION_TEST_DATE_GLACIER,
     identifierType: 'event_id',
@@ -83,10 +81,10 @@ export const ticketIdToResponseMapping: {
   // validStandardAndGlacierTiersRequestData
   4: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(4),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: INTEGRATION_TEST_DATE_MIX_DATA,
     dateTo: INTEGRATION_TEST_DATE_MIX_DATA,
     identifierType: 'event_id',
@@ -100,10 +98,10 @@ export const ticketIdToResponseMapping: {
   // validRequestNoData
   5: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(5),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: INTEGRATION_TEST_DATE_NO_DATA,
     dateTo: INTEGRATION_TEST_DATE_NO_DATA,
     identifierType: 'event_id',
@@ -117,10 +115,10 @@ export const ticketIdToResponseMapping: {
   // endToEndFlowRequestData.endToEndFlowRequestDataWithEventId
   6: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(6),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: END_TO_END_TEST_DATE,
     dateTo: END_TO_END_TEST_DATE,
     identifierType: 'event_id',
@@ -134,10 +132,10 @@ export const ticketIdToResponseMapping: {
   // endToEndFlowRequestData.endToEndFlowRequestDataWithUserId
   7: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(7),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: END_TO_END_TEST_DATE,
     dateTo: END_TO_END_TEST_DATE,
     identifierType: 'user_id',
@@ -151,10 +149,10 @@ export const ticketIdToResponseMapping: {
   // endToEndFlowRequestDataWithSessionId
   8: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(8),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: END_TO_END_TEST_DATE,
     dateTo: END_TO_END_TEST_DATE,
     identifierType: 'session_id',
@@ -168,10 +166,10 @@ export const ticketIdToResponseMapping: {
   // endToEndFlowRequestDataWithJourneyId
   9: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(9),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: END_TO_END_TEST_DATE,
     dateTo: END_TO_END_TEST_DATE,
     identifierType: 'journey_id',
@@ -185,10 +183,10 @@ export const ticketIdToResponseMapping: {
   // endToEndFlowRequestDataNoMatch
   10: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(10),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: END_TO_END_TEST_DATE,
     dateTo: END_TO_END_TEST_DATE,
     identifierType: 'event_id',
@@ -202,10 +200,10 @@ export const ticketIdToResponseMapping: {
   // webhookAPIRequestData.validApiTestRequestData
   11: {
     zendeskId: createUniqueTicketIdWithMappingSuffix(11),
-    requesterEmail: REQUESTER_EMAIL,
-    requesterName: ZENDESK_END_USER_NAME,
-    recipientEmail: RECIPIENT_EMAIL,
-    recipientName: RECIPIENT_NAME,
+    requesterEmail: ZENDESK_REQUESTER_EMAIL,
+    requesterName: ZENDESK_REQUESTER_NAME,
+    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
+    recipientName: ZENDESK_RECIPIENT_NAME,
     dateFrom: END_TO_END_TEST_DATE,
     dateTo: END_TO_END_TEST_DATE,
     identifierType: 'event_id',

@@ -1,19 +1,22 @@
 import axios from 'axios'
 import { ZendeskWebhookRequest } from '../../../integration-tests/types/zendeskWebhookRequest'
 import { getEnv } from '../helpers'
+import { generateSignatureHeaders } from './generateSignatureHeaders'
 
 export const sendWebhookRequest = async (
-  customHeaders: {
+  webhookRequestData: ZendeskWebhookRequest,
+  customHeaders?: {
     [key: string]: string
-  },
-  webhookRequestData: ZendeskWebhookRequest
+  }
 ) => {
   return await axios({
     url: `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...customHeaders
+      ...(customHeaders
+        ? customHeaders
+        : generateSignatureHeaders(webhookRequestData))
     },
     data: webhookRequestData,
 
