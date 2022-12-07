@@ -37,14 +37,14 @@ describe('dynamoDbPut', () => {
   describe('addNewDataRequestRecord', () => {
     const recordItem = {
       zendeskId: { S: ZENDESK_TICKET_ID },
+      ttl: {
+        N: (
+          TEST_CURRENT_EPOCH_SECONDS +
+          TEST_DATABASE_TTL_HOURS * 60 * 60
+        ).toString()
+      },
       requestInfo: {
         M: {
-          ttl: {
-            N: (
-              TEST_CURRENT_EPOCH_SECONDS +
-              TEST_DATABASE_TTL_HOURS * 60 * 60
-            ).toString()
-          },
           zendeskId: { S: ZENDESK_TICKET_ID },
           recipientEmail: { S: TEST_RECIPIENT_EMAIL },
           recipientName: { S: TEST_RECIPIENT_NAME },
