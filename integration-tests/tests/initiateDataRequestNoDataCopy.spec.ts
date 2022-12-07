@@ -3,24 +3,23 @@ import {
   AUDIT_BUCKET_NAME,
   DATA_SENT_TO_QUEUE_MESSAGE,
   INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-  INTEGRATION_TEST_DATE_PREFIX,
-  INTEGRATION_TEST_DATE_PREFIX_NO_DATA,
   PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
   SQS_EVENT_RECEIVED_MESSAGE,
   TEST_FILE_NAME,
   WEBHOOK_RECEIVED_MESSAGE
 } from './constants/awsParameters'
 import {
-  validRequestData,
-  validRequestNoData
+  setCustomFieldValueForRequest,
+  validRequestData
 } from './constants/requestData/dataCopyRequestData'
+import { ZendeskFormFieldIDs } from './constants/zendeskParameters'
 import {
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
 } from './utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
+import { getAvailableTestDate } from './utils/aws/s3GetAvailableTestDate'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
@@ -30,19 +29,26 @@ const NOTHING_TO_COPY_MESSAGE =
 const DATA_AVAILABLE_MESSAGE = 'All data available, queuing Athena query'
 
 describe('Data should not be copied to analysis bucket', () => {
+  const generateTestDataWithCustomDate = (date: string) => {
+    const data = validRequestData
+
+    setCustomFieldValueForRequest(
+      data,
+      ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+      date
+    )
+    return data
+  }
+
   describe('valid requests for no data copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      await deleteAuditDataWithPrefix(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
+      const availableDate = await getAvailableTestDate()
+
+      ticketId = await createZendeskTicket(
+        generateTestDataWithCustomDate(availableDate.date)
       )
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_NO_DATA}`
-      )
-      ticketId = await createZendeskTicket(validRequestNoData)
       await approveZendeskTicket(ticketId)
     })
 
@@ -79,25 +85,25 @@ describe('Data should not be copied to analysis bucket', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      await deleteAuditDataWithPrefix(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
-      )
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
-      )
+      const availableDate = await getAvailableTestDate()
+
       await copyAuditDataFromTestDataBucket(
         AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME
+        `${availableDate.prefix}}/01/${TEST_FILE_NAME}`,
+        TEST_FILE_NAME,
+        'STANDARD',
+        true
       )
       await copyAuditDataFromTestDataBucket(
         ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME
+        `${availableDate.prefix}}/01/${TEST_FILE_NAME}`,
+        TEST_FILE_NAME,
+        'STANDARD',
+        true
       )
-      ticketId = await createZendeskTicket(validRequestData)
+      ticketId = await createZendeskTicket(
+        generateTestDataWithCustomDate(availableDate.date)
+      )
       await approveZendeskTicket(ticketId)
     })
 

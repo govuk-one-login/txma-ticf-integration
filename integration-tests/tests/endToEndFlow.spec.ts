@@ -1,12 +1,10 @@
 import {
-  ANALYSIS_BUCKET_NAME,
   AUDIT_BUCKET_NAME,
   END_TO_END_TEST_DATE_PREFIX,
   END_TO_END_TEST_EVENT_ID,
   END_TO_END_TEST_FILE_NAME
 } from './constants/awsParameters'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import {
@@ -23,11 +21,6 @@ describe('Query results generated', () => {
   let zendeskId: string
 
   beforeEach(async () => {
-    await deleteAuditDataWithPrefix(
-      AUDIT_BUCKET_NAME,
-      `firehose/${END_TO_END_TEST_DATE_PREFIX}`
-    )
-
     await copyAuditDataFromTestDataBucket(
       AUDIT_BUCKET_NAME,
       `firehose/${END_TO_END_TEST_DATE_PREFIX}/01/${END_TO_END_TEST_FILE_NAME}`,
@@ -36,10 +29,6 @@ describe('Query results generated', () => {
   })
 
   afterEach(async () => {
-    await deleteAuditDataWithPrefix(
-      ANALYSIS_BUCKET_NAME,
-      `firehose/${END_TO_END_TEST_DATE_PREFIX}`
-    )
     await deleteZendeskTicket(zendeskId)
   })
 

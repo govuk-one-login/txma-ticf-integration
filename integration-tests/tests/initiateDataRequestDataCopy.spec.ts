@@ -7,26 +7,21 @@ import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
 import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
 import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
 import {
-  validGlacierRequestData,
-  validRequestData,
-  validStandardAndGlacierTiersRequestData
+  setCustomFieldValueForRequest,
+  validRequestData
 } from './constants/requestData/dataCopyRequestData'
 import {
-  ANALYSIS_BUCKET_NAME,
   AUDIT_BUCKET_NAME,
   DATA_SENT_TO_QUEUE_MESSAGE,
   INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-  INTEGRATION_TEST_DATE_PREFIX,
-  INTEGRATION_TEST_DATE_PREFIX_GLACIER,
-  INTEGRATION_TEST_DATE_PREFIX_MIX_DATA,
   PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
   SQS_EVENT_RECEIVED_MESSAGE,
   TEST_FILE_NAME,
   WEBHOOK_RECEIVED_MESSAGE
 } from './constants/awsParameters'
 import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
-import { appendRandomIdToFilename } from './utils/helpers'
+import { getAvailableTestDate } from './utils/aws/s3GetAvailableTestDate'
+import { ZendeskFormFieldIDs } from './constants/zendeskParameters'
 
 describe('Data should be copied to analysis bucket', () => {
   const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'
@@ -42,24 +37,33 @@ describe('Data should be copied to analysis bucket', () => {
   const S3_GLACIER_RESTORE_STARTED_MESSAGE =
     'Started Glacier restore for zendesk ticket with id'
 
+  const generateTestDataWithCustomDate = (date: string) => {
+    const data = validRequestData
+
+    setCustomFieldValueForRequest(
+      data,
+      ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+      date
+    )
+    return data
+  }
+
   describe('valid requests for standard copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      await deleteAuditDataWithPrefix(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
-      )
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
-      )
+      const availableDate = await getAvailableTestDate()
+
       await copyAuditDataFromTestDataBucket(
         AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME
+        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
+        TEST_FILE_NAME,
+        'STANDARD',
+        true
       )
-      ticketId = await createZendeskTicket(validRequestData)
+      ticketId = await createZendeskTicket(
+        generateTestDataWithCustomDate(availableDate.date)
+      )
       await approveZendeskTicket(ticketId)
     })
 
@@ -113,23 +117,18 @@ describe('Data should be copied to analysis bucket', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      await deleteAuditDataWithPrefix(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_GLACIER}`
-      )
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_GLACIER}`
-      )
+      const availableDate = await getAvailableTestDate()
+
       await copyAuditDataFromTestDataBucket(
         AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_GLACIER}/01/${appendRandomIdToFilename(
-          TEST_FILE_NAME
-        )}`,
+        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
         TEST_FILE_NAME,
-        'GLACIER'
+        'GLACIER',
+        true
       )
-      ticketId = await createZendeskTicket(validGlacierRequestData)
+      ticketId = await createZendeskTicket(
+        generateTestDataWithCustomDate(availableDate.date)
+      )
       await approveZendeskTicket(ticketId)
     })
 
@@ -173,27 +172,24 @@ describe('Data should be copied to analysis bucket', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      await deleteAuditDataWithPrefix(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}`
-      )
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}`
-      )
+      const availableDate = await getAvailableTestDate()
+
       await copyAuditDataFromTestDataBucket(
         AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}/01/${TEST_FILE_NAME}`,
+        `${availableDate.prefix}}/01/${TEST_FILE_NAME}`,
         TEST_FILE_NAME,
-        'GLACIER'
+        'GLACIER',
+        true
       )
       await copyAuditDataFromTestDataBucket(
         AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}/02/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME
+        `${availableDate.prefix}/02/${TEST_FILE_NAME}`,
+        TEST_FILE_NAME,
+        'STANDARD',
+        true
       )
       ticketId = await createZendeskTicket(
-        validStandardAndGlacierTiersRequestData
+        generateTestDataWithCustomDate(availableDate.date)
       )
       await approveZendeskTicket(ticketId)
     })

@@ -24,19 +24,15 @@ import {
   dynamoDBItemDataPathsOnly,
   dynamoDBItemPIITypesOnly
 } from './constants/dynamoDBItemDetails'
-import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
 import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
 import { getEnv } from './utils/helpers'
 
 describe('Athena Query SQL generation and execution', () => {
   describe('Query SQL generation and execution successful', () => {
     let randomTicketId: string
+
     beforeEach(async () => {
       randomTicketId = Date.now().toString()
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}`
-      )
       await copyAuditDataFromTestDataBucket(
         ANALYSIS_BUCKET_NAME,
         `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}/01/${ATHENA_QUERY_TEST_FILE_NAME}`,
@@ -46,10 +42,6 @@ describe('Athena Query SQL generation and execution', () => {
 
     afterEach(async () => {
       await deleteDynamoDBTestItem(AUDIT_REQUEST_DYNAMODB_TABLE, randomTicketId)
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}`
-      )
     })
 
     it('Successful Athena processing - requests having only data paths', async () => {

@@ -4,19 +4,14 @@ import {
   generateZendeskRequestDate,
   getEnv
 } from '../../utils/helpers'
-import {
-  INTEGRATION_TEST_DATE,
-  TEST_DATA_DATA_PATHS,
-  INTEGRATION_TEST_DATE_GLACIER,
-  TEST_DATA_EVENT_ID,
-  INTEGRATION_TEST_DATE_MIX_DATA,
-  INTEGRATION_TEST_DATE_NO_DATA
-} from '../awsParameters'
+import { TEST_DATA_DATA_PATHS, TEST_DATA_EVENT_ID } from '../awsParameters'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_RECIPIENT_NAME,
   ZENDESK_PII_FORM_ID
 } from '../zendeskParameters'
+
+const testDate = '2022-01-01'
 
 const generateSubjectLine = () => {
   const fixedSubjectLine = process.env.FIXED_SUBJECT_LINE
@@ -49,7 +44,7 @@ export const validRequestData: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
-        value: INTEGRATION_TEST_DATE
+        value: testDate
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
@@ -75,19 +70,6 @@ export const validRequestData: ZendeskRequestData = {
     comment: {
       body: 'PII request created in integration test'
     }
-  }
-}
-
-export const setCustomFieldValueForRequest = (
-  requestData: ZendeskRequestData,
-  fieldId: number,
-  fieldValue: string
-) => {
-  const customField = requestData.request.custom_fields.find(
-    (f) => f.id === fieldId
-  )
-  if (customField) {
-    customField.value = fieldValue
   }
 }
 
@@ -131,122 +113,15 @@ export const invalidRequestData: ZendeskRequestData = {
   }
 }
 
-export const validGlacierRequestData: ZendeskRequestData = {
-  request: {
-    subject: `Integration Test Request - ` + generateRandomNumber(),
-    ticket_form_id: ZENDESK_PII_FORM_ID,
-    custom_fields: [
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID,
-        value: 'event_id'
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
-        value: TEST_DATA_EVENT_ID
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
-        value: INTEGRATION_TEST_DATE_GLACIER
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
-        value: ['drivers_license']
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: ''
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
-      }
-    ],
-    comment: {
-      body: 'PII request created in integration test'
-    }
-  }
-}
-
-export const validStandardAndGlacierTiersRequestData: ZendeskRequestData = {
-  request: {
-    subject: `Integration Test Request - ` + generateRandomNumber(),
-    ticket_form_id: ZENDESK_PII_FORM_ID,
-    custom_fields: [
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID,
-        value: 'event_id'
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
-        value: TEST_DATA_EVENT_ID
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
-        value: INTEGRATION_TEST_DATE_MIX_DATA
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
-        value: ['drivers_license']
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: ''
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
-      }
-    ],
-    comment: {
-      body: 'PII request created in integration test'
-    }
-  }
-}
-
-export const validRequestNoData: ZendeskRequestData = {
-  request: {
-    subject: `Integration Test Request - ` + generateRandomNumber(),
-    ticket_form_id: ZENDESK_PII_FORM_ID,
-    custom_fields: [
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID,
-        value: 'event_id'
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
-        value: TEST_DATA_EVENT_ID
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
-        value: INTEGRATION_TEST_DATE_NO_DATA
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
-        value: ['drivers_license']
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
-        value: ''
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        value: getEnv('ZENDESK_RECIPIENT_EMAIL')
-      },
-      {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
-      }
-    ],
-    comment: {
-      body: 'PII request created in integration test'
-    }
+export const setCustomFieldValueForRequest = (
+  requestData: ZendeskRequestData,
+  fieldId: number,
+  fieldValue: string
+) => {
+  const customField = requestData.request.custom_fields.find(
+    (f) => f.id === fieldId
+  )
+  if (customField) {
+    customField.value = fieldValue
   }
 }

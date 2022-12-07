@@ -6,13 +6,16 @@ export const copyAuditDataFromTestDataBucket = async (
   targetBucket: string,
   key: string,
   testfileName: string,
-  storageClass: 'GLACIER' | 'STANDARD' = 'STANDARD'
+  storageClass: 'GLACIER' | 'STANDARD' = 'STANDARD',
+  cleanup = false
 ) => {
   const input = {
     Bucket: targetBucket,
     CopySource: `${TEST_DATA_BUCKET_NAME}/${testfileName}`,
     Key: key,
-    StorageClass: storageClass
+    StorageClass: storageClass,
+    ...(cleanup && { Tagging: 'autoTest=true' }),
+    ...(cleanup && { TaggingDirective: 'REPLACE' })
   }
   const command = new CopyObjectCommand(input)
 
