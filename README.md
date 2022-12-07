@@ -55,13 +55,13 @@ The variables required to run the test are stored in AWS in the following places
 
 Any variables can be overriden by setting them as environment variables when running the tests:
 
-Overriding the `STACK_NAME` parameter, which is set in the config file (`integration-tests/jest.integtation.config.ts`), will allow you to point at a dev stack with different stack outputs. SSM parameters and Secrets defined in other stacks will remain unchanged. However, these can be overriden using environmet variables if they need to change.
+Overriding the `STACK_NAME` parameter, which is set in the config files (`tests/integration-tests/jest.integtation.config.ts` and `tests/e2e-tests/jest.e2e.config.ts`), will allow you to point at a dev stack with different stack outputs. SSM parameters and Secrets defined in other stacks will remain unchanged. However, these can be overriden using environmet variables if they need to change.
 
 Note: For the dev environment some Secrets or SSM Parameters may be missing since there is no main stack.
 
 If you want to use a particular fixed date for your data request, set the environment variable `FIXED_DATA_REQUEST_DATE`.
 
-Additionally, the tests can be run by getting all of their values from a local file. To do this, create a `.env` file in the `integration-tests` folder. There is an example `.env.template` file in the folder that can be copied, but sensitive values will need to be filled in.
+Additionally, the tests can be run by getting all of their values from a local file. To do this, create a `.env` file in the `tests/e2e-tests` or `tests/integration-tests` folders. There is an example `.env.template` file in the `tests/e2e-tests` folder that can be copied, but sensitive values will need to be filled in.
 
 If you are unsure of any values ask the tech lead/dev team.
 
@@ -69,10 +69,16 @@ If you are unsure of any values ask the tech lead/dev team.
 
 To run tests against the environment you will need to be authenticated against the environment you wish to run the tests.
 
-To run the entire pack and pull variables from AWS run the following:
+To run the integraton pack which pulls variables from AWS and assumes external services are stubbed you should assume a build account role and run the following:
 
 ```
 yarn test:integration
+```
+
+To run the end to end pack which pulls variables from AWS and interacts with real external services you should assume a staging account role and run the following:
+
+```
+yarn test:e2e
 ```
 
 To run an individual test (suite or test case):
@@ -93,15 +99,21 @@ To override certain variables run:
 STACK_NAME=<ANOTHER_STACK> ZENDESK_WEBHOOK_SECRET_KEY=<ANOTHER_SECRET> yarn test:integration
 ```
 
-If you wish to run the tests with locally defined variables instead of pulling them from AWS, create an `integration-tests/.env` file and run:
+If you wish to run the tests with locally defined variables instead of pulling them from AWS, create a `test/integration-tests/.env` or `test/e2e-tests/.env` file and run:
 
 ```
 yarn test:integration:dev
 ```
 
+or
+
+```
+yarn test:e2e:dev
+```
+
 ### Test Reports
 
-Running the tests creates a results file in JUnit format at `integration-tests/reports/allure-results`. This file is used to create a report using [Allure](https://docs.qameta.io/allure).
+Running the tests creates a results file in JUnit format at `tests/reports/allure-results`. This file is used to create a report using [Allure](https://docs.qameta.io/allure). Both suites output JUNIT xml to the same location.
 
 In order to create the report run:
 
@@ -120,7 +132,7 @@ http://localhost:5252
 An emailable version of the report is generated at the following location:
 
 ```
-integration-tests/reports/allure-reports/emailable-report-allure-docker-service.html
+tests/reports/allure-reports/emailable-report-allure-docker-service.html
 ```
 
 ### Creating and approving a Zendesk ticket
