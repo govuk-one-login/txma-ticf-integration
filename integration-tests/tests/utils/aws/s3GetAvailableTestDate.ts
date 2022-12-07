@@ -6,7 +6,16 @@ export const getAvailableTestDate = async () => {
   return findAvailableS3Locations(generateRandomDateAndPrefix())
 }
 
-const findAvailableS3Locations = async (checkDate: MatchedDateAndPrefix) => {
+const findAvailableS3Locations = async (
+  checkDate: MatchedDateAndPrefix,
+  count = 0
+) => {
+  count++
+
+  if (count >= 10) {
+    throw new Error('Could not find available test location')
+  }
+
   const buckets = [getEnv('ANALYSIS_BUCKET_NAME'), getEnv('AUDIT_BUCKET_NAME')]
 
   const locationAvailability = await Promise.all(
@@ -23,7 +32,7 @@ const findAvailableS3Locations = async (checkDate: MatchedDateAndPrefix) => {
   )
 
   if (locationAvailability.includes(false)) {
-    await findAvailableS3Locations(generateRandomDateAndPrefix())
+    await findAvailableS3Locations(generateRandomDateAndPrefix(), count)
   }
 
   return checkDate
