@@ -214,6 +214,7 @@ Resources:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           TERMINATED_JOB_QUEUE_URL: !Ref TerminatedJobQueue
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          DATABASE_TTL_HOURS: '{{resolve:ssm:DatabaseTtlHours}}'
       Events:
         InitiateDataRequestEvent:
           Type: SQS

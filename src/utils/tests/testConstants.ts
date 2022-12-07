@@ -62,3 +62,5 @@ export const TEST_VALID_EMAIL_RECIPIENTS_BUCKET = 'myEmailRecipientsBucket'
 export const TEST_VALID_EMAIL_RECIPIENTS_BUCKET_KEY =
   'myEmailRecipientsBucketKey'
 export const TEST_COMMENT_COPY = 'test comment copy'
+export const TEST_CURRENT_EPOCH_SECONDS = 1670335764
+export const TEST_DATABASE_TTL_HOURS = 120
