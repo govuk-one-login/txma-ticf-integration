@@ -1,4 +1,4 @@
-import { currentDateEpochSeconds } from '../../../../src/utils/currentDateEpochSeconds'
+import { currentDateEpochSeconds } from '../helpers'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
