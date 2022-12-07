@@ -4,23 +4,23 @@ import {
   INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
   WEBHOOK_INVALID_MESSAGE,
   WEBHOOK_RECEIVED_MESSAGE
-} from './constants/awsParameters'
+} from '../shared-test-code/constants/awsParameters'
 import {
   invalidRequestData,
   setCustomFieldValueForRequest,
   validRequestData
-} from './constants/requestData/dataCopyRequestData'
-import { ZendeskFormFieldIDs } from './constants/zendeskParameters'
+} from '../shared-test-code/constants/requestData/dataCopyRequestData'
+import { ZendeskFormFieldIDs } from '../shared-test-code/constants/zendeskParameters'
 import {
   assertEventNotPresent,
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern
-} from './utils/aws/cloudWatchGetLogs'
-import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
-import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
-import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
-import { getZendeskTicket } from './utils/zendesk/getZendeskTicket'
-import { assertZendeskCommentPresent } from './utils/zendesk/zendeskTicketComments'
+} from '../shared-test-code/utils/aws/cloudWatchGetLogs'
+import { approveZendeskTicket } from '../shared-test-code/utils/zendesk/approveZendeskTicket'
+import { createZendeskTicket } from '../shared-test-code/utils/zendesk/createZendeskTicket'
+import { deleteZendeskTicket } from '../shared-test-code/utils/zendesk/deleteZendeskTicket'
+import { getZendeskTicket } from '../shared-test-code/utils/zendesk/getZendeskTicket'
+import { assertZendeskCommentPresent } from '../shared-test-code/utils/zendesk/zendeskTicketComments'
 
 describe('Invalid requests should not start a data copy', () => {
   describe('invalid recipient email', () => {

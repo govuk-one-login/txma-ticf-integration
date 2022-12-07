@@ -1,4 +1,4 @@
-import { ZendeskRequestData } from '../../types/zendeskRequestData'
+import { ZendeskRequestData } from '../../../integration-tests/types/zendeskRequestData'
 import {
   generateRandomNumber,
   generateZendeskRequestDate,

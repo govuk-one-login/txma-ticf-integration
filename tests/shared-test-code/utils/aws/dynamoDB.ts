@@ -4,7 +4,10 @@ import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME
 } from '../../constants/zendeskParameters'
-import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
+import {
+  DynamoDBItem,
+  ItemDetails
+} from '../../../integration-tests/types/dynamoDBItem'
 import { getEnv } from '../helpers'
 import { invokeLambdaFunction } from './invokeLambdaFunction'
 

@@ -4,20 +4,20 @@ import {
   END_TO_END_TEST_DATE_PREFIX,
   END_TO_END_TEST_EVENT_ID,
   END_TO_END_TEST_FILE_NAME
-} from './constants/awsParameters'
-import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { deleteAuditDataWithPrefix } from './utils/aws/s3DeleteAuditDataWithPrefix'
-import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
-import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
+} from '../shared-test-code/constants/awsParameters'
+import { copyAuditDataFromTestDataBucket } from '../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
+import { deleteAuditDataWithPrefix } from '../shared-test-code/utils/aws/s3DeleteAuditDataWithPrefix'
+import { approveZendeskTicket } from '../shared-test-code/utils/zendesk/approveZendeskTicket'
+import { createZendeskTicket } from '../shared-test-code/utils/zendesk/createZendeskTicket'
 import {
   endToEndFlowRequestDataNoMatch,
   endToEndFlowRequestDataWithEventId,
   endToEndFlowRequestDataWithJourneyId,
   endToEndFlowRequestDataWithSessionId,
   endToEndFlowRequestDataWithUserId
-} from './constants/requestData/endToEndFlowRequestData'
-import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
-import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
+} from './constants/requestData'
+import { downloadResultsFileAndParseData } from '../shared-test-code/utils/queryResults/downloadAndParseResults'
+import { deleteZendeskTicket } from '../shared-test-code/utils/zendesk/deleteZendeskTicket'
 
 describe('Query results generated', () => {
   let zendeskId: string

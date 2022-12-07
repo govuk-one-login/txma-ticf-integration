@@ -1,12 +1,12 @@
-import { makeApproveZendeskTicketRequest } from '../integration-tests/tests/utils/zendesk/approveZendeskTicket'
-import { createZendeskTicket } from '../integration-tests/tests/utils/zendesk/createZendeskTicket'
-import { ZendeskRequestData } from '../integration-tests/tests/types/zendeskRequestData'
+import { makeApproveZendeskTicketRequest } from '../tests/shared-test-code/utils/zendesk/approveZendeskTicket'
+import { createZendeskTicket } from '../tests/shared-test-code/utils/zendesk/createZendeskTicket'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_NAME,
   ZENDESK_PII_FORM_ID
-} from '../integration-tests/tests/constants/zendeskParameters'
-import { getEnv } from '../integration-tests/tests/utils/helpers'
+} from '../tests/shared-test-code/constants/zendeskParameters'
+import { getEnv } from '../tests/shared-test-code/utils/helpers'
+import { ZendeskRequestData } from '../tests/integration-tests/types/zendeskRequestData'
 
 const generateTicketData = (): ZendeskRequestData => ({
   request: {

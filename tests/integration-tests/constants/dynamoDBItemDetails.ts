@@ -1,5 +1,5 @@
 import { DynamoDBItem } from '../types/dynamoDBItem'
-import { getEnv } from '../utils/helpers'
+import { getEnv } from '../../shared-test-code/utils/helpers'
 
 export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {
   ticket: {
