@@ -3,9 +3,12 @@ import {
   DynamoDBClient,
   PutItemCommandInput
 } from '@aws-sdk/client-dynamodb'
+import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import { addNewDataRequestRecord } from './dynamoDBPut'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 import {
+  TEST_CURRENT_EPOCH_SECONDS,
+  TEST_DATABASE_TTL_HOURS,
   TEST_DATE_FROM,
   TEST_DATE_TO,
   TEST_QUERY_DATABASE_TABLE_NAME,
@@ -17,16 +20,29 @@ import {
 } from '../../utils/tests/testConstants'
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-jest'
+import { when } from 'jest-when'
+
+jest.mock('../../utils/currentDateEpochSeconds', () => ({
+  currentDateEpochSeconds: jest.fn()
+}))
 
 const dynamoMock = mockClient(DynamoDBClient)
 
 describe('dynamoDbPut', () => {
   beforeEach(() => {
     dynamoMock.reset()
+    when(currentDateEpochSeconds).mockReturnValue(TEST_CURRENT_EPOCH_SECONDS)
   })
+
   describe('addNewDataRequestRecord', () => {
     const recordItem = {
       zendeskId: { S: ZENDESK_TICKET_ID },
+      ttl: {
+        N: (
+          TEST_CURRENT_EPOCH_SECONDS +
+          TEST_DATABASE_TTL_HOURS * 60 * 60
+        ).toString()
+      },
       requestInfo: {
         M: {
           zendeskId: { S: ZENDESK_TICKET_ID },

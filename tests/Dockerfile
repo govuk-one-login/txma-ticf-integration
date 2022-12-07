@@ -40,13 +40,13 @@ RUN apk update && \
 WORKDIR /test-app
 
 COPY package.json yarn.lock tsconfig.json .pnp* ./
-COPY integration-tests ./integration-tests
+COPY tests ./tests
 COPY .yarn ./.yarn
 
 RUN corepack enable
 RUN yarn unplug
 
-WORKDIR /test-app/integration-tests
+WORKDIR /test-app/tests
 
 RUN mv ./run-tests.sh /run-tests.sh
 RUN chmod +x /run-tests.sh

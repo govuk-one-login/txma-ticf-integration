@@ -5,7 +5,7 @@ import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_REQUESTS_ENDPOINT
 } from '../../constants/zendeskParameters'
-import { ZendeskRequestData } from '../../types/zendeskRequestData'
+import { ZendeskRequestData } from '../../../integration-tests/types/zendeskRequestData'
 
 export const createZendeskTicket = async (requestData: ZendeskRequestData) => {
   try {

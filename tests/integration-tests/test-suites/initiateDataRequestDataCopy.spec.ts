@@ -2,14 +2,14 @@ import {
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
-} from './utils/aws/cloudWatchGetLogs'
-import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
-import { approveZendeskTicket } from './utils/zendesk/approveZendeskTicket'
-import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
+} from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
+import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
+import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
+import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import {
   setCustomFieldValueForRequest,
   validRequestData
-} from './constants/requestData/dataCopyRequestData'
+} from '../../shared-test-code/constants/requestData/dataCopyRequestData'
 import {
   AUDIT_BUCKET_NAME,
   DATA_SENT_TO_QUEUE_MESSAGE,
@@ -18,10 +18,10 @@ import {
   SQS_EVENT_RECEIVED_MESSAGE,
   TEST_FILE_NAME,
   WEBHOOK_RECEIVED_MESSAGE
-} from './constants/awsParameters'
-import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { getAvailableTestDate } from './utils/aws/s3GetAvailableTestDate'
-import { ZendeskFormFieldIDs } from './constants/zendeskParameters'
+} from '../../shared-test-code/constants/awsParameters'
+import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
+import { ZendeskFormFieldIDs } from '../../shared-test-code/constants/zendeskParameters'
+import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 
 describe('Data should be copied to analysis bucket', () => {
   const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'

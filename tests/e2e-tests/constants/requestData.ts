@@ -1,5 +1,8 @@
-import { ZendeskRequestData } from '../../types/zendeskRequestData'
-import { generateRandomNumber, getEnv } from '../../utils/helpers'
+import { ZendeskRequestData } from '../../integration-tests/types/zendeskRequestData'
+import {
+  generateRandomNumber,
+  getEnv
+} from '../../shared-test-code/utils/helpers'
 import {
   END_TO_END_TEST_DATA_PATH,
   END_TO_END_TEST_DATE,
@@ -7,12 +10,12 @@ import {
   END_TO_END_TEST_JOURNEY_ID,
   END_TO_END_TEST_SESSION_ID,
   END_TO_END_TEST_USER_ID
-} from '../awsParameters'
+} from '../../shared-test-code/constants/awsParameters'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_PII_FORM_ID,
   ZENDESK_RECIPIENT_NAME
-} from '../zendeskParameters'
+} from '../../shared-test-code/constants/zendeskParameters'
 
 export const endToEndFlowRequestDataWithEventId: ZendeskRequestData = {
   request: {

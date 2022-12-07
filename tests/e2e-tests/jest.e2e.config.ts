@@ -16,15 +16,15 @@ const config: Config.InitialOptions = {
     [
       'jest-junit',
       {
-        suiteName: 'TxMA PII Data Tests',
-        outputDirectory: '<rootDir>/reports/allure-results',
+        suiteName: 'TxMA data retrieval end to end tests',
+        outputDirectory: '<rootDir>/../reports/allure-results',
         ancestorSeparator: ',',
         includeConsoleOutput: true
       }
     ]
   ],
-  setupFiles: ['<rootDir>/setup/setup.ts'],
-  testPathIgnorePatterns: ['/src/'],
+  setupFiles: ['<rootDir>/../shared-test-code/setup/setup.ts'],
+  testPathIgnorePatterns: ['/src/', '/tests/integration-tests/'],
   testTimeout: 120000,
   verbose: true
 }

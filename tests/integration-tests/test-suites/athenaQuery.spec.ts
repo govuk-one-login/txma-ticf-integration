@@ -2,30 +2,30 @@ import {
   populateDynamoDBWithTestItemDetails,
   getValueFromDynamoDB,
   deleteDynamoDBTestItem
-} from './utils/aws/dynamoDB'
-import { addMessageToQueue } from './utils/aws/sqs'
+} from '../../shared-test-code/utils/aws/dynamoDB'
+import { addMessageToQueue } from '../../shared-test-code/utils/aws/sqs'
 import {
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern
-} from './utils/aws/cloudWatchGetLogs'
-import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
-import { validRequestData } from './constants/requestData/dataCopyRequestData'
+} from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
+import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
+import { validRequestData } from '../../shared-test-code/constants/requestData/dataCopyRequestData'
 import {
   ANALYSIS_BUCKET_NAME,
   ATHENA_QUERY_DATA_TEST_DATE_PREFIX,
   ATHENA_QUERY_TEST_FILE_NAME,
   AUDIT_REQUEST_DYNAMODB_TABLE,
   INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP
-} from './constants/awsParameters'
-import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
-import { copyAuditDataFromTestDataBucket } from './utils/aws/s3CopyAuditDataFromTestDataBucket'
+} from '../../shared-test-code/constants/awsParameters'
+import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
+import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import {
   dynamoDBItemDataPathAndPIITypes,
   dynamoDBItemDataPathsOnly,
   dynamoDBItemPIITypesOnly
-} from './constants/dynamoDBItemDetails'
-import { downloadResultsFileAndParseData } from './utils/queryResults/downloadAndParseResults'
-import { getEnv } from './utils/helpers'
+} from '../constants/dynamoDBItemDetails'
+import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
+import { getEnv } from '../../shared-test-code/utils/helpers'
 
 describe('Athena Query SQL generation and execution', () => {
   describe('Query SQL generation and execution successful', () => {

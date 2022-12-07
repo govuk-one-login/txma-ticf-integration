@@ -2,7 +2,7 @@ import { NotifyClient } from 'notifications-node-client'
 import {
   CustomAxiosResponse,
   NotificationObject
-} from '../../types/notify/customAxiosResponse'
+} from '../../../integration-tests/types/notify/customAxiosResponse'
 import { getEnv, pause } from '../helpers'
 
 // Email objects from Notify here are referred to as Notifications

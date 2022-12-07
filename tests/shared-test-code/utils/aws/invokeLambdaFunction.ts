@@ -1,7 +1,7 @@
 import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda'
 import { AWS_REGION } from '../../constants/awsParameters'
-import { DynamoDbOperation } from '../../types/dynamoDbOperations'
-import { SqsMessage } from '../../types/sqsMessage'
+import { DynamoDbOperation } from '../../../integration-tests/types/dynamoDbOperations'
+import { SqsMessage } from '../../../integration-tests/types/sqsMessage'
 
 export const invokeLambdaFunction = async (
   functionName: string,

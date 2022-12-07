@@ -1,19 +1,22 @@
 import axios from 'axios'
-import { deleteZendeskTicket } from './utils/zendesk/deleteZendeskTicket'
-import { generateZendeskRequestDate, getEnv } from './utils/helpers'
-import { createZendeskTicket } from './utils/zendesk/createZendeskTicket'
+import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
+import {
+  generateZendeskRequestDate,
+  getEnv
+} from '../../shared-test-code/utils/helpers'
+import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
 import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME,
   ZENDESK_RECIPIENT_NAME
-} from './constants/zendeskParameters'
-import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
-import { generateSignatureHeaders } from './utils/zendesk/generateSignatureHeaders'
+} from '../../shared-test-code/constants/zendeskParameters'
+import { ZendeskWebhookRequest } from '../types/zendeskWebhookRequest'
+import { generateSignatureHeaders } from '../../shared-test-code/utils/zendesk/generateSignatureHeaders'
 import {
   TEST_DATA_DATA_PATHS,
   TEST_DATA_EVENT_ID
-} from './constants/awsParameters'
-import { validApiTestRequestData } from './constants/requestData/webhookAPIRequestData'
+} from '../../shared-test-code/constants/awsParameters'
+import { validApiTestRequestData } from '../../shared-test-code/constants/requestData/webhookAPIRequestData'
 
 const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
 

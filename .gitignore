@@ -3,8 +3,8 @@ dist/
 
 # Jest
 coverage/
-integration-tests/.env
-integration-tests/reports/
+tests/.env
+tests/reports/
 
 # Miscellaneous
 .DS_Store

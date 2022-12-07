@@ -1,9 +1,13 @@
+import { currentDateEpochSeconds } from '../../../../src/utils/currentDateEpochSeconds'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME
 } from '../../constants/zendeskParameters'
-import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
+import {
+  DynamoDBItem,
+  ItemDetails
+} from '../../../integration-tests/types/dynamoDBItem'
 import { getEnv } from '../helpers'
 import { invokeLambdaFunction } from './invokeLambdaFunction'
 
@@ -68,10 +72,16 @@ const getFieldValue = (ticketDetails: ItemDetails, fieldID: number) => {
   return field.pop()?.value
 }
 
+const fiveDaysInSeconds = 5 * 24 * 60 * 60
+
+const calculateDatabaseExpiryTime = () =>
+  currentDateEpochSeconds() + fiveDaysInSeconds
+
 const generateDynamoTableEntry = (
   zendeskId: string,
   ticketDetails: ItemDetails
 ) => ({
+  ttl: { N: calculateDatabaseExpiryTime().toString() },
   zendeskId: { S: `${zendeskId}` },
   requestInfo: {
     M: {

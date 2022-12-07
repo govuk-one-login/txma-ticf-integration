@@ -5,7 +5,7 @@ import {
   ZENDESK_BASE_URL,
   ZENDESK_TICKETS_ENDPOINT
 } from '../../constants/zendeskParameters'
-import { ZendeskComment } from '../../types/zendeskComment'
+import { ZendeskComment } from '../../../integration-tests/types/zendeskComment'
 
 export const listZendeskTicketComments = async (
   ticketId: string

@@ -12,7 +12,7 @@ const findAvailableS3Locations = async (
 ) => {
   count++
 
-  if (count >= 10) {
+  if (count > 10) {
     throw new Error('Could not find available test location')
   }
 
