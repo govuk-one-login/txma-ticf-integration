@@ -2,7 +2,7 @@ import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME
-} from '../../../integration-tests/constants/zendeskParameters'
+} from '../../constants/zendeskParameters'
 import {
   DynamoDBItem,
   ItemDetails

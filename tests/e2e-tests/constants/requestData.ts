@@ -15,7 +15,7 @@ import {
   ZendeskFormFieldIDs,
   ZENDESK_PII_FORM_ID,
   ZENDESK_RECIPIENT_NAME
-} from '../../integration-tests/constants/zendeskParameters'
+} from '../../shared-test-code/constants/zendeskParameters'
 
 export const endToEndFlowRequestDataWithEventId: ZendeskRequestData = {
   request: {

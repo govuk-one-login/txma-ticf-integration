@@ -2,11 +2,8 @@ import {
   generateRandomNumber,
   generateZendeskRequestDate,
   getEnv
-} from '../../../shared-test-code/utils/helpers'
-import {
-  TEST_DATA_DATA_PATHS,
-  TEST_DATA_EVENT_ID
-} from '../../../shared-test-code/constants/awsParameters'
+} from '../../utils/helpers'
+import { TEST_DATA_DATA_PATHS, TEST_DATA_EVENT_ID } from '../awsParameters'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_PII_FORM_ID,

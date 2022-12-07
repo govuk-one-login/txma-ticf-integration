@@ -9,7 +9,7 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { createZendeskTicket } from '../shared-test-code/utils/zendesk/createZendeskTicket'
-import { validRequestData } from './constants/requestData/dataCopyRequestData'
+import { validRequestData } from '../shared-test-code/constants/requestData/dataCopyRequestData'
 import {
   ANALYSIS_BUCKET_NAME,
   ATHENA_QUERY_DATA_TEST_DATE_PREFIX,

@@ -1,9 +1,9 @@
-import { ZendeskRequestData } from '../../types/zendeskRequestData'
+import { ZendeskRequestData } from '../../../integration-tests/types/zendeskRequestData'
 import {
   generateRandomNumber,
   generateZendeskRequestDate,
   getEnv
-} from '../../../shared-test-code/utils/helpers'
+} from '../../utils/helpers'
 import {
   INTEGRATION_TEST_DATE,
   TEST_DATA_DATA_PATHS,
@@ -11,7 +11,7 @@ import {
   TEST_DATA_EVENT_ID,
   INTEGRATION_TEST_DATE_MIX_DATA,
   INTEGRATION_TEST_DATE_NO_DATA
-} from '../../../shared-test-code/constants/awsParameters'
+} from '../awsParameters'
 import {
   ZendeskFormFieldIDs,
   ZENDESK_RECIPIENT_NAME,

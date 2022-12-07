@@ -4,7 +4,7 @@ import {
   ZendeskFormFieldIDs,
   ZENDESK_END_USER_NAME,
   ZENDESK_PII_FORM_ID
-} from '../tests/integration-tests/constants/zendeskParameters'
+} from '../tests/shared-test-code/constants/zendeskParameters'
 import { getEnv } from '../tests/shared-test-code/utils/helpers'
 import { ZendeskRequestData } from '../tests/integration-tests/types/zendeskRequestData'
 

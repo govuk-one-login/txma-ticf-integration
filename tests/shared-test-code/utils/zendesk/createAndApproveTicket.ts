@@ -1,6 +1,6 @@
 import { makeApproveZendeskTicketRequest } from './approveZendeskTicket'
 import { createZendeskTicket } from './createZendeskTicket'
-import { validRequestData } from '../../../integration-tests/constants/requestData/dataCopyRequestData'
+import { validRequestData } from '../../constants/requestData/dataCopyRequestData'
 
 const createAndApproveTicket = async () => {
   if (!process.env.FIXED_DATA_REQUEST_DATE) {

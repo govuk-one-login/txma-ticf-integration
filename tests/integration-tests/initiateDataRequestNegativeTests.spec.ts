@@ -9,8 +9,8 @@ import {
   invalidRequestData,
   setCustomFieldValueForRequest,
   validRequestData
-} from './constants/requestData/dataCopyRequestData'
-import { ZendeskFormFieldIDs } from './constants/zendeskParameters'
+} from '../shared-test-code/constants/requestData/dataCopyRequestData'
+import { ZendeskFormFieldIDs } from '../shared-test-code/constants/zendeskParameters'
 import {
   assertEventNotPresent,
   assertEventPresent,

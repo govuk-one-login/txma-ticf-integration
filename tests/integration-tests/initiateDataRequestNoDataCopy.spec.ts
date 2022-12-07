@@ -13,7 +13,7 @@ import {
 import {
   validRequestData,
   validRequestNoData
-} from './constants/requestData/dataCopyRequestData'
+} from '../shared-test-code/constants/requestData/dataCopyRequestData'
 import {
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern,

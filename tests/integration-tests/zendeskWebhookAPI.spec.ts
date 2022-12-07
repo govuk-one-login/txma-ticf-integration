@@ -9,14 +9,14 @@ import {
   ZENDESK_END_USER_EMAIL,
   ZENDESK_END_USER_NAME,
   ZENDESK_RECIPIENT_NAME
-} from './constants/zendeskParameters'
+} from '../shared-test-code/constants/zendeskParameters'
 import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
 import { generateSignatureHeaders } from '../shared-test-code/utils/zendesk/generateSignatureHeaders'
 import {
   TEST_DATA_DATA_PATHS,
   TEST_DATA_EVENT_ID
 } from '../shared-test-code/constants/awsParameters'
-import { validApiTestRequestData } from './constants/requestData/webhookAPIRequestData'
+import { validApiTestRequestData } from '../shared-test-code/constants/requestData/webhookAPIRequestData'
 
 const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
 

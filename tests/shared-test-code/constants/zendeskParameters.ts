@@ -1,4 +1,4 @@
-import { getEnv } from '../../shared-test-code/utils/helpers'
+import { getEnv } from '../utils/helpers'
 
 export const ZENDESK_ADMIN_EMAIL = getEnv('ZENDESK_ADMIN_EMAIL')
 export const ZENDESK_AGENT_EMAIL = getEnv('ZENDESK_AGENT_EMAIL')

@@ -10,7 +10,7 @@ import {
   validGlacierRequestData,
   validRequestData,
   validStandardAndGlacierTiersRequestData
-} from './constants/requestData/dataCopyRequestData'
+} from '../shared-test-code/constants/requestData/dataCopyRequestData'
 import {
   ANALYSIS_BUCKET_NAME,
   AUDIT_BUCKET_NAME,

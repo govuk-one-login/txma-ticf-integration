@@ -4,7 +4,7 @@ import {
   ZENDESK_ADMIN_EMAIL,
   ZENDESK_BASE_URL,
   ZENDESK_TICKETS_ENDPOINT
-} from '../../../integration-tests/constants/zendeskParameters'
+} from '../../constants/zendeskParameters'
 
 export const deleteZendeskTicket = async (ticketId: string) => {
   try {
