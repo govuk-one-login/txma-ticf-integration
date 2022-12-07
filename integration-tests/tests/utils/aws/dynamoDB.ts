@@ -69,8 +69,10 @@ const getFieldValue = (ticketDetails: ItemDetails, fieldID: number) => {
   return field.pop()?.value
 }
 
+const fiveDaysInSeconds = 5 * 24 * 60 * 60
+
 const calculateDatabaseExpiryTime = () =>
-  currentDateEpochSeconds() + 5 * 24 * 60 * 60
+  currentDateEpochSeconds() + fiveDaysInSeconds
 
 const generateDynamoTableEntry = (
   zendeskId: string,
