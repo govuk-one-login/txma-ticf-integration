@@ -11,7 +11,7 @@ import { pause } from '../helpers'
 export const getCloudWatchLogEventsGroupByMessagePattern = async (
   logGroupName: string,
   eventMessagePatterns: string[],
-  maxAttempts = 25
+  maxAttempts = 10
 ) => {
   const event = await waitForEventWithPatterns(
     logGroupName,
