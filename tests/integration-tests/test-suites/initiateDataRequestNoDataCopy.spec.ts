@@ -1,18 +1,10 @@
 import {
-  setCustomFieldValueForRequest,
-  validRequestData
-} from '../constants/dataCopyRequestData'
-import { ZendeskFormFieldIDs } from '../../shared-test-code/constants/zendeskParameters'
-import {
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
-import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
-import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
-import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import { getEnv } from '../../shared-test-code/utils/helpers'
 import {
   DATA_SENT_TO_QUEUE_MESSAGE,
@@ -20,41 +12,24 @@ import {
   WEBHOOK_RECEIVED_MESSAGE
 } from '../constants/cloudWatchLogMessages'
 import { TEST_FILE_NAME } from '../constants/testData'
+import { getTicketDetailsForId } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
+import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 const NOTHING_TO_COPY_MESSAGE =
   'Number of standard tier files to copy was 0, glacier tier files to copy was 0'
 const DATA_AVAILABLE_MESSAGE = 'All data available, queuing Athena query'
 
 describe('Data should not be copied to analysis bucket', () => {
-  const generateTestDataWithCustomDate = (date: string) => {
-    const data = validRequestData
-
-    setCustomFieldValueForRequest(
-      data,
-      ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
-      date
-    )
-    return data
-  }
-
   describe('valid requests for no data copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      const availableDate = await getAvailableTestDate()
-
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
-      )
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData = getTicketDetailsForId(5)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      console.log('request for valid data, no files present test ended')
-    })
-
-    test('request for valid data, no files present', async () => {
-      console.log('request for valid data, no files present test started')
+    it('request for valid data, no files present', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -109,23 +84,12 @@ describe('Data should not be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
-      )
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData = getTicketDetailsForId(1)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      await deleteZendeskTicket(ticketId)
-      console.log(
-        'request for valid data already in analysis bucket test ended'
-      )
-    })
-
-    test('request for valid data already in analysis bucket', async () => {
-      console.log(
-        'request for valid data already in analysis bucket test started'
-      )
+    it('request for valid data already in analysis bucket', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -143,7 +107,6 @@ describe('Data should not be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
