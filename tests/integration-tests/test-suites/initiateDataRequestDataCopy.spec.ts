@@ -177,9 +177,8 @@ describe('Data should be copied to analysis bucket', () => {
 
     beforeEach(async () => {
       const availableDate = await getAvailableTestDate()
-      console.log(availableDate)
 
-      const response = await copyAuditDataFromTestDataBucket(
+      await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
         `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
         TEST_FILE_NAME,
@@ -187,7 +186,6 @@ describe('Data should be copied to analysis bucket', () => {
         true
       )
 
-      console.log(response)
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
         `${availableDate.prefix}/02/${TEST_FILE_NAME}`,
