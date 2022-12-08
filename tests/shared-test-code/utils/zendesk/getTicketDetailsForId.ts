@@ -1,6 +1,5 @@
-import { ZendeskWebhookRequest } from '../../../integration-tests/types/zendeskWebhookRequest'
-
-import { ticketIdToResponseMapping } from '../../constants/requestData/ticketIdToResponseMapping'
+import { ZendeskWebhookRequest } from '../../types/zendeskWebhookRequest'
+import { ticketIdToResponseMapping } from './ticketIdToResponseMapping'
 
 export const getTicketDetailsForId = (
   testCaseNumber: number

@@ -1,4 +1,4 @@
-import { EnvironmentVar } from '../../integration-tests/types/environmentVar'
+import { EnvironmentVar } from '../types/environmentVar'
 
 export const generateRandomNumber = () => {
   return Math.floor(Math.random() * 100).toString()
@@ -31,8 +31,6 @@ export const pause = (delay: number): Promise<unknown> => {
   return new Promise((r) => setTimeout(r, delay))
 }
 
-export const appendRandomIdToFilename = (fileName: string) => {
-  return (
-    fileName.replace('.gz', '') + Math.round(Math.random() * 100000) + '.gz'
-  )
+export const currentDateEpochSeconds = (): number => {
+  return Math.round(Date.now() / 1000)
 }

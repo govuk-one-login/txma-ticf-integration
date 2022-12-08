@@ -1,24 +1,26 @@
-import { ZendeskWebhookRequest } from '../../../integration-tests/types/zendeskWebhookRequest'
-import { generateZendeskRequestDate } from '../../utils/helpers'
 import {
-  END_TO_END_TEST_DATA_PATH,
   END_TO_END_TEST_DATE,
   END_TO_END_TEST_EVENT_ID,
-  END_TO_END_TEST_JOURNEY_ID,
-  END_TO_END_TEST_SESSION_ID,
+  END_TO_END_TEST_DATA_PATH,
   END_TO_END_TEST_USER_ID,
+  END_TO_END_TEST_SESSION_ID,
+  END_TO_END_TEST_JOURNEY_ID
+} from '../../../e2e-tests/constants/testData'
+import {
+  TEST_DATA_EVENT_ID,
+  TEST_DATA_DATA_PATHS,
   INTEGRATION_TEST_DATE_GLACIER,
   INTEGRATION_TEST_DATE_MIX_DATA,
-  INTEGRATION_TEST_DATE_NO_DATA,
-  TEST_DATA_DATA_PATHS,
-  TEST_DATA_EVENT_ID
-} from '../awsParameters'
+  INTEGRATION_TEST_DATE_NO_DATA
+} from '../../../integration-tests/constants/testData'
 import {
-  ZENDESK_RECIPIENT_EMAIL,
-  ZENDESK_RECIPIENT_NAME,
   ZENDESK_REQUESTER_EMAIL,
-  ZENDESK_REQUESTER_NAME
-} from '../zendeskParameters'
+  ZENDESK_REQUESTER_NAME,
+  ZENDESK_RECIPIENT_EMAIL,
+  ZENDESK_RECIPIENT_NAME
+} from '../../constants/zendeskParameters'
+import { ZendeskWebhookRequest } from '../../types/zendeskWebhookRequest'
+import { generateZendeskRequestDate } from '../helpers'
 
 const createUniqueTicketIdWithMappingSuffix = (mappingId: number) => {
   return Date.now().toString() + 0 + mappingId

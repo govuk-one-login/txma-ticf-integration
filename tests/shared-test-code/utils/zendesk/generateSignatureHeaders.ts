@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { ZendeskWebhookRequest } from '../../../integration-tests/types/zendeskWebhookRequest'
+import { ZendeskWebhookRequest } from '../../types/zendeskWebhookRequest'
 import { getEnv } from '../helpers'
 
 export const generateSignatureHeaders = (

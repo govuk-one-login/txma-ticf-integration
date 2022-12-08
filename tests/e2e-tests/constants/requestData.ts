@@ -1,8 +1,12 @@
-import { ZendeskRequestData } from '../../integration-tests/types/zendeskRequestData'
+import { ZendeskRequestData } from '../../shared-test-code/types/zendeskRequestData'
 import {
   generateRandomNumber,
   getEnv
 } from '../../shared-test-code/utils/helpers'
+import {
+  ZendeskFormFieldIDs,
+  ZENDESK_PII_FORM_ID
+} from '../../shared-test-code/constants/zendeskParameters'
 import {
   END_TO_END_TEST_DATA_PATH,
   END_TO_END_TEST_DATE,
@@ -10,12 +14,7 @@ import {
   END_TO_END_TEST_JOURNEY_ID,
   END_TO_END_TEST_SESSION_ID,
   END_TO_END_TEST_USER_ID
-} from '../../shared-test-code/constants/awsParameters'
-import {
-  ZendeskFormFieldIDs,
-  ZENDESK_PII_FORM_ID,
-  ZENDESK_RECIPIENT_NAME
-} from '../../shared-test-code/constants/zendeskParameters'
+} from './testData'
 
 export const endToEndFlowRequestDataWithEventId: ZendeskRequestData = {
   request: {
@@ -48,7 +47,7 @@ export const endToEndFlowRequestDataWithEventId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
+        value: getEnv('ZENDESK_RECIPIENT_NAME')
       }
     ],
     comment: {
@@ -88,7 +87,7 @@ export const endToEndFlowRequestDataWithUserId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
+        value: getEnv('ZENDESK_RECIPIENT_NAME')
       }
     ],
     comment: {
@@ -128,7 +127,7 @@ export const endToEndFlowRequestDataWithSessionId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
+        value: getEnv('ZENDESK_RECIPIENT_NAME')
       }
     ],
     comment: {
@@ -168,7 +167,7 @@ export const endToEndFlowRequestDataWithJourneyId: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
+        value: getEnv('ZENDESK_RECIPIENT_NAME')
       }
     ],
     comment: {
@@ -208,7 +207,7 @@ export const endToEndFlowRequestDataNoMatch: ZendeskRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
+        value: getEnv('ZENDESK_RECIPIENT_NAME')
       }
     ],
     comment: {

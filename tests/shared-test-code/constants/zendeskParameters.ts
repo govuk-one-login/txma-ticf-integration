@@ -1,5 +1,8 @@
 import { getEnv } from '../utils/helpers'
 
+export const CLOSE_ZENDESK_TICKET_COMMENT =
+  'Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: From Date is in the future, To Date is in the future'
+
 export const ZENDESK_ADMIN_EMAIL = getEnv('ZENDESK_ADMIN_EMAIL')
 export const ZENDESK_AGENT_EMAIL = getEnv('ZENDESK_AGENT_EMAIL')
 export const ZENDESK_END_USER_EMAIL = getEnv('ZENDESK_END_USER_EMAIL')

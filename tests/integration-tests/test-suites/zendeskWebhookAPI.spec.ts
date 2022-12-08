@@ -1,6 +1,6 @@
-import { getTicketDetailsForId } from '../shared-test-code/utils/zendesk/getTicketDetailsForId'
-import { sendWebhookRequest } from '../shared-test-code/utils/zendesk/sendWebhookRequest'
-import { ZendeskWebhookRequest } from './types/zendeskWebhookRequest'
+import { getTicketDetailsForId } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
+import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
+import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
 
 describe('Zendesk request integrity', () => {
   it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
