@@ -29,7 +29,7 @@ describe('startCopyJob', () => {
     await startCopyJob(fileList, ZENDESK_TICKET_ID)
     expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
       ConfirmationRequired: false,
-      ClientRequestToken: `${TEST_ANALYSIS_BUCKET}-copy-${ZENDESK_TICKET_ID}`,
+      ClientRequestToken: `copy-${ZENDESK_TICKET_ID}`,
       AccountId: TEST_AWS_ACCOUNT_ID,
       RoleArn: TEST_BATCH_JOB_ROLE_ARN,
       Priority: 1,
