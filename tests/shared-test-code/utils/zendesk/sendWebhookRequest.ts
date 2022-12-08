@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ZendeskWebhookRequest } from '../../../integration-tests/types/zendeskWebhookRequest'
+import { ZendeskWebhookRequest } from '../../types/zendeskWebhookRequest'
 import { getEnv } from '../helpers'
 import { generateSignatureHeaders } from './generateSignatureHeaders'
 
