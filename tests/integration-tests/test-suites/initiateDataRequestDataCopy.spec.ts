@@ -3,7 +3,6 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
-
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { getTicketDetailsForId } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
@@ -12,14 +11,8 @@ import {
   SQS_EVENT_RECEIVED_MESSAGE,
   WEBHOOK_RECEIVED_MESSAGE
 } from '../constants/cloudWatchLogMessages'
-import { ZendeskFormFieldIDs } from '../../shared-test-code/constants/zendeskParameters'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 import { getEnv } from '../../shared-test-code/utils/helpers'
-import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
-import {
-  validRequestData,
-  setCustomFieldValueForRequest
-} from '../constants/dataCopyRequestData'
 import { TEST_FILE_NAME } from '../constants/testData'
 
 describe('Data should be copied to analysis bucket', () => {
@@ -36,17 +29,6 @@ describe('Data should be copied to analysis bucket', () => {
   const S3_GLACIER_RESTORE_STARTED_MESSAGE =
     'Started Glacier restore for zendesk ticket with id'
 
-  const generateTestDataWithCustomDate = (date: string) => {
-    const data = validRequestData
-
-    setCustomFieldValueForRequest(
-      data,
-      ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
-      date
-    )
-    return data
-  }
-
   describe('valid requests for standard copy - analysis bucket empty', () => {
     let ticketId: string
 
@@ -59,9 +41,6 @@ describe('Data should be copied to analysis bucket', () => {
         TEST_FILE_NAME,
         'STANDARD',
         true
-      )
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
       )
       const defaultWebhookRequestData = getTicketDetailsForId(1)
       ticketId = defaultWebhookRequestData.zendeskId
@@ -142,10 +121,8 @@ describe('Data should be copied to analysis bucket', () => {
         'GLACIER',
         true
       )
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
-      )
       const defaultWebhookRequestData = getTicketDetailsForId(3)
+      console.log('this is the webhook request: ', defaultWebhookRequestData)
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
