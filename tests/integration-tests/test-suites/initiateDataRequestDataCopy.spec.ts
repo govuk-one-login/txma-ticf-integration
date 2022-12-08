@@ -29,7 +29,7 @@ describe('Data should be copied to analysis bucket', () => {
   const S3_GLACIER_RESTORE_STARTED_MESSAGE =
     'Started Glacier restore for zendesk ticket with id'
 
-  describe('valid requests for standard copy - analysis bucket empty', () => {
+  describe('standard copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
@@ -47,12 +47,7 @@ describe('Data should be copied to analysis bucket', () => {
       await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      console.log('request for valid data all in standard tier test ended')
-    })
-
-    it('request for valid data all in standard tier', async () => {
-      console.log('request for valid data all in standard tier test started')
+    it('data all in standard tier', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -70,7 +65,6 @@ describe('Data should be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -108,7 +102,7 @@ describe('Data should be copied to analysis bucket', () => {
     })
   })
 
-  describe('valid requests for glacier copy - analysis bucket empty', () => {
+  describe('glacier copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
@@ -122,18 +116,11 @@ describe('Data should be copied to analysis bucket', () => {
         true
       )
       const defaultWebhookRequestData = getTicketDetailsForId(3)
-      console.log('this is the webhook request: ', defaultWebhookRequestData)
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      console.log('request for valid data all in glacier tier test ended')
-    })
-
-    it.only('request for valid data all in glacier tier', async () => {
-      console.log('request for valid data all in glacier tier test started')
-
+    it('data all in glacier tier', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -174,7 +161,7 @@ describe('Data should be copied to analysis bucket', () => {
     })
   })
 
-  describe('valid requests for standard and glacier copy - analysis bucket empty', () => {
+  describe('standard and glacier copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
@@ -200,17 +187,7 @@ describe('Data should be copied to analysis bucket', () => {
       await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      console.log(
-        'valid request with data in standard and glacier tier test ended'
-      )
-    })
-
-    it('valid request with data in standard and glacier tier', async () => {
-      console.log(
-        'valid request with data in standard and glacier tier test started'
-      )
-
+    it('data in standard and glacier tier', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -228,7 +205,6 @@ describe('Data should be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
