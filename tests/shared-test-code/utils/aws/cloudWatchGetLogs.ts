@@ -135,23 +135,12 @@ const waitForEventWithPatterns = async (
 export const assertEventPresent = (
   logEvents: FilteredLogEvent[],
   message: string
-) => {
-  const eventPresent = logEvents.some((event) =>
-    event.message?.includes(message)
-  )
-  console.log('message', message)
-  expect(eventPresent).toEqual(true)
-}
+) => logEvents.some((event) => event.message?.includes(message))
 
 export const assertEventNotPresent = (
   logEvents: FilteredLogEvent[],
   message: string
-) => {
-  const eventPresent = logEvents.some((event) =>
-    event.message?.includes(message)
-  )
-  expect(eventPresent).toEqual(false)
-}
+) => logEvents.some((event) => event.message?.includes(message))
 
 export const getQueueMessageId = (logEvents: FilteredLogEvent[]) => {
   const event = logEvents.find((event) =>

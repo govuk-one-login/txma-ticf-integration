@@ -78,8 +78,17 @@ describe('Athena Query SQL generation and execution', () => {
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
-      assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
-      assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
+      const isAthenaSqlGeneratedMessageInLogs = assertEventPresent(
+        athenaQueryEvents,
+        ATHENA_SQL_GENERATED_MESSAGE
+      )
+      expect(isAthenaSqlGeneratedMessageInLogs).toBeTrue()
+
+      const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
+        athenaQueryEvents,
+        ATHENA_INITIATED_QUERY_MESSAGE
+      )
+      expect(isAthenaInitiatedQueryMessageInLogs).toBeTrue()
 
       const value = await getValueFromDynamoDB(
         AUDIT_REQUEST_DYNAMODB_TABLE,
@@ -124,8 +133,18 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
-      assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
+
+      const isAthenaSqlGeneratedMessageInLogs = assertEventPresent(
+        athenaQueryEvents,
+        ATHENA_SQL_GENERATED_MESSAGE
+      )
+      expect(isAthenaSqlGeneratedMessageInLogs).toBeTrue()
+
+      const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
+        athenaQueryEvents,
+        ATHENA_INITIATED_QUERY_MESSAGE
+      )
+      expect(isAthenaInitiatedQueryMessageInLogs).toBeTrue()
 
       const value = await getValueFromDynamoDB(
         AUDIT_REQUEST_DYNAMODB_TABLE,
@@ -172,8 +191,18 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(athenaQueryEvents, ATHENA_SQL_GENERATED_MESSAGE)
-      assertEventPresent(athenaQueryEvents, ATHENA_INITIATED_QUERY_MESSAGE)
+
+      const isAthenaSqlGeneratedMessageInLogs = assertEventPresent(
+        athenaQueryEvents,
+        ATHENA_SQL_GENERATED_MESSAGE
+      )
+      expect(isAthenaSqlGeneratedMessageInLogs).toBeTrue()
+
+      const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
+        athenaQueryEvents,
+        ATHENA_INITIATED_QUERY_MESSAGE
+      )
+      expect(isAthenaInitiatedQueryMessageInLogs).toBeTrue()
 
       const value = await getValueFromDynamoDB(
         AUDIT_REQUEST_DYNAMODB_TABLE,
@@ -223,7 +252,12 @@ describe('Athena Query SQL generation and execution', () => {
       console.log('this is athenaQueryEvents: ', athenaQueryEvents)
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(athenaQueryEvents, ATHENA_HANDLER_INVOKE_ERROR)
+
+      const isAthenaHandlerInvokeErrorInLogs = assertEventPresent(
+        athenaQueryEvents,
+        ATHENA_HANDLER_INVOKE_ERROR
+      )
+      expect(isAthenaHandlerInvokeErrorInLogs).toBeTrue()
     })
   })
 })

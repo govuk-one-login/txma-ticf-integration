@@ -59,7 +59,11 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      const isDataSentToQueueMessageInLogs = assertEventPresent(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
+      expect(isDataSentToQueueMessageInLogs).toBeTrue()
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
 
@@ -71,7 +75,11 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
+      const isNothingToCopyMessageInLogs = assertEventPresent(
+        processDataRequestEvents,
+        NOTHING_TO_COPY_MESSAGE
+      )
+      expect(isNothingToCopyMessageInLogs).toBeTrue()
     })
   })
 
@@ -119,7 +127,11 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      const isDataSentToQueueMessageInLogs = assertEventPresent(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
+      expect(isDataSentToQueueMessageInLogs).toBeTrue()
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
       console.log('messageId', messageId)
@@ -132,8 +144,17 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
-      assertEventPresent(processDataRequestEvents, DATA_AVAILABLE_MESSAGE)
+      const isNothingToCopyMessageInLogs = assertEventPresent(
+        processDataRequestEvents,
+        NOTHING_TO_COPY_MESSAGE
+      )
+      expect(isNothingToCopyMessageInLogs).toBeTrue()
+
+      const isDataAvailableMessageInLogs = assertEventPresent(
+        processDataRequestEvents,
+        DATA_AVAILABLE_MESSAGE
+      )
+      expect(isDataAvailableMessageInLogs).toBeTrue()
     })
   })
 })

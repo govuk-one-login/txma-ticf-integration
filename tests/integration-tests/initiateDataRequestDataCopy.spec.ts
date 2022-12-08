@@ -3,14 +3,6 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
 } from '../shared-test-code/utils/aws/cloudWatchGetLogs'
-import { createZendeskTicket } from '../shared-test-code/utils/zendesk/createZendeskTicket'
-import { approveZendeskTicket } from '../shared-test-code/utils/zendesk/approveZendeskTicket'
-import { deleteZendeskTicket } from '../shared-test-code/utils/zendesk/deleteZendeskTicket'
-import {
-  validGlacierRequestData,
-  validRequestData,
-  validStandardAndGlacierTiersRequestData
-} from '../shared-test-code/constants/requestData/dataCopyRequestData'
 import {
   ANALYSIS_BUCKET_NAME,
   AUDIT_BUCKET_NAME,
@@ -27,6 +19,8 @@ import {
 import { copyAuditDataFromTestDataBucket } from '../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { deleteAuditDataWithPrefix } from '../shared-test-code/utils/aws/s3DeleteAuditDataWithPrefix'
 import { appendRandomIdToFilename } from '../shared-test-code/utils/helpers'
+import { sendWebhookRequest } from '../shared-test-code/utils/zendesk/sendWebhookRequest'
+import { getTicketDetailsForId } from '../shared-test-code/utils/zendesk/getTicketDetailsForId'
 
 describe('Data should be copied to analysis bucket', () => {
   const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'
@@ -59,16 +53,16 @@ describe('Data should be copied to analysis bucket', () => {
         `firehose/${INTEGRATION_TEST_DATE_PREFIX}/01/${TEST_FILE_NAME}`,
         TEST_FILE_NAME
       )
-      ticketId = await createZendeskTicket(validRequestData)
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData = getTicketDetailsForId(1)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
     afterEach(async () => {
-      await deleteZendeskTicket(ticketId)
       console.log('request for valid data all in standard tier test ended')
     })
 
-    test('request for valid data all in standard tier', async () => {
+    it('request for valid data all in standard tier', async () => {
       console.log('request for valid data all in standard tier test started')
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -77,7 +71,11 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      const isDataSentToQueueMessageInLogs = assertEventPresent(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
+      expect(isDataSentToQueueMessageInLogs).toBeTrue()
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
       console.log('messageId', messageId)
@@ -88,14 +86,19 @@ describe('Data should be copied to analysis bucket', () => {
           [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
           50
         )
-
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isStandardTierObjectsToCopyMessageInLogs = assertEventPresent(
         processDataRequestEvents,
         STANDARD_TIER_OBJECTS_TO_COPY_MESSAGE
       )
-      assertEventPresent(processDataRequestEvents, S3_COPY_JOB_STARTED_MESSAGE)
+      expect(isStandardTierObjectsToCopyMessageInLogs).toBeTrue()
+
+      const isCopyJobStartedMessageInLogs = assertEventPresent(
+        processDataRequestEvents,
+        S3_COPY_JOB_STARTED_MESSAGE
+      )
+      expect(isCopyJobStartedMessageInLogs).toBeTrue()
 
       const copyCompletedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -105,7 +108,11 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(copyCompletedEvents).not.toEqual([])
 
-      assertEventPresent(copyCompletedEvents, COPY_COMPLETE_MESSAGE)
+      const isCopyCompleteMessageInLogs = assertEventPresent(
+        copyCompletedEvents,
+        COPY_COMPLETE_MESSAGE
+      )
+      expect(isCopyCompleteMessageInLogs).toBeTrue()
     })
   })
 
@@ -129,16 +136,18 @@ describe('Data should be copied to analysis bucket', () => {
         TEST_FILE_NAME,
         'GLACIER'
       )
-      ticketId = await createZendeskTicket(validGlacierRequestData)
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData = getTicketDetailsForId(3)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
     afterEach(async () => {
       console.log('request for valid data all in glacier tier test ended')
     })
 
-    test('request for valid data all in glacier tier', async () => {
+    it.only('request for valid data all in glacier tier', async () => {
       console.log('request for valid data all in glacier tier test started')
+
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
@@ -146,7 +155,11 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      const isDataSentToQueueMessageInLogs = assertEventPresent(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
+      expect(isDataSentToQueueMessageInLogs).toBeTrue()
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
 
@@ -158,14 +171,17 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isGlacierTierObjectCopyMessageInLogs = assertEventPresent(
         processDataRequestEvents,
         GLACIER_TIER_OBJECTS_TO_COPY_MESSAGE
       )
-      assertEventPresent(
+      expect(isGlacierTierObjectCopyMessageInLogs).toBeTrue()
+
+      const isGlacierRestoreStartedMessageInLogs = assertEventPresent(
         processDataRequestEvents,
         S3_GLACIER_RESTORE_STARTED_MESSAGE
       )
+      expect(isGlacierRestoreStartedMessageInLogs).toBeTrue()
     })
   })
 
@@ -192,10 +208,9 @@ describe('Data should be copied to analysis bucket', () => {
         `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}/02/${TEST_FILE_NAME}`,
         TEST_FILE_NAME
       )
-      ticketId = await createZendeskTicket(
-        validStandardAndGlacierTiersRequestData
-      )
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData = getTicketDetailsForId(4)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
     afterEach(async () => {
@@ -204,7 +219,7 @@ describe('Data should be copied to analysis bucket', () => {
       )
     })
 
-    test('valid request with data in standard and glacier tier', async () => {
+    it('valid request with data in standard and glacier tier', async () => {
       console.log(
         'valid request with data in standard and glacier tier test started'
       )
@@ -216,7 +231,11 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      const isDataSentToQueueMessageInLogs = assertEventPresent(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
+      expect(isDataSentToQueueMessageInLogs).toBeTrue()
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
       console.log('messageId', messageId)
@@ -229,10 +248,11 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isMixTierObjectsToCopyMessageInLogs = assertEventPresent(
         processDataRequestEvents,
         MIX_TIER_OBJECTS_TO_COPY_MESSAGE
       )
+      expect(isMixTierObjectsToCopyMessageInLogs).toBeTrue()
     })
   })
 })

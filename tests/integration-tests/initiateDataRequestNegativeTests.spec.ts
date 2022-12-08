@@ -55,11 +55,17 @@ describe('Invalid requests should not start a data copy', () => {
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
 
-      assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
-      assertEventNotPresent(
+      const isWebhookInvalidMessageInLogs = assertEventPresent(
+        initiateDataRequestEvents,
+        WEBHOOK_INVALID_MESSAGE
+      )
+      expect(isWebhookInvalidMessageInLogs).toBeTrue()
+
+      const isDataSentToQueueMessageNotInLogs = assertEventNotPresent(
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
+      expect(isDataSentToQueueMessageNotInLogs).toBeTrue()
 
       const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')
@@ -95,11 +101,17 @@ describe('Invalid requests should not start a data copy', () => {
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
 
-      assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
-      assertEventNotPresent(
+      const isWebhookInvalidMessageInLogs = assertEventPresent(
+        initiateDataRequestEvents,
+        WEBHOOK_INVALID_MESSAGE
+      )
+      expect(isWebhookInvalidMessageInLogs).toBeTrue()
+
+      const isDataSentToQueueMessageNotInLogs = assertEventNotPresent(
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
+      expect(isDataSentToQueueMessageNotInLogs).toBeTrue()
 
       const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')

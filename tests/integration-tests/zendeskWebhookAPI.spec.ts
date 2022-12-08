@@ -6,7 +6,6 @@ describe('Zendesk request integrity', () => {
   it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
     const defaultWebhookRequestData = getTicketDetailsForId(1)
     const invalidSignature = 'cCxJHacr678ZZigFZZlYq4qz2XLWPEOeS+PPDuTivwQ='
-
     const headers = {
       'X-Zendesk-Webhook-Signature': invalidSignature
     }
@@ -15,6 +14,7 @@ describe('Zendesk request integrity', () => {
       defaultWebhookRequestData,
       headers
     )
+
     expect(errorResponse.status).toEqual(400)
     expect(errorResponse.data.message).toEqual('Invalid request source')
   })
@@ -22,9 +22,11 @@ describe('Zendesk request integrity', () => {
 
 describe('Zendesk ticket check', () => {
   let defaultWebhookRequestData: ZendeskWebhookRequest
+
   beforeEach(() => {
     defaultWebhookRequestData = { ...getTicketDetailsForId(1) }
   })
+
   it('API Gateway returns 200 for a matching zendesk ticket', async () => {
     const response = await sendWebhookRequest(defaultWebhookRequestData)
 
@@ -36,6 +38,7 @@ describe('Zendesk ticket check', () => {
     defaultWebhookRequestData.zendeskId = '0'
 
     const errorResponse = await sendWebhookRequest(defaultWebhookRequestData)
+
     expect(errorResponse.status).toEqual(404)
     expect(errorResponse.data.message).toEqual('Zendesk ticket not found')
   })
@@ -43,7 +46,7 @@ describe('Zendesk ticket check', () => {
   it('API Gateway returns a 400 response if the request does not match info in corresponding Zendesk ticket', async () => {
     defaultWebhookRequestData.identifierType = 'journey_id'
     defaultWebhookRequestData.journeyIds = '3457879'
-    console.log('this is req data: ', defaultWebhookRequestData)
+
     const errorResponse = await sendWebhookRequest(defaultWebhookRequestData)
 
     expect(errorResponse.status).toEqual(400)
