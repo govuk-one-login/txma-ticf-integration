@@ -1,15 +1,8 @@
 import { currentDateEpochSeconds } from '../helpers'
-import {
-  ZendeskFormFieldIDs,
-  ZENDESK_END_USER_EMAIL,
-  ZENDESK_END_USER_NAME
-} from '../../constants/zendeskParameters'
-import {
-  DynamoDBItem,
-  ItemDetails
-} from '../../../integration-tests/types/dynamoDBItem'
+import { ZendeskFormFieldIDs } from '../../constants/zendeskParameters'
 import { getEnv } from '../helpers'
 import { invokeLambdaFunction } from './invokeLambdaFunction'
+import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
 
 export const getValueFromDynamoDB = async (
   tableName: string,
@@ -117,10 +110,10 @@ const generateDynamoTableEntry = (
         )}`
       },
       requesterEmail: {
-        S: `${ZENDESK_END_USER_EMAIL}`
+        S: `${getEnv('ZENDESK_END_USER_EMAIL')}`
       },
       requesterName: {
-        S: `${ZENDESK_END_USER_NAME}`
+        S: `${getEnv('ZENDESK_END_USER_NAME')}`
       },
       dataPaths: {
         L: getFieldListValues(

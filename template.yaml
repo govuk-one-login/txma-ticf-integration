@@ -687,6 +687,17 @@ Resources:
             ExpirationInDays: 7
             NoncurrentVersionExpiration:
               NoncurrentDays: 1
+          - !If
+            - TestRoleResources
+            - Id: DeleteAutoTestObjects
+              Status: Enabled
+              ExpirationInDays: 1
+              NoncurrentVersionExpiration:
+                NoncurrentDays: 1
+              TagFilters:
+                - Key: autoTest
+                  Value: 'true'
+            - !Ref AWS::NoValue
       LoggingConfiguration:
         DestinationBucketName: !Ref AnalysisLogsBucket
         LogFilePrefix: String

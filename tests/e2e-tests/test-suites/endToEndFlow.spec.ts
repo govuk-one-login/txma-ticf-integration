@@ -1,45 +1,34 @@
-import {
-  ANALYSIS_BUCKET_NAME,
-  AUDIT_BUCKET_NAME,
-  END_TO_END_TEST_DATE_PREFIX,
-  END_TO_END_TEST_EVENT_ID,
-  END_TO_END_TEST_FILE_NAME
-} from '../shared-test-code/constants/awsParameters'
-import { copyAuditDataFromTestDataBucket } from '../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { deleteAuditDataWithPrefix } from '../shared-test-code/utils/aws/s3DeleteAuditDataWithPrefix'
-import { approveZendeskTicket } from '../shared-test-code/utils/zendesk/approveZendeskTicket'
-import { createZendeskTicket } from '../shared-test-code/utils/zendesk/createZendeskTicket'
+import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
+import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
+import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
 import {
   endToEndFlowRequestDataNoMatch,
   endToEndFlowRequestDataWithEventId,
   endToEndFlowRequestDataWithJourneyId,
   endToEndFlowRequestDataWithSessionId,
   endToEndFlowRequestDataWithUserId
-} from './constants/requestData'
-import { downloadResultsFileAndParseData } from '../shared-test-code/utils/queryResults/downloadAndParseResults'
-import { deleteZendeskTicket } from '../shared-test-code/utils/zendesk/deleteZendeskTicket'
+} from '../constants/requestData'
+import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
+import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
+import { getEnv } from '../../shared-test-code/utils/helpers'
+import {
+  END_TO_END_TEST_DATE_PREFIX,
+  END_TO_END_TEST_EVENT_ID,
+  END_TO_END_TEST_FILE_NAME
+} from '../constants/testData'
 
 describe('Query results generated', () => {
   let zendeskId: string
 
   beforeEach(async () => {
-    await deleteAuditDataWithPrefix(
-      AUDIT_BUCKET_NAME,
-      `firehose/${END_TO_END_TEST_DATE_PREFIX}`
-    )
-
     await copyAuditDataFromTestDataBucket(
-      AUDIT_BUCKET_NAME,
+      getEnv('AUDIT_BUCKET_NAME'),
       `firehose/${END_TO_END_TEST_DATE_PREFIX}/01/${END_TO_END_TEST_FILE_NAME}`,
       END_TO_END_TEST_FILE_NAME
     )
   })
 
   afterEach(async () => {
-    await deleteAuditDataWithPrefix(
-      ANALYSIS_BUCKET_NAME,
-      `firehose/${END_TO_END_TEST_DATE_PREFIX}`
-    )
     await deleteZendeskTicket(zendeskId)
   })
 

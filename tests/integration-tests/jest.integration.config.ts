@@ -8,7 +8,8 @@ const config: Config.InitialOptions = {
     ZENDESK_ADMIN_EMAIL: 'txma-team2-ticf-admin-dev@test.gov.uk',
     ZENDESK_AGENT_EMAIL: 'txma-team2-ticf-approver-dev@test.gov.uk',
     ZENDESK_END_USER_EMAIL: 'txma-team2-ticf-analyst-dev@test.gov.uk',
-    ZENDESK_END_USER_NAME: 'Txma-team2-ticf-analyst-dev'
+    ZENDESK_END_USER_NAME: 'Txma-team2-ticf-analyst-dev',
+    ZENDESK_RECIPIENT_NAME: 'Test User'
   },
   preset: 'ts-jest',
   reporters: [

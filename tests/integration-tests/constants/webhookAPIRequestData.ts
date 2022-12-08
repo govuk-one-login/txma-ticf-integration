@@ -2,13 +2,12 @@ import {
   generateRandomNumber,
   generateZendeskRequestDate,
   getEnv
-} from '../../utils/helpers'
-import { TEST_DATA_DATA_PATHS, TEST_DATA_EVENT_ID } from '../awsParameters'
+} from '../../shared-test-code/utils/helpers'
 import {
   ZendeskFormFieldIDs,
-  ZENDESK_PII_FORM_ID,
-  ZENDESK_RECIPIENT_NAME
-} from '../zendeskParameters'
+  ZENDESK_PII_FORM_ID
+} from '../../shared-test-code/constants/zendeskParameters'
+import { TEST_DATA_DATA_PATHS, TEST_DATA_EVENT_ID } from './testData'
 
 export const validApiTestRequestData = {
   request: {
@@ -41,7 +40,7 @@ export const validApiTestRequestData = {
       },
       {
         id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
-        value: ZENDESK_RECIPIENT_NAME
+        value: getEnv('ZENDESK_RECIPIENT_NAME')
       }
     ],
     comment: {

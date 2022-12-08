@@ -1,4 +1,4 @@
-import { DynamoDBItem } from '../types/dynamoDBItem'
+import { DynamoDBItem } from '../../shared-test-code/types/dynamoDBItem'
 import { getEnv } from '../../shared-test-code/utils/helpers'
 
 export const dynamoDBItemDataPathAndPIITypes: DynamoDBItem = {

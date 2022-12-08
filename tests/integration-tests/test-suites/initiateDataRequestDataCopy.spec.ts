@@ -2,31 +2,24 @@ import {
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
-} from '../shared-test-code/utils/aws/cloudWatchGetLogs'
-import { createZendeskTicket } from '../shared-test-code/utils/zendesk/createZendeskTicket'
-import { approveZendeskTicket } from '../shared-test-code/utils/zendesk/approveZendeskTicket'
-import { deleteZendeskTicket } from '../shared-test-code/utils/zendesk/deleteZendeskTicket'
+} from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
+import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
+import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
+import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import {
-  validGlacierRequestData,
-  validRequestData,
-  validStandardAndGlacierTiersRequestData
-} from '../shared-test-code/constants/requestData/dataCopyRequestData'
+  setCustomFieldValueForRequest,
+  validRequestData
+} from '../constants/dataCopyRequestData'
+import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
+import { ZendeskFormFieldIDs } from '../../shared-test-code/constants/zendeskParameters'
+import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
+import { getEnv } from '../../shared-test-code/utils/helpers'
+import { TEST_FILE_NAME } from '../constants/testData'
 import {
-  ANALYSIS_BUCKET_NAME,
-  AUDIT_BUCKET_NAME,
   DATA_SENT_TO_QUEUE_MESSAGE,
-  INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-  INTEGRATION_TEST_DATE_PREFIX,
-  INTEGRATION_TEST_DATE_PREFIX_GLACIER,
-  INTEGRATION_TEST_DATE_PREFIX_MIX_DATA,
-  PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
   SQS_EVENT_RECEIVED_MESSAGE,
-  TEST_FILE_NAME,
   WEBHOOK_RECEIVED_MESSAGE
-} from '../shared-test-code/constants/awsParameters'
-import { copyAuditDataFromTestDataBucket } from '../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { deleteAuditDataWithPrefix } from '../shared-test-code/utils/aws/s3DeleteAuditDataWithPrefix'
-import { appendRandomIdToFilename } from '../shared-test-code/utils/helpers'
+} from '../constants/cloudWatchLogMessages'
 
 describe('Data should be copied to analysis bucket', () => {
   const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'
@@ -42,24 +35,33 @@ describe('Data should be copied to analysis bucket', () => {
   const S3_GLACIER_RESTORE_STARTED_MESSAGE =
     'Started Glacier restore for zendesk ticket with id'
 
+  const generateTestDataWithCustomDate = (date: string) => {
+    const data = validRequestData
+
+    setCustomFieldValueForRequest(
+      data,
+      ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+      date
+    )
+    return data
+  }
+
   describe('valid requests for standard copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      await deleteAuditDataWithPrefix(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
-      )
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}`
-      )
+      const availableDate = await getAvailableTestDate()
+
       await copyAuditDataFromTestDataBucket(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME
+        getEnv('AUDIT_BUCKET_NAME'),
+        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
+        TEST_FILE_NAME,
+        'STANDARD',
+        true
       )
-      ticketId = await createZendeskTicket(validRequestData)
+      ticketId = await createZendeskTicket(
+        generateTestDataWithCustomDate(availableDate.date)
+      )
       await approveZendeskTicket(ticketId)
     })
 
@@ -72,19 +74,22 @@ describe('Data should be copied to analysis bucket', () => {
       console.log('request for valid data all in standard tier test started')
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
-      const messageId = getQueueMessageId(initiateDataRequestEvents)
+      const messageId = getQueueMessageId(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
       console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
           50
         )
@@ -99,7 +104,7 @@ describe('Data should be copied to analysis bucket', () => {
 
       const copyCompletedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [COPY_COMPLETE_MESSAGE, 'zendeskId', ticketId],
           100
         )
@@ -113,23 +118,18 @@ describe('Data should be copied to analysis bucket', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      await deleteAuditDataWithPrefix(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_GLACIER}`
-      )
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_GLACIER}`
-      )
+      const availableDate = await getAvailableTestDate()
+
       await copyAuditDataFromTestDataBucket(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_GLACIER}/01/${appendRandomIdToFilename(
-          TEST_FILE_NAME
-        )}`,
+        getEnv('AUDIT_BUCKET_NAME'),
+        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
         TEST_FILE_NAME,
-        'GLACIER'
+        'GLACIER',
+        true
       )
-      ticketId = await createZendeskTicket(validGlacierRequestData)
+      ticketId = await createZendeskTicket(
+        generateTestDataWithCustomDate(availableDate.date)
+      )
       await approveZendeskTicket(ticketId)
     })
 
@@ -141,18 +141,21 @@ describe('Data should be copied to analysis bucket', () => {
       console.log('request for valid data all in glacier tier test started')
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
-      const messageId = getQueueMessageId(initiateDataRequestEvents)
+      const messageId = getQueueMessageId(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
           70
         )
@@ -173,27 +176,25 @@ describe('Data should be copied to analysis bucket', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      await deleteAuditDataWithPrefix(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}`
-      )
-      await deleteAuditDataWithPrefix(
-        ANALYSIS_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}`
-      )
+      const availableDate = await getAvailableTestDate()
+
       await copyAuditDataFromTestDataBucket(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}/01/${TEST_FILE_NAME}`,
+        getEnv('AUDIT_BUCKET_NAME'),
+        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
         TEST_FILE_NAME,
-        'GLACIER'
+        'GLACIER',
+        true
       )
+
       await copyAuditDataFromTestDataBucket(
-        AUDIT_BUCKET_NAME,
-        `firehose/${INTEGRATION_TEST_DATE_PREFIX_MIX_DATA}/02/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME
+        getEnv('AUDIT_BUCKET_NAME'),
+        `${availableDate.prefix}/02/${TEST_FILE_NAME}`,
+        TEST_FILE_NAME,
+        'STANDARD',
+        true
       )
       ticketId = await createZendeskTicket(
-        validStandardAndGlacierTiersRequestData
+        generateTestDataWithCustomDate(availableDate.date)
       )
       await approveZendeskTicket(ticketId)
     })
@@ -211,19 +212,22 @@ describe('Data should be copied to analysis bucket', () => {
 
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
       assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
 
-      const messageId = getQueueMessageId(initiateDataRequestEvents)
+      const messageId = getQueueMessageId(
+        initiateDataRequestEvents,
+        DATA_SENT_TO_QUEUE_MESSAGE
+      )
       console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
           50
         )

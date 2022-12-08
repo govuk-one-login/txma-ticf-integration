@@ -1,5 +1,6 @@
 export type EnvironmentVar = {
   name:
+    | 'AWS_REGION'
     | 'ANALYSIS_BUCKET_NAME'
     | 'AUDIT_BUCKET_NAME'
     | 'AUDIT_REQUEST_DYNAMODB_TABLE'
@@ -22,6 +23,7 @@ export type EnvironmentVar = {
     | 'ZENDESK_AGENT_EMAIL'
     | 'ZENDESK_API_KEY'
     | 'ZENDESK_END_USER_EMAIL'
+    | 'ZENDESK_END_USER_NAME'
     | 'ZENDESK_HOSTNAME'
     | 'ZENDESK_RECIPIENT_EMAIL'
     | 'ZENDESK_RECIPIENT_NAME'

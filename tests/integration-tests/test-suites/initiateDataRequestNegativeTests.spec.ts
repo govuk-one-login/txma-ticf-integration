@@ -1,26 +1,28 @@
 import {
-  CLOSE_ZENDESK_TICKET_COMMENT,
-  DATA_SENT_TO_QUEUE_MESSAGE,
-  INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
-  WEBHOOK_INVALID_MESSAGE,
-  WEBHOOK_RECEIVED_MESSAGE
-} from '../shared-test-code/constants/awsParameters'
-import {
   invalidRequestData,
   setCustomFieldValueForRequest,
   validRequestData
-} from '../shared-test-code/constants/requestData/dataCopyRequestData'
-import { ZendeskFormFieldIDs } from '../shared-test-code/constants/zendeskParameters'
+} from '../constants/dataCopyRequestData'
+import {
+  CLOSE_ZENDESK_TICKET_COMMENT,
+  ZendeskFormFieldIDs
+} from '../../shared-test-code/constants/zendeskParameters'
 import {
   assertEventNotPresent,
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern
-} from '../shared-test-code/utils/aws/cloudWatchGetLogs'
-import { approveZendeskTicket } from '../shared-test-code/utils/zendesk/approveZendeskTicket'
-import { createZendeskTicket } from '../shared-test-code/utils/zendesk/createZendeskTicket'
-import { deleteZendeskTicket } from '../shared-test-code/utils/zendesk/deleteZendeskTicket'
-import { getZendeskTicket } from '../shared-test-code/utils/zendesk/getZendeskTicket'
-import { assertZendeskCommentPresent } from '../shared-test-code/utils/zendesk/zendeskTicketComments'
+} from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
+import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
+import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
+import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
+import { getZendeskTicket } from '../../shared-test-code/utils/zendesk/getZendeskTicket'
+import { assertZendeskCommentPresent } from '../../shared-test-code/utils/zendesk/zendeskTicketComments'
+import { getEnv } from '../../shared-test-code/utils/helpers'
+import {
+  DATA_SENT_TO_QUEUE_MESSAGE,
+  WEBHOOK_INVALID_MESSAGE,
+  WEBHOOK_RECEIVED_MESSAGE
+} from '../constants/cloudWatchLogMessages'
 
 describe('Invalid requests should not start a data copy', () => {
   describe('invalid recipient email', () => {
@@ -51,7 +53,7 @@ describe('Invalid requests should not start a data copy', () => {
 
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
 
@@ -91,7 +93,7 @@ describe('Invalid requests should not start a data copy', () => {
       )
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP,
+          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
         )
 
