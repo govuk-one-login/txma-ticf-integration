@@ -46,7 +46,7 @@ const createBulkGlacierRestoreJob = async (
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     ConfirmationRequired: false,
-    ClientRequestToken: `${analysisBucketName}-restore-${zendeskTicketId}`,
+    ClientRequestToken: `restore-${zendeskTicketId}`,
     AccountId: getEnv('AWS_ACCOUNT_ID'),
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
