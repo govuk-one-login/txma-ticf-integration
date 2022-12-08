@@ -111,7 +111,7 @@ export const ticketIdToResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: TEST_DATA_EVENT_ID,
-    piiTypes: '',
+    piiTypes: 'drivers_license',
     dataPaths: ''
   },
   // endToEndFlowRequestData.endToEndFlowRequestDataWithEventId
