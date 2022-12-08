@@ -46,7 +46,7 @@ const createS3CopyJob = async (
   const input = {
     ConfirmationRequired: false,
     AccountId: getEnv('AWS_ACCOUNT_ID'),
-    ClientRequestToken: `${analysisBucketName}-copy-${zendeskTicketId}`,
+    ClientRequestToken: `copy-${zendeskTicketId}`,
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
     Operation: {
