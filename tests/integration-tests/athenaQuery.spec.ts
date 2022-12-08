@@ -82,13 +82,13 @@ describe('Athena Query SQL generation and execution', () => {
         athenaQueryEvents,
         ATHENA_SQL_GENERATED_MESSAGE
       )
-      expect(isAthenaSqlGeneratedMessageInLogs).toBeTrue()
+      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
 
       const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
         athenaQueryEvents,
         ATHENA_INITIATED_QUERY_MESSAGE
       )
-      expect(isAthenaInitiatedQueryMessageInLogs).toBeTrue()
+      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
 
       const value = await getValueFromDynamoDB(
         AUDIT_REQUEST_DYNAMODB_TABLE,
@@ -138,13 +138,13 @@ describe('Athena Query SQL generation and execution', () => {
         athenaQueryEvents,
         ATHENA_SQL_GENERATED_MESSAGE
       )
-      expect(isAthenaSqlGeneratedMessageInLogs).toBeTrue()
+      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
 
       const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
         athenaQueryEvents,
         ATHENA_INITIATED_QUERY_MESSAGE
       )
-      expect(isAthenaInitiatedQueryMessageInLogs).toBeTrue()
+      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
 
       const value = await getValueFromDynamoDB(
         AUDIT_REQUEST_DYNAMODB_TABLE,
@@ -196,13 +196,13 @@ describe('Athena Query SQL generation and execution', () => {
         athenaQueryEvents,
         ATHENA_SQL_GENERATED_MESSAGE
       )
-      expect(isAthenaSqlGeneratedMessageInLogs).toBeTrue()
+      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
 
       const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
         athenaQueryEvents,
         ATHENA_INITIATED_QUERY_MESSAGE
       )
-      expect(isAthenaInitiatedQueryMessageInLogs).toBeTrue()
+      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
 
       const value = await getValueFromDynamoDB(
         AUDIT_REQUEST_DYNAMODB_TABLE,
@@ -257,7 +257,7 @@ describe('Athena Query SQL generation and execution', () => {
         athenaQueryEvents,
         ATHENA_HANDLER_INVOKE_ERROR
       )
-      expect(isAthenaHandlerInvokeErrorInLogs).toBeTrue()
+      expect(isAthenaHandlerInvokeErrorInLogs).toBe(true)
     })
   })
 })

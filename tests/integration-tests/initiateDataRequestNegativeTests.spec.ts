@@ -59,13 +59,13 @@ describe('Invalid requests should not start a data copy', () => {
         initiateDataRequestEvents,
         WEBHOOK_INVALID_MESSAGE
       )
-      expect(isWebhookInvalidMessageInLogs).toBeTrue()
+      expect(isWebhookInvalidMessageInLogs).toBe(true)
 
       const isDataSentToQueueMessageNotInLogs = assertEventNotPresent(
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      expect(isDataSentToQueueMessageNotInLogs).toBeTrue()
+      expect(isDataSentToQueueMessageNotInLogs).toBe(true)
 
       const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')
@@ -105,13 +105,13 @@ describe('Invalid requests should not start a data copy', () => {
         initiateDataRequestEvents,
         WEBHOOK_INVALID_MESSAGE
       )
-      expect(isWebhookInvalidMessageInLogs).toBeTrue()
+      expect(isWebhookInvalidMessageInLogs).toBe(true)
 
       const isDataSentToQueueMessageNotInLogs = assertEventNotPresent(
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      expect(isDataSentToQueueMessageNotInLogs).toBeTrue()
+      expect(isDataSentToQueueMessageNotInLogs).toBe(true)
 
       const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')

@@ -63,7 +63,7 @@ describe('Data should not be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      expect(isDataSentToQueueMessageInLogs).toBeTrue()
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
 
@@ -79,7 +79,7 @@ describe('Data should not be copied to analysis bucket', () => {
         processDataRequestEvents,
         NOTHING_TO_COPY_MESSAGE
       )
-      expect(isNothingToCopyMessageInLogs).toBeTrue()
+      expect(isNothingToCopyMessageInLogs).toBe(true)
     })
   })
 
@@ -131,7 +131,7 @@ describe('Data should not be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      expect(isDataSentToQueueMessageInLogs).toBeTrue()
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
       console.log('messageId', messageId)
@@ -148,13 +148,13 @@ describe('Data should not be copied to analysis bucket', () => {
         processDataRequestEvents,
         NOTHING_TO_COPY_MESSAGE
       )
-      expect(isNothingToCopyMessageInLogs).toBeTrue()
+      expect(isNothingToCopyMessageInLogs).toBe(true)
 
       const isDataAvailableMessageInLogs = assertEventPresent(
         processDataRequestEvents,
         DATA_AVAILABLE_MESSAGE
       )
-      expect(isDataAvailableMessageInLogs).toBeTrue()
+      expect(isDataAvailableMessageInLogs).toBe(true)
     })
   })
 })

@@ -75,7 +75,7 @@ describe('Data should be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      expect(isDataSentToQueueMessageInLogs).toBeTrue()
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
       console.log('messageId', messageId)
@@ -92,13 +92,13 @@ describe('Data should be copied to analysis bucket', () => {
         processDataRequestEvents,
         STANDARD_TIER_OBJECTS_TO_COPY_MESSAGE
       )
-      expect(isStandardTierObjectsToCopyMessageInLogs).toBeTrue()
+      expect(isStandardTierObjectsToCopyMessageInLogs).toBe(true)
 
       const isCopyJobStartedMessageInLogs = assertEventPresent(
         processDataRequestEvents,
         S3_COPY_JOB_STARTED_MESSAGE
       )
-      expect(isCopyJobStartedMessageInLogs).toBeTrue()
+      expect(isCopyJobStartedMessageInLogs).toBe(true)
 
       const copyCompletedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -112,7 +112,7 @@ describe('Data should be copied to analysis bucket', () => {
         copyCompletedEvents,
         COPY_COMPLETE_MESSAGE
       )
-      expect(isCopyCompleteMessageInLogs).toBeTrue()
+      expect(isCopyCompleteMessageInLogs).toBe(true)
     })
   })
 
@@ -159,7 +159,7 @@ describe('Data should be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      expect(isDataSentToQueueMessageInLogs).toBeTrue()
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
 
@@ -175,13 +175,13 @@ describe('Data should be copied to analysis bucket', () => {
         processDataRequestEvents,
         GLACIER_TIER_OBJECTS_TO_COPY_MESSAGE
       )
-      expect(isGlacierTierObjectCopyMessageInLogs).toBeTrue()
+      expect(isGlacierTierObjectCopyMessageInLogs).toBe(true)
 
       const isGlacierRestoreStartedMessageInLogs = assertEventPresent(
         processDataRequestEvents,
         S3_GLACIER_RESTORE_STARTED_MESSAGE
       )
-      expect(isGlacierRestoreStartedMessageInLogs).toBeTrue()
+      expect(isGlacierRestoreStartedMessageInLogs).toBe(true)
     })
   })
 
@@ -235,7 +235,7 @@ describe('Data should be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         DATA_SENT_TO_QUEUE_MESSAGE
       )
-      expect(isDataSentToQueueMessageInLogs).toBeTrue()
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(initiateDataRequestEvents)
       console.log('messageId', messageId)
@@ -252,7 +252,7 @@ describe('Data should be copied to analysis bucket', () => {
         processDataRequestEvents,
         MIX_TIER_OBJECTS_TO_COPY_MESSAGE
       )
-      expect(isMixTierObjectsToCopyMessageInLogs).toBeTrue()
+      expect(isMixTierObjectsToCopyMessageInLogs).toBe(true)
     })
   })
 })
