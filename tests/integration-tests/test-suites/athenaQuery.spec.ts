@@ -101,12 +101,11 @@ describe('Athena Query SQL generation and execution', () => {
 
       const csvRows = await downloadResultsFileAndParseData(randomTicketId)
 
-      const expectedBirthDate = `"1981-07-28"`
-      const expectedBuildingName = `"PERIGARTH"`
-
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate0_value).toEqual(expectedBirthDate)
-      expect(csvRows[0].address0_buildingname).toEqual(expectedBuildingName)
+      expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(csvRows[0].address0_buildingname).toEqual(
+        testData.athenaTestBuildingName
+      )
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
