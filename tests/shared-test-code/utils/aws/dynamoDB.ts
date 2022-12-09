@@ -1,8 +1,8 @@
 import { currentDateEpochSeconds } from '../helpers'
-import { ZendeskFormFieldIDs } from '../../constants/zendeskParameters'
+import { zendeskConstants } from '../../constants/zendeskParameters'
 import { getEnv } from '../helpers'
 import { invokeLambdaFunction } from './invokeLambdaFunction'
-import { DynamoDBItem, ItemDetails } from '../../types/dynamoDBItem'
+import { CustomField, ZendeskRequestData } from '../../types/zendeskRequestData'
 
 export const getValueFromDynamoDB = async (
   tableName: string,
@@ -22,13 +22,16 @@ export const getValueFromDynamoDB = async (
 export const populateDynamoDBWithTestItemDetails = async (
   tableName: string,
   zendeskId: string,
-  itemDetails: DynamoDBItem
+  zendeskTicketData: ZendeskRequestData
 ) => {
   return await invokeLambdaFunction(getEnv('DYNAMO_OPERATIONS_FUNCTION_NAME'), {
     operation: 'PUT',
     params: {
       tableName,
-      itemToPut: generateDynamoTableEntry(zendeskId, itemDetails.ticket)
+      itemToPut: generateDynamoTableEntry(
+        zendeskId,
+        zendeskTicketData.request.custom_fields
+      )
     }
   })
 }
@@ -43,13 +46,13 @@ export const deleteDynamoDBTestItem = async (
   })
 }
 
-const getFieldListValues = (ticketDetails: ItemDetails, fieldID: number) => {
-  const value = getFieldValue(ticketDetails, fieldID)
+const getFieldListValues = (customFields: CustomField[], id: number) => {
+  const value = getFieldValue(customFields, id)
   if (value == null) {
     return []
   } else if (typeof value === 'string') {
     return value.split(' ').map((item: string) => ({ S: item }))
-  } else if (value.constructor.name === 'Array') {
+  } else if (Array.isArray(value)) {
     return value.map((item: string) => ({
       S: item
     }))
@@ -58,9 +61,9 @@ const getFieldListValues = (ticketDetails: ItemDetails, fieldID: number) => {
   }
 }
 
-const getFieldValue = (ticketDetails: ItemDetails, fieldID: number) => {
-  const field = ticketDetails.fields.filter((field) => {
-    return field.id === fieldID
+const getFieldValue = (customFields: CustomField[], id: number) => {
+  const field = customFields.filter((field) => {
+    return field.id === id
   })
   return field.pop()?.value
 }
@@ -72,7 +75,7 @@ const calculateDatabaseExpiryTime = () =>
 
 const generateDynamoTableEntry = (
   zendeskId: string,
-  ticketDetails: ItemDetails
+  customFields: CustomField[]
 ) => ({
   ttl: { N: calculateDatabaseExpiryTime().toString() },
   zendeskId: { S: `${zendeskId}` },
@@ -81,32 +84,32 @@ const generateDynamoTableEntry = (
       zendeskId: { S: `${zendeskId}` },
       dateFrom: {
         S: `${getFieldValue(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
+          customFields,
+          zendeskConstants.fieldIds.requestDate
         )}`
       },
       dateTo: {
         S: `${getFieldValue(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID
+          customFields,
+          zendeskConstants.fieldIds.requestDate
         )}`
       },
       identifierType: {
         S: `${getFieldValue(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID
+          customFields,
+          zendeskConstants.fieldIds.identifier
         )}`
       },
       recipientEmail: {
         S: `${getFieldValue(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL
+          customFields,
+          zendeskConstants.fieldIds.recipientEmail
         )}`
       },
       recipientName: {
         S: `${getFieldValue(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME
+          customFields,
+          zendeskConstants.fieldIds.recipientName
         )}`
       },
       requesterEmail: {
@@ -117,39 +120,30 @@ const generateDynamoTableEntry = (
       },
       dataPaths: {
         L: getFieldListValues(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID
+          customFields,
+          zendeskConstants.fieldIds.customDataPath
         )
       },
       eventIds: {
-        L: getFieldListValues(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID
-        )
+        L: getFieldListValues(customFields, zendeskConstants.fieldIds.eventIds)
       },
       sessionIds: {
         L: getFieldListValues(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_SESSION_ID_LIST_FIELD_ID
+          customFields,
+          zendeskConstants.fieldIds.sessionIds
         )
       },
       journeyIds: {
         L: getFieldListValues(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_JOURNEY_ID_LIST_FIELD_ID
+          customFields,
+          zendeskConstants.fieldIds.journeyIds
         )
       },
       userIds: {
-        L: getFieldListValues(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_USER_ID_LIST_FIELD_ID
-        )
+        L: getFieldListValues(customFields, zendeskConstants.fieldIds.userIds)
       },
       piiTypes: {
-        L: getFieldListValues(
-          ticketDetails,
-          ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID
-        )
+        L: getFieldListValues(customFields, zendeskConstants.fieldIds.piiTypes)
       }
     }
   }

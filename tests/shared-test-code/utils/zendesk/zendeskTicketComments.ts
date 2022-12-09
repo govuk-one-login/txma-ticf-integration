@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { authoriseAs } from './authoriseAs'
-import { ZENDESK_TICKETS_ENDPOINT } from '../../constants/zendeskParameters'
 import { ZendeskComment } from '../../types/zendeskComment'
 import { getEnv } from '../helpers'
 
@@ -11,7 +10,7 @@ export const listZendeskTicketComments = async (
     const response = await axios({
       url: `https://${getEnv(
         'ZENDESK_HOSTNAME'
-      )}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}/comments`,
+      )}/api/v2/tickets/${ticketId}/comments`,
       method: 'GET',
       headers: {
         Authorization: authoriseAs(getEnv('ZENDESK_AGENT_EMAIL')),

@@ -1,32 +1,31 @@
 import axios from 'axios'
 import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
-import {
-  generateZendeskRequestDate,
-  getEnv
-} from '../../shared-test-code/utils/helpers'
+import { getEnv } from '../../shared-test-code/utils/helpers'
 import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
 import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
 import { generateSignatureHeaders } from '../../shared-test-code/utils/zendesk/generateSignatureHeaders'
-import { validApiTestRequestData } from '../constants/webhookAPIRequestData'
-import { TEST_DATA_DATA_PATHS, TEST_DATA_EVENT_ID } from '../constants/testData'
+import { integrationTestData } from '../constants/testData'
+import { requestConstants } from '../constants/requests'
 
 const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
 
 const defaultWebhookRequestData: ZendeskWebhookRequest = {
   zendeskId: '1',
-  recipientEmail: getEnv('ZENDESK_RECIPIENT_EMAIL'),
+  recipientEmail: process.env.FIXED_RECIPIENT_EMAIL
+    ? process.env.FIXED_RECIPIENT_EMAIL
+    : getEnv('ZENDESK_RECIPIENT_EMAIL'),
   recipientName: getEnv('ZENDESK_RECIPIENT_NAME'),
   requesterEmail: getEnv('ZENDESK_END_USER_EMAIL'),
   requesterName: getEnv('ZENDESK_END_USER_NAME'),
-  dateFrom: generateZendeskRequestDate(-60),
-  dateTo: generateZendeskRequestDate(-60),
+  dateFrom: integrationTestData.date,
+  dateTo: integrationTestData.date,
   identifierType: 'event_id',
-  eventIds: TEST_DATA_EVENT_ID,
+  eventIds: integrationTestData.eventId,
   piiTypes: 'drivers_license',
   sessionIds: '',
   journeyIds: '',
   userIds: '',
-  dataPaths: TEST_DATA_DATA_PATHS
+  dataPaths: ''
 }
 
 const sendWebhook = async (
@@ -77,7 +76,7 @@ describe('Zendesk ticket check', () => {
   let ticketId: string
 
   beforeAll(async () => {
-    ticketId = await createZendeskTicket(validApiTestRequestData)
+    ticketId = await createZendeskTicket(requestConstants.valid)
   })
 
   afterAll(async () => {

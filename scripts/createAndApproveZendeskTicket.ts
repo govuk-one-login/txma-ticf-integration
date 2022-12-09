@@ -1,43 +1,40 @@
 import { makeApproveZendeskTicketRequest } from '../tests/shared-test-code/utils/zendesk/approveZendeskTicket'
 import { createZendeskTicket } from '../tests/shared-test-code/utils/zendesk/createZendeskTicket'
-import {
-  ZendeskFormFieldIDs,
-  ZENDESK_PII_FORM_ID
-} from '../tests/shared-test-code/constants/zendeskParameters'
 import { getEnv } from '../tests/shared-test-code/utils/helpers'
 import { ZendeskRequestData } from '../tests/shared-test-code/types/zendeskRequestData'
+import { zendeskConstants } from '../tests/shared-test-code/constants/zendeskParameters'
 
 const generateTicketData = (): ZendeskRequestData => ({
   request: {
     subject: getEnv('FIXED_SUBJECT_LINE'),
-    ticket_form_id: ZENDESK_PII_FORM_ID,
+    ticket_form_id: zendeskConstants.piiFormId,
     custom_fields: [
       {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_FIELD_ID,
+        id: zendeskConstants.fieldIds.identifier,
         value: 'event_id'
       },
       {
-        id: ZendeskFormFieldIDs.PII_FORM_EVENT_ID_LIST_FIELD_ID,
+        id: zendeskConstants.fieldIds.eventIds,
         value: getEnv('OVERRIDE_EVENT_IDS')
       },
       {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+        id: zendeskConstants.fieldIds.requestDate,
         value: getEnv('FIXED_DATA_REQUEST_DATE')
       },
       {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUESTED_PII_TYPE_FIELD_ID,
+        id: zendeskConstants.fieldIds.piiTypes,
         value: ['drivers_license']
       },
       {
-        id: ZendeskFormFieldIDs.PII_FORM_CUSTOM_DATA_PATH_FIELD_ID,
+        id: zendeskConstants.fieldIds.customDataPath,
         value: getEnv('DATA_PATHS')
       },
       {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
+        id: zendeskConstants.fieldIds.recipientEmail,
         value: getEnv('FIXED_RECIPIENT_EMAIL')
       },
       {
-        id: ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_NAME,
+        id: zendeskConstants.fieldIds.recipientName,
         value: 'Test User'
       }
     ],

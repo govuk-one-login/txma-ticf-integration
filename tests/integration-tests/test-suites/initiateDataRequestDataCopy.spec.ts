@@ -6,41 +6,22 @@ import {
 import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
 import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
 import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
-import {
-  setCustomFieldValueForRequest,
-  validRequestData
-} from '../constants/dataCopyRequestData'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { ZendeskFormFieldIDs } from '../../shared-test-code/constants/zendeskParameters'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 import { getEnv } from '../../shared-test-code/utils/helpers'
-import { TEST_FILE_NAME } from '../constants/testData'
-import {
-  DATA_SENT_TO_QUEUE_MESSAGE,
-  SQS_EVENT_RECEIVED_MESSAGE,
-  WEBHOOK_RECEIVED_MESSAGE
-} from '../constants/cloudWatchLogMessages'
+import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
+import { setCustomFieldValueForRequest } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
+import { integrationTestData } from '../constants/testData'
+import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
+import { requestConstants } from '../constants/requests'
 
 describe('Data should be copied to analysis bucket', () => {
-  const COPY_COMPLETE_MESSAGE = 'Restore/copy process complete.'
-
-  const STANDARD_TIER_OBJECTS_TO_COPY_MESSAGE =
-    'Number of standard tier files to copy was 1, glacier tier files to copy was 0'
-  const GLACIER_TIER_OBJECTS_TO_COPY_MESSAGE =
-    'Number of standard tier files to copy was 0, glacier tier files to copy was 1'
-  const MIX_TIER_OBJECTS_TO_COPY_MESSAGE =
-    'Number of standard tier files to copy was 1, glacier tier files to copy was 1'
-  const S3_COPY_JOB_STARTED_MESSAGE =
-    'Started S3 copy job for zendesk ticket with id'
-  const S3_GLACIER_RESTORE_STARTED_MESSAGE =
-    'Started Glacier restore for zendesk ticket with id'
-
   const generateTestDataWithCustomDate = (date: string) => {
-    const data = validRequestData
+    const data = requestConstants.valid
 
     setCustomFieldValueForRequest(
       data,
-      ZendeskFormFieldIDs.PII_FORM_REQUEST_DATE_FIELD_ID,
+      zendeskConstants.fieldIds.requestDate,
       date
     )
     return data
@@ -54,8 +35,8 @@ describe('Data should be copied to analysis bucket', () => {
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME,
+        `${availableDate.prefix}/01/${integrationTestData.dataCopyTestFileName}`,
+        integrationTestData.dataCopyTestFileName,
         'STANDARD',
         true
       )
@@ -75,22 +56,25 @@ describe('Data should be copied to analysis bucket', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      assertEventPresent(
+        initiateDataRequestEvents,
+        cloudwatchLogFilters.dataSentToQueue
+      )
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
       console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
           50
         )
 
@@ -98,19 +82,22 @@ describe('Data should be copied to analysis bucket', () => {
 
       assertEventPresent(
         processDataRequestEvents,
-        STANDARD_TIER_OBJECTS_TO_COPY_MESSAGE
+        cloudwatchLogFilters.standardTierCopy
       )
-      assertEventPresent(processDataRequestEvents, S3_COPY_JOB_STARTED_MESSAGE)
+      assertEventPresent(
+        processDataRequestEvents,
+        cloudwatchLogFilters.copyStarted
+      )
 
       const copyCompletedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [COPY_COMPLETE_MESSAGE, 'zendeskId', ticketId],
+          [cloudwatchLogFilters.copyComplete, 'zendeskId', ticketId],
           100
         )
       expect(copyCompletedEvents).not.toEqual([])
 
-      assertEventPresent(copyCompletedEvents, COPY_COMPLETE_MESSAGE)
+      assertEventPresent(copyCompletedEvents, cloudwatchLogFilters.copyComplete)
     })
   })
 
@@ -122,8 +109,8 @@ describe('Data should be copied to analysis bucket', () => {
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME,
+        `${availableDate.prefix}/01/${integrationTestData.dataCopyTestFileName}`,
+        integrationTestData.dataCopyTestFileName,
         'GLACIER',
         true
       )
@@ -142,32 +129,35 @@ describe('Data should be copied to analysis bucket', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      assertEventPresent(
+        initiateDataRequestEvents,
+        cloudwatchLogFilters.dataSentToQueue
+      )
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
           70
         )
       expect(processDataRequestEvents).not.toEqual([])
 
       assertEventPresent(
         processDataRequestEvents,
-        GLACIER_TIER_OBJECTS_TO_COPY_MESSAGE
+        cloudwatchLogFilters.glacierTierCopy
       )
       assertEventPresent(
         processDataRequestEvents,
-        S3_GLACIER_RESTORE_STARTED_MESSAGE
+        cloudwatchLogFilters.restoreStarted
       )
     })
   })
@@ -180,16 +170,16 @@ describe('Data should be copied to analysis bucket', () => {
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME,
+        `${availableDate.prefix}/01/${integrationTestData.dataCopyTestFileName}`,
+        integrationTestData.dataCopyTestFileName,
         'GLACIER',
         true
       )
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/02/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME,
+        `${availableDate.prefix}/02/${integrationTestData.dataCopyTestFileName}`,
+        integrationTestData.dataCopyTestFileName,
         'STANDARD',
         true
       )
@@ -213,29 +203,32 @@ describe('Data should be copied to analysis bucket', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(initiateDataRequestEvents, DATA_SENT_TO_QUEUE_MESSAGE)
+      assertEventPresent(
+        initiateDataRequestEvents,
+        cloudwatchLogFilters.dataSentToQueue
+      )
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
       console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
           50
         )
       expect(processDataRequestEvents).not.toEqual([])
 
       assertEventPresent(
         processDataRequestEvents,
-        MIX_TIER_OBJECTS_TO_COPY_MESSAGE
+        cloudwatchLogFilters.mixedTierCopy
       )
     })
   })
