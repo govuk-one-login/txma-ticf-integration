@@ -1,13 +1,4 @@
 import {
-  invalidRequestData,
-  setCustomFieldValueForRequest,
-  validRequestData
-} from '../constants/dataCopyRequestData'
-import {
-  CLOSE_ZENDESK_TICKET_COMMENT,
-  ZendeskFormFieldIDs
-} from '../../shared-test-code/constants/zendeskParameters'
-import {
   assertEventNotPresent,
   assertEventPresent,
   getCloudWatchLogEventsGroupByMessagePattern
@@ -18,23 +9,29 @@ import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/delete
 import { getZendeskTicket } from '../../shared-test-code/utils/zendesk/getZendeskTicket'
 import { assertZendeskCommentPresent } from '../../shared-test-code/utils/zendesk/zendeskTicketComments'
 import { getEnv } from '../../shared-test-code/utils/helpers'
-import {
-  DATA_SENT_TO_QUEUE_MESSAGE,
-  WEBHOOK_INVALID_MESSAGE,
-  WEBHOOK_RECEIVED_MESSAGE
-} from '../constants/cloudWatchLogMessages'
+
+import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
+import { setCustomFieldValueForRequest } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
+import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
+import { requestConstants } from '../constants/requests'
+
+const closeTicketComment =
+  'Your ticket has been closed because some fields were invalid. ' +
+  'Here is the list of what was wrong: From Date is in the future, To Date is in the future'
 
 describe('Invalid requests should not start a data copy', () => {
   describe('invalid recipient email', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      const ticketData = { ...validRequestData }
+      const ticketData = { ...requestConstants.valid }
+
       setCustomFieldValueForRequest(
         ticketData,
-        ZendeskFormFieldIDs.PII_FORM_IDENTIFIER_RECIPIENT_EMAIL,
-        'txma-team2-bogus-ticf-analyst-dev@test.gov.uk'
+        zendeskConstants.fieldIds.recipientEmail,
+        'invalid@test.gov.uk'
       )
+
       ticketId = await createZendeskTicket(ticketData)
       await approveZendeskTicket(ticketId)
     })
@@ -54,13 +51,16 @@ describe('Invalid requests should not start a data copy', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
 
-      assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
+      assertEventPresent(
+        initiateDataRequestEvents,
+        cloudwatchLogFilters.webhookInvalid
+      )
       assertEventNotPresent(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
 
       const zendeskTicket = await getZendeskTicket(ticketId)
@@ -76,7 +76,7 @@ describe('Invalid requests should not start a data copy', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      ticketId = await createZendeskTicket(invalidRequestData)
+      ticketId = await createZendeskTicket(requestConstants.invalid)
       await approveZendeskTicket(ticketId)
     })
 
@@ -94,18 +94,21 @@ describe('Invalid requests should not start a data copy', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
 
-      assertEventPresent(initiateDataRequestEvents, WEBHOOK_INVALID_MESSAGE)
+      assertEventPresent(
+        initiateDataRequestEvents,
+        cloudwatchLogFilters.webhookInvalid
+      )
       assertEventNotPresent(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
 
       const zendeskTicket = await getZendeskTicket(ticketId)
       expect(zendeskTicket.status).toEqual('closed')
-      await assertZendeskCommentPresent(ticketId, CLOSE_ZENDESK_TICKET_COMMENT)
+      await assertZendeskCommentPresent(ticketId, closeTicketComment)
     })
   })
 })

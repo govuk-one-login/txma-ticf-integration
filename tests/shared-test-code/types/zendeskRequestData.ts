@@ -9,7 +9,7 @@ type ZendeskRequest = {
   comment: ZendeskComment
 }
 
-type CustomField = {
+export type CustomField = {
   id: number
   value: string | string[] | null
 }

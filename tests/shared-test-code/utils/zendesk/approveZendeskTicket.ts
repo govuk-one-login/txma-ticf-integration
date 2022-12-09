@@ -1,10 +1,7 @@
 import axios, { AxiosPromise } from 'axios'
 import { authoriseAs } from './authoriseAs'
-import {
-  ZendeskFormFieldIDs,
-  ZENDESK_TICKETS_ENDPOINT
-} from '../../constants/zendeskParameters'
 import { getEnv } from '../helpers'
+import { zendeskConstants } from '../../constants/zendeskParameters'
 
 export const approveZendeskTicket = async (ticketId: string) => {
   try {
@@ -23,9 +20,7 @@ export const makeApproveZendeskTicketRequest = (
   ticketId: string
 ): AxiosPromise => {
   return axios({
-    url: `https://${getEnv(
-      'ZENDESK_HOSTNAME'
-    )}${ZENDESK_TICKETS_ENDPOINT}/${ticketId}`,
+    url: `https://${getEnv('ZENDESK_HOSTNAME')}/api/v2/tickets/${ticketId}`,
     method: 'PUT',
     headers: {
       Authorization: authoriseAs(getEnv('ZENDESK_AGENT_EMAIL')),
@@ -40,14 +35,14 @@ const ticketApprovalData = {
     tags: ['process_started', 'approved'],
     custom_fields: [
       {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_STATUS_FIELD_ID,
+        id: zendeskConstants.fieldIds.status,
         value: 'approved'
       }
     ],
     status: 'open',
     fields: [
       {
-        id: ZendeskFormFieldIDs.PII_FORM_REQUEST_STATUS_FIELD_ID,
+        id: zendeskConstants.fieldIds.status,
         value: 'approved'
       }
     ],
