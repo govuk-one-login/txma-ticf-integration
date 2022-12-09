@@ -4,7 +4,7 @@ import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebho
 
 describe('Zendesk request integrity', () => {
   it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
-    const defaultWebhookRequestData = getTicketDetailsForId(1)
+    const defaultWebhookRequestData = getTicketDetailsForId(1, '2022-01-01')
     const invalidSignature = 'cCxJHacr678ZZigFZZlYq4qz2XLWPEOeS+PPDuTivwQ='
     const headers = {
       'X-Zendesk-Webhook-Signature': invalidSignature
@@ -24,7 +24,7 @@ describe('Zendesk ticket check', () => {
   let defaultWebhookRequestData: ZendeskWebhookRequest
 
   beforeEach(() => {
-    defaultWebhookRequestData = { ...getTicketDetailsForId(1) }
+    defaultWebhookRequestData = { ...getTicketDetailsForId(1, '2022-01-01') }
   })
 
   it('API Gateway returns 200 for a matching zendesk ticket', async () => {

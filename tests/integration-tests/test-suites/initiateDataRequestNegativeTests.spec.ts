@@ -17,7 +17,7 @@ describe('Invalid requests should not start a data copy', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      const defaultWebhookRequestData = getTicketDetailsForId(1)
+      const defaultWebhookRequestData = getTicketDetailsForId(1, '2022-01-01')
       defaultWebhookRequestData.recipientEmail =
         'txma-team2-bogus-ticf-analyst-dev@test.gov.uk'
       ticketId = defaultWebhookRequestData.zendeskId
@@ -47,9 +47,19 @@ describe('Invalid requests should not start a data copy', () => {
 
   describe('invalid request - date in the future', () => {
     let ticketId: string
+    const getTomorrowAsString = () => {
+      const today: Date = new Date()
+      today.setDate(today.getDate() + 1)
+      return `${today.getFullYear()}-${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
+    }
 
     beforeEach(async () => {
-      const defaultWebhookRequestData = getTicketDetailsForId(2)
+      const defaultWebhookRequestData = getTicketDetailsForId(
+        2,
+        getTomorrowAsString()
+      )
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })

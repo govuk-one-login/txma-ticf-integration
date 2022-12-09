@@ -24,7 +24,7 @@ describe('Data should not be copied to analysis bucket', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      const defaultWebhookRequestData = getTicketDetailsForId(5)
+      const defaultWebhookRequestData = getTicketDetailsForId(5, '2022-01-07')
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
@@ -84,7 +84,10 @@ describe('Data should not be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      const defaultWebhookRequestData = getTicketDetailsForId(1)
+      const defaultWebhookRequestData = getTicketDetailsForId(
+        1,
+        availableDate.date
+      )
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })

@@ -42,8 +42,14 @@ describe('Data should be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      const defaultWebhookRequestData = getTicketDetailsForId(1)
+      const defaultWebhookRequestData = getTicketDetailsForId(
+        1,
+        availableDate.date
+      )
       ticketId = defaultWebhookRequestData.zendeskId
+      console.log(
+        `using test date ${availableDate.date} and zendeskId ${ticketId}`
+      )
       await sendWebhookRequest(defaultWebhookRequestData)
     })
 
@@ -115,7 +121,10 @@ describe('Data should be copied to analysis bucket', () => {
         'GLACIER',
         true
       )
-      const defaultWebhookRequestData = getTicketDetailsForId(3)
+      const defaultWebhookRequestData = getTicketDetailsForId(
+        3,
+        availableDate.date
+      )
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
@@ -182,7 +191,10 @@ describe('Data should be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      const defaultWebhookRequestData = getTicketDetailsForId(4)
+      const defaultWebhookRequestData = getTicketDetailsForId(
+        4,
+        availableDate.date
+      )
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
