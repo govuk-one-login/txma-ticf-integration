@@ -1,4 +1,4 @@
-import { endToEndTestData } from '../../../e2e-tests/constants/testData'
+import { testData } from '../../../e2e-tests/constants/testData'
 import { zendeskConstants } from '../../constants/zendeskParameters'
 import { CustomField, ZendeskRequestData } from '../../types/zendeskRequestData'
 import { generateRandomNumber, getEnv } from '../helpers'
@@ -8,8 +8,8 @@ export const generateZendeskTicketData = (
 ): ZendeskRequestData => {
   const defaultValues: CustomFieldValues = {
     identifier: 'event_id',
-    eventIds: endToEndTestData.eventId,
-    requestDate: endToEndTestData.date,
+    eventIds: testData.eventId,
+    requestDate: testData.date,
     piiTypes: ['name', 'dob', 'addresses'],
     recipientEmail: process.env.FIXED_RECIPIENT_EMAIL
       ? process.env.FIXED_RECIPIENT_EMAIL

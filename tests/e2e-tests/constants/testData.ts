@@ -1,4 +1,4 @@
-export const endToEndTestData: EndToEndTestDataConstants = {
+export const testData: TestDataConstants = {
   dataPath:
     'restricted.name[0].nameParts[0].value restricted.name[0].nameParts[1].value restricted.birthDate[0].value restricted.address[0].validFrom restricted.address[1].postalCode',
   date: '2022-04-01',
@@ -10,7 +10,7 @@ export const endToEndTestData: EndToEndTestDataConstants = {
   userId: 'urn:uuid:03d3c6d3-6d7c-41df-bf45-c94401c96a2e'
 }
 
-type EndToEndTestDataConstants = {
+type TestDataConstants = {
   readonly dataPath: string
   readonly date: string
   readonly eventId: string

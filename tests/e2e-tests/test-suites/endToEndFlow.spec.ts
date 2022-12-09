@@ -5,31 +5,31 @@ import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/qu
 import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import { getEnv } from '../../shared-test-code/utils/helpers'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
-import { endToEndTestData } from '../constants/testData'
+import { testData } from '../constants/testData'
 
 const endToEndFlowRequestDataWithEventId = generateZendeskTicketData({
   identifier: 'event_id',
-  eventIds: endToEndTestData.eventId,
-  requestDate: endToEndTestData.date,
-  customDataPath: endToEndTestData.dataPath,
+  eventIds: testData.eventId,
+  requestDate: testData.date,
+  customDataPath: testData.dataPath,
   recipientEmail: getEnv('ZENDESK_RECIPIENT_EMAIL'),
   recipientName: getEnv('ZENDESK_RECIPIENT_NAME')
 })
 
 const endToEndFlowRequestDataWithUserId = generateZendeskTicketData({
   identifier: 'user_id',
-  userIds: endToEndTestData.userId,
+  userIds: testData.userId,
   piiTypes: ['passport_number', 'passport_expiry_date']
 })
 
 const endToEndFlowRequestDataWithSessionId = generateZendeskTicketData({
   identifier: 'session_id',
-  sessionIds: endToEndTestData.sessionId
+  sessionIds: testData.sessionId
 })
 
 const endToEndFlowRequestDataWithJourneyId = generateZendeskTicketData({
   identifier: 'journey_id',
-  journeyIds: endToEndTestData.journeyId,
+  journeyIds: testData.journeyId,
   piiTypes: ['drivers_license']
 })
 
@@ -44,8 +44,8 @@ describe('Query results generated', () => {
   beforeEach(async () => {
     await copyAuditDataFromTestDataBucket(
       getEnv('AUDIT_BUCKET_NAME'),
-      `firehose/${endToEndTestData.prefix}/01/${endToEndTestData.fileName}`,
-      endToEndTestData.fileName
+      `firehose/${testData.prefix}/01/${testData.fileName}`,
+      testData.fileName
     )
   })
 
@@ -66,7 +66,7 @@ describe('Query results generated', () => {
     const rows = await downloadResultsFileAndParseData(zendeskId)
 
     expect(rows.length).toEqual(1)
-    expect(rows[0].event_id).toEqual(endToEndTestData.eventId)
+    expect(rows[0].event_id).toEqual(testData.eventId)
     expect(rows[0].name0_nameparts0_value).toEqual(expectedFirstName)
     expect(rows[0].name0_nameparts1_value).toEqual(expectedLastName)
     expect(rows[0].birthdate0_value).toEqual(expectedBirthDate)

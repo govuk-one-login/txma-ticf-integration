@@ -1,7 +1,7 @@
 import { ZendeskRequestData } from '../../shared-test-code/types/zendeskRequestData'
 import { generateCurrentDateWithOffset } from '../../shared-test-code/utils/helpers'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
-import { integrationTestData } from './testData'
+import { testData } from './testData'
 
 const futureDate = generateCurrentDateWithOffset(50)
 
@@ -14,8 +14,8 @@ export const requestConstants: IntegrationTestRequestConstants = {
   }),
   valid: generateZendeskTicketData({
     identifier: 'event_id',
-    eventIds: integrationTestData.eventId,
-    requestDate: integrationTestData.date,
+    eventIds: testData.eventId,
+    requestDate: testData.date,
     piiTypes: ['drivers_license']
   })
 }

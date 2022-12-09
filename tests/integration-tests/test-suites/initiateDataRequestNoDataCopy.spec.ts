@@ -12,7 +12,7 @@ import { getEnv } from '../../shared-test-code/utils/helpers'
 import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
 import { setCustomFieldValueForRequest } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
-import { integrationTestData } from '../constants/testData'
+import { testData } from '../constants/testData'
 import { requestConstants } from '../constants/requests'
 
 const NOTHING_TO_COPY_MESSAGE =
@@ -86,15 +86,15 @@ describe('Data should not be copied to analysis bucket', () => {
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${integrationTestData.dataCopyTestFileName}`,
-        integrationTestData.dataCopyTestFileName,
+        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+        testData.dataCopyTestFileName,
         'STANDARD',
         true
       )
       await copyAuditDataFromTestDataBucket(
         getEnv('ANALYSIS_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${integrationTestData.dataCopyTestFileName}`,
-        integrationTestData.dataCopyTestFileName,
+        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+        testData.dataCopyTestFileName,
         'STANDARD',
         true
       )

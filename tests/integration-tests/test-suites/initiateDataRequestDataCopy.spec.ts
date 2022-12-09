@@ -11,7 +11,7 @@ import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvai
 import { getEnv } from '../../shared-test-code/utils/helpers'
 import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
 import { setCustomFieldValueForRequest } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
-import { integrationTestData } from '../constants/testData'
+import { testData } from '../constants/testData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { requestConstants } from '../constants/requests'
 
@@ -35,8 +35,8 @@ describe('Data should be copied to analysis bucket', () => {
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${integrationTestData.dataCopyTestFileName}`,
-        integrationTestData.dataCopyTestFileName,
+        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+        testData.dataCopyTestFileName,
         'STANDARD',
         true
       )
@@ -109,8 +109,8 @@ describe('Data should be copied to analysis bucket', () => {
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${integrationTestData.dataCopyTestFileName}`,
-        integrationTestData.dataCopyTestFileName,
+        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+        testData.dataCopyTestFileName,
         'GLACIER',
         true
       )
@@ -170,16 +170,16 @@ describe('Data should be copied to analysis bucket', () => {
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${integrationTestData.dataCopyTestFileName}`,
-        integrationTestData.dataCopyTestFileName,
+        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+        testData.dataCopyTestFileName,
         'GLACIER',
         true
       )
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/02/${integrationTestData.dataCopyTestFileName}`,
-        integrationTestData.dataCopyTestFileName,
+        `${availableDate.prefix}/02/${testData.dataCopyTestFileName}`,
+        testData.dataCopyTestFileName,
         'STANDARD',
         true
       )

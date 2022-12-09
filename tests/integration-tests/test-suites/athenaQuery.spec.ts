@@ -13,7 +13,7 @@ import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/delete
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
 import { getEnv } from '../../shared-test-code/utils/helpers'
-import { integrationTestData } from '../constants/testData'
+import { testData } from '../constants/testData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
 import { requestConstants } from '../constants/requests'
@@ -50,8 +50,8 @@ describe('Athena Query SQL generation and execution', () => {
       randomTicketId = Date.now().toString()
       await copyAuditDataFromTestDataBucket(
         getEnv('ANALYSIS_BUCKET_NAME'),
-        `firehose/${integrationTestData.athenaTestPrefix}/01/${integrationTestData.athenaTestFileName}`,
-        integrationTestData.athenaTestFileName
+        `firehose/${testData.athenaTestPrefix}/01/${testData.athenaTestFileName}`,
+        testData.athenaTestFileName
       )
     })
 
@@ -147,12 +147,9 @@ describe('Athena Query SQL generation and execution', () => {
 
       const csvRows = await downloadResultsFileAndParseData(randomTicketId)
 
-      const expectedName = `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`
-      const expectedAddress = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
-
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].name).toEqual(expectedName)
-      expect(csvRows[0].addresses).toEqual(expectedAddress)
+      expect(csvRows[0].name).toEqual(testData.athenaTestName)
+      expect(csvRows[0].addresses).toEqual(testData.athenaTestAddresses)
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
@@ -193,16 +190,13 @@ describe('Athena Query SQL generation and execution', () => {
 
       const csvRows = await downloadResultsFileAndParseData(randomTicketId)
 
-      const expectedAddresses = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
-      const expectedName = `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`
-      const expectedBuildingName = `"PERIGARTH"`
-      const expectedBirthDate = `"1981-07-28"`
-
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate0_value).toEqual(expectedBirthDate)
-      expect(csvRows[0].address0_buildingname).toEqual(expectedBuildingName)
-      expect(csvRows[0].name).toEqual(expectedName)
-      expect(csvRows[0].addresses).toEqual(expectedAddresses)
+      expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(csvRows[0].address0_buildingname).toEqual(
+        testData.athenaTestBuildingName
+      )
+      expect(csvRows[0].name).toEqual(testData.athenaTestName)
+      expect(csvRows[0].addresses).toEqual(testData.athenaTestAddresses)
     })
   })
 

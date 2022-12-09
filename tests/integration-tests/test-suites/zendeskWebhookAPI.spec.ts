@@ -4,7 +4,7 @@ import { getEnv } from '../../shared-test-code/utils/helpers'
 import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
 import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
 import { generateSignatureHeaders } from '../../shared-test-code/utils/zendesk/generateSignatureHeaders'
-import { integrationTestData } from '../constants/testData'
+import { testData } from '../constants/testData'
 import { requestConstants } from '../constants/requests'
 
 const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
@@ -17,10 +17,10 @@ const defaultWebhookRequestData: ZendeskWebhookRequest = {
   recipientName: getEnv('ZENDESK_RECIPIENT_NAME'),
   requesterEmail: getEnv('ZENDESK_END_USER_EMAIL'),
   requesterName: getEnv('ZENDESK_END_USER_NAME'),
-  dateFrom: integrationTestData.date,
-  dateTo: integrationTestData.date,
+  dateFrom: testData.date,
+  dateTo: testData.date,
   identifierType: 'event_id',
-  eventIds: integrationTestData.eventId,
+  eventIds: testData.eventId,
   piiTypes: 'drivers_license',
   sessionIds: '',
   journeyIds: '',
