@@ -9,7 +9,7 @@ import {
   WEBHOOK_INVALID_MESSAGE,
   WEBHOOK_RECEIVED_MESSAGE
 } from '../constants/cloudWatchLogMessages'
-import { getTicketDetailsForId } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 describe('Invalid requests should not start a data copy', () => {
@@ -17,7 +17,8 @@ describe('Invalid requests should not start a data copy', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      const defaultWebhookRequestData = getTicketDetailsForId(1, '2022-01-01')
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(1, '2022-01-01')
       defaultWebhookRequestData.recipientEmail =
         'txma-team2-bogus-ticf-analyst-dev@test.gov.uk'
       ticketId = defaultWebhookRequestData.zendeskId
@@ -56,10 +57,8 @@ describe('Invalid requests should not start a data copy', () => {
     }
 
     beforeEach(async () => {
-      const defaultWebhookRequestData = getTicketDetailsForId(
-        2,
-        getTomorrowAsString()
-      )
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(2, getTomorrowAsString())
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })

@@ -1,21 +1,25 @@
 import { ZendeskWebhookRequest } from '../../types/zendeskWebhookRequest'
-import { ticketIdToResponseMapping } from './ticketIdToResponseMapping'
+import { zendeskTicketTestCaseMapping } from './ticketIdToResponseMapping'
 
-export const getTicketDetailsForId = (
+export const getWebhookRequestDataForTestCaseNumberAndDate = (
   testCaseNumber: number,
   requestDate: string
 ): ZendeskWebhookRequest => {
-  const mappedTestCase = ticketIdToResponseMapping[testCaseNumber]
-  mappedTestCase.dateFrom = requestDate
-  mappedTestCase.dateTo = requestDate
-  mappedTestCase.zendeskId = createUniqueTicketIdForDateWithMappingSuffix(
-    testCaseNumber,
-    requestDate
-  )
+  const mappedTestCase = zendeskTicketTestCaseMapping[testCaseNumber]
   if (!mappedTestCase) {
     throw new Error(`No test case found for test case number ${testCaseNumber}`)
   }
-  return mappedTestCase
+  const webhookRequest = {
+    ...mappedTestCase,
+    dateFrom: requestDate,
+    dateTo: requestDate,
+    zendeskId: createUniqueTicketIdForDateWithMappingSuffix(
+      testCaseNumber,
+      requestDate
+    )
+  }
+
+  return webhookRequest
 }
 
 const createUniqueTicketIdForDateWithMappingSuffix = (

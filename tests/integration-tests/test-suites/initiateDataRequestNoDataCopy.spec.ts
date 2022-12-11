@@ -12,7 +12,7 @@ import {
   WEBHOOK_RECEIVED_MESSAGE
 } from '../constants/cloudWatchLogMessages'
 import { TEST_FILE_NAME } from '../constants/testData'
-import { getTicketDetailsForId } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 const NOTHING_TO_COPY_MESSAGE =
@@ -24,7 +24,8 @@ describe('Data should not be copied to analysis bucket', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      const defaultWebhookRequestData = getTicketDetailsForId(5, '2022-01-07')
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(5, '2022-01-07')
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
@@ -84,10 +85,8 @@ describe('Data should not be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      const defaultWebhookRequestData = getTicketDetailsForId(
-        1,
-        availableDate.date
-      )
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(1, availableDate.date)
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })

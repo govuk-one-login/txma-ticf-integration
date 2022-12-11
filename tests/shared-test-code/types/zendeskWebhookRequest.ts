@@ -1,11 +1,8 @@
-export type ZendeskWebhookRequest = {
-  zendeskId: string
+export interface ZendeskTicketTestData {
   recipientEmail: string
   recipientName: string
   requesterEmail: string
   requesterName: string
-  dateFrom: string
-  dateTo: string
   identifierType: string
   eventIds: string
   piiTypes: string
@@ -13,4 +10,10 @@ export type ZendeskWebhookRequest = {
   journeyIds: string
   userIds: string
   dataPaths: string
+}
+
+export interface ZendeskWebhookRequest extends ZendeskTicketTestData {
+  zendeskId: string
+  dateFrom: string
+  dateTo: string
 }

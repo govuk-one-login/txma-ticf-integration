@@ -5,7 +5,7 @@ import {
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
-import { getTicketDetailsForId } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
 import {
   DATA_SENT_TO_QUEUE_MESSAGE,
   SQS_EVENT_RECEIVED_MESSAGE,
@@ -42,10 +42,8 @@ describe('Data should be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      const defaultWebhookRequestData = getTicketDetailsForId(
-        1,
-        availableDate.date
-      )
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(1, availableDate.date)
       ticketId = defaultWebhookRequestData.zendeskId
       console.log(
         `using test date ${availableDate.date} and zendeskId ${ticketId}`
@@ -121,10 +119,8 @@ describe('Data should be copied to analysis bucket', () => {
         'GLACIER',
         true
       )
-      const defaultWebhookRequestData = getTicketDetailsForId(
-        3,
-        availableDate.date
-      )
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(3, availableDate.date)
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
@@ -191,10 +187,8 @@ describe('Data should be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      const defaultWebhookRequestData = getTicketDetailsForId(
-        4,
-        availableDate.date
-      )
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(4, availableDate.date)
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
