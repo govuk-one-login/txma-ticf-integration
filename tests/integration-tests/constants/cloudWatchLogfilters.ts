@@ -9,6 +9,8 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   dataSentToQueue: 'Sent data transfer queue message with id',
   glacierTierCopy:
     'Number of standard tier files to copy was 0, glacier tier files to copy was 1',
+  nothingToCopyMessage:
+    'Number of standard tier files to copy was 0, glacier tier files to copy was 0',
   mixedTierCopy:
     'Number of standard tier files to copy was 1, glacier tier files to copy was 1',
   restoreStarted: 'Started Glacier restore for zendesk ticket with id',
@@ -17,7 +19,8 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   sqsEventReceived: 'Handling data request SQS event',
   webhookInvalid: 'Zendesk request was invalid',
   webhookReceived: 'received Zendesk webhook',
-  zendeskRequestInvalid: 'Zendesk request was invalid'
+  zendeskRequestInvalid: 'Zendesk request was invalid',
+  allDataAvailableQueuingAthenaQuery: 'All data available, queuing Athena query'
 }
 
 type CloudwatchLogFiltersConstants = {
@@ -29,6 +32,7 @@ type CloudwatchLogFiltersConstants = {
   readonly copyComplete: string
   readonly dataSentToQueue: string
   readonly glacierTierCopy: string
+  readonly nothingToCopyMessage: string
   readonly mixedTierCopy: string
   readonly restoreStarted: string
   readonly standardTierCopy: string
@@ -36,4 +40,5 @@ type CloudwatchLogFiltersConstants = {
   readonly webhookInvalid: string
   readonly webhookReceived: string
   readonly zendeskRequestInvalid: string
+  readonly allDataAvailableQueuingAthenaQuery: string
 }
