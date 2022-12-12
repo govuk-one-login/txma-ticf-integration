@@ -7,7 +7,7 @@ import {
 } from '../../shared-test-code/constants/zendeskParameters'
 import { ZendeskTicketTestData } from '../../shared-test-code/types/zendeskWebhookRequest'
 
-export const zendeskTicketTestCaseMapping: {
+export const zendeskTicketTestCaseToMockResponseMapping: {
   [key: number]: ZendeskTicketTestData
 } = {
   // dataCopyRequestData.validRequestData

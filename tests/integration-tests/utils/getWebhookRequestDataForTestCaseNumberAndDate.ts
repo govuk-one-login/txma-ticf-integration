@@ -1,11 +1,12 @@
 import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
-import { zendeskTicketTestCaseMapping } from './ticketIdToMockResponseMapping'
+import { zendeskTicketTestCaseToMockResponseMapping } from './zendeskTicketTestCaseToMockResponseMapping'
 
 export const getWebhookRequestDataForTestCaseNumberAndDate = (
   testCaseNumber: number,
   requestDate: string
 ): ZendeskWebhookRequest => {
-  const mappedTestCase = zendeskTicketTestCaseMapping[testCaseNumber]
+  const mappedTestCase =
+    zendeskTicketTestCaseToMockResponseMapping[testCaseNumber]
   if (!mappedTestCase) {
     throw new Error(`No test case found for test case number ${testCaseNumber}`)
   }
