@@ -6,12 +6,8 @@ import {
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 import { getEnv } from '../../shared-test-code/utils/helpers'
-import {
-  DATA_SENT_TO_QUEUE_MESSAGE,
-  SQS_EVENT_RECEIVED_MESSAGE,
-  WEBHOOK_RECEIVED_MESSAGE
-} from '../constants/cloudWatchLogMessages'
-import { TEST_FILE_NAME } from '../constants/testData'
+import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
+import { testData } from '../constants/testData'
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
@@ -34,25 +30,25 @@ describe('Data should not be copied to analysis bucket', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
       const isDataSentToQueueMessageInLogs = assertEventPresent(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
       expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
           50
         )
       expect(processDataRequestEvents).not.toEqual([])
@@ -73,15 +69,15 @@ describe('Data should not be copied to analysis bucket', () => {
 
       await copyAuditDataFromTestDataBucket(
         getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME,
+        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+        testData.dataCopyTestFileName,
         'STANDARD',
         true
       )
       await copyAuditDataFromTestDataBucket(
         getEnv('ANALYSIS_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${TEST_FILE_NAME}`,
-        TEST_FILE_NAME,
+        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+        testData.dataCopyTestFileName,
         'STANDARD',
         true
       )
@@ -95,25 +91,25 @@ describe('Data should not be copied to analysis bucket', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [WEBHOOK_RECEIVED_MESSAGE, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
       const isDataSentToQueueMessageInLogs = assertEventPresent(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
       expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
-        DATA_SENT_TO_QUEUE_MESSAGE
+        cloudwatchLogFilters.dataSentToQueue
       )
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [SQS_EVENT_RECEIVED_MESSAGE, 'messageId', messageId],
+          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
           70
         )
       expect(processDataRequestEvents).not.toEqual([])

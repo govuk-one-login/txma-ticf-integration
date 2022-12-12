@@ -1,5 +1,5 @@
 import {
-  populateDynamoDBWithTestItemDetails,
+  populateDynamoDBWithTestItemDetails as populateDynamoDBWithTicketDetails,
   getValueFromDynamoDB,
   deleteDynamoDBTestItem
 } from '../../shared-test-code/utils/aws/dynamoDB'
@@ -9,19 +9,36 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
-
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
-import { getEnv } from '../../shared-test-code/utils/helpers'
 import { pollNotifyMockForDownloadUrl } from '../../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
-import {
-  dynamoDBItemDataPathsOnly,
-  dynamoDBItemPIITypesOnly,
-  dynamoDBItemDataPathAndPIITypes
-} from '../constants/dynamoDBItemDetails'
-import {
-  ATHENA_QUERY_DATA_TEST_DATE_PREFIX,
-  ATHENA_QUERY_TEST_FILE_NAME
-} from '../constants/testData'
+import { getEnv } from '../../shared-test-code/utils/helpers'
+import { testData } from '../constants/testData'
+import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
+import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
+
+const ticketWithDataPathAndPiiTypes = generateZendeskTicketData({
+  identifier: 'event_id',
+  eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
+  requestDate: '2022-04-01',
+  piiTypes: ['addresses'],
+  customDataPath:
+    'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
+})
+
+const ticketWithPiiTypesOnly = generateZendeskTicketData({
+  identifier: 'event_id',
+  eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
+  requestDate: '2022-04-01',
+  piiTypes: ['addresses', 'name']
+})
+
+const ticketWithCustomDataPathsOnly = generateZendeskTicketData({
+  identifier: 'event_id',
+  eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
+  requestDate: '2022-04-01',
+  customDataPath:
+    'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
+})
 
 describe('Athena Query SQL generation and execution', () => {
   describe('Query SQL generation and execution successful', () => {
@@ -31,8 +48,8 @@ describe('Athena Query SQL generation and execution', () => {
       randomTicketId = Date.now().toString()
       await copyAuditDataFromTestDataBucket(
         getEnv('ANALYSIS_BUCKET_NAME'),
-        `firehose/${ATHENA_QUERY_DATA_TEST_DATE_PREFIX}/01/${ATHENA_QUERY_TEST_FILE_NAME}`,
-        ATHENA_QUERY_TEST_FILE_NAME
+        `firehose/${testData.athenaTestPrefix}/01/${testData.athenaTestFileName}`,
+        testData.athenaTestFileName
       )
     })
 
@@ -45,43 +62,33 @@ describe('Athena Query SQL generation and execution', () => {
 
     it('Successful Athena processing - requests having only data paths', async () => {
       console.log('Test ticket id: ' + randomTicketId)
-      await populateDynamoDBWithTestItemDetails(
+      await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
-        dynamoDBItemDataPathsOnly
+        ticketWithDataPathAndPiiTypes
       )
       await addMessageToQueue(
         randomTicketId,
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
 
-      const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
-      const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
-      const ATHENA_INITIATED_QUERY_MESSAGE =
-        'Athena query execution initiated with QueryExecutionId'
-      const EXPECTED_RESULTS_BIRTHDATE = `"1981-07-28"`
-      const EXPECTED_BUILDING_NAME = `"PERIGARTH"`
-
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [ATHENA_EVENT_HANDLER_MESSAGE, 'body', randomTicketId]
+          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
         )
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
-      const isAthenaSqlGeneratedMessageInLogs = assertEventPresent(
+      assertEventPresent(
         athenaQueryEvents,
-        ATHENA_SQL_GENERATED_MESSAGE
+        cloudwatchLogFilters.athenaSqlGenerated
       )
-      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
-
-      const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
+      assertEventPresent(
         athenaQueryEvents,
-        ATHENA_INITIATED_QUERY_MESSAGE
+        cloudwatchLogFilters.athenaQueryInitiated
       )
-      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -95,33 +102,28 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate0_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
-      expect(csvRows[0].address0_buildingname).toEqual(EXPECTED_BUILDING_NAME)
+      expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(csvRows[0].address0_buildingname).toEqual(
+        testData.athenaTestBuildingName
+      )
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
       console.log('Test ticket id: ' + randomTicketId)
-      await populateDynamoDBWithTestItemDetails(
+      await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
-        dynamoDBItemPIITypesOnly
+        ticketWithPiiTypesOnly
       )
       await addMessageToQueue(
         randomTicketId,
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
 
-      const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
-      const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
-      const ATHENA_INITIATED_QUERY_MESSAGE =
-        'Athena query execution initiated with QueryExecutionId'
-      const EXPECTED_NAME = `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`
-      const EXPECTED_ADDRESSES = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
-
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [ATHENA_EVENT_HANDLER_MESSAGE, 'body', randomTicketId]
+          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
         )
 
       expect(athenaQueryEvents).not.toEqual([])
@@ -129,13 +131,13 @@ describe('Athena Query SQL generation and execution', () => {
 
       const isAthenaSqlGeneratedMessageInLogs = assertEventPresent(
         athenaQueryEvents,
-        ATHENA_SQL_GENERATED_MESSAGE
+        cloudwatchLogFilters.athenaSqlGenerated
       )
       expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
 
       const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
         athenaQueryEvents,
-        ATHENA_INITIATED_QUERY_MESSAGE
+        cloudwatchLogFilters.athenaQueryInitiated
       )
       expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
 
@@ -151,35 +153,26 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].name).toEqual(EXPECTED_NAME)
-      expect(csvRows[0].addresses).toEqual(EXPECTED_ADDRESSES)
+      expect(csvRows[0].name).toEqual(testData.athenaTestName)
+      expect(csvRows[0].addresses).toEqual(testData.athenaTestAddresses)
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
       console.log('Test ticket id: ' + randomTicketId)
-      await populateDynamoDBWithTestItemDetails(
+      await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
-        dynamoDBItemDataPathAndPIITypes
+        ticketWithCustomDataPathsOnly
       )
       await addMessageToQueue(
         randomTicketId,
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
 
-      const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
-      const ATHENA_SQL_GENERATED_MESSAGE = 'Athena SQL generated'
-      const ATHENA_INITIATED_QUERY_MESSAGE =
-        'Athena query execution initiated with QueryExecutionId'
-      const EXPECTED_ADDRESSES = `[{"uprn":"9051041658","buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB","validfrom":"2014-01-01"},{"buildingname":"PERIGARTH","streetname":"PITSTRUAN TERRACE","addresslocality":"ABERDEEN","postalcode":"AB10 6QW","addresscountry":"GB"}]`
-      const EXPECTED_NAME = `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`
-      const EXPECTED_BUILDING_NAME = `"PERIGARTH"`
-      const EXPECTED_RESULTS_BIRTHDATE = `"1981-07-28"`
-
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [ATHENA_EVENT_HANDLER_MESSAGE, 'body', randomTicketId]
+          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
         )
 
       expect(athenaQueryEvents).not.toEqual([])
@@ -187,13 +180,13 @@ describe('Athena Query SQL generation and execution', () => {
 
       const isAthenaSqlGeneratedMessageInLogs = assertEventPresent(
         athenaQueryEvents,
-        ATHENA_SQL_GENERATED_MESSAGE
+        cloudwatchLogFilters.athenaSqlGenerated
       )
       expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
 
       const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
         athenaQueryEvents,
-        ATHENA_INITIATED_QUERY_MESSAGE
+        cloudwatchLogFilters.athenaQueryInitiated
       )
       expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
 
@@ -209,10 +202,12 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate0_value).toEqual(EXPECTED_RESULTS_BIRTHDATE)
-      expect(csvRows[0].address0_buildingname).toEqual(EXPECTED_BUILDING_NAME)
-      expect(csvRows[0].name).toEqual(EXPECTED_NAME)
-      expect(csvRows[0].addresses).toEqual(EXPECTED_ADDRESSES)
+      expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(csvRows[0].address0_buildingname).toEqual(
+        testData.athenaTestBuildingName
+      )
+      expect(csvRows[0].name).toEqual(testData.athenaTestName)
+      expect(csvRows[0].addresses).toEqual(testData.athenaTestAddresses)
     })
   })
 
@@ -228,14 +223,11 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
-      const ATHENA_EVENT_HANDLER_MESSAGE = 'Handling Athena Query event'
-      const ATHENA_HANDLER_INVOKE_ERROR =
-        'Cannot find database entry for zendesk ticket'
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
           [
-            ATHENA_EVENT_HANDLER_MESSAGE,
+            cloudwatchLogFilters.athenaEventReceived,
             'body',
             ticketId,
             `ApproximateReceiveCount\\":`,
@@ -248,7 +240,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       const isAthenaHandlerInvokeErrorInLogs = assertEventPresent(
         athenaQueryEvents,
-        ATHENA_HANDLER_INVOKE_ERROR
+        cloudwatchLogFilters.athenaInvokeError
       )
       expect(isAthenaHandlerInvokeErrorInLogs).toBe(true)
     })

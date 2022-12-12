@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { ZENDESK_BASE_URL } from '../../constants/zendeskParameters'
-import { pause } from '../helpers'
+import { getEnv, pause } from '../helpers'
 
 export const pollNotifyMockForDownloadUrl = async (zendeskId: string) => {
   const maxAttempts = 30
@@ -16,7 +15,7 @@ export const pollNotifyMockForDownloadUrl = async (zendeskId: string) => {
 
 const getDownloadUrlFromNotifyMock = async (zendeskId: string) => {
   const response = await axios({
-    url: `${ZENDESK_BASE_URL}/notifyrequest/${zendeskId}`,
+    url: `https://${getEnv('ZENDESK_HOSTNAME')}/notifyrequest/${zendeskId}`,
     method: 'GET',
     headers: { Accept: 'application/json' },
 

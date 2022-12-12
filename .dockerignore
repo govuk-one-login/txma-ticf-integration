@@ -5,7 +5,7 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-tests/.env*
+tests/**/.env*
 tests/docker-compose.allure.yaml
 tests/Dockerfile
 tests/reports/
