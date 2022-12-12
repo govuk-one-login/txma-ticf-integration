@@ -2,6 +2,7 @@ import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aw
 import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
 import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
+import { pollNotifyApiForDownloadUrl } from '../../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyApi'
 import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import { getEnv } from '../../shared-test-code/utils/helpers'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
@@ -63,7 +64,8 @@ describe('Query results generated', () => {
     zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithEventId)
     await approveZendeskTicket(zendeskId)
 
-    const rows = await downloadResultsFileAndParseData(zendeskId)
+    const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
+    const rows = await downloadResultsFileAndParseData(downloadUrl)
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(testData.eventId)
@@ -81,7 +83,9 @@ describe('Query results generated', () => {
     zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithUserId)
     await approveZendeskTicket(zendeskId)
 
-    const rows = await downloadResultsFileAndParseData(zendeskId)
+    const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
+    const rows = await downloadResultsFileAndParseData(downloadUrl)
+
     expect(rows.length).toEqual(1)
     expect(rows[0].passport_number).toEqual(expectedPassportNumber)
     expect(rows[0].passport_expiry_date).toEqual(expectedPassportExpiryDate)
@@ -101,7 +105,9 @@ describe('Query results generated', () => {
     zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithJourneyId)
     await approveZendeskTicket(zendeskId)
 
-    const rows = await downloadResultsFileAndParseData(zendeskId)
+    const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
+    const rows = await downloadResultsFileAndParseData(downloadUrl)
+
     expect(rows.length).toEqual(1)
     expect.arrayContaining(expectedDriversLicense)
   })
@@ -112,7 +118,8 @@ describe('Query results generated', () => {
     zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithSessionId)
     await approveZendeskTicket(zendeskId)
 
-    const rows = await downloadResultsFileAndParseData(zendeskId)
+    const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
+    const rows = await downloadResultsFileAndParseData(downloadUrl)
 
     expect(rows.length).toEqual(1)
     expect(rows[0].name).toBeDefined()
@@ -124,7 +131,9 @@ describe('Query results generated', () => {
     zendeskId = await createZendeskTicket(endToEndFlowRequestDataNoMatch)
     await approveZendeskTicket(zendeskId)
 
-    const rows = await downloadResultsFileAndParseData(zendeskId)
+    const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
+    const rows = await downloadResultsFileAndParseData(downloadUrl)
+
     expect(rows.length).toEqual(0)
   })
 })

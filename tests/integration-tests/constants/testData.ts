@@ -7,7 +7,16 @@ export const testData: TestDataConstants = {
   athenaTestPrefix: '2022/04/01',
   dataCopyTestFileName: 'test-audit-data.gz',
   date: '2022-01-01',
-  eventId: 'c9e2bf44-b95e-4f9a-81c4-cf02d42c1552'
+  eventId: 'c9e2bf44-b95e-4f9a-81c4-cf02d42c1552',
+  dataPaths:
+    'restricted.this1.that1 restricted.this2.that2 restricted.this3.that3.those3',
+  mockServerValues: {
+    zendeskEndUserName: 'Txma-team2-ticf-analyst-dev',
+    recipientName: 'Test User',
+    recipientEmail: 'fake-ticf-recipient@test.gov.uk',
+    requesterEmail: 'fake-ticf-analyst@test.gov.uk',
+    requesterName: 'Txma-team2-ticf-analyst-dev'
+  }
 }
 
 type TestDataConstants = {
@@ -20,4 +29,14 @@ type TestDataConstants = {
   readonly date: string
   readonly dataCopyTestFileName: string
   readonly eventId: string
+  readonly dataPaths: string
+  readonly mockServerValues: MockServerValues
+}
+
+type MockServerValues = {
+  readonly zendeskEndUserName: string
+  readonly recipientName: string
+  readonly recipientEmail: string
+  readonly requesterEmail: string
+  readonly requesterName: string
 }

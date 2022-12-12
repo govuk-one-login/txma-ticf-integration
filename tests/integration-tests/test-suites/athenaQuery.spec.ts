@@ -5,18 +5,16 @@ import {
 } from '../../shared-test-code/utils/aws/dynamoDB'
 import { addMessageToQueue } from '../../shared-test-code/utils/aws/sqs'
 import {
-  assertEventPresent,
+  eventIsPresent,
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
-import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
-import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
+import { pollNotifyMockForDownloadUrl } from '../../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
 import { getEnv } from '../../shared-test-code/utils/helpers'
 import { testData } from '../constants/testData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
-import { requestConstants } from '../constants/requests'
 
 const ticketWithDataPathAndPiiTypes = generateZendeskTicketData({
   identifier: 'event_id',
@@ -83,11 +81,8 @@ describe('Athena Query SQL generation and execution', () => {
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
-      assertEventPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaSqlGenerated
-      )
-      assertEventPresent(
+      eventIsPresent(athenaQueryEvents, cloudwatchLogFilters.athenaSqlGenerated)
+      eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
@@ -99,7 +94,9 @@ describe('Athena Query SQL generation and execution', () => {
       )
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
+      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
+      expect(downloadUrl.startsWith('https')).toBe(true)
+      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
@@ -128,14 +125,18 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(
+
+      const isAthenaSqlGeneratedMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaSqlGenerated
       )
-      assertEventPresent(
+      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
+
+      const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
+      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -144,7 +145,9 @@ describe('Athena Query SQL generation and execution', () => {
       )
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
+      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
+      expect(downloadUrl.startsWith('https')).toBe(true)
+      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].name).toEqual(testData.athenaTestName)
@@ -171,14 +174,18 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(
+
+      const isAthenaSqlGeneratedMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaSqlGenerated
       )
-      assertEventPresent(
+      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
+
+      const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
+      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -187,7 +194,9 @@ describe('Athena Query SQL generation and execution', () => {
       )
       expect(value?.athenaQueryId.S).toBeDefined()
 
-      const csvRows = await downloadResultsFileAndParseData(randomTicketId)
+      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
+      expect(downloadUrl.startsWith('https')).toBe(true)
+      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
@@ -203,19 +212,14 @@ describe('Athena Query SQL generation and execution', () => {
     let ticketId: string
 
     beforeAll(async () => {
-      ticketId = await createZendeskTicket(requestConstants.invalid)
-    })
-
-    afterAll(async () => {
-      await deleteZendeskTicket(ticketId)
+      ticketId = Date.now().toString()
+      await addMessageToQueue(
+        ticketId,
+        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
+      )
     })
 
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
-      await addMessageToQueue(
-        `${ticketId}`,
-        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
-      )
-
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
@@ -227,13 +231,14 @@ describe('Athena Query SQL generation and execution', () => {
             `\\"2\\"`
           ]
         )
-
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
-      assertEventPresent(
+
+      const isAthenaHandlerInvokeErrorInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaInvokeError
       )
+      expect(isAthenaHandlerInvokeErrorInLogs).toBe(true)
     })
   })
 })

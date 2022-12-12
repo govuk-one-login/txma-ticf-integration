@@ -1,124 +1,57 @@
-import axios from 'axios'
-import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
-import { getEnv } from '../../shared-test-code/utils/helpers'
-import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
+import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
-import { generateSignatureHeaders } from '../../shared-test-code/utils/zendesk/generateSignatureHeaders'
-import { testData } from '../constants/testData'
-import { requestConstants } from '../constants/requests'
-
-const webhookUrl = `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`
-
-const defaultWebhookRequestData: ZendeskWebhookRequest = {
-  zendeskId: '1',
-  recipientEmail: process.env.FIXED_RECIPIENT_EMAIL
-    ? process.env.FIXED_RECIPIENT_EMAIL
-    : getEnv('ZENDESK_RECIPIENT_EMAIL'),
-  recipientName: getEnv('ZENDESK_RECIPIENT_NAME'),
-  requesterEmail: getEnv('ZENDESK_END_USER_EMAIL'),
-  requesterName: getEnv('ZENDESK_END_USER_NAME'),
-  dateFrom: testData.date,
-  dateTo: testData.date,
-  identifierType: 'event_id',
-  eventIds: testData.eventId,
-  piiTypes: 'drivers_license',
-  sessionIds: '',
-  journeyIds: '',
-  userIds: '',
-  dataPaths: ''
-}
-
-const sendWebhook = async (
-  customHeaders: {
-    [key: string]: string
-  },
-  webhookRequestData: ZendeskWebhookRequest
-) => {
-  return axios({
-    url: webhookUrl,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...customHeaders
-    },
-    data: webhookRequestData
-  })
-    .then((res) => {
-      return {
-        data: res.data,
-        status: res.status
-      }
-    })
-    .catch((error) => {
-      if (error.response) {
-        return error.response
-      }
-      console.log(error.status)
-      throw 'No response recieved from gateway'
-    })
-}
 
 describe('Zendesk request integrity', () => {
-  test('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
+  it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
+    const defaultWebhookRequestData =
+      getWebhookRequestDataForTestCaseNumberAndDate(1, '2022-01-01')
     const invalidSignature = 'cCxJHacr678ZZigFZZlYq4qz2XLWPEOeS+PPDuTivwQ='
-
     const headers = {
       'X-Zendesk-Webhook-Signature': invalidSignature
     }
 
-    const errorResponse = await sendWebhook(headers, defaultWebhookRequestData)
+    const errorResponse = await sendWebhookRequest(
+      defaultWebhookRequestData,
+      headers
+    )
+
     expect(errorResponse.status).toEqual(400)
     expect(errorResponse.data.message).toEqual('Invalid request source')
   })
 })
 
 describe('Zendesk ticket check', () => {
-  let ticketId: string
+  let defaultWebhookRequestData: ZendeskWebhookRequest
 
-  beforeAll(async () => {
-    ticketId = await createZendeskTicket(requestConstants.valid)
-  })
-
-  afterAll(async () => {
-    await deleteZendeskTicket(ticketId)
-  })
-
-  test('API Gateway returns 200 for a matching zendesk ticket', async () => {
-    const webhookRequestData = defaultWebhookRequestData
-    webhookRequestData.zendeskId = ticketId
-
-    const headers = {
-      ...generateSignatureHeaders(webhookRequestData)
+  beforeEach(() => {
+    defaultWebhookRequestData = {
+      ...getWebhookRequestDataForTestCaseNumberAndDate(1, '2022-01-01')
     }
-    const response = await sendWebhook(headers, webhookRequestData)
+  })
+
+  it('API Gateway returns 200 for a matching zendesk ticket', async () => {
+    const response = await sendWebhookRequest(defaultWebhookRequestData)
+
     expect(response.status).toEqual(200)
     expect(response.data.message).toEqual('data transfer initiated')
   })
 
-  test('API Gateway returns a 404 response if the request refers to a non-existent Zendesk ticket', async () => {
-    const webhookRequestData = defaultWebhookRequestData
-    webhookRequestData.zendeskId = '10000000000000000'
+  it('API Gateway returns a 404 response if the request refers to a non-existent Zendesk ticket', async () => {
+    defaultWebhookRequestData.zendeskId = '0'
 
-    const headers = {
-      ...generateSignatureHeaders(defaultWebhookRequestData)
-    }
+    const errorResponse = await sendWebhookRequest(defaultWebhookRequestData)
 
-    const errorResponse = await sendWebhook(headers, defaultWebhookRequestData)
     expect(errorResponse.status).toEqual(404)
     expect(errorResponse.data.message).toEqual('Zendesk ticket not found')
   })
 
-  test('API Gateway returns a 400 response if the request does not match info in corresponding Zendesk ticket', async () => {
-    const webhookRequestData = defaultWebhookRequestData
-    webhookRequestData.zendeskId = ticketId
-    webhookRequestData.identifierType = 'journey_id'
-    webhookRequestData.journeyIds = '3457879'
+  it('API Gateway returns a 400 response if the request does not match info in corresponding Zendesk ticket', async () => {
+    defaultWebhookRequestData.identifierType = 'journey_id'
+    defaultWebhookRequestData.journeyIds = '3457879'
 
-    const headers = {
-      ...generateSignatureHeaders(webhookRequestData)
-    }
+    const errorResponse = await sendWebhookRequest(defaultWebhookRequestData)
 
-    const errorResponse = await sendWebhook(headers, webhookRequestData)
     expect(errorResponse.status).toEqual(400)
     expect(errorResponse.data.message).toEqual(
       'Request parameters do not match a Zendesk Ticket'

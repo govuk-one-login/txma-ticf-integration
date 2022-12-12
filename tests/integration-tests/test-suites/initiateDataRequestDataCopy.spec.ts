@@ -1,32 +1,17 @@
 import {
-  assertEventPresent,
+  eventIsPresent,
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
-import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
-import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
-import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 import { getEnv } from '../../shared-test-code/utils/helpers'
-import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
-import { setCustomFieldValueForRequest } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
 import { testData } from '../constants/testData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
-import { requestConstants } from '../constants/requests'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
+import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 describe('Data should be copied to analysis bucket', () => {
-  const generateTestDataWithCustomDate = (date: string) => {
-    const data = requestConstants.valid
-
-    setCustomFieldValueForRequest(
-      data,
-      zendeskConstants.fieldIds.requestDate,
-      date
-    )
-    return data
-  }
-
   describe('valid requests for standard copy - analysis bucket empty', () => {
     let ticketId: string
 
@@ -40,19 +25,13 @@ describe('Data should be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
-      )
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(1, availableDate.date)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      await deleteZendeskTicket(ticketId)
-      console.log('request for valid data all in standard tier test ended')
-    })
-
-    test('request for valid data all in standard tier', async () => {
-      console.log('request for valid data all in standard tier test started')
+    it('data all in standard tier', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -60,16 +39,16 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -77,17 +56,18 @@ describe('Data should be copied to analysis bucket', () => {
           [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
           50
         )
-
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isStandardTierObjectsToCopyMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.standardTierCopy
       )
-      assertEventPresent(
+      expect(isStandardTierObjectsToCopyMessageInLogs).toBe(true)
+      const isCopyJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.copyStarted
       )
+      expect(isCopyJobStartedMessageInLogs).toBe(true)
 
       const copyCompletedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -97,11 +77,15 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(copyCompletedEvents).not.toEqual([])
 
-      assertEventPresent(copyCompletedEvents, cloudwatchLogFilters.copyComplete)
+      const isCopyCompleteMessageInLogs = eventIsPresent(
+        copyCompletedEvents,
+        cloudwatchLogFilters.copyComplete
+      )
+      expect(isCopyCompleteMessageInLogs).toBe(true)
     })
   })
 
-  describe('valid requests for glacier copy - analysis bucket empty', () => {
+  describe('glacier copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
@@ -114,18 +98,13 @@ describe('Data should be copied to analysis bucket', () => {
         'GLACIER',
         true
       )
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
-      )
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(3, availableDate.date)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      console.log('request for valid data all in glacier tier test ended')
-    })
-
-    test('request for valid data all in glacier tier', async () => {
-      console.log('request for valid data all in glacier tier test started')
+    it('data all in glacier tier', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -133,10 +112,11 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
@@ -151,18 +131,21 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isGlacierTierObjectCopyMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.glacierTierCopy
       )
-      assertEventPresent(
+      expect(isGlacierTierObjectCopyMessageInLogs).toBe(true)
+
+      const isGlacierRestoreStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.restoreStarted
       )
+      expect(isGlacierRestoreStartedMessageInLogs).toBe(true)
     })
   })
 
-  describe('valid requests for standard and glacier copy - analysis bucket empty', () => {
+  describe('standard and glacier copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
@@ -183,23 +166,13 @@ describe('Data should be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
-      )
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(4, availableDate.date)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      console.log(
-        'valid request with data in standard and glacier tier test ended'
-      )
-    })
-
-    test('valid request with data in standard and glacier tier', async () => {
-      console.log(
-        'valid request with data in standard and glacier tier test started'
-      )
-
+    it('data in standard and glacier tier', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -207,16 +180,16 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -226,10 +199,11 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isMixTierObjectsToCopyMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.mixedTierCopy
       )
+      expect(isMixTierObjectsToCopyMessageInLogs).toBe(true)
     })
   })
 })

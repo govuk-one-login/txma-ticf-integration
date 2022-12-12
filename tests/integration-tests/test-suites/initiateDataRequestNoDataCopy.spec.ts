@@ -1,54 +1,28 @@
 import {
-  assertEventPresent,
+  eventIsPresent,
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
-import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
-import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
-import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/deleteZendeskTicket'
 import { getEnv } from '../../shared-test-code/utils/helpers'
-import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
-import { setCustomFieldValueForRequest } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { testData } from '../constants/testData'
-import { requestConstants } from '../constants/requests'
-
-const NOTHING_TO_COPY_MESSAGE =
-  'Number of standard tier files to copy was 0, glacier tier files to copy was 0'
-const DATA_AVAILABLE_MESSAGE = 'All data available, queuing Athena query'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
+import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 describe('Data should not be copied to analysis bucket', () => {
-  const generateTestDataWithCustomDate = (date: string) => {
-    const data = requestConstants.valid
-
-    setCustomFieldValueForRequest(
-      data,
-      zendeskConstants.fieldIds.requestDate,
-      date
-    )
-    return data
-  }
-
   describe('valid requests for no data copy - analysis bucket empty', () => {
     let ticketId: string
 
     beforeEach(async () => {
-      const availableDate = await getAvailableTestDate()
-
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
-      )
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(5, '2022-01-07')
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      console.log('request for valid data, no files present test ended')
-    })
-
-    test('request for valid data, no files present', async () => {
-      console.log('request for valid data, no files present test started')
+    it('request for valid data, no files present', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -56,10 +30,11 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
@@ -74,7 +49,11 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
+      const isNothingToCopyMessageInLogs = eventIsPresent(
+        processDataRequestEvents,
+        cloudwatchLogFilters.nothingToCopyMessage
+      )
+      expect(isNothingToCopyMessageInLogs).toBe(true)
     })
   })
 
@@ -98,23 +77,13 @@ describe('Data should not be copied to analysis bucket', () => {
         'STANDARD',
         true
       )
-      ticketId = await createZendeskTicket(
-        generateTestDataWithCustomDate(availableDate.date)
-      )
-      await approveZendeskTicket(ticketId)
+      const defaultWebhookRequestData =
+        getWebhookRequestDataForTestCaseNumberAndDate(1, availableDate.date)
+      ticketId = defaultWebhookRequestData.zendeskId
+      await sendWebhookRequest(defaultWebhookRequestData)
     })
 
-    afterEach(async () => {
-      await deleteZendeskTicket(ticketId)
-      console.log(
-        'request for valid data already in analysis bucket test ended'
-      )
-    })
-
-    test('request for valid data already in analysis bucket', async () => {
-      console.log(
-        'request for valid data already in analysis bucket test started'
-      )
+    it('request for valid data already in analysis bucket', async () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -122,16 +91,16 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
+      expect(isDataSentToQueueMessageInLogs).toBe(true)
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      console.log('messageId', messageId)
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -141,8 +110,17 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      assertEventPresent(processDataRequestEvents, NOTHING_TO_COPY_MESSAGE)
-      assertEventPresent(processDataRequestEvents, DATA_AVAILABLE_MESSAGE)
+      const isNothingToCopyMessageInLogs = eventIsPresent(
+        processDataRequestEvents,
+        cloudwatchLogFilters.nothingToCopyMessage
+      )
+      expect(isNothingToCopyMessageInLogs).toBe(true)
+
+      const isDataAvailableMessageInLogs = eventIsPresent(
+        processDataRequestEvents,
+        cloudwatchLogFilters.allDataAvailableQueuingAthenaQuery
+      )
+      expect(isDataAvailableMessageInLogs).toBe(true)
     })
   })
 })

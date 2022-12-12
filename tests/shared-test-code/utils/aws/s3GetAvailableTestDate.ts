@@ -9,7 +9,7 @@ export const getAvailableTestDate = async () => {
 const findAvailableS3Locations = async (
   checkDate: MatchedDateAndPrefix,
   count = 0
-) => {
+): Promise<MatchedDateAndPrefix> => {
   count++
 
   if (count > 10) {
@@ -32,7 +32,7 @@ const findAvailableS3Locations = async (
   )
 
   if (locationAvailability.includes(false)) {
-    await findAvailableS3Locations(generateRandomDateAndPrefix(), count)
+    return await findAvailableS3Locations(generateRandomDateAndPrefix(), count)
   }
 
   return checkDate
