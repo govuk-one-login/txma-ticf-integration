@@ -24,20 +24,6 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     piiTypes: 'drivers_license',
     dataPaths: testData.dataPaths
   },
-  // invalidRequestData: Date in future
-  2: {
-    requesterEmail: ZENDESK_REQUESTER_EMAIL,
-    requesterName: ZENDESK_REQUESTER_NAME,
-    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
-    recipientName: ZENDESK_RECIPIENT_NAME,
-    identifierType: 'event_id',
-    sessionIds: '',
-    journeyIds: '',
-    userIds: '',
-    eventIds: testData.eventId,
-    piiTypes: 'drivers_license',
-    dataPaths: ''
-  },
   // validGlacierRequestData
   3: {
     requesterEmail: ZENDESK_REQUESTER_EMAIL,

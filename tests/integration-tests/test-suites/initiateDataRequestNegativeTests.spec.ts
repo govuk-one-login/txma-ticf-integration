@@ -55,7 +55,7 @@ describe('Invalid requests should not start a data copy', () => {
 
     beforeEach(async () => {
       const defaultWebhookRequestData =
-        getWebhookRequestDataForTestCaseNumberAndDate(2, getTomorrowAsString())
+        getWebhookRequestDataForTestCaseNumberAndDate(1, getTomorrowAsString())
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })
