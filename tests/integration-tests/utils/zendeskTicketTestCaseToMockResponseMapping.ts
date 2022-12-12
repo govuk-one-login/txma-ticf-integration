@@ -1,10 +1,4 @@
 import { testData } from '../constants/testData'
-import {
-  ZENDESK_REQUESTER_EMAIL,
-  ZENDESK_REQUESTER_NAME,
-  ZENDESK_RECIPIENT_EMAIL,
-  ZENDESK_RECIPIENT_NAME
-} from '../../shared-test-code/constants/zendeskParameters'
 import { ZendeskTicketTestData } from '../../shared-test-code/types/zendeskWebhookRequest'
 
 export const zendeskTicketTestCaseToMockResponseMapping: {
@@ -12,10 +6,10 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
 } = {
   // dataCopyRequestData.validRequestData
   1: {
-    requesterEmail: ZENDESK_REQUESTER_EMAIL,
-    requesterName: ZENDESK_REQUESTER_NAME,
-    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
-    recipientName: ZENDESK_RECIPIENT_NAME,
+    requesterEmail: testData.mockServerValues.requesterEmail,
+    requesterName: testData.mockServerValues.requesterName,
+    recipientEmail: testData.mockServerValues.recipientEmail,
+    recipientName: testData.mockServerValues.recipientName,
     identifierType: 'event_id',
     sessionIds: '',
     journeyIds: '',
@@ -26,10 +20,10 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
   },
   // validGlacierRequestData
   3: {
-    requesterEmail: ZENDESK_REQUESTER_EMAIL,
-    requesterName: ZENDESK_REQUESTER_NAME,
-    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
-    recipientName: ZENDESK_RECIPIENT_NAME,
+    requesterEmail: testData.mockServerValues.requesterEmail,
+    requesterName: testData.mockServerValues.requesterName,
+    recipientEmail: testData.mockServerValues.recipientEmail,
+    recipientName: testData.mockServerValues.recipientName,
     identifierType: 'event_id',
     sessionIds: '',
     journeyIds: '',
@@ -40,10 +34,10 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
   },
   // validStandardAndGlacierTiersRequestData
   4: {
-    requesterEmail: ZENDESK_REQUESTER_EMAIL,
-    requesterName: ZENDESK_REQUESTER_NAME,
-    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
-    recipientName: ZENDESK_RECIPIENT_NAME,
+    requesterEmail: testData.mockServerValues.requesterEmail,
+    requesterName: testData.mockServerValues.requesterName,
+    recipientEmail: testData.mockServerValues.recipientEmail,
+    recipientName: testData.mockServerValues.recipientName,
     identifierType: 'event_id',
     sessionIds: '',
     journeyIds: '',
@@ -54,10 +48,10 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
   },
   // validRequestNoData
   5: {
-    requesterEmail: ZENDESK_REQUESTER_EMAIL,
-    requesterName: ZENDESK_REQUESTER_NAME,
-    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
-    recipientName: ZENDESK_RECIPIENT_NAME,
+    requesterEmail: testData.mockServerValues.requesterEmail,
+    requesterName: testData.mockServerValues.requesterName,
+    recipientEmail: testData.mockServerValues.recipientEmail,
+    recipientName: testData.mockServerValues.recipientName,
     identifierType: 'event_id',
     sessionIds: '',
     journeyIds: '',
@@ -68,10 +62,10 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
   },
   // webhookAPIRequestData.validApiTestRequestData
   11: {
-    requesterEmail: ZENDESK_REQUESTER_EMAIL,
-    requesterName: ZENDESK_REQUESTER_NAME,
-    recipientEmail: ZENDESK_RECIPIENT_EMAIL,
-    recipientName: ZENDESK_RECIPIENT_NAME,
+    requesterEmail: testData.mockServerValues.requesterEmail,
+    requesterName: testData.mockServerValues.requesterName,
+    recipientEmail: testData.mockServerValues.recipientEmail,
+    recipientName: testData.mockServerValues.recipientName,
     identifierType: 'event_id',
     sessionIds: '',
     journeyIds: '',

@@ -1,14 +1,3 @@
-export const CLOSE_ZENDESK_TICKET_COMMENT =
-  'Your ticket has been closed because some fields were invalid. Here is the list of what was wrong: From Date is in the future, To Date is in the future'
-
-export const ZENDESK_END_USER_NAME = 'Txma-team2-ticf-analyst-dev'
-export const ZENDESK_RECIPIENT_NAME = 'Test User'
-export const ZENDESK_RECIPIENT_EMAIL = 'fake-ticf-recipient@test.gov.uk'
-export const ZENDESK_REQUESTER_EMAIL = 'fake-ticf-analyst@test.gov.uk'
-export const ZENDESK_REQUESTER_NAME = 'Txma-team2-ticf-analyst-dev'
-
-export const ZENDESK_REQUESTS_ENDPOINT = '/api/v2/requests'
-export const ZENDESK_TICKETS_ENDPOINT = '/api/v2/tickets'
 export const zendeskConstants: ZendeskConstants = {
   fieldIds: {
     customDataPath: 5698447116060,
