@@ -234,7 +234,6 @@ describe('Athena Query SQL generation and execution', () => {
             `\\"2\\"`
           ]
         )
-      console.log('this is athenaQueryEvents: ', athenaQueryEvents)
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 

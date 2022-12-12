@@ -28,9 +28,6 @@ describe('Data should be copied to analysis bucket', () => {
       const defaultWebhookRequestData =
         getWebhookRequestDataForTestCaseNumberAndDate(1, availableDate.date)
       ticketId = defaultWebhookRequestData.zendeskId
-      console.log(
-        `using test date ${availableDate.date} and zendeskId ${ticketId}`
-      )
       await sendWebhookRequest(defaultWebhookRequestData)
     })
 
