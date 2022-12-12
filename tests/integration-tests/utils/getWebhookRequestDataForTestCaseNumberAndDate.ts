@@ -14,7 +14,7 @@ export const getWebhookRequestDataForTestCaseNumberAndDate = (
     ...mappedTestCase,
     dateFrom: requestDate,
     dateTo: requestDate,
-    zendeskId: createUniqueTicketIdForDateWithMappingSuffix(
+    zendeskId: createUniqueTicketIdForDateWithTestCaseSuffix(
       testCaseNumber,
       requestDate
     )
@@ -23,11 +23,11 @@ export const getWebhookRequestDataForTestCaseNumberAndDate = (
   return webhookRequest
 }
 
-const createUniqueTicketIdForDateWithMappingSuffix = (
-  mappingId: number,
+const createUniqueTicketIdForDateWithTestCaseSuffix = (
+  testCaseId: number,
   date: string
 ) => {
   return `${date.replaceAll('-', '')}${Math.floor(
     Math.random() * 10000
-  )}${mappingId.toString().padStart(2, '0')}`
+  )}${testCaseId.toString().padStart(2, '0')}`
 }
