@@ -6,7 +6,7 @@ import {
 import { getEnv } from '../../shared-test-code/utils/helpers'
 
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
-import { getWebhookRequestDataForTestCaseNumberAndDate } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 describe('Invalid requests should not start a data copy', () => {

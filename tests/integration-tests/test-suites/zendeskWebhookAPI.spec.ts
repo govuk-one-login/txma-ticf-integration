@@ -1,4 +1,4 @@
-import { getWebhookRequestDataForTestCaseNumberAndDate } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
 

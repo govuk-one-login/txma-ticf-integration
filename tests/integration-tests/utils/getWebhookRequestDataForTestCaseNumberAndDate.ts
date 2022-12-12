@@ -1,5 +1,5 @@
-import { ZendeskWebhookRequest } from '../../types/zendeskWebhookRequest'
-import { zendeskTicketTestCaseMapping } from './ticketIdToResponseMapping'
+import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
+import { zendeskTicketTestCaseMapping } from './ticketIdToMockResponseMapping'
 
 export const getWebhookRequestDataForTestCaseNumberAndDate = (
   testCaseNumber: number,

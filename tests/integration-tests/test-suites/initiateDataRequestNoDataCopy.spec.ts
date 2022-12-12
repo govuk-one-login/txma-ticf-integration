@@ -8,7 +8,7 @@ import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvai
 import { getEnv } from '../../shared-test-code/utils/helpers'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { testData } from '../constants/testData'
-import { getWebhookRequestDataForTestCaseNumberAndDate } from '../../shared-test-code/utils/zendesk/getTicketDetailsForId'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 const NOTHING_TO_COPY_MESSAGE =
