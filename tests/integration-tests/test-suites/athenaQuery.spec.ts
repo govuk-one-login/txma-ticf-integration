@@ -5,7 +5,7 @@ import {
 } from '../../shared-test-code/utils/aws/dynamoDB'
 import { addMessageToQueue } from '../../shared-test-code/utils/aws/sqs'
 import {
-  assertEventPresent,
+  eventIsPresent,
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
@@ -81,11 +81,8 @@ describe('Athena Query SQL generation and execution', () => {
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
-      assertEventPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaSqlGenerated
-      )
-      assertEventPresent(
+      eventIsPresent(athenaQueryEvents, cloudwatchLogFilters.athenaSqlGenerated)
+      eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
@@ -129,13 +126,13 @@ describe('Athena Query SQL generation and execution', () => {
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
-      const isAthenaSqlGeneratedMessageInLogs = assertEventPresent(
+      const isAthenaSqlGeneratedMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaSqlGenerated
       )
       expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
 
-      const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
+      const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
@@ -178,13 +175,13 @@ describe('Athena Query SQL generation and execution', () => {
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
-      const isAthenaSqlGeneratedMessageInLogs = assertEventPresent(
+      const isAthenaSqlGeneratedMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaSqlGenerated
       )
       expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
 
-      const isAthenaInitiatedQueryMessageInLogs = assertEventPresent(
+      const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
@@ -237,7 +234,7 @@ describe('Athena Query SQL generation and execution', () => {
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
-      const isAthenaHandlerInvokeErrorInLogs = assertEventPresent(
+      const isAthenaHandlerInvokeErrorInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaInvokeError
       )

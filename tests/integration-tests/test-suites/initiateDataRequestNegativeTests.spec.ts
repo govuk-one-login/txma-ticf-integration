@@ -1,6 +1,5 @@
 import {
-  assertEventNotPresent,
-  assertEventPresent,
+  eventIsPresent,
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { getEnv } from '../../shared-test-code/utils/helpers'
@@ -29,17 +28,17 @@ describe('Invalid requests should not start a data copy', () => {
           [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
 
-      const isWebhookInvalidMessageInLogs = assertEventPresent(
+      const isWebhookInvalidMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.webhookInvalid
       )
       expect(isWebhookInvalidMessageInLogs).toBe(true)
 
-      const isDataSentToQueueMessageNotInLogs = assertEventNotPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageNotInLogs).toBe(true)
+      expect(isDataSentToQueueMessageInLogs).toBe(false)
     })
   })
 
@@ -67,17 +66,17 @@ describe('Invalid requests should not start a data copy', () => {
           [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
         )
 
-      const isWebhookInvalidMessageInLogs = assertEventPresent(
+      const isWebhookInvalidMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.webhookInvalid
       )
       expect(isWebhookInvalidMessageInLogs).toBe(true)
 
-      const isDataSentToQueueMessageNotInLogs = assertEventNotPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageNotInLogs).toBe(true)
+      expect(isDataSentToQueueMessageInLogs).toBe(false)
     })
   })
 })

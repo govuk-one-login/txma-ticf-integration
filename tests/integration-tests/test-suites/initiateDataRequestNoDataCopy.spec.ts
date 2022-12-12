@@ -1,5 +1,5 @@
 import {
-  assertEventPresent,
+  eventIsPresent,
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
@@ -30,7 +30,7 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      const isDataSentToQueueMessageInLogs = assertEventPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
@@ -49,7 +49,7 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      const isNothingToCopyMessageInLogs = assertEventPresent(
+      const isNothingToCopyMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.nothingToCopyMessage
       )
@@ -91,7 +91,7 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(initiateDataRequestEvents).not.toEqual([])
 
-      const isDataSentToQueueMessageInLogs = assertEventPresent(
+      const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
@@ -110,13 +110,13 @@ describe('Data should not be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      const isNothingToCopyMessageInLogs = assertEventPresent(
+      const isNothingToCopyMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.nothingToCopyMessage
       )
       expect(isNothingToCopyMessageInLogs).toBe(true)
 
-      const isDataAvailableMessageInLogs = assertEventPresent(
+      const isDataAvailableMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.allDataAvailableQueuingAthenaQuery
       )

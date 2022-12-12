@@ -131,15 +131,10 @@ const waitForEventWithPatterns = async (
   }
 }
 
-export const assertEventPresent = (
+export const eventIsPresent = (
   logEvents: FilteredLogEvent[],
   message: string
 ) => logEvents.some((event) => event.message?.includes(message))
-
-export const assertEventNotPresent = (
-  logEvents: FilteredLogEvent[],
-  message: string
-) => !logEvents.some((event) => event.message?.includes(message))
 
 export const getQueueMessageId = (
   logEvents: FilteredLogEvent[],
