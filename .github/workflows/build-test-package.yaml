@@ -36,6 +36,9 @@ jobs:
       - name: Run tests
         if: always()
         run: yarn test
+      - name: sam fix https://github.com/aws/aws-sam-cli/issues/4527
+        # This seems to be a new bug on 3/1/23, so this temporary workaround can be removed once the SAM CLI is updated
+        run: $(dirname $(readlink $(which sam)))/pip install --force-reinstall "cryptography==38.0.4"
       - name: Validate SAM template
         if: always()
         run: sam validate
