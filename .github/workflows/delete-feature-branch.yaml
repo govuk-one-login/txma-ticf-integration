@@ -24,7 +24,7 @@ jobs:
       - name: Setup SAM CLI
         uses: aws-actions/setup-sam@v2
       - name: Assume the dev account deployment role
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
