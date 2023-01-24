@@ -5,6 +5,7 @@ import {
 import { handler } from './handler'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { constructSqsEvent } from '../../utils/tests/events/sqsEvent'
+import { logger } from '../../sharedServices/logger'
 
 jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
@@ -26,7 +27,7 @@ const callHandlerWithBody = async (customBody: string) => {
 
 describe('initiate closeZendeskTicket handler', () => {
   beforeEach(() => {
-    jest.spyOn(global.console, 'error')
+    jest.spyOn(logger, 'error')
   })
   afterEach(() => {
     jest.clearAllMocks()
@@ -105,7 +106,7 @@ describe('initiate closeZendeskTicket handler', () => {
       TEST_COMMENT_COPY,
       'closed'
     )
-    expect(console.error).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       'Could not update Zendesk ticket: ',
       Error('An updateZendeskTicket related error')
     )

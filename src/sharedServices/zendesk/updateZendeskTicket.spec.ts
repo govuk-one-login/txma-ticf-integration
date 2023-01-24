@@ -12,6 +12,7 @@ import {
 } from '../../utils/tests/testConstants'
 import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
 import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
+import { logger } from '../logger'
 
 const zendeskTicketMessage = 'Something was invalid.'
 const NEW_TICKET_STATUS = 'closed'
@@ -29,8 +30,8 @@ describe('updating a zendesk ticket', () => {
   beforeEach(() => {
     givenAllSecretsAvailable()
     mockHttpsRequestUtils.givenAuthTokenGenerated()
-    jest.spyOn(global.console, 'log')
-    jest.spyOn(global.console, 'error')
+    jest.spyOn(logger, 'info')
+    jest.spyOn(logger, 'error')
   })
   afterEach(() => {
     jest.clearAllMocks()
@@ -84,9 +85,9 @@ describe('updating a zendesk ticket', () => {
         }
       }
     )
-    expect(console.log).toHaveBeenLastCalledWith(
+    expect(logger.info).toHaveBeenLastCalledWith(
       'Zendesk ticket update successful.',
-      { theReturnData: '123' }
+      JSON.stringify({ theReturnData: '123' })
     )
   }
   it('a single api call fails', async () => {
@@ -94,7 +95,7 @@ describe('updating a zendesk ticket', () => {
 
     await updateZendeskTicket(exampleEventBody, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
-    expect(console.error).toHaveBeenLastCalledWith(
+    expect(logger.error).toHaveBeenLastCalledWith(
       'Zendesk ticket update failed.',
       Error('There was an error.')
     )
@@ -105,7 +106,7 @@ describe('updating a zendesk ticket', () => {
 
     await updateZendeskTicketById(ZENDESK_TICKET_ID, zendeskTicketMessage)
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
-    expect(console.error).toHaveBeenLastCalledWith(
+    expect(logger.error).toHaveBeenLastCalledWith(
       'Zendesk ticket update failed.',
       Error('There was an error.')
     )
@@ -113,32 +114,32 @@ describe('updating a zendesk ticket', () => {
 
   it('returns from the function if eventBody is null', async () => {
     await updateZendeskTicket(null, zendeskTicketMessage)
-    expect(console.error).toHaveBeenLastCalledWith(
+    expect(logger.error).toHaveBeenLastCalledWith(
       'No Zendesk info available. Cannot update ticket.'
     )
   })
 
   it('returns from the function if Zendesk Ticket ID is not set', async () => {
     await updateZendeskTicket("{zendeskId: ''}", zendeskTicketMessage)
-    expect(console.error).toHaveBeenLastCalledWith(
+    expect(logger.error).toHaveBeenLastCalledWith(
       'No Zendesk ticket ID present. Cannot update ticket.'
     )
   })
 
   it('returns from the function if Zendesk Ticket ID key is not present', async () => {
     await updateZendeskTicket("{someOtherKey: ''}", zendeskTicketMessage)
-    expect(console.error).toHaveBeenLastCalledWith(
+    expect(logger.error).toHaveBeenLastCalledWith(
       'No Zendesk ticket ID present. Cannot update ticket.'
     )
   })
 
   it('returns from the function if eventBody is not JSON', async () => {
     await updateZendeskTicket('hello', zendeskTicketMessage)
-    expect(console.error).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       'Error parsing JSON: ',
       new SyntaxError('Unexpected token h in JSON at position 0')
     )
-    expect(console.error).toHaveBeenLastCalledWith(
+    expect(logger.error).toHaveBeenLastCalledWith(
       'No Zendesk ticket ID present. Cannot update ticket.'
     )
   })
