@@ -3,6 +3,7 @@ import {
   StartQueryExecutionCommand,
   StartQueryExecutionCommandInput
 } from '@aws-sdk/client-athena'
+import { logger } from '../../sharedServices/logger'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutionResult'
 import { getEnv } from '../../utils/helpers'
@@ -11,14 +12,14 @@ export const startQueryExecution = async (
   queryParams: CreateQuerySqlResult
 ): Promise<StartQueryExecutionResult> => {
   // validate queryParams
-  console.log('Attempting to start Athena query execution')
+  logger.info('Attempting to start Athena query execution')
 
   const client = new AthenaClient({
     region: getEnv('AWS_REGION')
   })
 
   const input = generateQueryExecutionCommandInput(queryParams)
-  console.log(input)
+  logger.info(JSON.stringify(input))
 
   const command = new StartQueryExecutionCommand(input)
 

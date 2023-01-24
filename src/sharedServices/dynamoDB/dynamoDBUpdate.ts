@@ -4,6 +4,7 @@ import {
   UpdateItemCommandInput
 } from '@aws-sdk/client-dynamodb'
 import { getEnv } from '../../utils/helpers'
+import { logger } from '../logger'
 
 export const incrementObjectFieldByOne = async (
   zendeskId: string,
@@ -42,7 +43,7 @@ export const updateQueryByZendeskId = async (
     )
   }
 
-  console.log(`Updated item in db: ${JSON.stringify(responseObject)}`)
+  logger.info(`Updated item in db: ${JSON.stringify(responseObject)}`)
 
   return
 }

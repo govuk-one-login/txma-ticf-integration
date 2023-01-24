@@ -8,12 +8,13 @@ import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZend
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutionResult'
 import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
+import { logger } from '../../sharedServices/logger'
 
 export const handler = async (event: SQSEvent): Promise<void> => {
   console.log('Handling Athena Query event', JSON.stringify(event, null, 2))
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
-
+  logger.appendKeys({ zendeskId: zendeskId })
   const athenaTable = await confirmAthenaTable()
 
   await checkAthenaTableExists(athenaTable, zendeskId)
@@ -65,9 +66,10 @@ const confirmQuerySqlGeneration = async (
   }
 
   if (querySql.sql) {
-    console.log(
-      `Athena SQL generated: ${querySql.sql}, parameters: ${querySql.queryParameters}`
-    )
+    logger.info('athena query', {
+      sql: querySql.sql,
+      parameters: querySql.queryParameters
+    })
   }
   return
 }
@@ -107,8 +109,8 @@ const updateDbAndLog = async (
       )
       throw new Error(`Error updating db for zendesk ticket: ${zendeskId}`)
     }
-    console.log(
-      `Athena query execution initiated with QueryExecutionId: ${queryExecutionDetails.queryExecutionId}`
-    )
+    logger.info('Athena query execution initiated', {
+      QueryExecutionId: queryExecutionDetails.queryExecutionId
+    })
   }
 }
