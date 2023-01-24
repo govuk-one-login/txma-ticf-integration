@@ -28,6 +28,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.163.0"],\
@@ -189,6 +190,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/types", "npm:3.127.0"],\
             ["@aws-sdk/util-utf8-browser", "npm:3.109.0"],\
             ["tslib", "npm:1.14.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-lambda-powertools/commons", [\
+        ["npm:1.5.1", {\
+          "packageLocation": "./.yarn/cache/@aws-lambda-powertools-commons-npm-1.5.1-d6037631ee-4bcde9212a.zip/node_modules/@aws-lambda-powertools/commons/",\
+          "packageDependencies": [\
+            ["@aws-lambda-powertools/commons", "npm:1.5.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-lambda-powertools/logger", [\
+        ["npm:1.5.1", {\
+          "packageLocation": "./.yarn/cache/@aws-lambda-powertools-logger-npm-1.5.1-c76ac8025e-3bc5e092c6.zip/node_modules/@aws-lambda-powertools/logger/",\
+          "packageDependencies": [\
+            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
+            ["@aws-lambda-powertools/commons", "npm:1.5.1"],\
+            ["lodash.merge", "npm:4.6.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5307,6 +5328,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["di-txma-ticf-integration", "workspace:."],\
+            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.163.0"],\

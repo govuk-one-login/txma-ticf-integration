@@ -118,6 +118,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-lambda-powertools/commons@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "@aws-lambda-powertools/commons@npm:1.5.1"
+  checksum: 4bcde9212aad591b09a3f8199182857fd0124152e882a08a16a694e815968df93e18b75ce453068e0dce9ce9394a18c59af480c75231ab220d4f221f51ae7f25
+  languageName: node
+  linkType: hard
+
+"@aws-lambda-powertools/logger@npm:^1.5.0":
+  version: 1.5.1
+  resolution: "@aws-lambda-powertools/logger@npm:1.5.1"
+  dependencies:
+    "@aws-lambda-powertools/commons": ^1.5.1
+    lodash.merge: ^4.6.2
+  checksum: 3bc5e092c6b36127a55eb3cd1670e9c9c3da81266d944c009d54cb8bde1111e8d09705eafc757338ac02d2e0ed47c02879ad049966e872a73800f70027835e47
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/abort-controller@npm:3.162.0":
   version: 3.162.0
   resolution: "@aws-sdk/abort-controller@npm:3.162.0"
@@ -4396,6 +4413,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "di-txma-ticf-integration@workspace:."
   dependencies:
+    "@aws-lambda-powertools/logger": ^1.5.0
     "@aws-sdk/client-athena": 3.163.0
     "@aws-sdk/client-cloudformation": 3.163.0
     "@aws-sdk/client-cloudwatch-logs": 3.163.0
