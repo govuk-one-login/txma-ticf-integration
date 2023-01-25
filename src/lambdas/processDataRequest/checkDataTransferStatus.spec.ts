@@ -15,6 +15,7 @@ import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynam
 import { DataRequestParams } from '../../types/dataRequestParams'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
+import { logger } from '../../sharedServices/logger'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getDatabaseEntryByZendeskId: jest.fn()
@@ -60,8 +61,8 @@ describe('checkDataTransferStatus', () => {
   const EXPECTED_COPY_WAIT_TIME_IN_SECONDS = 30
 
   beforeEach(() => {
-    jest.spyOn(global.console, 'log')
-    jest.spyOn(global.console, 'error')
+    jest.spyOn(logger, 'info')
+    jest.spyOn(logger, 'error')
   })
   afterEach(() => {
     jest.clearAllMocks()
@@ -138,10 +139,12 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.log).toHaveBeenLastCalledWith(
-      'Glacier restore still in progress.',
-      'Placing zendeskId back on InitiateDataRequestQueue.',
-      'Number of checks: 2'
+    expect(logger.info).toHaveBeenLastCalledWith(
+      'Placing zendeskId back on InitiateDataRequestQueue',
+      {
+        glacier_progress: 'Glacier restore still in progress',
+        number_of_checks: '2'
+      }
     )
     expect(mockIncrementPollingRetryCount).toBeCalledWith(
       ZENDESK_TICKET_ID,
@@ -167,7 +170,7 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.log).toHaveBeenLastCalledWith(
+    expect(logger.info).toHaveBeenLastCalledWith(
       'Glacier restore complete. Starting copy job'
     )
     expect(startCopyJob).toBeCalledWith(filesToCopy, ZENDESK_TICKET_ID)
@@ -195,10 +198,12 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.log).toHaveBeenLastCalledWith(
-      'Copy job still in progress.',
-      'Placing zendeskId back on InitiateDataRequestQueue.',
-      'Number of checks: 2'
+    expect(logger.info).toHaveBeenLastCalledWith(
+      'Placing zendeskId back on InitiateDataRequestQueue',
+      {
+        glacier_progress: 'Copy job still in progress',
+        number_of_checks: '2'
+      }
     )
     expect(mockIncrementPollingRetryCount).toBeCalledWith(
       ZENDESK_TICKET_ID,
@@ -234,7 +239,7 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.log).toHaveBeenLastCalledWith(
+    expect(logger.info).toHaveBeenLastCalledWith(
       `Restore/copy process complete. Placing zendeskId '${ZENDESK_TICKET_ID}' on InitiateAthenaQueryQueue`
     )
     expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
@@ -247,7 +252,7 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.error).toHaveBeenLastCalledWith(
+    expect(logger.error).toHaveBeenLastCalledWith(
       'Status check count exceeded. Process terminated'
     )
     expect(terminateStatusCheckProcess).toHaveBeenCalledWith(ZENDESK_TICKET_ID)
@@ -265,7 +270,7 @@ describe('checkDataTransferStatus', () => {
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
-    expect(console.error).toHaveBeenLastCalledWith(
+    expect(logger.error).toHaveBeenLastCalledWith(
       'Status check count exceeded. Process terminated'
     )
     expect(terminateStatusCheckProcess).toHaveBeenCalledWith(ZENDESK_TICKET_ID)

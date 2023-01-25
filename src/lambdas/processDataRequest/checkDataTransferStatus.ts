@@ -10,6 +10,7 @@ import {
 } from '../../constants/configurationConstants'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
+import { logger } from '../../sharedServices/logger'
 
 export const checkDataTransferStatus = async (zendeskId: string) => {
   const dbEntry = await getDatabaseEntryByZendeskId(zendeskId)
@@ -22,7 +23,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     (dbEntry.checkCopyStatusCount &&
       dbEntry.checkCopyStatusCount >= MAX_AUDIT_TO_ANALYSIS_COPY_RETRIES)
   ) {
-    console.error('Status check count exceeded. Process terminated')
+    logger.error('Status check count exceeded. Process terminated')
     await terminateStatusCheckProcess(zendeskId)
     return await updateZendeskTicketById(
       zendeskId,
@@ -39,7 +40,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     s3BucketDataLocationResult.standardTierLocationsToCopy.length > 0
 
   if (!glacierRestoreStillInProgress && !copyJobStarted) {
-    console.log('Glacier restore complete. Starting copy job')
+    logger.info('Glacier restore complete. Starting copy job')
     await startCopyJob(
       s3BucketDataLocationResult.standardTierLocationsToCopy,
       zendeskId
@@ -50,17 +51,17 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
       copyJobStillInProgress
     )
   } else if (glacierRestoreStillInProgress || copyJobStillInProgress) {
-    console.log(
-      `${
+    logger.info('Placing zendeskId back on InitiateDataRequestQueue', {
+      glacier_progress: `${
         glacierRestoreStillInProgress ? 'Glacier restore' : 'Copy job'
-      } still in progress.`,
-      'Placing zendeskId back on InitiateDataRequestQueue.',
-      `Number of checks: ${
+      } still in progress`,
+      number_of_checks: `${
         copyJobStillInProgress
           ? addOneToRetryCountForLogs(dbEntry.checkCopyStatusCount)
           : addOneToRetryCountForLogs(dbEntry.checkGlacierStatusCount)
       }`
-    )
+    })
+
     await maintainRetryState(
       zendeskId,
       glacierRestoreStillInProgress,
@@ -71,7 +72,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     !copyJobStillInProgress &&
     !glacierRestoreStillInProgress
   ) {
-    console.log(
+    logger.info(
       `Restore/copy process complete. Placing zendeskId '${zendeskId}' on InitiateAthenaQueryQueue`
     )
     await sendInitiateAthenaQueryMessage(zendeskId)

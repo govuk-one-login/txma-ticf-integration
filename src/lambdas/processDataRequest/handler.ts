@@ -10,8 +10,10 @@ import {
   isContinueDataTransferParams
 } from '../../types/continueDataTransferParams'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
+import { logger } from '../../sharedServices/logger'
+
 export const handler = async (event: SQSEvent) => {
-  console.log('Handling data request SQS event', JSON.stringify(event, null, 2))
+  logger.info('Handling data request SQS event', JSON.stringify(event, null, 2))
   if (event.Records.length === 0) {
     throw new Error('No data in event')
   }
