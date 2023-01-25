@@ -26,6 +26,7 @@ import {
   TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
   TEST_ZENDESK_FIELD_ID_SESSION_IDS,
   TEST_ZENDESK_FIELD_ID_USER_IDS,
+  ZENDESK_PII_TYPE_PREFIX,
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../utils/tests/testConstants'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
@@ -91,7 +92,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
-            value: ['passport_number']
+            value: [`${ZENDESK_PII_TYPE_PREFIX}passport_number`]
           },
           {
             id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
@@ -155,7 +156,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
-            value: ['passport_number']
+            value: [`${ZENDESK_PII_TYPE_PREFIX}passport_number`]
           },
           {
             id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
@@ -303,7 +304,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
-            value: ['passport_number']
+            value: [`${ZENDESK_PII_TYPE_PREFIX}passport_number`]
           },
           {
             id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,

@@ -393,7 +393,14 @@ describe('validateZendeskRequest', () => {
     'drivers_license',
     'name',
     'dob',
-    'addresses'
+    'addresses',
+    'pii_requested_passport_number',
+    'pii_requested_passport_number',
+    'pii_requested_passport_expiry_date',
+    'pii_requested_drivers_license',
+    'pii_requested_name',
+    'pii_requested_dob',
+    'pii_requested_addresses'
   ])(
     `should return a valid response if piiTypes contains %p`,
     async (type: string) => {
