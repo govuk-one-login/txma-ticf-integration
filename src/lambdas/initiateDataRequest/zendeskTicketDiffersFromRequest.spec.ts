@@ -121,6 +121,67 @@ describe('match zendesk ticket details', () => {
     )
   }
 
+  const givenZendeskTicketMatchesWithNoPiiTypePrefix = () => {
+    mockGetZendeskTicket.mockImplementation(() =>
+      Promise.resolve({
+        id: ZENDESK_TICKET_ID_AS_NUMBER,
+        requester_id: 123,
+        custom_fields: [
+          {
+            id: TEST_ZENDESK_FIELD_ID_DATA_PATHS,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
+            value: TEST_DATE_FROM
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
+            value: TEST_DATE_TO
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
+            value: '123 456'
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
+            value: 'event_id'
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
+            value: ['passport_number']
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_USER_IDS,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
+            value: TEST_RECIPIENT_EMAIL
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
+            value: TEST_RECIPIENT_NAME
+          }
+        ]
+      })
+    )
+    mockGetZendeskUser.mockImplementation(() =>
+      Promise.resolve({
+        email: TEST_REQUESTER_EMAIL,
+        name: TEST_REQUESTER_NAME
+      })
+    )
+  }
+
   const givenZendeskTicketDoesNotMatchValues = (
     parameterName: string,
     parameterValue: string | string[]
@@ -335,6 +396,13 @@ describe('match zendesk ticket details', () => {
 
   test('ticket and request match', async () => {
     givenZendeskTicketMatches()
+    expect(await zendeskTicketDiffersFromRequest(testDataRequest)).toEqual(
+      false
+    )
+  })
+
+  test('ticket and request match with no PII type prefix in response from Zendesk', async () => {
+    givenZendeskTicketMatchesWithNoPiiTypePrefix()
     expect(await zendeskTicketDiffersFromRequest(testDataRequest)).toEqual(
       false
     )
