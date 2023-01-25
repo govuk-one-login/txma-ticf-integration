@@ -412,6 +412,20 @@ describe('validateZendeskRequest', () => {
     }
   )
 
+  it('should remove the Zendesk prefix from the PII type if it is found', async () => {
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(
+        buildValidRequestBodyWithPiiTypes(
+          `${ZENDESK_PII_TYPE_PREFIX}passport_number`
+        )
+      )
+    )
+    expect(validationResult.isValid).toEqual(true)
+    expect(validationResult.dataRequestParams?.piiTypes).toEqual([
+      'passport_number'
+    ])
+  })
+
   it('should return an invalid response if piiTypes contains an invalid value', async () => {
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
