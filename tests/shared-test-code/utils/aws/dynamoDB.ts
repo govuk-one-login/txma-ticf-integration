@@ -143,7 +143,14 @@ const generateDynamoTableEntry = (
         L: getFieldListValues(customFields, zendeskConstants.fieldIds.userIds)
       },
       piiTypes: {
-        L: getFieldListValues(customFields, zendeskConstants.fieldIds.piiTypes)
+        L: getFieldListValues(
+          customFields,
+          zendeskConstants.fieldIds.piiTypes
+        ).map((item) => ({
+          // Need to cater for the fact that the Zendesk ticket
+          // will have a prefix before the PII type that we store in the database
+          S: item.S.replace(zendeskConstants.piiTypesPrefix, '')
+        }))
       }
     }
   }
