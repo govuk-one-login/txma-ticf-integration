@@ -7,6 +7,7 @@ import { deleteZendeskTicket } from '../../shared-test-code/utils/zendesk/delete
 import { getEnv } from '../../shared-test-code/utils/helpers'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
 import { testData } from '../constants/testData'
+import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
 
 const endToEndFlowRequestDataWithEventId = generateZendeskTicketData({
   identifier: 'event_id',
@@ -20,7 +21,10 @@ const endToEndFlowRequestDataWithEventId = generateZendeskTicketData({
 const endToEndFlowRequestDataWithUserId = generateZendeskTicketData({
   identifier: 'user_id',
   userIds: testData.userId,
-  piiTypes: ['passport_number', 'passport_expiry_date']
+  piiTypes: [
+    `${zendeskConstants.piiTypesPrefix}passport_number`,
+    `${zendeskConstants.piiTypesPrefix}passport_expiry_date`
+  ]
 })
 
 const endToEndFlowRequestDataWithSessionId = generateZendeskTicketData({
@@ -31,7 +35,7 @@ const endToEndFlowRequestDataWithSessionId = generateZendeskTicketData({
 const endToEndFlowRequestDataWithJourneyId = generateZendeskTicketData({
   identifier: 'journey_id',
   journeyIds: testData.journeyId,
-  piiTypes: ['drivers_license']
+  piiTypes: [`${zendeskConstants.piiTypesPrefix}drivers_license`]
 })
 
 const endToEndFlowRequestDataNoMatch = generateZendeskTicketData({

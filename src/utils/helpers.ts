@@ -1,3 +1,4 @@
+import { ZENDESK_PII_TYPE_PREFIX } from '../constants/zendeskConstants'
 import { EnvironmentVar } from '../types/environmentVar'
 
 export const getEnv = (name: EnvironmentVar['name']) => {
@@ -49,3 +50,6 @@ export const mapSpaceSeparatedStringToList = (input: string): string[] => {
 
   return inputList.map((x) => x.replaceAll(' ', '')).filter((x) => x.length)
 }
+
+export const removeZendeskPiiTypePrefixFromPiiType = (piiType: string) =>
+  piiType.replace(ZENDESK_PII_TYPE_PREFIX, '')

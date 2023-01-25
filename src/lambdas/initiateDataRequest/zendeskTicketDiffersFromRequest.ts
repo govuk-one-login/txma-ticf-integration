@@ -6,7 +6,8 @@ import { ZendeskTicket } from '../../types/zendeskTicketResult'
 import { ZendeskUser } from '../../types/zendeskUserResult'
 import {
   getEnvAsNumber,
-  mapSpaceSeparatedStringToList
+  mapSpaceSeparatedStringToList,
+  removeZendeskPiiTypePrefixFromPiiType
 } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
@@ -136,7 +137,12 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('eventIds')
   if (!matchArrayParams(ticketJourneyIds, requestParams.journeyIds))
     unmatchedParameters.push('journeyIds')
-  if (!matchArrayParams(ticketPiiTypes, requestParams.piiTypes))
+  if (
+    !matchArrayParams(
+      ticketPiiTypes.map(removeZendeskPiiTypePrefixFromPiiType),
+      requestParams.piiTypes
+    )
+  )
     unmatchedParameters.push('piiTypes')
   if (!matchArrayParams(ticketSessionIds, requestParams.sessionIds))
     unmatchedParameters.push('sessionIds')

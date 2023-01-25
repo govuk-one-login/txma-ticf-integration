@@ -4,7 +4,8 @@ import {
   getEpochDate,
   tryParseJSON,
   isEmpty,
-  mapSpaceSeparatedStringToList
+  mapSpaceSeparatedStringToList,
+  removeZendeskPiiTypePrefixFromPiiType
 } from '../../utils/helpers'
 import { PII_TYPES_DATA_PATHS_MAP } from '../../constants/athenaSqlMapConstants'
 import { IdentifierTypes } from '../../types/dataRequestParams'
@@ -28,9 +29,13 @@ export const validateZendeskRequest = async (
 
   const piiTypes = data.piiTypes.replace(/,/g, '')
   const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
-  const piiTypesList = mapSpaceSeparatedStringToList(data.piiTypes)
-  const piiTypesAllValid = piiTypesList?.length
-    ? piiTypesList.every((type) => validPiiTypes.includes(type))
+
+  const sanitisedPiiTypesList = mapSpaceSeparatedStringToList(
+    data.piiTypes
+  ).map(removeZendeskPiiTypePrefixFromPiiType)
+
+  const piiTypesAllValid = sanitisedPiiTypesList?.length
+    ? sanitisedPiiTypesList.every((type) => validPiiTypes.includes(type))
     : true
 
   const dataPathsList = mapSpaceSeparatedStringToList(data.dataPaths)
@@ -151,7 +156,7 @@ export const validateZendeskRequest = async (
       journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
       eventIds: mapSpaceSeparatedStringToList(data.eventIds),
       userIds: mapSpaceSeparatedStringToList(data.userIds),
-      piiTypes: mapSpaceSeparatedStringToList(data.piiTypes),
+      piiTypes: sanitisedPiiTypesList,
       dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
       identifierType: sanitisedIdentifierType,
       recipientEmail: data.recipientEmail,

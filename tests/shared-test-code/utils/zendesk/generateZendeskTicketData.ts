@@ -10,7 +10,11 @@ export const generateZendeskTicketData = (
     identifier: 'event_id',
     eventIds: testData.eventId,
     requestDate: testData.date,
-    piiTypes: ['name', 'dob', 'addresses'],
+    piiTypes: [
+      `${zendeskConstants.piiTypesPrefix}name`,
+      `${zendeskConstants.piiTypesPrefix}dob`,
+      `${zendeskConstants.piiTypesPrefix}addresses`
+    ],
     recipientEmail: process.env.FIXED_RECIPIENT_EMAIL
       ? process.env.FIXED_RECIPIENT_EMAIL
       : getEnv('ZENDESK_RECIPIENT_EMAIL'),

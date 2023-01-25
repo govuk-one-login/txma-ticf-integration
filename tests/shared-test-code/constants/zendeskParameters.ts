@@ -12,12 +12,14 @@ export const zendeskConstants: ZendeskConstants = {
     status: 5605885870748,
     userIds: 5605546094108
   },
-  piiFormId: 5603412248860
+  piiFormId: 5603412248860,
+  piiTypesPrefix: 'pii_requested_'
 }
 
 type ZendeskConstants = {
   readonly fieldIds: ZendeskFieldIds
   readonly piiFormId: number
+  readonly piiTypesPrefix: string
 }
 
 type ZendeskFieldIds = {
