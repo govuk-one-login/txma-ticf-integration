@@ -61,7 +61,7 @@ jest.mock('../../sharedServices/queue/sendAuditMessage', () => ({
   sendIllegalRequestAuditMessage: jest.fn()
 }))
 
-describe('initate data request handler', () => {
+describe('initiate data request handler', () => {
   const givenRequestValidationResult = (
     isValid: boolean,
     dataRequestParams?: DataRequestParams,
