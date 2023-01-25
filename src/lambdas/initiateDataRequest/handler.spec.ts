@@ -17,6 +17,7 @@ import {
 } from '../../sharedServices/queue/sendAuditMessage'
 import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
 import { tryParseJSON } from '../../utils/helpers'
+import { logger } from '../../sharedServices/logger'
 
 const mockValidateZendeskRequest = validateZendeskRequest as jest.Mock<
   Promise<ValidatedDataRequestParamsResult>
@@ -148,7 +149,7 @@ describe('initate data request handler', () => {
   })
 
   it('returns 400 response when request signature is invalid and zendeskId is undefined', async () => {
-    jest.spyOn(global.console, 'warn')
+    jest.spyOn(logger, 'warn')
     givenSignatureIsInvalid()
 
     const handlerCallResult = await callHandlerWithBody()
@@ -159,7 +160,7 @@ describe('initate data request handler', () => {
         message: 'Invalid request source'
       })
     })
-    expect(console.warn).toHaveBeenLastCalledWith(
+    expect(logger.warn).toHaveBeenLastCalledWith(
       'Request received with invalid webhook signature'
     )
     expect(sendInitiateDataTransferMessage).not.toHaveBeenCalled()
@@ -174,7 +175,7 @@ describe('initate data request handler', () => {
   })
 
   it('returns 400 response when request signature is invalid and zendeskId is present', async () => {
-    jest.spyOn(global.console, 'warn')
+    jest.spyOn(logger, 'warn')
     givenSignatureIsInvalid()
     const customBody = { zendeskId: ZENDESK_TICKET_ID }
 
@@ -186,7 +187,7 @@ describe('initate data request handler', () => {
         message: 'Invalid request source'
       })
     })
-    expect(console.warn).toHaveBeenLastCalledWith(
+    expect(logger.warn).toHaveBeenLastCalledWith(
       'Request received with invalid webhook signature'
     )
     expect(sendInitiateDataTransferMessage).not.toHaveBeenCalled()

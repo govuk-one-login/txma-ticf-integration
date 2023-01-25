@@ -92,18 +92,17 @@ export const sendQueryOutputGeneratedAuditMessage = async (
       ...createAuditMessageBaseObjectDetails(zendeskId)
     }
 
-    console.log(
-      'sending query output generated message for zendeskId ',
-      zendeskId
+    logger.info(
+      `sending query output generated message for zendeskId ${zendeskId}`
     )
     await sendSqsMessage(
       queryOutputGeneratedAuditMessageDetails,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
   } catch (error) {
-    console.error(
+    logger.error(
       'An error occurred while sending message to audit queue: ',
-      error
+      error as Error
     )
   }
 }
