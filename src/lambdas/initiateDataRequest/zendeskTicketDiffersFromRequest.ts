@@ -1,4 +1,5 @@
 import { loggingCopy } from '../../constants/loggingCopy'
+import { logger } from '../../sharedServices/logger'
 import { getZendeskTicket } from '../../sharedServices/zendesk/getZendeskTicket'
 import { getZendeskUser } from '../../sharedServices/zendesk/getZendeskUser'
 import { DataRequestParams } from '../../types/dataRequestParams'
@@ -13,7 +14,7 @@ import { interpolateTemplate } from '../../utils/interpolateTemplate'
 export const zendeskTicketDiffersFromRequest = async (
   requestParams: DataRequestParams
 ) => {
-  console.log(interpolateTemplate('requestMatchesZendeskTickets', loggingCopy))
+  logger.info(interpolateTemplate('requestMatchesZendeskTickets', loggingCopy))
   const ticketDetails = await getZendeskTicket(requestParams.zendeskId)
   const requesterDetails = await getZendeskUser(ticketDetails.requester_id)
 
@@ -144,13 +145,13 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('userIds')
 
   if (unmatchedParameters.length > 0) {
-    console.warn(
+    logger.warn(
       interpolateTemplate('requestDoesntMatcheZendeskTickets', loggingCopy),
-      unmatchedParameters
+      JSON.stringify(unmatchedParameters)
     )
     return true
   } else {
-    console.log(
+    logger.info(
       interpolateTemplate('requestMatchesExistingZendeskTickets', loggingCopy)
     )
     return false

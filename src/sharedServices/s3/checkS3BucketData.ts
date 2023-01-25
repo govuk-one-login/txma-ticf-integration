@@ -4,11 +4,15 @@ import { listS3Files } from './listS3Files'
 import { getEnv } from '../../utils/helpers'
 import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
 import { _Object } from '@aws-sdk/client-s3'
+import { logger } from '../logger'
 
 export const checkS3BucketData = async (
   dataRequestParams: DataRequestParams
 ): Promise<S3BucketDataLocationResult> => {
-  console.log('Looking for S3 data using params', dataRequestParams)
+  logger.info(
+    'Looking for S3 data using params',
+    JSON.stringify(dataRequestParams)
+  )
 
   const prefixes = generateS3ObjectPrefixes(
     dataRequestParams.dateFrom,
@@ -27,12 +31,15 @@ export const checkS3BucketData = async (
     getEnv('ANALYSIS_BUCKET_NAME')
   )
 
-  console.log(
+  logger.info(
     'Objects present in analysis bucket:',
-    existingAnalysisBucketObjects
+    JSON.stringify(existingAnalysisBucketObjects)
   )
 
-  console.log('Objects present in auditBucket', requestedAuditBucketObjects)
+  logger.info(
+    'Objects present in auditBucket',
+    JSON.stringify(requestedAuditBucketObjects)
+  )
   const objectsToCopy = requestedAuditBucketObjects.filter(
     (object) =>
       !existingAnalysisBucketObjects.map((o) => o.Key).includes(object.Key)
@@ -46,7 +53,7 @@ export const checkS3BucketData = async (
     .filter((o) => o.StorageClass === 'GLACIER')
     .map((o) => o.Key as string)
 
-  console.log(
+  logger.info(
     `Number of standard tier files to copy was ${standardTierLocationsToCopy?.length}, glacier tier files to copy was ${glacierTierLocationsToCopy?.length}`
   )
   return Promise.resolve({
@@ -73,12 +80,12 @@ const retrieveS3ObjectsForPrefixes = async (
     )
   ).then((objects: _Object[][]) => objects.flat())
   if (rawData.some((o) => !o.Key)) {
-    console.warn(
+    logger.warn(
       `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', date from '${dataRequestParams.dateFrom}', date to '${dataRequestParams.dateTo}'.`
     )
   }
   if (rawData.some((o) => !o.StorageClass)) {
-    console.warn(
+    logger.warn(
       `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', date from '${dataRequestParams.dateFrom}', date to '${dataRequestParams.dateTo}'.`
     )
   }

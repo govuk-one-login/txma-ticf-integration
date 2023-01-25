@@ -53,7 +53,7 @@ export const handler = async (
       return await handleUnmatchedRequest(requestParams.zendeskId)
     }
   } catch (error) {
-    console.error(error)
+    logger.error('error', error as Error)
     await sendIllegalRequestAuditMessage(
       requestParams.zendeskId,
       'non-existent-ticket'

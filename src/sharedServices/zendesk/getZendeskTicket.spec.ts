@@ -7,6 +7,7 @@ import {
   ZENDESK_TICKET_ID,
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../utils/tests/testConstants'
+import { logger } from '../logger'
 
 jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: jest.fn()
@@ -41,7 +42,7 @@ describe('get zendesk ticket information', () => {
   beforeEach(() => {
     givenAllSecretsAvailable()
     mockHttpsRequestUtils.givenAuthTokenGenerated()
-    jest.spyOn(global.console, 'log')
+    jest.spyOn(logger, 'info')
   })
 
   afterEach(() => {
@@ -54,7 +55,7 @@ describe('get zendesk ticket information', () => {
 
     expectSuccessfulApiCallToBeMade()
 
-    expect(console.log).toHaveBeenLastCalledWith(
+    expect(logger.info).toHaveBeenLastCalledWith(
       'Zendesk ticket with matching id found',
       JSON.stringify(successResponse.ticket)
     )

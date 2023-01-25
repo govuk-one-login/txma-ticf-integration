@@ -11,7 +11,7 @@ import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableR
 import { logger } from '../../sharedServices/logger'
 
 export const handler = async (event: SQSEvent): Promise<void> => {
-  console.log('Handling Athena Query event', JSON.stringify(event, null, 2))
+  logger.info('Handling Athena Query event', JSON.stringify(event, null, 2))
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
   logger.appendKeys({ zendeskId: zendeskId })
