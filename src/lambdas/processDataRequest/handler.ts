@@ -21,6 +21,8 @@ export const handler = async (event: SQSEvent) => {
   if (isEmpty(eventData)) {
     throw new Error('Event data did not include a valid JSON body')
   }
+  logger.appendKeys({ zendeskId: eventData.zendeskId })
+
   if (isDataRequestParams(eventData)) {
     await initiateDataTransfer(eventData as DataRequestParams)
   } else if (isContinueDataTransferParams(eventData)) {
