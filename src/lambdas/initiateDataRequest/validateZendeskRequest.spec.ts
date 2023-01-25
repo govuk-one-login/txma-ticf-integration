@@ -2,6 +2,7 @@ import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { validateZendeskRequest } from './validateZendeskRequest'
 import { IdentifierTypes } from '../../types/dataRequestParams'
 import { when } from 'jest-when'
+import { ZENDESK_PII_TYPE_PREFIX } from '../../utils/tests/testConstants'
 
 jest.mock('./isEmailInValidRecipientList', () => ({
   isEmailInValidRecipientList: jest.fn()
@@ -393,7 +394,14 @@ describe('validateZendeskRequest', () => {
     'drivers_license',
     'name',
     'dob',
-    'addresses'
+    'addresses',
+    `${ZENDESK_PII_TYPE_PREFIX}passport_number`,
+    `${ZENDESK_PII_TYPE_PREFIX}passport_number`,
+    `${ZENDESK_PII_TYPE_PREFIX}passport_expiry_date`,
+    `${ZENDESK_PII_TYPE_PREFIX}drivers_license`,
+    `${ZENDESK_PII_TYPE_PREFIX}name`,
+    `${ZENDESK_PII_TYPE_PREFIX}dob`,
+    `${ZENDESK_PII_TYPE_PREFIX}addresses`
   ])(
     `should return a valid response if piiTypes contains %p`,
     async (type: string) => {
@@ -403,6 +411,20 @@ describe('validateZendeskRequest', () => {
       expect(validationResult.isValid).toEqual(true)
     }
   )
+
+  it('should remove the Zendesk prefix from the PII type if it is found', async () => {
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(
+        buildValidRequestBodyWithPiiTypes(
+          `${ZENDESK_PII_TYPE_PREFIX}passport_number`
+        )
+      )
+    )
+    expect(validationResult.isValid).toEqual(true)
+    expect(validationResult.dataRequestParams?.piiTypes).toEqual([
+      'passport_number'
+    ])
+  })
 
   it('should return an invalid response if piiTypes contains an invalid value', async () => {
     const validationResult = await validateZendeskRequest(
