@@ -2,6 +2,7 @@ import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { validateZendeskRequest } from './validateZendeskRequest'
 import { IdentifierTypes } from '../../types/dataRequestParams'
 import { when } from 'jest-when'
+import { ZENDESK_PII_TYPE_PREFIX } from '../../utils/tests/testConstants'
 
 jest.mock('./isEmailInValidRecipientList', () => ({
   isEmailInValidRecipientList: jest.fn()
@@ -394,13 +395,13 @@ describe('validateZendeskRequest', () => {
     'name',
     'dob',
     'addresses',
-    'pii_requested_passport_number',
-    'pii_requested_passport_number',
-    'pii_requested_passport_expiry_date',
-    'pii_requested_drivers_license',
-    'pii_requested_name',
-    'pii_requested_dob',
-    'pii_requested_addresses'
+    `${ZENDESK_PII_TYPE_PREFIX}passport_number`,
+    `${ZENDESK_PII_TYPE_PREFIX}passport_number`,
+    `${ZENDESK_PII_TYPE_PREFIX}passport_expiry_date`,
+    `${ZENDESK_PII_TYPE_PREFIX}drivers_license`,
+    `${ZENDESK_PII_TYPE_PREFIX}name`,
+    `${ZENDESK_PII_TYPE_PREFIX}dob`,
+    `${ZENDESK_PII_TYPE_PREFIX}addresses`
   ])(
     `should return a valid response if piiTypes contains %p`,
     async (type: string) => {
