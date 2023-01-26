@@ -1,5 +1,8 @@
 import { testData } from '../constants/testData'
 import { ZendeskTicketTestData } from '../../shared-test-code/types/zendeskWebhookRequest'
+import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
+const addPrefixToZendeskPiiType = (piiType: string) =>
+  `${zendeskConstants.piiTypesPrefix}${piiType}`
 
 export const zendeskTicketTestCaseToMockResponseMapping: {
   [key: number]: ZendeskTicketTestData
@@ -15,7 +18,7 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: testData.eventId,
-    piiTypes: 'drivers_license',
+    piiTypes: addPrefixToZendeskPiiType('drivers_license'),
     dataPaths: testData.dataPaths
   },
   // validGlacierRequestData
@@ -29,7 +32,7 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: testData.eventId,
-    piiTypes: 'drivers_license',
+    piiTypes: addPrefixToZendeskPiiType('drivers_license'),
     dataPaths: ''
   },
   // validStandardAndGlacierTiersRequestData
@@ -43,7 +46,7 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: testData.eventId,
-    piiTypes: 'drivers_license',
+    piiTypes: addPrefixToZendeskPiiType('drivers_license'),
     dataPaths: ''
   },
   // validRequestNoData
@@ -57,21 +60,7 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: testData.eventId,
-    piiTypes: 'drivers_license',
+    piiTypes: addPrefixToZendeskPiiType('drivers_license'),
     dataPaths: ''
-  },
-  // webhookAPIRequestData.validApiTestRequestData
-  11: {
-    requesterEmail: testData.mockServerValues.requesterEmail,
-    requesterName: testData.mockServerValues.requesterName,
-    recipientEmail: testData.mockServerValues.recipientEmail,
-    recipientName: testData.mockServerValues.recipientName,
-    identifierType: 'event_id',
-    sessionIds: '',
-    journeyIds: '',
-    userIds: '',
-    eventIds: testData.eventId,
-    piiTypes: 'drivers_license',
-    dataPaths: testData.dataPaths
   }
 }
