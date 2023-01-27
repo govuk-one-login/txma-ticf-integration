@@ -125,8 +125,6 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('recipientName')
   if (!matchStringParams(requesterDetails.email, requestParams.requesterEmail))
     unmatchedParameters.push('requesterEmail')
-  if (!matchStringParams(requesterDetails.name, requestParams.requesterName))
-    unmatchedParameters.push('requesterName')
   if (!matchArrayParams(ticketDataPaths, requestParams.dataPaths))
     unmatchedParameters.push('dataPaths')
   if (!matchStringParams(ticketDateFrom, requestParams.dateFrom))
