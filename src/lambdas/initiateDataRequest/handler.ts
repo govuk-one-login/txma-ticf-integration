@@ -74,11 +74,7 @@ export const handler = async (
 
   const messageId = (await sendInitiateDataTransferMessage(requestParams)) ?? ''
 
-  logger.info(
-    interpolateTemplate('transferQueueMessageWithId', loggingCopy, {
-      messageId
-    })
-  )
+  logger.info('Sent data transfer queue message', { messageId })
 
   return {
     statusCode: 200,
