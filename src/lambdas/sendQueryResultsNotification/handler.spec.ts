@@ -14,6 +14,7 @@ import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
 import { logger } from '../../sharedServices/logger'
+import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: jest.fn()
@@ -75,7 +76,7 @@ describe('sendQueryResultsNotification', () => {
       const message = `Athena Query ${TEST_ATHENA_QUERY_ID} did not complete with status: ${state}`
       givenDbReturnsData()
 
-      await handler(generateAthenaEventBridgeEvent(state))
+      await handler(generateAthenaEventBridgeEvent(state), mockLambdaContext)
       expect(logger.error).toHaveBeenCalledWith(
         'failed to confirm query state',
         Error(message)
@@ -95,7 +96,10 @@ describe('sendQueryResultsNotification', () => {
     const unrecognisedQueryState = 'something unrecognised'
     givenDbReturnsData()
 
-    await handler(generateAthenaEventBridgeEvent(unrecognisedQueryState))
+    await handler(
+      generateAthenaEventBridgeEvent(unrecognisedQueryState),
+      mockLambdaContext
+    )
     expect(logger.error).toHaveBeenCalledWith(
       'failed to confirm query state',
       Error(
@@ -111,7 +115,10 @@ describe('sendQueryResultsNotification', () => {
       sendQueryCompleteQueueMessage as jest.Mock
     givenDbReturnsData()
 
-    await handler(generateAthenaEventBridgeEvent('SUCCEEDED'))
+    await handler(
+      generateAthenaEventBridgeEvent('SUCCEEDED'),
+      mockLambdaContext
+    )
 
     expect(getQueryByAthenaQueryId).toHaveBeenCalledWith(TEST_ATHENA_QUERY_ID)
     expect(sendQueryCompleteQueueMessage).toHaveBeenCalledWith({

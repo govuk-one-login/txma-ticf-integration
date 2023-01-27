@@ -6,6 +6,7 @@ import { handler } from './handler'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { constructSqsEvent } from '../../utils/tests/events/sqsEvent'
 import { logger } from '../../sharedServices/logger'
+import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 
 jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
@@ -22,7 +23,7 @@ const validEventBody = `{
       "commentCopyText": "${TEST_COMMENT_COPY}"
     }`
 const callHandlerWithBody = async (customBody: string) => {
-  await handler(constructSqsEvent(customBody))
+  await handler(constructSqsEvent(customBody), mockLambdaContext)
 }
 
 describe('initiate closeZendeskTicket handler', () => {
@@ -45,7 +46,7 @@ describe('initiate closeZendeskTicket handler', () => {
   })
 
   it('throws an error when no event records are in the SQSEvent object', async () => {
-    await expect(handler({ Records: [] })).rejects.toThrow(
+    await expect(handler({ Records: [] }, mockLambdaContext)).rejects.toThrow(
       'No records found in event'
     )
   })

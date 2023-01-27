@@ -18,6 +18,7 @@ import {
 import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
 import { tryParseJSON } from '../../utils/helpers'
 import { logger } from '../../sharedServices/logger'
+import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 
 const mockValidateZendeskRequest = validateZendeskRequest as jest.Mock<
   Promise<ValidatedDataRequestParamsResult>
@@ -115,10 +116,13 @@ describe('initiate data request handler', () => {
   const callHandlerWithBody = async (customBody?: {
     [key: string]: string
   }) => {
-    return await handler({
-      ...defaultApiRequest,
-      body: JSON.stringify(customBody) ?? requestBody
-    })
+    return await handler(
+      {
+        ...defaultApiRequest,
+        body: JSON.stringify(customBody) ?? requestBody
+      },
+      mockLambdaContext
+    )
   }
 
   beforeEach(() => {
