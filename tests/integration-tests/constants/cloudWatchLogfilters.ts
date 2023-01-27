@@ -6,7 +6,7 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   athenaSqlGenerated: 'Athena SQL generated',
   copyComplete: 'Restore/copy process complete.',
   copyStarted: 'Started S3 copy job for zendesk ticket with id',
-  dataSentToQueue: 'Sent data transfer queue message with id',
+  dataSentToQueue: 'Sent data transfer queue message',
   glacierTierCopy:
     'Number of standard tier files to copy was 0, glacier tier files to copy was 1',
   nothingToCopyMessage:
