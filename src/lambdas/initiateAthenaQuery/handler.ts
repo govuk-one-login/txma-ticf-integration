@@ -15,7 +15,7 @@ export const handler = async (
   context: Context
 ): Promise<void> => {
   logger.addContext(context)
-  logger.info('Handling Athena Query event', JSON.stringify(event, null, 2))
+  logger.info('Handling Athena Query event', { handledEvent: event })
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
   logger.appendKeys({ zendeskId: zendeskId })
