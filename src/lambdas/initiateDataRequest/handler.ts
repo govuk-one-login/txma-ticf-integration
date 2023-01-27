@@ -1,4 +1,8 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context
+} from 'aws-lambda'
 import {
   updateZendeskTicket,
   updateZendeskTicketById
@@ -20,8 +24,10 @@ import { tryParseJSON } from '../../utils/helpers'
 import { logger } from '../../sharedServices/logger'
 
 export const handler = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
+  context: Context
 ): Promise<APIGatewayProxyResult> => {
+  logger.addContext(context)
   logger.info('received Zendesk webhook', JSON.stringify(event, null, 2))
 
   const parsedEventBody = tryParseJSON(event.body ?? '')

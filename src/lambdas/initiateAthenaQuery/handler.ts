@@ -1,4 +1,4 @@
-import { SQSEvent } from 'aws-lambda'
+import { Context, SQSEvent } from 'aws-lambda'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import { createQuerySql } from './createQuerySql'
@@ -10,7 +10,11 @@ import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutio
 import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
 import { logger } from '../../sharedServices/logger'
 
-export const handler = async (event: SQSEvent): Promise<void> => {
+export const handler = async (
+  event: SQSEvent,
+  context: Context
+): Promise<void> => {
+  logger.addContext(context)
   logger.info('Handling Athena Query event', JSON.stringify(event, null, 2))
 
   const zendeskId = retrieveZendeskIdFromEvent(event)

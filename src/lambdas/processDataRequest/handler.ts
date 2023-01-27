@@ -1,4 +1,4 @@
-import { SQSEvent } from 'aws-lambda'
+import { Context, SQSEvent } from 'aws-lambda'
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { tryParseJSON, isEmpty } from '../../utils/helpers'
 import {
@@ -12,7 +12,8 @@ import {
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import { logger } from '../../sharedServices/logger'
 
-export const handler = async (event: SQSEvent) => {
+export const handler = async (event: SQSEvent, context: Context) => {
+  logger.addContext(context)
   logger.info('Handling data request SQS event', JSON.stringify(event, null, 2))
   if (event.Records.length === 0) {
     throw new Error('No data in event')

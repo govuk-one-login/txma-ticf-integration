@@ -1,4 +1,4 @@
-import { EventBridgeEvent } from 'aws-lambda'
+import { Context, EventBridgeEvent } from 'aws-lambda'
 import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { logger } from '../../sharedServices/logger'
 import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
@@ -7,8 +7,10 @@ import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
 import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 
 export const handler = async (
-  event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>
+  event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>,
+  context: Context
 ): Promise<void> => {
+  logger.addContext(context)
   logger.info('received event', JSON.stringify(event, null, 2))
 
   const queryDetails = event.detail

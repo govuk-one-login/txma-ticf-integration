@@ -1,4 +1,4 @@
-import { SQSEvent } from 'aws-lambda'
+import { Context, SQSEvent } from 'aws-lambda'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { tryParseJSON } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
@@ -6,7 +6,8 @@ import { zendeskCopy } from '../../constants/zendeskCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
 import { logger } from '../../sharedServices/logger'
 
-export const handler = async (event: SQSEvent) => {
+export const handler = async (event: SQSEvent, context: Context) => {
+  logger.addContext(context)
   logger.info(
     'Handling close zendesk ticket SQS event',
     JSON.stringify(event, null, 2)
