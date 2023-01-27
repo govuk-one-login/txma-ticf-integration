@@ -70,7 +70,7 @@ const confirmQuerySqlGeneration = async (
   }
 
   if (querySql.sql) {
-    logger.info('athena query', {
+    logger.info('Athena SQL generated', {
       sql: querySql.sql,
       parameters: querySql.queryParameters
     })
