@@ -10,10 +10,10 @@ import {
   isContinueDataTransferParams
 } from '../../types/continueDataTransferParams'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
-import { logger } from '../../sharedServices/logger'
+import { initialiseLogger, logger } from '../../sharedServices/logger'
 
 export const handler = async (event: SQSEvent, context: Context) => {
-  logger.addContext(context)
+  initialiseLogger(context)
   logger.info('Handling data request SQS event', { handledEvent: event })
   if (event.Records.length === 0) {
     throw new Error('No data in event')

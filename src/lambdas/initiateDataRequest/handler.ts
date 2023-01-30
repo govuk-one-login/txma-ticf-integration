@@ -21,13 +21,13 @@ import {
   sendIllegalRequestAuditMessage
 } from '../../sharedServices/queue/sendAuditMessage'
 import { tryParseJSON } from '../../utils/helpers'
-import { logger } from '../../sharedServices/logger'
+import { initialiseLogger, logger } from '../../sharedServices/logger'
 
 export const handler = async (
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> => {
-  logger.addContext(context)
+  initialiseLogger(context)
   logger.info('received Zendesk webhook', JSON.stringify(event, null, 2))
 
   const parsedEventBody = tryParseJSON(event.body ?? '')

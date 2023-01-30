@@ -8,17 +8,21 @@ import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZend
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutionResult'
 import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
-import { logger } from '../../sharedServices/logger'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 
 export const handler = async (
   event: SQSEvent,
   context: Context
 ): Promise<void> => {
-  logger.addContext(context)
+  initialiseLogger(context)
   logger.info('Handling Athena Query event', { handledEvent: event })
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
-  logger.appendKeys({ zendeskId: zendeskId })
+  appendZendeskIdToLogger(zendeskId)
   const athenaTable = await confirmAthenaTable()
 
   await checkAthenaTableExists(athenaTable, zendeskId)

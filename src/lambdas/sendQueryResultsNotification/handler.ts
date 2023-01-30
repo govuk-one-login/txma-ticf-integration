@@ -1,6 +1,10 @@
 import { Context, EventBridgeEvent } from 'aws-lambda'
 import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBGet'
-import { logger } from '../../sharedServices/logger'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
@@ -10,7 +14,7 @@ export const handler = async (
   event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>,
   context: Context
 ): Promise<void> => {
-  logger.addContext(context)
+  initialiseLogger(context)
   logger.info('received event', { handledEvent: event })
 
   const queryDetails = event.detail
@@ -18,8 +22,8 @@ export const handler = async (
 
   const requestData = await getQueryByAthenaQueryId(athenaQueryId)
   const zendeskTicketId = requestData.requestInfo.zendeskId
+  appendZendeskIdToLogger(zendeskTicketId)
 
-  logger.appendKeys({ zendeskId: zendeskTicketId })
   try {
     await confirmQueryState(queryDetails, zendeskTicketId)
   } catch (error) {

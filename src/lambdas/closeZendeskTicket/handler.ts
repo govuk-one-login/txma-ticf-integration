@@ -4,17 +4,22 @@ import { tryParseJSON } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import { zendeskCopy } from '../../constants/zendeskCopy'
 import { loggingCopy } from '../../constants/loggingCopy'
-import { logger } from '../../sharedServices/logger'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 
 export const handler = async (event: SQSEvent, context: Context) => {
-  logger.addContext(context)
+  initialiseLogger(context)
   logger.info(
     'Handling close zendesk ticket SQS event',
     JSON.stringify(event, null, 2)
   )
 
   const requestDetails = parseRequestDetails(event)
-  logger.appendKeys({ zendeskId: requestDetails.zendeskId })
+  appendZendeskIdToLogger(requestDetails.zendeskId)
+
   await closeZendeskTicket(
     requestDetails.zendeskId,
     requestDetails.commentCopyText
