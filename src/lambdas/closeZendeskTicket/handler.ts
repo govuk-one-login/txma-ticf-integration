@@ -12,10 +12,9 @@ import {
 
 export const handler = async (event: SQSEvent, context: Context) => {
   initialiseLogger(context)
-  logger.info(
-    'Handling close zendesk ticket SQS event',
-    JSON.stringify(event, null, 2)
-  )
+  logger.info('Handling close zendesk ticket SQS event', {
+    handledEvent: event
+  })
 
   const requestDetails = parseRequestDetails(event)
   appendZendeskIdToLogger(requestDetails.zendeskId)
