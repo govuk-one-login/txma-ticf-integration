@@ -1,7 +1,7 @@
 import { testData } from '../../../e2e-tests/constants/testData'
 import { zendeskConstants } from '../../constants/zendeskParameters'
 import { CustomField, ZendeskRequestData } from '../../types/zendeskRequestData'
-import { generateRandomNumber, getEnv } from '../helpers'
+import { generateRandomNumberString, getEnv } from '../helpers'
 
 export const generateZendeskTicketData = (
   customFieldValues: Partial<CustomFieldValues>
@@ -44,7 +44,7 @@ export const generateZendeskTicketData = (
     request: {
       subject: process.env.FIXED_SUBJECT_LINE
         ? process.env.FIXED_SUBJECT_LINE
-        : `Integration Test Request - ` + generateRandomNumber(),
+        : `Integration Test Request - ` + generateRandomNumberString(),
       ticket_form_id: zendeskConstants.piiFormId,
       custom_fields: setCustomFields(customFieldIds, mergedValues),
       comment: {

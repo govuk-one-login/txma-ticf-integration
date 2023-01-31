@@ -1,7 +1,7 @@
 import { EnvironmentVar } from '../types/environmentVar'
 
-export const generateRandomNumber = () => {
-  return Math.floor(Math.random() * 100).toString()
+export const generateRandomNumberString = (max = 100) => {
+  return Math.floor(Math.random() * max).toString()
 }
 
 export const generateCurrentDateWithOffset = (offset: number): string => {
