@@ -16,3 +16,4 @@ dist/
 sonar-project.properties
 reports/
 yarn.lock
+.nvmrc
