@@ -10,7 +10,11 @@ import {
   isContinueDataTransferParams
 } from '../../types/continueDataTransferParams'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
-import { initialiseLogger, logger } from '../../sharedServices/logger'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 
 export const handler = async (event: SQSEvent, context: Context) => {
   initialiseLogger(context)
@@ -22,7 +26,7 @@ export const handler = async (event: SQSEvent, context: Context) => {
   if (isEmpty(eventData)) {
     throw new Error('Event data did not include a valid JSON body')
   }
-  logger.appendKeys({ zendeskId: eventData.zendeskId })
+  appendZendeskIdToLogger(eventData.zendeskId)
 
   if (isDataRequestParams(eventData)) {
     await initiateDataTransfer(eventData as DataRequestParams)
