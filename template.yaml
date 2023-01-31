@@ -56,7 +56,7 @@ Globals:
     PermissionsBoundary:
       !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     ReservedConcurrentExecutions: 10
-    Runtime: nodejs16.x
+    Runtime: nodejs18.x
     Timeout: 30
   Api:
     OpenApiVersion: 3.0.1
