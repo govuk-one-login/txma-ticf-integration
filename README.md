@@ -111,6 +111,13 @@ or
 yarn test:e2e:dev
 ```
 
+run integration tests against a feature branch
+
+```
+export STACK_NAME='{STACK_NAME}'
+gds aws di-txma-audit-dev yarn test:integration
+```
+
 ### Test Reports
 
 Running the tests creates a results file in JUnit format at `tests/reports/allure-results`. This file is used to create a report using [Allure](https://docs.qameta.io/allure). Both suites output JUNIT xml to the same location.
