@@ -113,10 +113,29 @@ yarn test:e2e:dev
 
 run integration tests against a feature branch
 
-```
-export STACK_NAME='{STACK_NAME}'
-gds aws di-txma-audit-dev yarn test:integration
-```
+1. in audit-dev, under `tests/{stackname}/ZendeskSecrets` insert the following json
+
+   ```json
+   {
+     "ZENDESK_API_KEY": "{ANY VALUE}",
+     "ZENDESK_RECIPIENT_EMAIL": "di-txma2-testing@digital.cabinet-office.gov.uk",
+     "ZENDESK_HOSTNAME": "mockserver.transaction.build.account.gov.uk",
+     "ZENDESK_WEBHOOK_SECRET_KEY": "{REPLACE ME}"
+   }
+   ```
+
+2. Visit the secret `ZendeskSecrets` and copy the value for `ZENDESK_WEBHOOK_SECRET_KEY` into the secret above
+3. Under `tests/{stackname}/NotifySecrets` insert the following json
+   ```json
+   {
+     "NOTIFY_API_KEY": "{ANY_VALUE}"
+   }
+   ```
+4. then run the commands below
+   ```bash
+   export STACK_NAME='{STACK_NAME}'
+   gds aws di-txma-audit-dev yarn test:integration
+   ```
 
 ### Test Reports
 
