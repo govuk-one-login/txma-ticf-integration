@@ -23,6 +23,9 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:

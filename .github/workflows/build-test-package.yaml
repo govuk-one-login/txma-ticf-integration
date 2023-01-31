@@ -15,6 +15,9 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: Setup Python 3.8
         uses: actions/setup-python@v4
         with:
@@ -67,6 +70,9 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: Node - Enable Corepack
         run: corepack enable
       - name: Install ESBuild binaries
