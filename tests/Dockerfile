@@ -25,7 +25,7 @@ RUN /aws-cli-bin/aws --version
 RUN rm -rf /usr/local/aws-cli/v2/current/dist/aws_completer /usr/local/aws-cli/v2/current/dist/awscli/data/ac.index /usr/local/aws-cli/v2/current/dist/awscli/examples
 RUN find /usr/local/aws-cli/v2/current/dist/awscli/botocore/data -name examples-1.json -delete
 
-FROM node:16-alpine${ALPINE_VERSION} as run-tests
+FROM node:18-alpine${ALPINE_VERSION} as run-tests
 
 COPY --from=builder /usr/local/bin/python /usr/local/bin/python
 COPY --from=builder /usr/local/lib/ /usr/local/lib/
