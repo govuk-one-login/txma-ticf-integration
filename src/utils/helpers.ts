@@ -1,4 +1,5 @@
 import { ZENDESK_PII_TYPE_PREFIX } from '../constants/zendeskConstants'
+import { logger } from '../sharedServices/logger'
 import { EnvironmentVar } from '../types/environmentVar'
 
 export const getEnv = (name: EnvironmentVar['name']) => {
@@ -33,7 +34,7 @@ export const tryParseJSON = (jsonString: string) => {
   try {
     return JSON.parse(jsonString)
   } catch (error) {
-    console.error('Error parsing JSON: ', error)
+    logger.error('Error parsing JSON: ', error as Error)
     return {}
   }
 }

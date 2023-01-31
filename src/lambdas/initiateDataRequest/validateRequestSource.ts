@@ -1,5 +1,6 @@
 import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 import * as crypto from 'crypto'
+import { logger } from '../../sharedServices/logger'
 import { retrieveZendeskApiSecrets } from '../../sharedServices/secrets/retrieveZendeskApiSecrets'
 
 export const isSignatureInvalid = async (
@@ -14,14 +15,14 @@ export const isSignatureInvalid = async (
 
   const secrets = await retrieveZendeskApiSecrets()
   const SIGNING_SECRET_ALGORITHM = 'sha256'
-  console.log('Creating HMAC')
+  logger.info('Creating HMAC')
   const hmac = crypto.createHmac(
     SIGNING_SECRET_ALGORITHM,
     secrets.zendeskWebhookSecretKey
   )
-  console.log('Creating local signature')
+  logger.info('Creating local signature')
   const localSignature = hmac.update(headerTimestamp + body).digest('base64')
-  console.log('Comparing local signature with header signature')
+  logger.info('Comparing local signature with header signature')
   return !(
     Buffer.compare(
       Buffer.from(headerSignature),

@@ -1,4 +1,8 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context
+} from 'aws-lambda'
 import {
   updateZendeskTicket,
   updateZendeskTicketById
@@ -17,11 +21,14 @@ import {
   sendIllegalRequestAuditMessage
 } from '../../sharedServices/queue/sendAuditMessage'
 import { tryParseJSON } from '../../utils/helpers'
+import { initialiseLogger, logger } from '../../sharedServices/logger'
 
 export const handler = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
+  context: Context
 ): Promise<APIGatewayProxyResult> => {
-  console.log('received Zendesk webhook', JSON.stringify(event, null, 2))
+  initialiseLogger(context)
+  logger.info('received Zendesk webhook', JSON.stringify(event, null, 2))
 
   const parsedEventBody = tryParseJSON(event.body ?? '')
   await sendAuditDataRequestMessage(parsedEventBody)
@@ -52,7 +59,7 @@ export const handler = async (
       return await handleUnmatchedRequest(requestParams.zendeskId)
     }
   } catch (error) {
-    console.error(error)
+    logger.error('error', error as Error)
     await sendIllegalRequestAuditMessage(
       requestParams.zendeskId,
       'non-existent-ticket'
@@ -67,11 +74,7 @@ export const handler = async (
 
   const messageId = (await sendInitiateDataTransferMessage(requestParams)) ?? ''
 
-  console.log(
-    interpolateTemplate('transferQueueMessageWithId', loggingCopy, {
-      messageId
-    })
-  )
+  logger.info('Sent data transfer queue message', { messageId })
 
   return {
     statusCode: 200,
@@ -85,10 +88,10 @@ const handleInvalidRequest = async (
   requestBody: string | null,
   validatedZendeskRequest: ValidatedDataRequestParamsResult
 ) => {
-  console.log(interpolateTemplate('requestInvalid', loggingCopy))
+  logger.info(interpolateTemplate('requestInvalid', loggingCopy))
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
-  console.log('Validation message: ', validationMessage)
+  logger.info('Validation message: ', validationMessage)
   const newTicketStatus = 'closed'
   await updateZendeskTicket(
     requestBody,
@@ -106,7 +109,7 @@ const handleInvalidRequest = async (
 }
 
 const handleInvalidSignature = async () => {
-  console.warn(interpolateTemplate('invalidWebhookSignature', loggingCopy))
+  logger.warn(interpolateTemplate('invalidWebhookSignature', loggingCopy))
   return {
     statusCode: 400,
     body: JSON.stringify({

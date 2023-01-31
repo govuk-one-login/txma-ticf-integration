@@ -13,6 +13,8 @@ import { handler } from './handler'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
+import { logger } from '../../sharedServices/logger'
+import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: jest.fn()
@@ -69,13 +71,16 @@ describe('sendQueryResultsNotification', () => {
   it.each(['CANCELLED', 'FAILED'])(
     `should log an error if the Athena query state is set to %p`,
     async (state: string) => {
-      jest.spyOn(global.console, 'error')
+      jest.spyOn(logger, 'error')
 
       const message = `Athena Query ${TEST_ATHENA_QUERY_ID} did not complete with status: ${state}`
       givenDbReturnsData()
 
-      await handler(generateAthenaEventBridgeEvent(state))
-      expect(console.error).toHaveBeenCalledWith(Error(message))
+      await handler(generateAthenaEventBridgeEvent(state), mockLambdaContext)
+      expect(logger.error).toHaveBeenCalledWith(
+        'failed to confirm query state',
+        Error(message)
+      )
       expect(updateZendeskTicketById).toHaveBeenCalledWith(
         dbQueryResult.requestInfo.zendeskId,
         message,
@@ -86,13 +91,17 @@ describe('sendQueryResultsNotification', () => {
   )
 
   it('should log an error if the Athena query state is unrecognised', async () => {
-    jest.spyOn(global.console, 'error')
+    jest.spyOn(logger, 'error')
 
     const unrecognisedQueryState = 'something unrecognised'
     givenDbReturnsData()
 
-    await handler(generateAthenaEventBridgeEvent(unrecognisedQueryState))
-    expect(console.error).toHaveBeenCalledWith(
+    await handler(
+      generateAthenaEventBridgeEvent(unrecognisedQueryState),
+      mockLambdaContext
+    )
+    expect(logger.error).toHaveBeenCalledWith(
+      'failed to confirm query state',
       Error(
         `Function was called with unexpected state: ${unrecognisedQueryState}. Ensure the template is configured correctly`
       )
@@ -106,7 +115,10 @@ describe('sendQueryResultsNotification', () => {
       sendQueryCompleteQueueMessage as jest.Mock
     givenDbReturnsData()
 
-    await handler(generateAthenaEventBridgeEvent('SUCCEEDED'))
+    await handler(
+      generateAthenaEventBridgeEvent('SUCCEEDED'),
+      mockLambdaContext
+    )
 
     expect(getQueryByAthenaQueryId).toHaveBeenCalledWith(TEST_ATHENA_QUERY_ID)
     expect(sendQueryCompleteQueueMessage).toHaveBeenCalledWith({

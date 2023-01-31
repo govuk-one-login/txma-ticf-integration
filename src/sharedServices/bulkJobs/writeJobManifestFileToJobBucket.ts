@@ -1,5 +1,6 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getEnv } from '../../utils/helpers'
+import { logger } from '../logger'
 import { createManifestFileText } from './createManifestFileText'
 
 export const writeJobManifestFileToJobBucket = async (
@@ -8,7 +9,9 @@ export const writeJobManifestFileToJobBucket = async (
   manifestFileName: string
 ): Promise<string> => {
   const client = new S3Client(getEnv('AWS_REGION'))
-  console.log(`Writing job manifest file to ${manifestFileName}`)
+  logger.info('Writing job manifest file', {
+    manifestFileName: manifestFileName
+  })
   const response = await client.send(
     new PutObjectCommand({
       Key: manifestFileName,
@@ -16,6 +19,6 @@ export const writeJobManifestFileToJobBucket = async (
       Body: createManifestFileText(sourceBucket, fileList)
     })
   )
-  console.log('wrote manifest to S3 with etag ', response.ETag)
+  logger.info('wrote manifest to S3 with etag ', { etag: response.ETag })
   return response.ETag as string
 }

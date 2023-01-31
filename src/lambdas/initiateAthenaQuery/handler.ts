@@ -1,4 +1,4 @@
-import { SQSEvent } from 'aws-lambda'
+import { Context, SQSEvent } from 'aws-lambda'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import { createQuerySql } from './createQuerySql'
@@ -8,12 +8,21 @@ import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZend
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutionResult'
 import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 
-export const handler = async (event: SQSEvent): Promise<void> => {
-  console.log('Handling Athena Query event', JSON.stringify(event, null, 2))
+export const handler = async (
+  event: SQSEvent,
+  context: Context
+): Promise<void> => {
+  initialiseLogger(context)
+  logger.info('Handling Athena Query event', { handledEvent: event })
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
-
+  appendZendeskIdToLogger(zendeskId)
   const athenaTable = await confirmAthenaTable()
 
   await checkAthenaTableExists(athenaTable, zendeskId)
@@ -65,9 +74,10 @@ const confirmQuerySqlGeneration = async (
   }
 
   if (querySql.sql) {
-    console.log(
-      `Athena SQL generated: ${querySql.sql}, parameters: ${querySql.queryParameters}`
-    )
+    logger.info('Athena SQL generated', {
+      sql: querySql.sql,
+      parameters: querySql.queryParameters
+    })
   }
   return
 }
@@ -107,8 +117,8 @@ const updateDbAndLog = async (
       )
       throw new Error(`Error updating db for zendesk ticket: ${zendeskId}`)
     }
-    console.log(
-      `Athena query execution initiated with QueryExecutionId: ${queryExecutionDetails.queryExecutionId}`
-    )
+    logger.info('Athena query execution initiated', {
+      QueryExecutionId: queryExecutionDetails.queryExecutionId
+    })
   }
 }

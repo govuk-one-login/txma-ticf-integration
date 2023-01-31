@@ -1,4 +1,4 @@
-import { SQSEvent } from 'aws-lambda'
+import { Context, SQSEvent } from 'aws-lambda'
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { tryParseJSON, isEmpty } from '../../utils/helpers'
 import {
@@ -10,8 +10,15 @@ import {
   isContinueDataTransferParams
 } from '../../types/continueDataTransferParams'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
-export const handler = async (event: SQSEvent) => {
-  console.log('Handling data request SQS event', JSON.stringify(event, null, 2))
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
+
+export const handler = async (event: SQSEvent, context: Context) => {
+  initialiseLogger(context)
+  logger.info('Handling data request SQS event', { handledEvent: event })
   if (event.Records.length === 0) {
     throw new Error('No data in event')
   }
@@ -19,6 +26,8 @@ export const handler = async (event: SQSEvent) => {
   if (isEmpty(eventData)) {
     throw new Error('Event data did not include a valid JSON body')
   }
+  appendZendeskIdToLogger(eventData.zendeskId)
+
   if (isDataRequestParams(eventData)) {
     await initiateDataTransfer(eventData as DataRequestParams)
   } else if (isContinueDataTransferParams(eventData)) {

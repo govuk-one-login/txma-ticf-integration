@@ -94,7 +94,8 @@ const filterLogEvents = async (
 }
 
 const extractRequestIdFromEventMessage = (message: string) => {
-  const requestId = message.split('\t')[1]
+  const parsedMessage = JSON.parse(message)
+  const requestId = parsedMessage.function_request_id
   console.log(`RequestId: ${requestId}`)
 
   return requestId
@@ -143,6 +144,8 @@ export const getQueueMessageId = (
   const event = logEvents.find((event) => event.message?.includes(message))
 
   if (!event || !event.message) throw Error('Message not added to queue')
-
-  return event.message?.split('id')[1].trim()
+  const parsedLog = JSON.parse(event.message)
+  const messageId = parsedLog.messageId
+  console.log('Got messageId', messageId)
+  return messageId
 }

@@ -9,6 +9,7 @@ import {
 } from '../../utils/helpers'
 import { PII_TYPES_DATA_PATHS_MAP } from '../../constants/athenaSqlMapConstants'
 import { IdentifierTypes } from '../../types/dataRequestParams'
+import { appendZendeskIdToLogger } from '../../sharedServices/logger'
 
 const IDENTIFIERS = ['event_id', 'session_id', 'journey_id', 'user_id']
 
@@ -23,6 +24,9 @@ export const validateZendeskRequest = async (
       validationMessage: 'No data in request',
       isValid: false
     }
+  }
+  if (data.zendeskId) {
+    appendZendeskIdToLogger(data.zendeskId)
   }
   const isEmailValid = (email: string) =>
     /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(email ?? '')

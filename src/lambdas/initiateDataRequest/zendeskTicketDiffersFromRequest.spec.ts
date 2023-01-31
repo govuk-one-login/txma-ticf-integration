@@ -30,6 +30,7 @@ import {
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../utils/tests/testConstants'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
+import { logger } from '../../sharedServices/logger'
 
 jest.mock('../../sharedServices/zendesk/getZendeskTicket', () => ({
   getZendeskTicket: jest.fn()
@@ -46,7 +47,7 @@ const mockGetZendeskUser = getZendeskUser as jest.Mock<Promise<ZendeskUser>>
 
 describe('match zendesk ticket details', () => {
   beforeEach(() => {
-    jest.spyOn(global.console, 'warn')
+    jest.spyOn(logger, 'warn')
   })
   afterEach(() => {
     jest.clearAllMocks()
@@ -428,9 +429,9 @@ describe('match zendesk ticket details', () => {
       )
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
-      expect(console.warn).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        [parameterName]
+        JSON.stringify([parameterName])
       )
     }
   )
@@ -449,9 +450,9 @@ describe('match zendesk ticket details', () => {
       )
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
-      expect(console.warn).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        [parameterName]
+        JSON.stringify([parameterName])
       )
     }
   )
@@ -470,9 +471,9 @@ describe('match zendesk ticket details', () => {
       )
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
-      expect(console.warn).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        [parameterName]
+        JSON.stringify([parameterName])
       )
     }
   )

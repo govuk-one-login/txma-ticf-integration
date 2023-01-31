@@ -7,6 +7,7 @@ import {
 import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRequestDetails'
 import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import { getEnv } from '../../utils/helpers'
+import { logger } from '../logger'
 import { sendSqsMessage } from './sendSqsMessage'
 
 export const sendAuditDataRequestMessage = async (
@@ -40,15 +41,18 @@ export const sendAuditDataRequestMessage = async (
       }
     }
 
-    console.log('sending audit data request message', auditQueryRequestDetails)
+    logger.info(
+      'sending audit data request message',
+      JSON.stringify(auditQueryRequestDetails)
+    )
     await sendSqsMessage(
       auditDataRequestEvent,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
   } catch (error) {
-    console.error(
+    logger.error(
       'An error occurred while sending message to audit queue: ',
-      error
+      error as Error
     )
   }
 }
@@ -64,18 +68,17 @@ export const sendIllegalRequestAuditMessage = async (
     }
     auditQueryIllegalRequestDetails.extensions.error = getErrorObject(errorType)
 
-    console.log(
-      'sending illegal request audit message for zendeskId ',
-      zendeskId
+    logger.info(
+      `sending illegal request audit message for zendeskId ${zendeskId}`
     )
     await sendSqsMessage(
       auditQueryIllegalRequestDetails,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
   } catch (error) {
-    console.error(
+    logger.error(
       'An error occurred while sending message to audit queue: ',
-      error
+      error as Error
     )
   }
 }
@@ -89,18 +92,17 @@ export const sendQueryOutputGeneratedAuditMessage = async (
       ...createAuditMessageBaseObjectDetails(zendeskId)
     }
 
-    console.log(
-      'sending query output generated message for zendeskId ',
-      zendeskId
+    logger.info(
+      `sending query output generated message for zendeskId ${zendeskId}`
     )
     await sendSqsMessage(
       queryOutputGeneratedAuditMessageDetails,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
   } catch (error) {
-    console.error(
+    logger.error(
       'An error occurred while sending message to audit queue: ',
-      error
+      error as Error
     )
   }
 }

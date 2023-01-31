@@ -4,6 +4,7 @@ import {
   CreateJobCommandInput
 } from '@aws-sdk/client-s3-control'
 import { getEnv } from '../../utils/helpers'
+import { logger } from '../logger'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
@@ -14,7 +15,7 @@ export const startCopyJob = async (
   zendeskTicketId: string
 ) => {
   if (filesToCopy?.length < 1) {
-    console.warn('startCopyJob called with no files. Not performing any action')
+    logger.warn('startCopyJob called with no files. Not performing any action')
     return
   }
 
@@ -24,7 +25,7 @@ export const startCopyJob = async (
     filesToCopy,
     manifestFileName
   )
-  console.log(
+  logger.info(
     `Starting S3 standard tier copying for zendesk ticket with id ${zendeskTicketId}`
   )
   const jobId = await createS3CopyJob(
@@ -32,7 +33,7 @@ export const startCopyJob = async (
     manifestFileEtag,
     zendeskTicketId
   )
-  console.log(
+  logger.info(
     `Started S3 copy job for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
   )
 }
