@@ -330,6 +330,50 @@ Resources:
       FilterPattern: ''
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
+  TestQueueHandlerFunction:
+    #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: testQueueHandler.handler
+      Environment:
+        Variables:
+          SHOULD_ERROR: 'true'
+      Events:
+        InitiateDataRequestEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt TestQueue.Arn
+            BatchSize: 1
+      FunctionName: !Sub ${AWS::StackName}-test-queue-handler
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Policies:
+        - Statement:
+            - Sid: Logs
+              Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt TestQueueHandlerLogs.Arn
+            - Sid: UseSqsKmsKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+                - kms:GenerateDataKey*
+                - kms:ReEncrypt*
+              Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt TestDeadLetterQueue.Arn
+
+  TestQueueHandlerLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-test-queue-handler'
+      RetentionInDays: 30
+
   InitiateAthenaQueryFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_117:VPC not required
@@ -855,6 +899,19 @@ Resources:
         maxReceiveCount: 5
 
   InitiateDataRequestDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+  TestQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt TestDeadLetterQueue.Arn
+        maxReceiveCount: 3
+
+  TestDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
