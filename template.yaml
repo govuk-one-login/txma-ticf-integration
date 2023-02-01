@@ -916,6 +916,31 @@ Resources:
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
 
+  TestQueueAlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: test-queue-alert-topic
+      TopicName: test-queue-alert-topic
+      KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+  MyDeadLetterQueueAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: test-dead-letter-queue-alarm
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt TestDeadLetterQueue.QueueName
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref TestQueueAlertTopic
+
   TerminatedJobQueue:
     Type: AWS::SQS::Queue
     Properties:
