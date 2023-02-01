@@ -27,12 +27,13 @@ Parameters:
 
 Conditions:
   ApiCustomDomain: !Not [!Equals [!Ref Environment, dev]]
-  DevEnvironment: !Equals [!Ref Environment, dev]
-  IsProductionOrStaging:
+  CslsEgress:
     !Or [
       !Equals [!Ref Environment, production],
+      !Equals [!Ref Environment, integration],
       !Equals [!Ref Environment, staging]
     ]
+  DevEnvironment: !Equals [!Ref Environment, dev]
   TestEnvironment:
     !Not [
       !Or [
@@ -110,7 +111,7 @@ Resources:
 
   ZendeskWebhookAccessCslsSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
-    Condition: IsProductionOrStaging
+    Condition: CslsEgress
     Properties:
       LogGroupName: !Ref ZendeskWebhookAccessLogGroup
       FilterPattern: ''
@@ -210,7 +211,7 @@ Resources:
 
   InitiateDataRequestCslsSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
-    Condition: IsProductionOrStaging
+    Condition: CslsEgress
     Properties:
       LogGroupName: !Ref InitiateDataRequestLogs
       FilterPattern: ''
@@ -323,7 +324,7 @@ Resources:
 
   ProcessDataRequestCslsSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
-    Condition: IsProductionOrStaging
+    Condition: CslsEgress
     Properties:
       LogGroupName: !Ref ProcessDataRequestLogs
       FilterPattern: ''
@@ -439,7 +440,7 @@ Resources:
 
   InitiateAthenaQueryCslsSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
-    Condition: IsProductionOrStaging
+    Condition: CslsEgress
     Properties:
       LogGroupName: !Ref InitiateAthenaQueryLogs
       FilterPattern: ''
@@ -532,7 +533,7 @@ Resources:
 
   SendQueryResultsNotificationCslsSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
-    Condition: IsProductionOrStaging
+    Condition: CslsEgress
     Properties:
       LogGroupName: !Ref SendQueryResultsNotificationLogs
       FilterPattern: ''
@@ -618,7 +619,7 @@ Resources:
 
   CloseZendeskTicketCslsSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
-    Condition: IsProductionOrStaging
+    Condition: CslsEgress
     Properties:
       LogGroupName: !Ref CloseZendeskTicketLogs
       FilterPattern: ''
