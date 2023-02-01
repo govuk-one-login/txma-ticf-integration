@@ -11,7 +11,10 @@ import {
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
 import { pollNotifyMockForDownloadUrl } from '../../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
-import { getEnv } from '../../shared-test-code/utils/helpers'
+import {
+  generateRandomNumberString,
+  getEnv
+} from '../../shared-test-code/utils/helpers'
 import { testData } from '../constants/testData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
@@ -40,12 +43,14 @@ const ticketWithCustomDataPathsOnly = generateZendeskTicketData({
     'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
 })
 
+const maxRandomTicketId = 1000000000000
+
 describe('Athena Query SQL generation and execution', () => {
   describe('Query SQL generation and execution successful', () => {
     let randomTicketId: string
 
     beforeEach(async () => {
-      randomTicketId = Date.now().toString()
+      randomTicketId = generateRandomNumberString(maxRandomTicketId)
       await copyAuditDataFromTestDataBucket(
         getEnv('ANALYSIS_BUCKET_NAME'),
         `firehose/${testData.athenaTestPrefix}/01/${testData.athenaTestFileName}`,
@@ -209,12 +214,12 @@ describe('Athena Query SQL generation and execution', () => {
   })
 
   describe('Query execution unsuccessful', () => {
-    let ticketId: string
+    let randomTicketId: string
 
     beforeAll(async () => {
-      ticketId = Date.now().toString()
+      randomTicketId = generateRandomNumberString(maxRandomTicketId)
       await addMessageToQueue(
-        ticketId,
+        randomTicketId,
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
     })
@@ -226,7 +231,7 @@ describe('Athena Query SQL generation and execution', () => {
           [
             cloudwatchLogFilters.athenaEventReceived,
             'body',
-            ticketId,
+            randomTicketId,
             `ApproximateReceiveCount\\":`,
             `\\"2\\"`
           ]
