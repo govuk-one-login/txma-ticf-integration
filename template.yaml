@@ -338,9 +338,9 @@ Resources:
       Handler: initiateAthenaQuery.handler
       Environment:
         Variables:
-          ATHENA_DATABASE_NAME: '{{resolve:ssm:AuditAnalysisDatabaseName}}'
+          ATHENA_DATABASE_NAME: '{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}'
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
-          ATHENA_WORKGROUP_NAME: '{{resolve:ssm:AthenaAnalysisWorkgroupName}}'
+          ATHENA_WORKGROUP_NAME: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupName}}'
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       Events:
@@ -359,13 +359,13 @@ Resources:
                 - glue:GetTable
               Resource:
                 - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
-                - '{{resolve:ssm:AuditAnalysisDatabaseArn}}'
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditAnalysisDatabaseName}}/${AuditAnalysisTable}
+                - '{{resolve:ssm:AuditDataAnalysisGlueDatabaseArn}}'
+                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}/${AuditAnalysisTable}
             - Sid: StartAthenaQuery
               Effect: Allow
               Action:
                 - athena:StartQueryExecution
-              Resource: '{{resolve:ssm:AthenaAnalysisWorkgroupArn}}'
+              Resource: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupArn}}'
             - Sid: ReadFromAnalysisBucket
               Effect: Allow
               Action:
@@ -641,7 +641,7 @@ Resources:
     Type: AWS::Glue::Table
     Properties:
       CatalogId: !Ref AWS::AccountId
-      DatabaseName: '{{resolve:ssm:AuditAnalysisDatabaseName}}'
+      DatabaseName: '{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}'
       TableInput:
         Description: Table contains event message data to be analysed
         Name:
