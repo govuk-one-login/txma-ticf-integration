@@ -7,7 +7,7 @@ export const handler = async (event: SQSEvent, context: Context) => {
   logger.info('Handling test SQS event', {
     handledEvent: event
   })
-  if (getEnv('SHOULD_ERROR')) {
+  if (getEnv('SHOULD_ERROR') === 'true') {
     throw Error('Something went wrong: ARRRRGH!')
   }
 }

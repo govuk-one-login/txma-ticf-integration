@@ -338,7 +338,7 @@ Resources:
       Handler: testQueueHandler.handler
       Environment:
         Variables:
-          SHOULD_ERROR: 'true'
+          SHOULD_ERROR: 'false'
       Events:
         InitiateDataRequestEvent:
           Type: SQS
