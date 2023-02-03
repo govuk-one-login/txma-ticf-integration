@@ -153,8 +153,7 @@ export const validateZendeskRequest = async (
       ? validationMessages.join(', ')
       : undefined,
     dataRequestParams: {
-      dateFrom: data.dateFrom,
-      dateTo: data.dateTo,
+      dates: [data.dateFrom],
       zendeskId: data.zendeskId,
       sessionIds: mapSpaceSeparatedStringToList(data.sessionIds),
       journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),

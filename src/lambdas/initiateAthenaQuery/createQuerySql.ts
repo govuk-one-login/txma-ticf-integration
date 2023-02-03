@@ -50,12 +50,16 @@ export const createQuerySql = (
     'ATHENA_TABLE_NAME'
   )}`
 
-  const queryString = `SELECT ${sqlIdTypeStatement} ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime >= ? AND datetime <= ?`
+  const commaSeparatedQuestionMarks = (numberOfEntries: number) =>
+    Array(numberOfEntries).fill('?').join(',')
+
+  const queryString = `SELECT ${sqlIdTypeStatement} ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime IN (${commaSeparatedQuestionMarks(
+    requestData.dates.length
+  )})`
 
   const queryParameters = generateQueryParameters(
     identifiers,
-    requestData.dateFrom,
-    requestData.dateTo
+    requestData.dates
   )
 
   return {
@@ -178,23 +182,13 @@ const formatIdWhereStatement = (identifierType: IdentifierTypes) => {
 
 const generateQueryParameters = (
   identifiers: string[],
-  dateFrom: string,
-  dateTo: string
+  dates: string[]
 ): string[] => {
   const queryParameters = identifiers.map((identifier) => `'${identifier}'`)
-  queryParameters.push(formatDateFrom(dateFrom))
-  queryParameters.push(formatDateTo(dateTo))
+  dates.forEach((date) => queryParameters.push(`'${formatDateForQuery(date)}'`))
   return queryParameters
 }
 
-const formatDateFrom = (dateFrom: string): string => {
-  const splitDateFrom = dateFrom.split('-')
-  splitDateFrom.push('00')
-  return `'${splitDateFrom.join('/')}'`
-}
-
-const formatDateTo = (dateTo: string): string => {
-  const splitDateTo = dateTo.split('-')
-  splitDateTo.push('23')
-  return `'${splitDateTo.join('/')}'`
+const formatDateForQuery = (dateFrom: string): string => {
+  return dateFrom.replaceAll('-', '/')
 }

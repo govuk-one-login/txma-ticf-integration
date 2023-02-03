@@ -22,6 +22,7 @@ describe('validateZendeskRequest', () => {
     identifierType?: IdentifierTypes
     dateFrom?: string
     dateTo?: string
+    dates: string
     piiTypes?: string
     dataPaths?: string
     eventIds?: string
@@ -38,6 +39,7 @@ describe('validateZendeskRequest', () => {
     requesterName: testResultsName,
     dateFrom: '2021-08-01',
     dateTo: '2021-08-01',
+    dates: '',
     journeyIds: '',
     eventIds: '',
     sessionIds: '',
@@ -52,8 +54,7 @@ describe('validateZendeskRequest', () => {
     'requesterEmail',
     'requesterName',
     'identifierType',
-    'dateFrom',
-    'dateTo',
+    'dates',
     'piiTypes',
     'dataPaths',
     'eventIds',
@@ -231,8 +232,7 @@ describe('validateZendeskRequest', () => {
 
     expect(validationResult.isValid).toEqual(true)
 
-    expect(validationResult.dataRequestParams?.dateFrom).toEqual('2021-08-01')
-    expect(validationResult.dataRequestParams?.dateTo).toEqual('2021-08-01')
+    expect(validationResult.dataRequestParams?.dates).toEqual(['2021-08-01'])
     expect(validationResult.dataRequestParams?.zendeskId).toEqual(testZendeskId)
     expect(validationResult.dataRequestParams?.recipientEmail).toEqual(
       testValidResultsEmail
