@@ -4,6 +4,7 @@ import { makeHttpsRequest, base64Encode } from './../http/httpsRequestUtils'
 import { tryParseJSON } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import { loggingCopy } from '../../constants/loggingCopy'
+import { logger } from '../logger'
 
 export const updateZendeskTicket = async (
   eventBody: string | null,
@@ -11,12 +12,12 @@ export const updateZendeskTicket = async (
   ticketStatus: string | null = null
 ) => {
   if (!eventBody) {
-    console.error(interpolateTemplate('zendeskNoInfo', loggingCopy))
+    logger.error(interpolateTemplate('zendeskNoInfo', loggingCopy))
     return
   }
   const zendeskTicketInfo = tryParseJSON(eventBody)
   if (!zendeskTicketInfo.zendeskId) {
-    console.error(interpolateTemplate('zendeskNoTicketId', loggingCopy))
+    logger.error(interpolateTemplate('zendeskNoTicketId', loggingCopy))
     return
   }
 
@@ -55,8 +56,14 @@ export const updateZendeskTicketById = async (
   }
   try {
     const data = await makeHttpsRequest(options, postData)
-    console.log(interpolateTemplate('zendeskSuccessful', loggingCopy), data)
+    logger.info(
+      interpolateTemplate('zendeskSuccessful', loggingCopy),
+      JSON.stringify(data)
+    )
   } catch (error) {
-    console.error(interpolateTemplate('zendeskFailed', loggingCopy), error)
+    logger.error(
+      interpolateTemplate('zendeskFailed', loggingCopy),
+      error as Error
+    )
   }
 }

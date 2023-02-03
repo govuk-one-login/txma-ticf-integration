@@ -12,6 +12,7 @@ import {
   noIdTestDataRequest,
   testDataRequest
 } from '../../utils/tests/testDataRequest'
+import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 jest.mock('./confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
 }))
@@ -68,7 +69,7 @@ describe('initiate athena query handler', () => {
     })
 
     const testZendeskId = testAthenaQueryEvent.Records[0].body
-    await handler(testAthenaQueryEvent)
+    await handler(testAthenaQueryEvent, mockLambdaContext)
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockCreateQuerySql).toHaveBeenCalledWith(dataPathsTestDataRequest)
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
@@ -84,7 +85,7 @@ describe('initiate athena query handler', () => {
   })
 
   it('throws an error if there is no data in the SQS Event', async () => {
-    expect(handler({ Records: [] })).rejects.toThrow(
+    expect(handler({ Records: [] }, mockLambdaContext)).rejects.toThrow(
       'No data in Athena Query event'
     )
     expect(mockConfirmAthenaTable).not.toHaveBeenCalled()
@@ -96,9 +97,9 @@ describe('initiate athena query handler', () => {
       message: 'test error message'
     })
     const testZendeskId = testAthenaQueryEvent.Records[0].body
-    await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
-      'test error message'
-    )
+    await expect(
+      handler(testAthenaQueryEvent, mockLambdaContext)
+    ).rejects.toThrow('test error message')
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       testZendeskId,
@@ -121,9 +122,9 @@ describe('initiate athena query handler', () => {
     })
     const testZendeskId = testAthenaQueryEvent.Records[0].body
 
-    await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
-      'sql error message'
-    )
+    await expect(
+      handler(testAthenaQueryEvent, mockLambdaContext)
+    ).rejects.toThrow('sql error message')
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(testZendeskId)
     expect(mockCreateQuerySql).toHaveBeenCalledWith(noIdTestDataRequest)
@@ -155,9 +156,9 @@ describe('initiate athena query handler', () => {
 
     const testZendeskId = testAthenaQueryEvent.Records[0].body
 
-    await expect(handler(testAthenaQueryEvent)).rejects.toThrow(
-      'test athena error'
-    )
+    await expect(
+      handler(testAthenaQueryEvent, mockLambdaContext)
+    ).rejects.toThrow('test athena error')
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(testZendeskId)
     expect(mockCreateQuerySql).toHaveBeenCalledWith(dataPathsTestDataRequest)

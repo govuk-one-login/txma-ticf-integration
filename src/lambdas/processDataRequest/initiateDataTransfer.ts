@@ -9,13 +9,14 @@ import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { logger } from '../../sharedServices/logger'
 
 export const initiateDataTransfer = async (
   dataRequestParams: DataRequestParams
 ) => {
   const bucketData = await checkS3BucketData(dataRequestParams)
   if (!bucketData.dataAvailable) {
-    console.log(interpolateTemplate('noDataFound', loggingCopy))
+    logger.info(interpolateTemplate('noDataFound', loggingCopy))
     await updateZendeskTicketById(
       dataRequestParams.zendeskId,
       interpolateTemplate('bucketDataUnavailable', zendeskCopy),
@@ -32,7 +33,7 @@ export const initiateDataTransfer = async (
 
   const shouldStartCopyFromAuditBucket =
     copyFromAuditToAnalysisBucketRequired && !glacierRestoreRequired
-  console.log('storing new data request record')
+  logger.info('storing new data request record')
   await addNewDataRequestRecord(
     dataRequestParams,
     glacierRestoreRequired,
@@ -40,7 +41,7 @@ export const initiateDataTransfer = async (
   )
 
   if (glacierRestoreRequired) {
-    console.log(interpolateTemplate('foundGlacierLocations', loggingCopy))
+    logger.info(interpolateTemplate('foundGlacierLocations', loggingCopy))
     await startGlacierRestore(
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId
@@ -53,10 +54,10 @@ export const initiateDataTransfer = async (
   }
 
   if (!glacierRestoreRequired && !shouldStartCopyFromAuditBucket) {
-    console.log(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
+    logger.info(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
     await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
   } else {
-    console.log(interpolateTemplate('queuingMessageLongPoll', loggingCopy))
+    logger.info(interpolateTemplate('queuingMessageLongPoll', loggingCopy))
     const waitTimeInSeconds = glacierRestoreRequired ? 900 : 30
     await sendContinuePollingDataTransferMessage(
       dataRequestParams.zendeskId,

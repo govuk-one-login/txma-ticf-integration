@@ -11,6 +11,7 @@ import {
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
+import { logger } from '../logger'
 jest.mock('./listS3Files', () => ({
   listS3Files: jest.fn()
 }))
@@ -90,27 +91,27 @@ describe('check objects in analysis bucket', () => {
 
   beforeEach(() => {
     when(listS3Files).resetWhenMocks()
-    jest.spyOn(global.console, 'log')
-    jest.spyOn(global.console, 'warn')
+    jest.spyOn(logger, 'info')
+    jest.spyOn(logger, 'warn')
   })
 
   const assertNumberOfFilesLogged = (
     standardTierFiles: number,
     glacierTierFiles: number
   ) => {
-    expect(console.log).toHaveBeenLastCalledWith(
+    expect(logger.info).toHaveBeenLastCalledWith(
       `Number of standard tier files to copy was ${standardTierFiles}, glacier tier files to copy was ${glacierTierFiles}`
     )
   }
 
   const assertFilesMissingKeysLogged = (bucketName: string) => {
-    expect(console.warn).toHaveBeenLastCalledWith(
+    expect(logger.warn).toHaveBeenLastCalledWith(
       `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', date from '${TEST_DATE_FROM}', date to '${TEST_DATE_TO}'.`
     )
   }
 
   const assertFilesMissingStorageClassLogged = (bucketName: string) => {
-    expect(console.warn).toHaveBeenLastCalledWith(
+    expect(logger.warn).toHaveBeenLastCalledWith(
       `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', date from '${TEST_DATE_FROM}', date to '${TEST_DATE_TO}'.`
     )
   }

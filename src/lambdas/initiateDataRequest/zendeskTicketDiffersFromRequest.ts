@@ -1,4 +1,5 @@
 import { loggingCopy } from '../../constants/loggingCopy'
+import { logger } from '../../sharedServices/logger'
 import { getZendeskTicket } from '../../sharedServices/zendesk/getZendeskTicket'
 import { getZendeskUser } from '../../sharedServices/zendesk/getZendeskUser'
 import { DataRequestParams } from '../../types/dataRequestParams'
@@ -6,14 +7,15 @@ import { ZendeskTicket } from '../../types/zendeskTicketResult'
 import { ZendeskUser } from '../../types/zendeskUserResult'
 import {
   getEnvAsNumber,
-  mapSpaceSeparatedStringToList
+  mapSpaceSeparatedStringToList,
+  removeZendeskPiiTypePrefixFromPiiType
 } from '../../utils/helpers'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 
 export const zendeskTicketDiffersFromRequest = async (
   requestParams: DataRequestParams
 ) => {
-  console.log(interpolateTemplate('requestMatchesZendeskTickets', loggingCopy))
+  logger.info(interpolateTemplate('requestMatchesZendeskTickets', loggingCopy))
   const ticketDetails = await getZendeskTicket(requestParams.zendeskId)
   const requesterDetails = await getZendeskUser(ticketDetails.requester_id)
 
@@ -124,8 +126,6 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('recipientName')
   if (!matchStringParams(requesterDetails.email, requestParams.requesterEmail))
     unmatchedParameters.push('requesterEmail')
-  if (!matchStringParams(requesterDetails.name, requestParams.requesterName))
-    unmatchedParameters.push('requesterName')
   if (!matchArrayParams(ticketDataPaths, requestParams.dataPaths))
     unmatchedParameters.push('dataPaths')
   if (!matchStringParams(ticketDateFrom, requestParams.dateFrom))
@@ -136,7 +136,12 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('eventIds')
   if (!matchArrayParams(ticketJourneyIds, requestParams.journeyIds))
     unmatchedParameters.push('journeyIds')
-  if (!matchArrayParams(ticketPiiTypes, requestParams.piiTypes))
+  if (
+    !matchArrayParams(
+      ticketPiiTypes.map(removeZendeskPiiTypePrefixFromPiiType),
+      requestParams.piiTypes
+    )
+  )
     unmatchedParameters.push('piiTypes')
   if (!matchArrayParams(ticketSessionIds, requestParams.sessionIds))
     unmatchedParameters.push('sessionIds')
@@ -144,13 +149,13 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('userIds')
 
   if (unmatchedParameters.length > 0) {
-    console.warn(
+    logger.warn(
       interpolateTemplate('requestDoesntMatcheZendeskTickets', loggingCopy),
-      unmatchedParameters
+      JSON.stringify(unmatchedParameters)
     )
     return true
   } else {
-    console.log(
+    logger.info(
       interpolateTemplate('requestMatchesExistingZendeskTickets', loggingCopy)
     )
     return false

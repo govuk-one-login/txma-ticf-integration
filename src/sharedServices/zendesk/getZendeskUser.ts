@@ -4,6 +4,7 @@ import { isZendeskUserResult, ZendeskUser } from '../../types/zendeskUserResult'
 import { base64Encode, makeHttpsRequest } from '../http/httpsRequestUtils'
 import { loggingCopy } from '../../constants/loggingCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { logger } from '../logger'
 
 export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   const secrets = await retrieveZendeskApiSecrets()
@@ -25,7 +26,10 @@ export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   }
 
   const userInfo = data.user
-  console.log(interpolateTemplate('zendeskUserFound', loggingCopy), userInfo)
+  logger.info(
+    interpolateTemplate('zendeskUserFound', loggingCopy),
+    JSON.stringify(userInfo)
+  )
 
   return userInfo
 }

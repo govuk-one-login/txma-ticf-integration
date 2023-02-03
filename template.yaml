@@ -27,6 +27,12 @@ Parameters:
 
 Conditions:
   ApiCustomDomain: !Not [!Equals [!Ref Environment, dev]]
+  CslsEgress:
+    !Or [
+      !Equals [!Ref Environment, production],
+      !Equals [!Ref Environment, integration],
+      !Equals [!Ref Environment, staging]
+    ]
   DevEnvironment: !Equals [!Ref Environment, dev]
   TestEnvironment:
     !Not [
@@ -51,7 +57,7 @@ Globals:
     PermissionsBoundary:
       !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
     ReservedConcurrentExecutions: 10
-    Runtime: nodejs16.x
+    Runtime: nodejs18.x
     Timeout: 30
   Api:
     OpenApiVersion: 3.0.1
@@ -102,6 +108,14 @@ Resources:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
       LogGroupName: !Sub /aws/apigateway/${AWS::StackName}-zendesk-webhook-api-access-logs
       RetentionInDays: 30
+
+  ZendeskWebhookAccessCslsSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: CslsEgress
+    Properties:
+      LogGroupName: !Ref ZendeskWebhookAccessLogGroup
+      FilterPattern: ''
+      DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   ZendeskWebhookApiWafAssociation:
     Type: AWS::WAFv2::WebACLAssociation
@@ -187,12 +201,21 @@ Resources:
                 - s3:GetObject
               Resource:
                 - '{{resolve:ssm:ValidEmailRecipientsBucketArn}}/*'
+
   InitiateDataRequestLogs:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-initiate-data-request'
       RetentionInDays: 30
+
+  InitiateDataRequestCslsSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: CslsEgress
+    Properties:
+      LogGroupName: !Ref InitiateDataRequestLogs
+      FilterPattern: ''
+      DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   ProcessDataRequestFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
@@ -299,6 +322,14 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-process-data'
       RetentionInDays: 30
 
+  ProcessDataRequestCslsSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: CslsEgress
+    Properties:
+      LogGroupName: !Ref ProcessDataRequestLogs
+      FilterPattern: ''
+      DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
+
   InitiateAthenaQueryFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_117:VPC not required
@@ -307,9 +338,9 @@ Resources:
       Handler: initiateAthenaQuery.handler
       Environment:
         Variables:
-          ATHENA_DATABASE_NAME: '{{resolve:ssm:AuditAnalysisDatabaseName}}'
+          ATHENA_DATABASE_NAME: '{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}'
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
-          ATHENA_WORKGROUP_NAME: '{{resolve:ssm:AthenaAnalysisWorkgroupName}}'
+          ATHENA_WORKGROUP_NAME: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupName}}'
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       Events:
@@ -328,13 +359,13 @@ Resources:
                 - glue:GetTable
               Resource:
                 - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
-                - '{{resolve:ssm:AuditAnalysisDatabaseArn}}'
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditAnalysisDatabaseName}}/${AuditAnalysisTable}
+                - '{{resolve:ssm:AuditDataAnalysisGlueDatabaseArn}}'
+                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}/${AuditAnalysisTable}
             - Sid: StartAthenaQuery
               Effect: Allow
               Action:
                 - athena:StartQueryExecution
-              Resource: '{{resolve:ssm:AthenaAnalysisWorkgroupArn}}'
+              Resource: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupArn}}'
             - Sid: ReadFromAnalysisBucket
               Effect: Allow
               Action:
@@ -406,6 +437,14 @@ Resources:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-initiate-athena-query'
       RetentionInDays: 30
+
+  InitiateAthenaQueryCslsSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: CslsEgress
+    Properties:
+      LogGroupName: !Ref InitiateAthenaQueryLogs
+      FilterPattern: ''
+      DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   SendQueryResultsNotificationFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
@@ -492,6 +531,14 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-send-query-results-notification'
       RetentionInDays: 30
 
+  SendQueryResultsNotificationCslsSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: CslsEgress
+    Properties:
+      LogGroupName: !Ref SendQueryResultsNotificationLogs
+      FilterPattern: ''
+      DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
+
   CloseZendeskTicketFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_116:The SQS queue itself will be responsible for its own DLQ
@@ -570,6 +617,14 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-close-zendesk-ticket'
       RetentionInDays: 30
 
+  CloseZendeskTicketCslsSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: CslsEgress
+    Properties:
+      LogGroupName: !Ref CloseZendeskTicketLogs
+      FilterPattern: ''
+      DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
+
   PermissionForAthenaEventToInvokeLambda:
     Type: AWS::Lambda::Permission
     Properties:
@@ -586,7 +641,7 @@ Resources:
     Type: AWS::Glue::Table
     Properties:
       CatalogId: !Ref AWS::AccountId
-      DatabaseName: '{{resolve:ssm:AuditAnalysisDatabaseName}}'
+      DatabaseName: '{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}'
       TableInput:
         Description: Table contains event message data to be analysed
         Name:

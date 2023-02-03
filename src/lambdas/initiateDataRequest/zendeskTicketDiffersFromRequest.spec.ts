@@ -26,9 +26,11 @@ import {
   TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
   TEST_ZENDESK_FIELD_ID_SESSION_IDS,
   TEST_ZENDESK_FIELD_ID_USER_IDS,
+  ZENDESK_PII_TYPE_PREFIX,
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../utils/tests/testConstants'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
+import { logger } from '../../sharedServices/logger'
 
 jest.mock('../../sharedServices/zendesk/getZendeskTicket', () => ({
   getZendeskTicket: jest.fn()
@@ -45,7 +47,7 @@ const mockGetZendeskUser = getZendeskUser as jest.Mock<Promise<ZendeskUser>>
 
 describe('match zendesk ticket details', () => {
   beforeEach(() => {
-    jest.spyOn(global.console, 'warn')
+    jest.spyOn(logger, 'warn')
   })
   afterEach(() => {
     jest.clearAllMocks()
@@ -60,6 +62,67 @@ describe('match zendesk ticket details', () => {
   }
 
   const givenZendeskTicketMatches = () => {
+    mockGetZendeskTicket.mockImplementation(() =>
+      Promise.resolve({
+        id: ZENDESK_TICKET_ID_AS_NUMBER,
+        requester_id: 123,
+        custom_fields: [
+          {
+            id: TEST_ZENDESK_FIELD_ID_DATA_PATHS,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
+            value: TEST_DATE_FROM
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
+            value: TEST_DATE_TO
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
+            value: '123 456'
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
+            value: 'event_id'
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
+            value: [`${ZENDESK_PII_TYPE_PREFIX}passport_number`]
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_USER_IDS,
+            value: null
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL,
+            value: TEST_RECIPIENT_EMAIL
+          },
+          {
+            id: TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME,
+            value: TEST_RECIPIENT_NAME
+          }
+        ]
+      })
+    )
+    mockGetZendeskUser.mockImplementation(() =>
+      Promise.resolve({
+        email: TEST_REQUESTER_EMAIL,
+        name: TEST_REQUESTER_NAME
+      })
+    )
+  }
+
+  const givenZendeskTicketMatchesWithNoPiiTypePrefix = () => {
     mockGetZendeskTicket.mockImplementation(() =>
       Promise.resolve({
         id: ZENDESK_TICKET_ID_AS_NUMBER,
@@ -155,7 +218,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
-            value: ['passport_number']
+            value: [`${ZENDESK_PII_TYPE_PREFIX}passport_number`]
           },
           {
             id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
@@ -303,7 +366,7 @@ describe('match zendesk ticket details', () => {
           },
           {
             id: TEST_ZENDESK_FIELD_ID_PII_TYPES,
-            value: ['passport_number']
+            value: [`${ZENDESK_PII_TYPE_PREFIX}passport_number`]
           },
           {
             id: TEST_ZENDESK_FIELD_ID_SESSION_IDS,
@@ -339,12 +402,18 @@ describe('match zendesk ticket details', () => {
     )
   })
 
+  test('ticket and request match with no PII type prefix in response from Zendesk', async () => {
+    givenZendeskTicketMatchesWithNoPiiTypePrefix()
+    expect(await zendeskTicketDiffersFromRequest(testDataRequest)).toEqual(
+      false
+    )
+  })
+
   test.each([
     ['zendeskId', '123456789'],
     ['recipientEmail', 'notmyemail@example.gov.uk'],
     ['recipientName', 'not my name'],
     ['requesterEmail', 'notmyemail@example.gov.uk'],
-    ['requesterName', 'not my name'],
     ['dataPaths', ['123456789']],
     ['dateFrom', '123456789'],
     ['dateTo', '123456789'],
@@ -360,9 +429,9 @@ describe('match zendesk ticket details', () => {
       )
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
-      expect(console.warn).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        [parameterName]
+        JSON.stringify([parameterName])
       )
     }
   )
@@ -381,9 +450,9 @@ describe('match zendesk ticket details', () => {
       )
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
-      expect(console.warn).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        [parameterName]
+        JSON.stringify([parameterName])
       )
     }
   )
@@ -402,9 +471,9 @@ describe('match zendesk ticket details', () => {
       )
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
-      expect(console.warn).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        [parameterName]
+        JSON.stringify([parameterName])
       )
     }
   )

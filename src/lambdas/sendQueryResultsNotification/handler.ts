@@ -1,25 +1,33 @@
-import { EventBridgeEvent } from 'aws-lambda'
+import { Context, EventBridgeEvent } from 'aws-lambda'
 import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
 import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 
 export const handler = async (
-  event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>
+  event: EventBridgeEvent<'Athena Query State Change', AthenaEBEventDetails>,
+  context: Context
 ): Promise<void> => {
-  console.log('received event', JSON.stringify(event, null, 2))
+  initialiseLogger(context)
+  logger.info('received event', { handledEvent: event })
 
   const queryDetails = event.detail
   const athenaQueryId = queryDetails.queryExecutionId
 
   const requestData = await getQueryByAthenaQueryId(athenaQueryId)
   const zendeskTicketId = requestData.requestInfo.zendeskId
+  appendZendeskIdToLogger(zendeskTicketId)
 
   try {
     await confirmQueryState(queryDetails, zendeskTicketId)
   } catch (error) {
-    console.error(error)
+    logger.error('failed to confirm query state', error as Error)
     return
   }
 

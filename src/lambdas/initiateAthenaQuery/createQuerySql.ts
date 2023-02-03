@@ -2,6 +2,7 @@ import {
   IDENTIFIER_TYPES_EVENT_PATH_MAP,
   PII_TYPES_DATA_PATHS_MAP
 } from '../../constants/athenaSqlMapConstants'
+import { logger } from '../../sharedServices/logger'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import {
   DataRequestParams,
@@ -12,7 +13,7 @@ import { getEnv } from '../../utils/helpers'
 export const createQuerySql = (
   requestData: DataRequestParams
 ): CreateQuerySqlResult => {
-  console.info('Generating Athena SQL query string')
+  logger.info('Generating Athena SQL query string')
   const identifierType = requestData.identifierType
   const identifiers = getIdentifiers(identifierType, requestData)
 

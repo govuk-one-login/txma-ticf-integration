@@ -12,6 +12,7 @@ import {
   TEST_REQUESTER_NAME,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
+import { logger } from '../logger'
 import {
   sendAuditDataRequestMessage,
   sendIllegalRequestAuditMessage,
@@ -40,8 +41,8 @@ const givenSendSqsError = () => {
 describe('sendAuditMessage', () => {
   beforeEach(() => {
     when(currentDateEpochSeconds).mockReturnValue(TEST_TIMESTAMP)
-    jest.spyOn(global.console, 'log')
-    jest.spyOn(global.console, 'error')
+    jest.spyOn(logger, 'info')
+    jest.spyOn(logger, 'error')
   })
   afterEach(() => {
     jest.resetAllMocks()
@@ -92,9 +93,9 @@ describe('sendAuditMessage', () => {
     it('calls the sendSqsMessage function with the correct parameters', async () => {
       await sendAuditDataRequestMessage(testAuditQueryRequestDetails)
 
-      expect(console.log).toHaveBeenCalledWith(
+      expect(logger.info).toHaveBeenCalledWith(
         'sending audit data request message',
-        testAuditQueryRequestDetails
+        JSON.stringify(testAuditQueryRequestDetails)
       )
       expect(sendSqsMessage).toHaveBeenCalledWith(
         testAuditDataRequestEvent,
@@ -107,7 +108,7 @@ describe('sendAuditMessage', () => {
 
       await sendAuditDataRequestMessage(testAuditQueryRequestDetails)
 
-      expect(console.error).toHaveBeenCalledWith(
+      expect(logger.error).toHaveBeenCalledWith(
         errorPrefix,
         Error(errorMessage)
       )
@@ -156,9 +157,8 @@ describe('sendAuditMessage', () => {
 
         await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID, errorType)
 
-        expect(console.log).toHaveBeenCalledWith(
-          'sending illegal request audit message for zendeskId ',
-          ZENDESK_TICKET_ID
+        expect(logger.info).toHaveBeenCalledWith(
+          `sending illegal request audit message for zendeskId ${ZENDESK_TICKET_ID}`
         )
         expect(sendSqsMessage).toHaveBeenCalledWith(
           testAuditQueryIllegalRequestDetails,
@@ -173,7 +173,7 @@ describe('sendAuditMessage', () => {
 
       await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID, exampleErrorType)
 
-      expect(console.error).toHaveBeenCalledWith(
+      expect(logger.error).toHaveBeenCalledWith(
         errorPrefix,
         Error(errorMessage)
       )
@@ -194,9 +194,8 @@ describe('sendAuditMessage', () => {
     it('calls the sendSqsMessage function with the correct parameters', async () => {
       await sendQueryOutputGeneratedAuditMessage(ZENDESK_TICKET_ID)
 
-      expect(console.log).toHaveBeenCalledWith(
-        'sending query output generated message for zendeskId ',
-        ZENDESK_TICKET_ID
+      expect(logger.info).toHaveBeenCalledWith(
+        `sending query output generated message for zendeskId ${ZENDESK_TICKET_ID}`
       )
       expect(sendSqsMessage).toHaveBeenCalledWith(
         testQueryOutputGeneratedAuditMessageDetails,
@@ -209,7 +208,7 @@ describe('sendAuditMessage', () => {
 
       await sendQueryOutputGeneratedAuditMessage(ZENDESK_TICKET_ID)
 
-      expect(console.error).toHaveBeenCalledWith(
+      expect(logger.error).toHaveBeenCalledWith(
         errorPrefix,
         Error(errorMessage)
       )

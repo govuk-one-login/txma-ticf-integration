@@ -4,6 +4,7 @@ import {
   CreateJobCommandInput
 } from '@aws-sdk/client-s3-control'
 import { getEnv } from '../../utils/helpers'
+import { logger } from '../logger'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
@@ -13,7 +14,7 @@ export const startGlacierRestore = async (
   zendeskTicketId: string
 ) => {
   if (filesToRestore?.length < 1) {
-    console.warn(
+    logger.warn(
       'startGlacierRestore called with no files. Not performing any action'
     )
     return
@@ -25,7 +26,7 @@ export const startGlacierRestore = async (
     filesToRestore,
     manifestFileName
   )
-  console.log(
+  logger.info(
     `Starting Glacier restore for zendesk ticket with id '${zendeskTicketId}'`
   )
   const jobId = await createBulkGlacierRestoreJob(
@@ -33,7 +34,7 @@ export const startGlacierRestore = async (
     manifestFileEtag,
     zendeskTicketId
   )
-  console.log(
+  logger.info(
     `Started Glacier restore for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
   )
 }
