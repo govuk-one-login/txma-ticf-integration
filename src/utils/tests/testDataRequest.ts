@@ -1,5 +1,7 @@
 import { DataRequestParams } from '../../types/dataRequestParams'
 import {
+  TEST_DATE_1,
+  TEST_DATE_2,
   TEST_DATE_FROM,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
@@ -14,7 +16,7 @@ export const testDataRequest = {
   recipientName: TEST_RECIPIENT_NAME,
   requesterEmail: TEST_REQUESTER_EMAIL,
   requesterName: TEST_REQUESTER_NAME,
-  dates: [TEST_DATE_FROM],
+  dates: [TEST_DATE_1, TEST_DATE_2],
   identifierType: 'event_id',
   eventIds: ['123', '456'],
   piiTypes: ['passport_number'],

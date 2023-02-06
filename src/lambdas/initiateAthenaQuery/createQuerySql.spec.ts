@@ -5,9 +5,7 @@ import {
   testDataRequestWithNoDataPathsOrPiiTypes
 } from '../../utils/tests/testDataRequest'
 import { IdentifierTypes } from '../../types/dataRequestParams'
-import {
-  TEST_FORMATTED_DATE_FROM
-} from '../../utils/tests/testConstants'
+import { TEST_FORMATTED_DATE_FROM } from '../../utils/tests/testConstants'
 
 describe('create Query SQL', () => {
   it.each([
@@ -64,11 +62,7 @@ describe('create Query SQL', () => {
       expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
         sqlGenerated: true,
         sql: `SELECT event_id, ${piiSql} as ${piiType} FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
-        queryParameters: [
-          `'123'`,
-          `'456'`,
-          `'${TEST_FORMATTED_DATE_FROM}'`
-        ]
+        queryParameters: [`'123'`, `'456'`, `'${TEST_FORMATTED_DATE_FROM}'`]
       })
       testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
     }
@@ -82,11 +76,7 @@ describe('create Query SQL', () => {
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: true,
       sql: `SELECT event_id, restricted, timestamp_formatted FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
-      queryParameters: [
-        `'123'`,
-        `'456'`,
-        `'${TEST_FORMATTED_DATE_FROM}'`
-      ]
+      queryParameters: [`'123'`, `'456'`, `'${TEST_FORMATTED_DATE_FROM}'`]
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
   })
@@ -100,11 +90,7 @@ describe('create Query SQL', () => {
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: true,
       sql: `SELECT event_id, json_extract(restricted, '$.user[0].firstname') as user0_firstname, json_extract(restricted, '$.user[1].firstname') as user1_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
-      queryParameters: [
-        `'123'`,
-        `'456'`,
-        `'${TEST_FORMATTED_DATE_FROM}'`
-      ]
+      queryParameters: [`'123'`, `'456'`, `'${TEST_FORMATTED_DATE_FROM}'`]
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
     testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
