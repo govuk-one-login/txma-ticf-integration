@@ -14,8 +14,7 @@ export const isQueryRequestDBParams = (
     typeof test?.recipientName === 'string' &&
     typeof test?.requesterEmail === 'string' &&
     typeof test?.requesterName === 'string' &&
-    typeof test?.dateFrom === 'string' &&
-    typeof test?.dateTo === 'string' &&
+    // TODO: add a check for the "dates" property
     typeof test?.identifierType === 'string'
   )
 }
