@@ -2,7 +2,11 @@ import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { validateZendeskRequest } from './validateZendeskRequest'
 import { IdentifierTypes } from '../../types/dataRequestParams'
 import { when } from 'jest-when'
-import { ZENDESK_PII_TYPE_PREFIX } from '../../utils/tests/testConstants'
+import {
+  TEST_DATE_1,
+  TEST_DATE_2,
+  ZENDESK_PII_TYPE_PREFIX
+} from '../../utils/tests/testConstants'
 
 jest.mock('./isEmailInValidRecipientList', () => ({
   isEmailInValidRecipientList: jest.fn()
@@ -37,9 +41,7 @@ describe('validateZendeskRequest', () => {
     recipientName: testResultsName,
     requesterEmail: testValidResultsEmail,
     requesterName: testResultsName,
-    dateFrom: '2021-08-01',
-    dateTo: '2021-08-01',
-    dates: '',
+    dates: `${TEST_DATE_1} ${TEST_DATE_2}`,
     journeyIds: '',
     eventIds: '',
     sessionIds: '',
@@ -103,6 +105,12 @@ describe('validateZendeskRequest', () => {
       '',
       dataPaths
     )
+  }
+
+  const buildRequestBodyWithDateList = (dateListString: string) => {
+    const requestBody = buildValidRequestBodyWithIds('session_id', 'sessionId1')
+    requestBody.dates = dateListString
+    return requestBody
   }
 
   const buildRequestBodyWithDates = (dateFrom: string, dateTo: string) => {
@@ -232,7 +240,10 @@ describe('validateZendeskRequest', () => {
 
     expect(validationResult.isValid).toEqual(true)
 
-    expect(validationResult.dataRequestParams?.dates).toEqual(['2021-08-01'])
+    expect(validationResult.dataRequestParams?.dates).toEqual([
+      TEST_DATE_1,
+      TEST_DATE_2
+    ])
     expect(validationResult.dataRequestParams?.zendeskId).toEqual(testZendeskId)
     expect(validationResult.dataRequestParams?.recipientEmail).toEqual(
       testValidResultsEmail
@@ -272,6 +283,14 @@ describe('validateZendeskRequest', () => {
     ])
     expect(validationResult.dataRequestParams?.journeyIds).toEqual([])
     expect(validationResult.dataRequestParams?.eventIds).toEqual([])
+  })
+
+  it('should parse data into response if request contains a fromDate', async () => {
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(buildRequestBodyWithDates(TEST_DATE_1, TEST_DATE_1))
+    )
+    expect(validationResult.isValid).toEqual(true)
+    expect(validationResult.dataRequestParams?.dates).toEqual([TEST_DATE_1])
   })
 
   it('should return an invalid response if request does not contain sessionIds when required', async () => {
@@ -499,7 +518,7 @@ describe('validateZendeskRequest', () => {
     }
   )
 
-  const invalidDates = ['', 'blah', '01-08-2021']
+  const invalidDates = ['blah', '01-08-2021']
 
   it.each(invalidDates)(
     `should return an invalid response if an invalid fromDate of %p is passed`,
@@ -512,15 +531,23 @@ describe('validateZendeskRequest', () => {
       expect(validationResult.validationMessage).toEqual('From date is invalid')
     }
   )
-
-  it.each(invalidDates)(
-    `should return an invalid response if an invalid toDate of %p is passed`,
-    async (date: string) => {
+  const invalidDateLists = [
+    'blah',
+    '01-08-2021',
+    '01-08-2021 2022-08-01',
+    '2022-08-012022-09-01'
+  ]
+  it.each(invalidDateLists)(
+    `should return an invalid response if an invalid dates list of %p is passed`,
+    async (dateListString: string) => {
       const validationResult = await validateZendeskRequest(
-        JSON.stringify(buildRequestBodyWithDates('2021-08-01', date))
+        JSON.stringify(buildRequestBodyWithDateList(dateListString))
       )
+      console.log(validationResult.validationMessage)
       expect(validationResult.isValid).toEqual(false)
-      expect(validationResult.validationMessage).toEqual('To date is invalid')
+      expect(validationResult.validationMessage).toEqual(
+        'dates list is invalid'
+      )
     }
   )
 
@@ -542,27 +569,6 @@ describe('validateZendeskRequest', () => {
     )
   })
 
-  it(`should return an invalid response if toDate is ${tomorrowDateString}, after today ${todayDateString}`, async () => {
-    const validationResult = await validateZendeskRequest(
-      JSON.stringify(
-        buildRequestBodyWithDates(todayDateString, tomorrowDateString)
-      )
-    )
-    expect(validationResult.isValid).toEqual(false)
-    expect(validationResult.validationMessage).toContain(
-      'To Date is in the future'
-    )
-  })
-
-  it('should return an invalid response if toDate is before fromDate', async () => {
-    const validationResult = await validateZendeskRequest(
-      JSON.stringify(buildRequestBodyWithDates('2021-08-01', '2021-07-30'))
-    )
-    expect(validationResult.isValid).toEqual(false)
-    expect(validationResult.validationMessage).toEqual(
-      'To Date is before From Date'
-    )
-  })
   it('should return an invalid response if recipientEmail is not set', async () => {
     const requestBody = buildValidRequestBody()
     delete requestBody.recipientEmail

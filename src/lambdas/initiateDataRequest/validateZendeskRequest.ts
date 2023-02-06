@@ -94,15 +94,16 @@ export const validateZendeskRequest = async (
     },
     {
       message: 'From date is invalid',
-      isValid: dateFormatCorrect(data.dateFrom)
+      isValid: !data.dateFrom || dateFormatCorrect(data.dateFrom)
     },
     {
-      message: 'To date is invalid',
-      isValid: dateFormatCorrect(data.dateTo)
+      message: 'dates list is invalid',
+      isValid: !data.dates || dateListValid(data.dates)
     },
     {
       message: 'From Date is in the future',
       isValid:
+        !data.dateFrom ||
         !dateFormatCorrect(data.dateFrom) ||
         dateIsOnOrBeforeToday(data.dateFrom)
     },
@@ -110,13 +111,6 @@ export const validateZendeskRequest = async (
       message: 'To Date is in the future',
       isValid:
         !dateFormatCorrect(data.dateTo) || dateIsOnOrBeforeToday(data.dateTo)
-    },
-    {
-      message: 'To Date is before From Date',
-      isValid:
-        !dateFormatCorrect(data.dateFrom) ||
-        !dateFormatCorrect(data.dateTo) ||
-        datesAreInCorrectOrder(data.dateFrom, data.dateTo)
     },
     {
       message: 'Identifier type is invalid',
@@ -153,7 +147,10 @@ export const validateZendeskRequest = async (
       ? validationMessages.join(', ')
       : undefined,
     dataRequestParams: {
-      dates: [data.dateFrom],
+      dates:
+        data.dateFrom && data.dateFrom.length > 0
+          ? [data.dateFrom]
+          : mapSpaceSeparatedStringToList(data.dates),
       zendeskId: data.zendeskId,
       sessionIds: mapSpaceSeparatedStringToList(data.sessionIds),
       journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
@@ -182,8 +179,11 @@ const dateFormatCorrect = (dateString: string) => {
   return /^\d{4}-\d{2}-\d{2}$/.test(dateString)
 }
 
-const datesAreInCorrectOrder = (dateFrom: string, dateTo: string) => {
-  return new Date(dateFrom) <= new Date(dateTo)
+const dateListValid = (dateListString: string): boolean => {
+  return dateListString
+    .split(' ')
+    .map((date) => dateFormatCorrect(date))
+    .reduce((a, b) => a && b)
 }
 
 const dateIsOnOrBeforeToday = (dateString: string) => {
