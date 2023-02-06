@@ -12,10 +12,10 @@ import {
 } from '../../utils/tests/testConstants'
 import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
-import { DataRequestParams } from '../../types/dataRequestParams'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { logger } from '../../sharedServices/logger'
+import { testDataRequest } from '../../utils/tests/testDataRequest'
 
 jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
   getDatabaseEntryByZendeskId: jest.fn()
@@ -96,30 +96,13 @@ describe('checkDataTransferStatus', () => {
     givenDataResult([], [])
   }
 
-  const requestInfo: DataRequestParams = {
-    zendeskId: ZENDESK_TICKET_ID,
-    requesterEmail: 'test@test.gov.uk',
-    requesterName: 'Test Name',
-    recipientEmail: 'test@test.gov.uk',
-    recipientName: 'Test Name',
-    dateTo: '2022-09-06',
-    dateFrom: '2022-09-06',
-    identifierType: 'event_id',
-    eventIds: ['234gh24', '98h98bc'],
-    piiTypes: ['passport_number'],
-    sessionIds: [],
-    journeyIds: [],
-    userIds: [],
-    dataPaths: []
-  }
-
   const givenDatabaseEntryResult = (
     statusCountObject:
       | { checkGlacierStatusCount?: number; checkCopyStatusCount?: number }
       | undefined = undefined
   ) => {
     when(getDatabaseEntryByZendeskId).mockResolvedValue({
-      requestInfo,
+      requestInfo: testDataRequest,
       ...(statusCountObject?.checkGlacierStatusCount && {
         checkGlacierStatusCount: statusCountObject.checkGlacierStatusCount
       }),
