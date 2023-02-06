@@ -9,15 +9,11 @@ import {
 import { ZendeskTicket } from '../../types/zendeskTicketResult'
 import { ZendeskUser } from '../../types/zendeskUserResult'
 import {
-  TEST_DATE_FROM,
-  TEST_DATE_TO,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
   TEST_REQUESTER_EMAIL,
   TEST_REQUESTER_NAME,
   TEST_ZENDESK_FIELD_ID_DATA_PATHS,
-  TEST_ZENDESK_FIELD_ID_DATE_FROM,
-  TEST_ZENDESK_FIELD_ID_DATE_TO,
   TEST_ZENDESK_FIELD_ID_EVENT_IDS,
   TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
   TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
@@ -72,14 +68,6 @@ describe('match zendesk ticket details', () => {
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
-            value: TEST_DATE_FROM
-          },
-          {
-            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
-            value: TEST_DATE_TO
-          },
-          {
             id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
             value: '123 456'
           },
@@ -131,14 +119,6 @@ describe('match zendesk ticket details', () => {
           {
             id: TEST_ZENDESK_FIELD_ID_DATA_PATHS,
             value: null
-          },
-          {
-            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
-            value: TEST_DATE_FROM
-          },
-          {
-            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
-            value: TEST_DATE_TO
           },
           {
             id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
@@ -195,14 +175,6 @@ describe('match zendesk ticket details', () => {
           {
             id: TEST_ZENDESK_FIELD_ID_DATA_PATHS,
             value: 'path_to_data1 path_to_data2'
-          },
-          {
-            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
-            value: TEST_DATE_FROM
-          },
-          {
-            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
-            value: TEST_DATE_TO
           },
           {
             id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
@@ -274,14 +246,6 @@ describe('match zendesk ticket details', () => {
             value: null
           },
           {
-            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
-            value: TEST_DATE_FROM
-          },
-          {
-            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
-            value: TEST_DATE_TO
-          },
-          {
             id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
             value: null
           },
@@ -345,14 +309,6 @@ describe('match zendesk ticket details', () => {
         requester_id: 123,
         custom_fields: [
           {
-            id: TEST_ZENDESK_FIELD_ID_DATE_FROM,
-            value: TEST_DATE_FROM
-          },
-          {
-            id: TEST_ZENDESK_FIELD_ID_DATE_TO,
-            value: TEST_DATE_TO
-          },
-          {
             id: TEST_ZENDESK_FIELD_ID_EVENT_IDS,
             value: '123 456'
           },
@@ -415,8 +371,6 @@ describe('match zendesk ticket details', () => {
     ['recipientName', 'not my name'],
     ['requesterEmail', 'notmyemail@example.gov.uk'],
     ['dataPaths', ['123456789']],
-    ['dateFrom', '123456789'],
-    ['dateTo', '123456789'],
     ['eventIds', ['123456789']],
     ['journeyIds', ['123456789']],
     ['piiTypes', ['123456789']]

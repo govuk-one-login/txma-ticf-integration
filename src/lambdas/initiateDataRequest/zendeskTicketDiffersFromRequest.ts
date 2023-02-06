@@ -80,14 +80,6 @@ const ticketAndRequestDetailsDiffer = (
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATA_PATHS')
   ) as string[]
-  const ticketDateFrom = getZendeskCustomFieldValue(
-    ticketDetails,
-    getEnvAsNumber('ZENDESK_FIELD_ID_DATE_FROM')
-  ) as string | null
-  const ticketDateTo = getZendeskCustomFieldValue(
-    ticketDetails,
-    getEnvAsNumber('ZENDESK_FIELD_ID_DATE_TO')
-  ) as string | null
   const ticketEventIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_EVENT_IDS')
@@ -126,12 +118,9 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('recipientName')
   if (!matchStringParams(requesterDetails.email, requestParams.requesterEmail))
     unmatchedParameters.push('requesterEmail')
+  // TODO: add check for date matching
   if (!matchArrayParams(ticketDataPaths, requestParams.dataPaths))
     unmatchedParameters.push('dataPaths')
-  if (!matchStringParams(ticketDateFrom, requestParams.dateFrom))
-    unmatchedParameters.push('dateFrom')
-  if (!matchStringParams(ticketDateTo, requestParams.dateTo))
-    unmatchedParameters.push('dateTo')
   if (!matchArrayParams(ticketEventIds, requestParams.eventIds))
     unmatchedParameters.push('eventIds')
   if (!matchArrayParams(ticketJourneyIds, requestParams.journeyIds))
