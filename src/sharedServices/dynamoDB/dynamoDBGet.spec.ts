@@ -9,6 +9,8 @@ import {
 import { mockClient } from 'aws-sdk-client-mock'
 import {
   TEST_ATHENA_QUERY_ID,
+  TEST_DATE_1,
+  TEST_DATE_2,
   TEST_QUERY_DATABASE_TABLE_NAME
 } from '../../utils/tests/testConstants'
 import {
@@ -40,9 +42,8 @@ describe('dynamoDBGet', () => {
           recipientName: { S: 'test' },
           requesterEmail: { S: 'test@test.gov.uk' },
           requesterName: { S: 'test' },
-          dateTo: { S: '2022-09-06' },
           identifierType: { S: 'eventId' },
-          dateFrom: { S: '2022-09-06' },
+          dates: { L: [{ S: TEST_DATE_1 }, { S: TEST_DATE_2 }] },
           zendeskId: { S: '12' },
           eventIds: { L: [{ S: '234gh24' }, { S: '98h98bc' }] },
           piiTypes: { L: [{ S: 'passport_number' }] }
@@ -82,9 +83,8 @@ describe('dynamoDBGet', () => {
         recipientName: 'test',
         requesterEmail: 'test@test.gov.uk',
         requesterName: 'test',
-        dateTo: '2022-09-06',
+        dates: [TEST_DATE_1, TEST_DATE_2],
         identifierType: 'eventId',
-        dateFrom: '2022-09-06',
         zendeskId: '12',
         eventIds: ['234gh24', '98h98bc'],
         piiTypes: ['passport_number']
@@ -177,9 +177,8 @@ describe('dynamoDBGet', () => {
         recipientName: 'test',
         requesterEmail: 'test@test.gov.uk',
         requesterName: 'test',
-        dateTo: '2022-09-06',
+        dates: [TEST_DATE_1, TEST_DATE_2],
         identifierType: 'eventId',
-        dateFrom: '2022-09-06',
         zendeskId: '12',
         eventIds: ['234gh24', '98h98bc'],
         piiTypes: ['passport_number']
