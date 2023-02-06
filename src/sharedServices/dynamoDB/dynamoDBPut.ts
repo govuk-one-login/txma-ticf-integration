@@ -21,8 +21,7 @@ export const addNewDataRequestRecord = (
         recipientName: { S: dataRequestParams.recipientName },
         requesterEmail: { S: dataRequestParams.requesterEmail },
         requesterName: { S: dataRequestParams.requesterName },
-        dateFrom: { S: dataRequestParams.dateFrom },
-        dateTo: { S: dataRequestParams.dateTo },
+        dates: { L: dataRequestParams.dates.map((date) => ({ S: date })) },
         identifierType: { S: dataRequestParams.identifierType },
         sessionIds: {
           L: dataRequestParams.sessionIds.map((id) => ({ S: id }))
