@@ -34,37 +34,26 @@ export const createQuerySql = (
     }
   }
 
-  const sqlIdTypeStatement = formatIdTypeStatement(identifierType)
-
-  const sqlSelectStatement = formatSelectStatement(
-    filteredDataPaths,
-    filteredPiiTypes
-  )
-
-  const sqlWhereStatement = formatWhereStatement(
-    identifierType,
-    identifiers.length
-  )
-
   const dataSource = `${getEnv('ATHENA_DATABASE_NAME')}.${getEnv(
     'ATHENA_TABLE_NAME'
   )}`
 
   const commaSeparatedQuestionMarks = (numberOfEntries: number) =>
     Array(numberOfEntries).fill('?').join(',')
-  const queryString = `SELECT datetime, ${sqlIdTypeStatement} ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime IN (${commaSeparatedQuestionMarks(
-    requestData.dates.length
-  )})`
-
-  const queryParameters = generateQueryParameters(
-    identifiers,
-    requestData.dates
-  )
+  const queryString = `SELECT datetime, ${formatIdTypeStatement(
+    identifierType
+  )} ${formatSelectStatement(
+    filteredDataPaths,
+    filteredPiiTypes
+  )} FROM ${dataSource} WHERE ${formatWhereStatement(
+    identifierType,
+    identifiers.length
+  )} AND datetime IN (${commaSeparatedQuestionMarks(requestData.dates.length)})`
 
   return {
     sqlGenerated: true,
     sql: queryString,
-    queryParameters: queryParameters
+    queryParameters: generateQueryParameters(identifiers, requestData.dates)
   }
 }
 
