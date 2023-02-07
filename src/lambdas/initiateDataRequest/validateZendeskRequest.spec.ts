@@ -569,6 +569,22 @@ describe('validateZendeskRequest', () => {
     )
   })
 
+  it(`should return an invalid response if one of the dates in the date list is in the future`, async () => {
+    const dayAfterTomorrowDateString = getTodayPlusDaysAsString(2)
+    const twoDaysAgoDateString = getTodayPlusDaysAsString(-2)
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(
+        buildRequestBodyWithDateList(
+          `${dayAfterTomorrowDateString} ${twoDaysAgoDateString}`
+        )
+      )
+    )
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toContain(
+      'One of the requested dates is in the future'
+    )
+  })
+
   it('should return an invalid response if recipientEmail is not set', async () => {
     const requestBody = buildValidRequestBody()
     delete requestBody.recipientEmail

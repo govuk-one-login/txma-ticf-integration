@@ -108,9 +108,8 @@ export const validateZendeskRequest = async (
         dateIsOnOrBeforeToday(data.dateFrom)
     },
     {
-      message: 'To Date is in the future',
-      isValid:
-        !dateFormatCorrect(data.dateTo) || dateIsOnOrBeforeToday(data.dateTo)
+      message: 'One of the requested dates is in the future',
+      isValid: !dateListValid(data.dates) || dateListAllInPast(data.dates)
     },
     {
       message: 'Identifier type is invalid',
@@ -180,10 +179,23 @@ const dateFormatCorrect = (dateString: string) => {
 }
 
 const dateListValid = (dateListString: string): boolean => {
-  return dateListString
-    .split(' ')
-    .map((date) => dateFormatCorrect(date))
-    .reduce((a, b) => a && b)
+  return (
+    !!dateListString &&
+    dateListString
+      .split(' ')
+      .map((date) => dateFormatCorrect(date))
+      .reduce((a, b) => a && b)
+  )
+}
+
+const dateListAllInPast = (dateListString: string): boolean => {
+  return (
+    !!dateListString &&
+    dateListString
+      .split(' ')
+      .map((date) => dateIsOnOrBeforeToday(date))
+      .reduce((a, b) => a && b)
+  )
 }
 
 const dateIsOnOrBeforeToday = (dateString: string) => {
