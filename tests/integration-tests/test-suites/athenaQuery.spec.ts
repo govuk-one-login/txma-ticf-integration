@@ -21,7 +21,7 @@ import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/
 
 const ticketWithDataPathAndPiiTypes = generateZendeskTicketData({
   identifier: 'event_id',
-  eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
+  eventIds: testData.athenaTestEventId1,
   datesList: '2022-04-01',
   piiTypes: ['addresses'],
   customDataPath:
@@ -30,15 +30,23 @@ const ticketWithDataPathAndPiiTypes = generateZendeskTicketData({
 
 const ticketWithPiiTypesOnly = generateZendeskTicketData({
   identifier: 'event_id',
-  eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
+  eventIds: testData.athenaTestEventId1,
   datesList: '2022-04-01',
   piiTypes: ['addresses', 'name']
 })
 
 const ticketWithCustomDataPathsOnly = generateZendeskTicketData({
   identifier: 'event_id',
-  eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
+  eventIds: testData.athenaTestEventId1,
   datesList: '2022-04-01',
+  customDataPath:
+    'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
+})
+
+const ticketWithMultipleDates = generateZendeskTicketData({
+  identifier: 'event_id',
+  eventIds: `${testData.athenaTestEventId1} ${testData.athenaTestEventId2}`,
+  datesList: '2022-04-01 2022-05-01',
   customDataPath:
     'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
 })
@@ -55,6 +63,11 @@ describe('Athena Query SQL generation and execution', () => {
         getEnv('ANALYSIS_BUCKET_NAME'),
         `firehose/${testData.athenaTestPrefix}/01/${testData.athenaTestFileName}`,
         testData.athenaTestFileName
+      )
+      await copyAuditDataFromTestDataBucket(
+        getEnv('ANALYSIS_BUCKET_NAME'),
+        `firehose/${testData.athenaTest2Prefix}/01/${testData.athenaTest2FileName}`,
+        testData.athenaTest2FileName
       )
     })
 
@@ -210,6 +223,77 @@ describe('Athena Query SQL generation and execution', () => {
       )
       expect(csvRows[0].name).toEqual(testData.athenaTestName)
       expect(csvRows[0].addresses).toEqual(testData.athenaTestAddresses)
+    })
+
+    it('Successful Athena processing - requests having multiples dates', async () => {
+      console.log('Test ticket id: ' + randomTicketId)
+      await populateDynamoDBWithTicketDetails(
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
+        randomTicketId,
+        ticketWithMultipleDates
+      )
+      await addMessageToQueue(
+        randomTicketId,
+        getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
+      )
+
+      const athenaQueryEvents =
+        await getCloudWatchLogEventsGroupByMessagePattern(
+          getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
+          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
+        )
+
+      expect(athenaQueryEvents).not.toEqual([])
+      expect(athenaQueryEvents.length).toBeGreaterThan(1)
+
+      const isAthenaSqlGeneratedMessageInLogs = eventIsPresent(
+        athenaQueryEvents,
+        cloudwatchLogFilters.athenaSqlGenerated
+      )
+      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
+
+      const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
+        athenaQueryEvents,
+        cloudwatchLogFilters.athenaQueryInitiated
+      )
+      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
+
+      const value = await getValueFromDynamoDB(
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
+        randomTicketId,
+        'athenaQueryId'
+      )
+      expect(value?.athenaQueryId.S).toBeDefined()
+
+      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
+      expect(downloadUrl.startsWith('https')).toBe(true)
+      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
+
+      expect(csvRows.length).toEqual(2)
+      const event1Data = csvRows.find(
+        (row) => row.event_id === testData.athenaTestEventId1
+      )
+      const event2Data = csvRows.find(
+        (row) => row.event_id === testData.athenaTestEventId2
+      )
+      if (!event1Data || !event2Data) {
+        throw new Error(
+          'Could not find data for one or more of the test events'
+        )
+      }
+      expect(event1Data.birthdate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(event1Data.address0_buildingname).toEqual(
+        testData.athenaTestBuildingName
+      )
+      expect(event1Data.name).toEqual(testData.athenaTestName)
+      expect(event1Data.addresses).toEqual(testData.athenaTestAddresses)
+
+      expect(event2Data.birthdate0_value).toEqual(testData.athenaTestBirthDate2)
+      expect(event2Data.address0_buildingname).toEqual(
+        testData.athenaTestBuildingName2
+      )
+      expect(event2Data.name).toEqual(testData.athenaTestName2)
+      expect(event2Data.addresses).toEqual(testData.athenaTestAddresses2)
     })
   })
 
