@@ -22,7 +22,7 @@ import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/
 const ticketWithDataPathAndPiiTypes = generateZendeskTicketData({
   identifier: 'event_id',
   eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
-  requestDate: '2022-04-01',
+  datesList: '2022-04-01',
   piiTypes: ['addresses'],
   customDataPath:
     'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
@@ -31,14 +31,14 @@ const ticketWithDataPathAndPiiTypes = generateZendeskTicketData({
 const ticketWithPiiTypesOnly = generateZendeskTicketData({
   identifier: 'event_id',
   eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
-  requestDate: '2022-04-01',
+  datesList: '2022-04-01',
   piiTypes: ['addresses', 'name']
 })
 
 const ticketWithCustomDataPathsOnly = generateZendeskTicketData({
   identifier: 'event_id',
   eventIds: '99cbfa88-5277-422f-af25-be0864adb7db',
-  requestDate: '2022-04-01',
+  datesList: '2022-04-01',
   customDataPath:
     'restricted.name restricted.birthDate[0].value restricted.address[0].buildingName'
 })

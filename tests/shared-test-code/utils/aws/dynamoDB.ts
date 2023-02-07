@@ -83,15 +83,7 @@ const generateDynamoTableEntry = (
     M: {
       zendeskId: { S: `${zendeskId}` },
       dates: {
-        // TODO: update this to use multiple dates from new Zendesk field
-        L: [
-          {
-            S: `${getFieldValue(
-              customFields,
-              zendeskConstants.fieldIds.requestDate
-            )}`
-          }
-        ]
+        L: getFieldListValues(customFields, zendeskConstants.fieldIds.datesList)
       },
       identifierType: {
         S: `${getFieldValue(
