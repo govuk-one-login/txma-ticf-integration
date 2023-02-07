@@ -50,11 +50,9 @@ export const createQuerySql = (
     'ATHENA_TABLE_NAME'
   )}`
 
-  // const commaSeparatedQuestionMarks = (numberOfEntries: number) =>
-  //   Array(numberOfEntries).fill('?').join(',')
-  const dateEqualClauses = (numberOfEntries: number) =>
-    Array(numberOfEntries).fill('datetime=?').join(' OR ')
-  const queryString = `SELECT ${sqlIdTypeStatement} ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND (${dateEqualClauses(
+  const commaSeparatedQuestionMarks = (numberOfEntries: number) =>
+    Array(numberOfEntries).fill('?').join(',')
+  const queryString = `SELECT datetime, ${sqlIdTypeStatement} ${sqlSelectStatement} FROM ${dataSource} WHERE ${sqlWhereStatement} AND datetime IN (${commaSeparatedQuestionMarks(
     requestData.dates.length
   )})`
 
