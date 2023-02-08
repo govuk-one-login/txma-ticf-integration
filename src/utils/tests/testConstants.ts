@@ -57,6 +57,7 @@ export const TEST_ZENDESK_FIELD_ID_SESSION_IDS = 8
 export const TEST_ZENDESK_FIELD_ID_USER_IDS = 9
 export const TEST_ZENDESK_FIELD_ID_RECIPIENT_EMAIL = 10
 export const TEST_ZENDESK_FIELD_ID_RECIPIENT_NAME = 11
+export const TEST_ZENDESK_FIELD_ID_DATES = 12
 export const TEST_DOWNLOAD_HASH = 'myDownloadHash'
 export const TEST_SECURE_DOWNLOAD_WEBSITE_BASE_PATH =
   'http://my-download-website/secure'

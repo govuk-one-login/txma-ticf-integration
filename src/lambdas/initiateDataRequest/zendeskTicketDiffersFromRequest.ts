@@ -69,6 +69,40 @@ const getZendeskCustomSpaceSeparatedStringAsArray = (
   return mapSpaceSeparatedStringToList(fieldValue)
 }
 
+const datesMatch = (
+  ticketDetails: ZendeskTicket,
+  requestParams: DataRequestParams
+) => {
+  const ticketLegacyDateField = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnvAsNumber('ZENDESK_FIELD_ID_DATE_FROM')
+  )
+  const ticketDates = getZendeskCustomSpaceSeparatedStringAsArray(
+    ticketDetails,
+    getEnvAsNumber('ZENDESK_FIELD_ID_DATES')
+  )
+  if (ticketLegacyDateField) {
+    const returnValue = matchArrayParams(
+      [ticketLegacyDateField as string],
+      requestParams.dates
+    )
+    if (!returnValue) {
+      console.log(
+        `Request dates ${requestParams.dates}, legacy dates field ${ticketLegacyDateField}`
+      )
+    }
+    return returnValue
+  }
+
+  const returnValue = matchArrayParams(ticketDates, requestParams.dates)
+  if (!returnValue) {
+    console.log(
+      `Request dates ${requestParams.dates}, ticket dates ${ticketDates}`
+    )
+  }
+  return returnValue
+}
+
 const ticketAndRequestDetailsDiffer = (
   ticketDetails: ZendeskTicket,
   requesterDetails: ZendeskUser,
@@ -109,7 +143,9 @@ const ticketAndRequestDetailsDiffer = (
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_RECIPIENT_NAME')
   ) as string | null
-
+  if (!datesMatch(ticketDetails, requestParams)) {
+    unmatchedParameters.push('date')
+  }
   if (!matchStringParams(ticketDetails.id.toString(), requestParams.zendeskId))
     unmatchedParameters.push('zendeskId')
   if (!matchStringParams(ticketRecipientEmail, requestParams.recipientEmail))
