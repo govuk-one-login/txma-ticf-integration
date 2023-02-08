@@ -66,6 +66,10 @@ export const validateZendeskRequest = async (
         (await isEmailInValidRecipientList(data.recipientEmail))
     },
     {
+      message: 'No dates supplied',
+      isValid: !!data.dates || !!data.dateFrom
+    },
+    {
       message: 'At least one session id should be provided',
       isValid:
         sanitisedIdentifierType != 'session_id' || data.sessionIds?.length > 0

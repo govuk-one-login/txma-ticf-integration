@@ -26,7 +26,7 @@ describe('validateZendeskRequest', () => {
     identifierType?: IdentifierTypes
     dateFrom?: string
     dateTo?: string
-    dates: string
+    dates?: string
     piiTypes?: string
     dataPaths?: string
     eventIds?: string
@@ -518,6 +518,17 @@ describe('validateZendeskRequest', () => {
     }
   )
 
+  it('should return an invalid response if neither a dateFrom or dates property is passed', async () => {
+    const validRequestBody = buildValidRequestBody()
+    validRequestBody.dateFrom = undefined
+    validRequestBody.dates = undefined
+    const validationResult = await validateZendeskRequest(
+      JSON.stringify(validRequestBody)
+    )
+    expect(validationResult.isValid).toEqual(false)
+    expect(validationResult.validationMessage).toEqual('No dates supplied')
+  })
+
   const invalidDates = ['blah', '01-08-2021']
 
   it.each(invalidDates)(
@@ -531,6 +542,7 @@ describe('validateZendeskRequest', () => {
       expect(validationResult.validationMessage).toEqual('From date is invalid')
     }
   )
+
   const invalidDateLists = [
     'blah',
     '01-08-2021',
