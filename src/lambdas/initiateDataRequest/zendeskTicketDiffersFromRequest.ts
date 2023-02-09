@@ -154,7 +154,6 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('recipientName')
   if (!matchStringParams(requesterDetails.email, requestParams.requesterEmail))
     unmatchedParameters.push('requesterEmail')
-  // TODO: add check for date matching
   if (!matchArrayParams(ticketDataPaths, requestParams.dataPaths))
     unmatchedParameters.push('dataPaths')
   if (!matchArrayParams(ticketEventIds, requestParams.eventIds))
