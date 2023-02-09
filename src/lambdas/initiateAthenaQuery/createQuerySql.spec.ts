@@ -2,10 +2,15 @@ import { createQuerySql } from './createQuerySql'
 import {
   noIdTestDataRequest,
   dataPathsTestDataRequest,
-  testDataRequestWithNoDataPathsOrPiiTypes
+  testDataRequestWithNoDataPathsOrPiiTypes,
+  testDataRequestWithAllValuesSet
 } from '../../utils/tests/testDataRequest'
 import { IdentifierTypes } from '../../types/dataRequestParams'
-import { TEST_FORMATTED_DATE_FROM } from '../../utils/tests/testConstants'
+import {
+  TEST_ATHENA_FORMATTED_DATE_1,
+  TEST_ATHENA_FORMATTED_DATE_2,
+  TEST_FORMATTED_DATE_FROM
+} from '../../utils/tests/testConstants'
 
 describe('create Query SQL', () => {
   it.each([
@@ -94,6 +99,19 @@ describe('create Query SQL', () => {
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
     testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
+  })
+
+  test('returns a formatted SQL query handling multiple dates', () => {
+    expect(createQuerySql(testDataRequestWithAllValuesSet)).toEqual({
+      sqlGenerated: true,
+      sql: `SELECT datetime, event_id, path_to_data1, path_to_data2, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?,?)`,
+      queryParameters: [
+        `'123'`,
+        `'456'`,
+        `'${TEST_ATHENA_FORMATTED_DATE_1}'`,
+        `'${TEST_ATHENA_FORMATTED_DATE_2}'`
+      ]
+    })
   })
 
   test('returns an error message if there are no dataPaths or piiTypes', () => {

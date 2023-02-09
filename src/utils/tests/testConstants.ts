@@ -30,6 +30,8 @@ export const TEST_DATE_TO = '2021-08-21'
 
 export const TEST_DATE_1 = '2021-08-21'
 export const TEST_DATE_2 = '2021-09-10'
+export const TEST_ATHENA_FORMATTED_DATE_1 = '2021/08/21'
+export const TEST_ATHENA_FORMATTED_DATE_2 = '2021/09/10'
 
 export const TEST_FORMATTED_DATE_FROM = '2021/08/21'
 export const TEST_FORMATTED_DATE_TO = '2021/08/21/23'
