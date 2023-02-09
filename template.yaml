@@ -143,6 +143,7 @@ Resources:
           ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZendeskFieldIdDataPaths}}'
           ZENDESK_FIELD_ID_DATE_FROM: '{{resolve:ssm:ZendeskFieldIdDateFrom}}'
           ZENDESK_FIELD_ID_DATE_TO: '{{resolve:ssm:ZendeskFieldIdDateTo}}'
+          ZENDESK_FIELD_ID_DATES: '{{resolve:ssm:ZendeskFieldIdDates}}'
           ZENDESK_FIELD_ID_EVENT_IDS: '{{resolve:ssm:ZendeskFieldIdEventIds}}'
           ZENDESK_FIELD_ID_IDENTIFIER_TYPE: '{{resolve:ssm:ZendeskFieldIdIdentifierType}}'
           ZENDESK_FIELD_ID_JOURNEY_IDS: '{{resolve:ssm:ZendeskFieldIdJourneyIds}}'
