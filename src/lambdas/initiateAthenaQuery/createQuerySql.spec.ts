@@ -8,8 +8,7 @@ import {
 import { IdentifierTypes } from '../../types/dataRequestParams'
 import {
   TEST_ATHENA_FORMATTED_DATE_1,
-  TEST_ATHENA_FORMATTED_DATE_2,
-  TEST_FORMATTED_DATE_FROM
+  TEST_ATHENA_FORMATTED_DATE_2
 } from '../../utils/tests/testConstants'
 
 describe('create Query SQL', () => {
@@ -41,7 +40,7 @@ describe('create Query SQL', () => {
         queryParameters: [
           `'123${idExtension}'`,
           `'456${idExtension}'`,
-          `'${TEST_FORMATTED_DATE_FROM}'`
+          `'${TEST_ATHENA_FORMATTED_DATE_1}'`
         ]
       })
     }
@@ -67,7 +66,7 @@ describe('create Query SQL', () => {
       expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
         sqlGenerated: true,
         sql: `SELECT datetime, event_id, ${piiSql} as ${piiType} FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
-        queryParameters: [`'123'`, `'456'`, `'${TEST_FORMATTED_DATE_FROM}'`]
+        queryParameters: [`'123'`, `'456'`, `'${TEST_ATHENA_FORMATTED_DATE_1}'`]
       })
       testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
     }
@@ -81,7 +80,7 @@ describe('create Query SQL', () => {
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: true,
       sql: `SELECT datetime, event_id, restricted, timestamp_formatted FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
-      queryParameters: [`'123'`, `'456'`, `'${TEST_FORMATTED_DATE_FROM}'`]
+      queryParameters: [`'123'`, `'456'`, `'${TEST_ATHENA_FORMATTED_DATE_1}'`]
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
   })
@@ -95,7 +94,7 @@ describe('create Query SQL', () => {
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: true,
       sql: `SELECT datetime, event_id, json_extract(restricted, '$.user[0].firstname') as user0_firstname, json_extract(restricted, '$.user[1].firstname') as user1_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
-      queryParameters: [`'123'`, `'456'`, `'${TEST_FORMATTED_DATE_FROM}'`]
+      queryParameters: [`'123'`, `'456'`, `'${TEST_ATHENA_FORMATTED_DATE_1}'`]
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
     testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []

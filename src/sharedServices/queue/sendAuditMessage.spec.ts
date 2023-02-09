@@ -4,8 +4,8 @@ import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRe
 import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import {
   MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL,
-  TEST_DATE_FROM,
-  TEST_DATE_TO,
+  TEST_DATE_1,
+  TEST_DATE_2,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
   TEST_REQUESTER_EMAIL,
@@ -48,14 +48,19 @@ describe('sendAuditMessage', () => {
     jest.resetAllMocks()
   })
   describe('sendAuditDataRequestMessage', () => {
-    const testAuditQueryRequestDetails: AuditQueryDataRequestDetails = {
+    const testAuditQueryRequestDetails = (
+      isLegacyDateFromToRequest = false
+    ): AuditQueryDataRequestDetails => ({
       requesterEmail: TEST_REQUESTER_EMAIL,
       requesterName: TEST_REQUESTER_NAME,
       recipientEmail: TEST_RECIPIENT_EMAIL,
       recipientName: TEST_RECIPIENT_NAME,
       zendeskId: ZENDESK_TICKET_ID,
-      dateFrom: TEST_DATE_FROM,
-      dateTo: TEST_DATE_TO,
+      dateFrom: isLegacyDateFromToRequest ? TEST_DATE_1 : undefined,
+      dateTo: isLegacyDateFromToRequest ? TEST_DATE_1 : undefined,
+      dates: !isLegacyDateFromToRequest
+        ? `${TEST_DATE_1} ${TEST_DATE_2}`
+        : undefined,
       identifierType: 'event_id',
       requested_sessionIds: '',
       requested_journeyIds: '',
@@ -63,42 +68,48 @@ describe('sendAuditMessage', () => {
       requested_eventIds: '637783 3256',
       piiTypes: 'drivers_license',
       dataPaths: ''
-    }
-    const testAuditDataRequestEvent = {
+    })
+    const testAuditDataRequestEvent = (isLegacyDateFromToRequest = false) => ({
       timestamp: TEST_TIMESTAMP,
       event_name: 'TXMA_AUDIT_QUERY_DATA_REQUEST',
       component_id: 'TXMA',
       restricted: {
-        requesterEmail: testAuditQueryRequestDetails.requesterEmail,
-        requesterName: testAuditQueryRequestDetails.requesterName,
-        recipientEmail: testAuditQueryRequestDetails.recipientEmail,
-        recipientName: testAuditQueryRequestDetails.recipientName
+        requesterEmail: TEST_REQUESTER_EMAIL,
+        requesterName: TEST_REQUESTER_NAME,
+        recipientEmail: TEST_RECIPIENT_EMAIL,
+        recipientName: TEST_RECIPIENT_NAME
       },
       extensions: {
         ticket_details: {
-          zendeskId: testAuditQueryRequestDetails.zendeskId,
-          dateFrom: testAuditQueryRequestDetails.dateFrom,
-          dateTo: testAuditQueryRequestDetails.dateTo,
-          identifierType: testAuditQueryRequestDetails.identifierType,
+          zendeskId: ZENDESK_TICKET_ID,
+          dateFrom: isLegacyDateFromToRequest ? TEST_DATE_1 : undefined,
+          dateTo: isLegacyDateFromToRequest ? TEST_DATE_1 : undefined,
+          dates: !isLegacyDateFromToRequest
+            ? `${TEST_DATE_1} ${TEST_DATE_2}`
+            : undefined,
+          identifierType: 'event_id',
           requested_sessionIds: '',
           requested_journeyIds: '',
           requested_userIds: '',
-          requested_eventIds: testAuditQueryRequestDetails.requested_eventIds,
-          piiTypes: testAuditQueryRequestDetails.piiTypes,
+          requested_eventIds: '637783 3256',
+          piiTypes: 'drivers_license',
           dataPaths: ''
         }
       }
-    }
+    })
 
     it('calls the sendSqsMessage function with the correct parameters', async () => {
-      await sendAuditDataRequestMessage(testAuditQueryRequestDetails)
-
-      expect(logger.info).toHaveBeenCalledWith(
-        'sending audit data request message',
-        JSON.stringify(testAuditQueryRequestDetails)
-      )
+      await sendAuditDataRequestMessage(testAuditQueryRequestDetails())
       expect(sendSqsMessage).toHaveBeenCalledWith(
-        testAuditDataRequestEvent,
+        testAuditDataRequestEvent(),
+        MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL
+      )
+    })
+
+    it('calls the sendSqsMessage function correctly when we pass a request with date from/to instead of the new dates array', async () => {
+      await sendAuditDataRequestMessage(testAuditQueryRequestDetails(true))
+      expect(sendSqsMessage).toHaveBeenCalledWith(
+        testAuditDataRequestEvent(true),
         MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL
       )
     })
@@ -106,7 +117,7 @@ describe('sendAuditMessage', () => {
     it('logs an error message when an error occurs', async () => {
       givenSendSqsError()
 
-      await sendAuditDataRequestMessage(testAuditQueryRequestDetails)
+      await sendAuditDataRequestMessage(testAuditQueryRequestDetails())
 
       expect(logger.error).toHaveBeenCalledWith(
         errorPrefix,
