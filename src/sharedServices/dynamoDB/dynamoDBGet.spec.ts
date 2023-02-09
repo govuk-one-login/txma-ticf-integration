@@ -32,6 +32,7 @@ describe('dynamoDBGet', () => {
           checkGlacierStatusCount?: number
           checkCopyStatusCount?: number
           athenaQueryId?: string
+          isLegacyRecordWithDateFromTo?: boolean
         }
       | undefined = undefined
   ) => {
@@ -43,10 +44,20 @@ describe('dynamoDBGet', () => {
           requesterEmail: { S: 'test@test.gov.uk' },
           requesterName: { S: 'test' },
           identifierType: { S: 'eventId' },
-          dates: { L: [{ S: TEST_DATE_1 }, { S: TEST_DATE_2 }] },
+          ...(!parameters?.isLegacyRecordWithDateFromTo && {
+            dates: { L: [{ S: TEST_DATE_1 }, { S: TEST_DATE_2 }] }
+          }),
+          ...(parameters?.isLegacyRecordWithDateFromTo && {
+            dateFrom: { S: TEST_DATE_1 },
+            dateTo: { S: TEST_DATE_1 }
+          }),
           zendeskId: { S: '12' },
           eventIds: { L: [{ S: '234gh24' }, { S: '98h98bc' }] },
-          piiTypes: { L: [{ S: 'passport_number' }] }
+          sessionIds: { L: [] },
+          userIds: { L: [] },
+          journeyIds: { L: [] },
+          piiTypes: { L: [{ S: 'passport_number' }] },
+          dataPaths: { L: [] }
         }
       },
       zendeskId: { S: '12' },
@@ -87,7 +98,35 @@ describe('dynamoDBGet', () => {
         identifierType: 'eventId',
         zendeskId: '12',
         eventIds: ['234gh24', '98h98bc'],
+        journeyIds: [],
+        sessionIds: [],
+        userIds: [],
+        dataPaths: [],
         piiTypes: ['passport_number']
+      })
+
+      expect(result.checkGlacierStatusCount).toBeUndefined()
+      expect(result.checkCopyStatusCount).toBeUndefined()
+    })
+
+    test('Supports legacy record with dateFrom instead of dates', async () => {
+      givenDatabaseReturnsData({ isLegacyRecordWithDateFromTo: true })
+
+      const result = await getDatabaseEntryByZendeskId('12')
+      expect(result.requestInfo).toEqual({
+        recipientEmail: 'test@test.gov.uk',
+        recipientName: 'test',
+        requesterEmail: 'test@test.gov.uk',
+        requesterName: 'test',
+        dates: [TEST_DATE_1],
+        identifierType: 'eventId',
+        zendeskId: '12',
+        eventIds: ['234gh24', '98h98bc'],
+        piiTypes: ['passport_number'],
+        journeyIds: [],
+        sessionIds: [],
+        userIds: [],
+        dataPaths: []
       })
 
       expect(result.checkGlacierStatusCount).toBeUndefined()
@@ -166,7 +205,7 @@ describe('dynamoDBGet', () => {
       ExpressionAttributeValues: { ':value': { S: `${TEST_ATHENA_QUERY_ID}` } }
     }
 
-    it('should call the send function with the correct parameters', async () => {
+    it('should retrieve a record by athena query id', async () => {
       givenDatabaseReturnsData({ athenaQueryId: TEST_ATHENA_QUERY_ID })
 
       const result = await getQueryByAthenaQueryId(TEST_ATHENA_QUERY_ID)
@@ -181,7 +220,11 @@ describe('dynamoDBGet', () => {
         identifierType: 'eventId',
         zendeskId: '12',
         eventIds: ['234gh24', '98h98bc'],
-        piiTypes: ['passport_number']
+        piiTypes: ['passport_number'],
+        journeyIds: [],
+        sessionIds: [],
+        userIds: [],
+        dataPaths: []
       })
       expect(result.athenaQueryId).toEqual(TEST_ATHENA_QUERY_ID)
     })
