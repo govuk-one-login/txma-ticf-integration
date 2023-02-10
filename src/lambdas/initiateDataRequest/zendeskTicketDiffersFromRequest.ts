@@ -81,21 +81,9 @@ const datesMatch = (
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATES')
   )
-  if (ticketLegacyDateFieldValue) {
-    const returnValue = matchArrayParams(
-      [ticketLegacyDateFieldValue],
-      requestParams.dates
-    )
-    return returnValue
-  }
-
-  const returnValue = matchArrayParams(ticketDates, requestParams.dates)
-  if (!returnValue) {
-    console.log(
-      `Request dates ${requestParams.dates}, ticket dates ${ticketDates}`
-    )
-  }
-  return returnValue
+  return ticketLegacyDateFieldValue
+    ? matchArrayParams([ticketLegacyDateFieldValue], requestParams.dates)
+    : matchArrayParams(ticketDates, requestParams.dates)
 }
 
 const ticketAndRequestDetailsDiffer = (
