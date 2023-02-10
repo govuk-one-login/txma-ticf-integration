@@ -143,6 +143,7 @@ Resources:
           ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZendeskFieldIdDataPaths}}'
           ZENDESK_FIELD_ID_DATE_FROM: '{{resolve:ssm:ZendeskFieldIdDateFrom}}'
           ZENDESK_FIELD_ID_DATE_TO: '{{resolve:ssm:ZendeskFieldIdDateTo}}'
+          ZENDESK_FIELD_ID_DATES: '{{resolve:ssm:ZendeskFieldIdDates}}'
           ZENDESK_FIELD_ID_EVENT_IDS: '{{resolve:ssm:ZendeskFieldIdEventIds}}'
           ZENDESK_FIELD_ID_IDENTIFIER_TYPE: '{{resolve:ssm:ZendeskFieldIdIdentifierType}}'
           ZENDESK_FIELD_ID_JOURNEY_IDS: '{{resolve:ssm:ZendeskFieldIdJourneyIds}}'
@@ -656,10 +657,10 @@ Resources:
           has_encrypted_data: false
           projection.enabled: true
           projection.datetime.type: date
-          projection.datetime.range: '2022/01/01/00,NOW'
-          projection.datetime.format: 'yyyy/MM/dd/HH'
+          projection.datetime.range: '2022/01/01,NOW'
+          projection.datetime.format: 'yyyy/MM/dd'
           projection.datetime.interval: 1
-          projection.datetime.interval.unit: HOURS
+          projection.datetime.interval.unit: DAYS
           storage.location.template:
             !Join ['', ['s3://', !Ref AnalysisBucket, '/firehose/${datetime}/']]
         PartitionKeys:

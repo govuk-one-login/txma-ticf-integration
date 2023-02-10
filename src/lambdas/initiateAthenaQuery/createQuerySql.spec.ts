@@ -2,12 +2,13 @@ import { createQuerySql } from './createQuerySql'
 import {
   noIdTestDataRequest,
   dataPathsTestDataRequest,
-  testDataRequestWithNoDataPathsOrPiiTypes
+  testDataRequestWithNoDataPathsOrPiiTypes,
+  testDataRequestWithAllValuesSet
 } from '../../utils/tests/testDataRequest'
 import { IdentifierTypes } from '../../types/dataRequestParams'
 import {
-  TEST_FORMATTED_DATE_FROM,
-  TEST_FORMATTED_DATE_TO
+  TEST_ATHENA_FORMATTED_DATE_1,
+  TEST_ATHENA_FORMATTED_DATE_2
 } from '../../utils/tests/testConstants'
 
 describe('create Query SQL', () => {
@@ -35,12 +36,11 @@ describe('create Query SQL', () => {
       const idExtension = id.charAt(0)
       expect(createQuerySql(dataPathsTestDataRequest)).toEqual({
         sqlGenerated: true,
-        sql: `SELECT ${idSelectStatement} json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${idWhereStatement} IN (?, ?) AND datetime >= ? AND datetime <= ?`,
+        sql: `SELECT datetime, ${idSelectStatement} json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${idWhereStatement} IN (?, ?) AND datetime IN (?)`,
         queryParameters: [
           `'123${idExtension}'`,
           `'456${idExtension}'`,
-          `'${TEST_FORMATTED_DATE_FROM}'`,
-          `'${TEST_FORMATTED_DATE_TO}'`
+          `'${TEST_ATHENA_FORMATTED_DATE_1}'`
         ]
       })
     }
@@ -65,13 +65,8 @@ describe('create Query SQL', () => {
       testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = [piiType]
       expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
         sqlGenerated: true,
-        sql: `SELECT event_id, ${piiSql} as ${piiType} FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
-        queryParameters: [
-          `'123'`,
-          `'456'`,
-          `'${TEST_FORMATTED_DATE_FROM}'`,
-          `'${TEST_FORMATTED_DATE_TO}'`
-        ]
+        sql: `SELECT datetime, event_id, ${piiSql} as ${piiType} FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
+        queryParameters: [`'123'`, `'456'`, `'${TEST_ATHENA_FORMATTED_DATE_1}'`]
       })
       testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
     }
@@ -84,13 +79,8 @@ describe('create Query SQL', () => {
     ]
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: true,
-      sql: `SELECT event_id, restricted, timestamp_formatted FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
-      queryParameters: [
-        `'123'`,
-        `'456'`,
-        `'${TEST_FORMATTED_DATE_FROM}'`,
-        `'${TEST_FORMATTED_DATE_TO}'`
-      ]
+      sql: `SELECT datetime, event_id, restricted, timestamp_formatted FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
+      queryParameters: [`'123'`, `'456'`, `'${TEST_ATHENA_FORMATTED_DATE_1}'`]
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
   })
@@ -103,16 +93,24 @@ describe('create Query SQL', () => {
     testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = ['passport_number']
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: true,
-      sql: `SELECT event_id, json_extract(restricted, '$.user[0].firstname') as user0_firstname, json_extract(restricted, '$.user[1].firstname') as user1_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime >= ? AND datetime <= ?`,
-      queryParameters: [
-        `'123'`,
-        `'456'`,
-        `'${TEST_FORMATTED_DATE_FROM}'`,
-        `'${TEST_FORMATTED_DATE_TO}'`
-      ]
+      sql: `SELECT datetime, event_id, json_extract(restricted, '$.user[0].firstname') as user0_firstname, json_extract(restricted, '$.user[1].firstname') as user1_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
+      queryParameters: [`'123'`, `'456'`, `'${TEST_ATHENA_FORMATTED_DATE_1}'`]
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
     testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = []
+  })
+
+  test('returns a formatted SQL query handling multiple dates', () => {
+    expect(createQuerySql(testDataRequestWithAllValuesSet)).toEqual({
+      sqlGenerated: true,
+      sql: `SELECT datetime, event_id, path_to_data1, path_to_data2, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?,?)`,
+      queryParameters: [
+        `'123'`,
+        `'456'`,
+        `'${TEST_ATHENA_FORMATTED_DATE_1}'`,
+        `'${TEST_ATHENA_FORMATTED_DATE_2}'`
+      ]
+    })
   })
 
   test('returns an error message if there are no dataPaths or piiTypes', () => {

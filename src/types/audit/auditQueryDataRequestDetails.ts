@@ -4,8 +4,9 @@ export interface AuditQueryDataRequestDetails {
   recipientEmail: string
   recipientName: string
   zendeskId: string
-  dateFrom: string
-  dateTo: string
+  dateFrom?: string
+  dateTo?: string
+  dates?: string
   identifierType: string
   requested_sessionIds: string
   requested_journeyIds: string
