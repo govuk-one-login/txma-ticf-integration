@@ -73,24 +73,19 @@ const datesMatch = (
   ticketDetails: ZendeskTicket,
   requestParams: DataRequestParams
 ) => {
-  const ticketLegacyDateField = getZendeskCustomFieldValue(
+  const ticketLegacyDateFieldValue = getZendeskCustomFieldValue(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATE_FROM')
-  )
+  ) as string | null
   const ticketDates = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATES')
   )
-  if (ticketLegacyDateField) {
+  if (ticketLegacyDateFieldValue) {
     const returnValue = matchArrayParams(
-      [ticketLegacyDateField as string],
+      [ticketLegacyDateFieldValue],
       requestParams.dates
     )
-    if (!returnValue) {
-      console.log(
-        `Request dates ${requestParams.dates}, legacy dates field ${ticketLegacyDateField}`
-      )
-    }
     return returnValue
   }
 
