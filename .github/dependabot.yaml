@@ -7,3 +7,7 @@ updates:
     commit-message:
       prefix: dependabot
       include: scope
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
