@@ -62,7 +62,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-junit", "npm:14.0.1"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
-            ["node-html-parser", "npm:6.1.1"],\
+            ["node-html-parser", "npm:6.1.4"],\
             ["notifications-node-client", "npm:5.1.1"],\
             ["prettier", "npm:2.7.1"],\
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.0.8"],\
@@ -5371,7 +5371,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-junit", "npm:14.0.1"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
-            ["node-html-parser", "npm:6.1.1"],\
+            ["node-html-parser", "npm:6.1.4"],\
             ["notifications-node-client", "npm:5.1.1"],\
             ["prettier", "npm:2.7.1"],\
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.0.8"],\
@@ -8558,10 +8558,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["node-html-parser", [\
-        ["npm:6.1.1", {\
-          "packageLocation": "./.yarn/cache/node-html-parser-npm-6.1.1-4737107403-ce4d4035df.zip/node_modules/node-html-parser/",\
+        ["npm:6.1.4", {\
+          "packageLocation": "./.yarn/cache/node-html-parser-npm-6.1.4-59d4a58063-fadf622c6b.zip/node_modules/node-html-parser/",\
           "packageDependencies": [\
-            ["node-html-parser", "npm:6.1.1"],\
+            ["node-html-parser", "npm:6.1.4"],\
             ["css-select", "npm:5.1.0"],\
             ["he", "npm:1.2.0"]\
           ],\
