@@ -12,7 +12,15 @@ import { zendeskConstants } from '../../shared-test-code/constants/zendeskParame
 const endToEndFlowRequestDataWithEventId = generateZendeskTicketData({
   identifier: 'event_id',
   eventIds: testData.eventId,
-  requestDate: testData.date,
+  customDataPath: testData.dataPath,
+  recipientEmail: getEnv('ZENDESK_RECIPIENT_EMAIL'),
+  recipientName: getEnv('ZENDESK_RECIPIENT_NAME')
+})
+
+const endToEndFlowRequestDataWithTwoDates = generateZendeskTicketData({
+  identifier: 'event_id',
+  eventIds: `${testData.eventId} ${testData.eventId2}`,
+  datesList: `${testData.date} ${testData.date2}`,
   customDataPath: testData.dataPath,
   recipientEmail: getEnv('ZENDESK_RECIPIENT_EMAIL'),
   recipientName: getEnv('ZENDESK_RECIPIENT_NAME')
@@ -52,6 +60,11 @@ describe('Query results generated', () => {
       `firehose/${testData.prefix}/01/${testData.fileName}`,
       testData.fileName
     )
+    await copyAuditDataFromTestDataBucket(
+      getEnv('AUDIT_BUCKET_NAME'),
+      `firehose/${testData.prefix2}/01/${testData.fileName2}`,
+      testData.fileName2
+    )
   })
 
   afterEach(async () => {
@@ -78,6 +91,37 @@ describe('Query results generated', () => {
     expect(rows[0].birthdate0_value).toEqual(expectedBirthDate)
     expect(rows[0].address0_validfrom).toEqual(expectedAddressValidFromDate)
     expect(rows[0].address1_postalcode).toEqual(expectedPostalCode)
+  })
+
+  it('Query matching data with two dates', async () => {
+    zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithTwoDates)
+    await approveZendeskTicket(zendeskId)
+
+    const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
+    const rows = await downloadResultsFileAndParseData(downloadUrl)
+
+    expect(rows.length).toEqual(2)
+
+    expect(rows.length).toEqual(2)
+    const event1Data = rows.find((row) => row.event_id === testData.eventId)
+    const event2Data = rows.find((row) => row.event_id === testData.eventId2)
+    if (!event1Data || !event2Data) {
+      throw new Error('Could not find data for one or more of the test events')
+    }
+
+    expect(event1Data.event_id).toEqual(testData.eventId)
+    expect(event1Data.name0_nameparts0_value).toEqual(`"MICHELLE"`)
+    expect(event1Data.name0_nameparts1_value).toEqual(`"KABIR"`)
+    expect(event1Data.birthdate0_value).toEqual(`"1981-07-28"`)
+    expect(event1Data.address0_validfrom).toEqual(`"2014-01-01"`)
+    expect(event1Data.address1_postalcode).toEqual(`"EH2 5BJ"`)
+
+    expect(event2Data.event_id).toEqual(testData.eventId2)
+    expect(event2Data.name0_nameparts0_value).toEqual(`"MICHELLE2"`)
+    expect(event2Data.name0_nameparts1_value).toEqual(`"KABIR2"`)
+    expect(event2Data.birthdate0_value).toEqual(`"1981-07-29"`)
+    expect(event2Data.address0_validfrom).toEqual(`"2015-01-01"`)
+    expect(event2Data.address1_postalcode).toEqual(`"EH3 6BJ"`)
   })
 
   it('Query matching data with user id', async () => {
