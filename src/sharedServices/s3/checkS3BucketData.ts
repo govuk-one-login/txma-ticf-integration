@@ -2,9 +2,9 @@ import { DataRequestParams } from '../../types/dataRequestParams'
 import { S3BucketDataLocationResult } from '../../types/s3BucketDataLocationResult'
 import { listS3Files } from './listS3Files'
 import { getEnv } from '../../utils/helpers'
-import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
 import { _Object } from '@aws-sdk/client-s3'
 import { logger } from '../logger'
+import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
 
 export const checkS3BucketData = async (
   dataRequestParams: DataRequestParams
@@ -14,10 +14,7 @@ export const checkS3BucketData = async (
     JSON.stringify(dataRequestParams)
   )
 
-  const prefixes = generateS3ObjectPrefixes(
-    dataRequestParams.dateFrom,
-    dataRequestParams.dateTo
-  )
+  const prefixes = generateS3ObjectPrefixesForDateList(dataRequestParams.dates)
 
   const requestedAuditBucketObjects = await retrieveS3ObjectsForPrefixes(
     dataRequestParams,
@@ -81,12 +78,12 @@ const retrieveS3ObjectsForPrefixes = async (
   ).then((objects: _Object[][]) => objects.flat())
   if (rawData.some((o) => !o.Key)) {
     logger.warn(
-      `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', date from '${dataRequestParams.dateFrom}', date to '${dataRequestParams.dateTo}'.`
+      `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', dates '${dataRequestParams.dates}'.`
     )
   }
   if (rawData.some((o) => !o.StorageClass)) {
     logger.warn(
-      `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', date from '${dataRequestParams.dateFrom}', date to '${dataRequestParams.dateTo}'.`
+      `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', dates '${dataRequestParams.dates}'.`
     )
   }
   return rawData.filter((o) => !!o.Key && !!o.StorageClass)

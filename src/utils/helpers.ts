@@ -15,7 +15,7 @@ export const getEnvAsNumber = (name: EnvironmentVar['name']) => {
   return Number(getEnv(name))
 }
 
-export const getEpochDate = (dateString: string) => {
+export const getEpochDate = (dateString: string): number => {
   const dateParts = dateString.split('-')
 
   const epochDate = Date.UTC(

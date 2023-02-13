@@ -1,13 +1,13 @@
 import { listS3Files } from './listS3Files'
 import { checkS3BucketData } from './checkS3BucketData'
-import { generateS3ObjectPrefixes } from './generateS3ObjectPrefixes'
+import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
 import { StorageClass, _Object } from '@aws-sdk/client-s3'
 import { when } from 'jest-when'
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_AUDIT_BUCKET,
-  TEST_DATE_FROM,
-  TEST_DATE_TO,
+  TEST_DATE_1,
+  TEST_DATE_2,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
@@ -16,12 +16,11 @@ jest.mock('./listS3Files', () => ({
   listS3Files: jest.fn()
 }))
 
-jest.mock('./generateS3ObjectPrefixes', () => ({
-  generateS3ObjectPrefixes: jest.fn()
+jest.mock('./generateS3ObjectPrefixesForDateList', () => ({
+  generateS3ObjectPrefixesForDateList: jest.fn()
 }))
-const mockgenerateS3ObjectPrefixes = generateS3ObjectPrefixes as jest.Mock<
-  string[]
->
+const mockgenerateS3ObjectPrefixesForDateList =
+  generateS3ObjectPrefixesForDateList as jest.Mock<string[]>
 
 describe('check objects in analysis bucket', () => {
   const prefixes = [
@@ -29,7 +28,7 @@ describe('check objects in analysis bucket', () => {
     'firehose/2022/10/10/22',
     'firehose/2022/10/10/23'
   ]
-  mockgenerateS3ObjectPrefixes.mockReturnValue(prefixes)
+  mockgenerateS3ObjectPrefixesForDateList.mockReturnValue(prefixes)
   const generateS3ObjectDataForKey = (
     key: string,
     storageClass: StorageClass
@@ -106,13 +105,13 @@ describe('check objects in analysis bucket', () => {
 
   const assertFilesMissingKeysLogged = (bucketName: string) => {
     expect(logger.warn).toHaveBeenLastCalledWith(
-      `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', date from '${TEST_DATE_FROM}', date to '${TEST_DATE_TO}'.`
+      `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', dates '${TEST_DATE_1},${TEST_DATE_2}'.`
     )
   }
 
   const assertFilesMissingStorageClassLogged = (bucketName: string) => {
     expect(logger.warn).toHaveBeenLastCalledWith(
-      `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', date from '${TEST_DATE_FROM}', date to '${TEST_DATE_TO}'.`
+      `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', dates '${TEST_DATE_1},${TEST_DATE_2}'.`
     )
   }
 

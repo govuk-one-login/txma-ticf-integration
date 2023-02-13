@@ -54,8 +54,12 @@ const parseDatabaseItem = (item: Record<string, AttributeValue>) => {
     recipientName: responseObject?.recipientName?.S,
     requesterEmail: responseObject?.requesterEmail?.S,
     requesterName: responseObject?.requesterName?.S,
-    dateFrom: responseObject?.dateFrom?.S,
-    dateTo: responseObject?.dateTo?.S,
+    // This clause to support legacy records can be removed
+    // soon after we deploy this code, it's only here in case
+    // a request goes through at exactly the point we're deploying
+    dates: responseObject?.dateFrom
+      ? [responseObject?.dateFrom?.S]
+      : responseObject?.dates?.L?.map((id) => id.S),
     identifierType: responseObject?.identifierType?.S,
     sessionIds: responseObject?.sessionIds?.L?.map((id) => id.S),
     journeyIds: responseObject?.journeyIds?.L?.map((id) => id.S),

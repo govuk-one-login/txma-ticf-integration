@@ -44,11 +44,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/aws-lambda", "npm:8.10.102"],\
             ["@types/jest", "npm:28.1.7"],\
             ["@types/jest-when", "npm:3.5.2"],\
-            ["@types/node", "npm:18.7.1"],\
+            ["@types/node", "npm:18.13.0"],\
             ["@typescript-eslint/eslint-plugin", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.40.1"],\
             ["@typescript-eslint/parser", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.40.1"],\
-            ["aws-sdk-client-mock", "npm:2.0.0"],\
-            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.0"],\
+            ["aws-sdk-client-mock", "npm:2.0.1"],\
+            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1"],\
             ["aws-testing-library", "npm:2.1.5"],\
             ["axios", "npm:0.27.2"],\
             ["csv-string", "npm:4.1.1"],\
@@ -58,7 +58,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.1.3"],\
             ["husky", "npm:8.0.1"],\
             ["jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.1.3"],\
-            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0"],\
+            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.2.3"],\
             ["jest-junit", "npm:14.0.1"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
@@ -3684,14 +3684,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["type-detect", "npm:4.0.8"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:2.0.0", {\
+          "packageLocation": "./.yarn/cache/@sinonjs-commons-npm-2.0.0-3716f24f20-5023ba17ed.zip/node_modules/@sinonjs/commons/",\
+          "packageDependencies": [\
+            ["@sinonjs/commons", "npm:2.0.0"],\
+            ["type-detect", "npm:4.0.8"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@sinonjs/fake-timers", [\
-        ["npm:7.1.2", {\
-          "packageLocation": "./.yarn/cache/@sinonjs-fake-timers-npm-7.1.2-2a6b119ac7-c84773d797.zip/node_modules/@sinonjs/fake-timers/",\
+        ["npm:10.0.2", {\
+          "packageLocation": "./.yarn/cache/@sinonjs-fake-timers-npm-10.0.2-c5fa80f1cc-c62aa98e7c.zip/node_modules/@sinonjs/fake-timers/",\
           "packageDependencies": [\
-            ["@sinonjs/fake-timers", "npm:7.1.2"],\
-            ["@sinonjs/commons", "npm:1.8.3"]\
+            ["@sinonjs/fake-timers", "npm:10.0.2"],\
+            ["@sinonjs/commons", "npm:2.0.0"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -3705,11 +3713,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@sinonjs/samsam", [\
-        ["npm:6.1.1", {\
-          "packageLocation": "./.yarn/cache/@sinonjs-samsam-npm-6.1.1-06e18132d0-a09b0914bf.zip/node_modules/@sinonjs/samsam/",\
+        ["npm:7.0.1", {\
+          "packageLocation": "./.yarn/cache/@sinonjs-samsam-npm-7.0.1-d14786a4c3-291efb158d.zip/node_modules/@sinonjs/samsam/",\
           "packageDependencies": [\
-            ["@sinonjs/samsam", "npm:6.1.1"],\
-            ["@sinonjs/commons", "npm:1.8.3"],\
+            ["@sinonjs/samsam", "npm:7.0.1"],\
+            ["@sinonjs/commons", "npm:2.0.0"],\
             ["lodash.get", "npm:4.4.2"],\
             ["type-detect", "npm:4.0.8"]\
           ],\
@@ -3912,10 +3920,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/node", [\
-        ["npm:18.7.1", {\
-          "packageLocation": "./.yarn/cache/@types-node-npm-18.7.1-bd305aa69a-f1e2b701b1.zip/node_modules/@types/node/",\
+        ["npm:18.13.0", {\
+          "packageLocation": "./.yarn/cache/@types-node-npm-18.13.0-00f732af8e-4ea10f8802.zip/node_modules/@types/node/",\
           "packageDependencies": [\
-            ["@types/node", "npm:18.7.1"]\
+            ["@types/node", "npm:18.13.0"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -4544,32 +4552,32 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["aws-sdk-client-mock", [\
-        ["npm:2.0.0", {\
-          "packageLocation": "./.yarn/cache/aws-sdk-client-mock-npm-2.0.0-e450c5de3a-e6081ca6bb.zip/node_modules/aws-sdk-client-mock/",\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/cache/aws-sdk-client-mock-npm-2.0.1-ea5b74f647-447502ba92.zip/node_modules/aws-sdk-client-mock/",\
           "packageDependencies": [\
-            ["aws-sdk-client-mock", "npm:2.0.0"],\
+            ["aws-sdk-client-mock", "npm:2.0.1"],\
             ["@types/sinon", "npm:10.0.13"],\
-            ["sinon", "npm:11.1.2"],\
+            ["sinon", "npm:14.0.2"],\
             ["tslib", "npm:2.4.0"]\
           ],\
           "linkType": "HARD"\
         }]\
       ]],\
       ["aws-sdk-client-mock-jest", [\
-        ["npm:2.0.0", {\
-          "packageLocation": "./.yarn/cache/aws-sdk-client-mock-jest-npm-2.0.0-5763988398-57dc95b52f.zip/node_modules/aws-sdk-client-mock-jest/",\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/cache/aws-sdk-client-mock-jest-npm-2.0.1-6c76fdf93a-7a45ace039.zip/node_modules/aws-sdk-client-mock-jest/",\
           "packageDependencies": [\
-            ["aws-sdk-client-mock-jest", "npm:2.0.0"]\
+            ["aws-sdk-client-mock-jest", "npm:2.0.1"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.0", {\
-          "packageLocation": "./.yarn/__virtual__/aws-sdk-client-mock-jest-virtual-0f69a6a1fe/0/cache/aws-sdk-client-mock-jest-npm-2.0.0-5763988398-57dc95b52f.zip/node_modules/aws-sdk-client-mock-jest/",\
+        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1", {\
+          "packageLocation": "./.yarn/__virtual__/aws-sdk-client-mock-jest-virtual-c902ec3ab3/0/cache/aws-sdk-client-mock-jest-npm-2.0.1-6c76fdf93a-7a45ace039.zip/node_modules/aws-sdk-client-mock-jest/",\
           "packageDependencies": [\
-            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.0"],\
+            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1"],\
             ["@types/aws-sdk-client-mock", null],\
             ["@types/jest", "npm:28.1.8"],\
-            ["aws-sdk-client-mock", "npm:2.0.0"],\
+            ["aws-sdk-client-mock", "npm:2.0.1"],\
             ["tslib", "npm:2.4.0"]\
           ],\
           "packagePeers": [\
@@ -5345,11 +5353,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/aws-lambda", "npm:8.10.102"],\
             ["@types/jest", "npm:28.1.7"],\
             ["@types/jest-when", "npm:3.5.2"],\
-            ["@types/node", "npm:18.7.1"],\
+            ["@types/node", "npm:18.13.0"],\
             ["@typescript-eslint/eslint-plugin", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.40.1"],\
             ["@typescript-eslint/parser", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.40.1"],\
-            ["aws-sdk-client-mock", "npm:2.0.0"],\
-            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.0"],\
+            ["aws-sdk-client-mock", "npm:2.0.1"],\
+            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1"],\
             ["aws-testing-library", "npm:2.1.5"],\
             ["axios", "npm:0.27.2"],\
             ["csv-string", "npm:4.1.1"],\
@@ -5359,7 +5367,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.1.3"],\
             ["husky", "npm:8.0.1"],\
             ["jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.1.3"],\
-            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0"],\
+            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.2.3"],\
             ["jest-junit", "npm:14.0.1"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
@@ -7465,17 +7473,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["jest-extended", [\
-        ["npm:3.1.0", {\
-          "packageLocation": "./.yarn/cache/jest-extended-npm-3.1.0-71230ee916-1656670f7c.zip/node_modules/jest-extended/",\
+        ["npm:3.2.3", {\
+          "packageLocation": "./.yarn/cache/jest-extended-npm-3.2.3-2ca4a65612-af837ca22e.zip/node_modules/jest-extended/",\
           "packageDependencies": [\
-            ["jest-extended", "npm:3.1.0"]\
+            ["jest-extended", "npm:3.2.3"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0", {\
-          "packageLocation": "./.yarn/__virtual__/jest-extended-virtual-cd653d0ae6/0/cache/jest-extended-npm-3.1.0-71230ee916-1656670f7c.zip/node_modules/jest-extended/",\
+        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.2.3", {\
+          "packageLocation": "./.yarn/__virtual__/jest-extended-virtual-8382de1ce7/0/cache/jest-extended-npm-3.2.3-2ca4a65612-af837ca22e.zip/node_modules/jest-extended/",\
           "packageDependencies": [\
-            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.1.0"],\
+            ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.2.3"],\
             ["@types/jest", "npm:28.1.7"],\
             ["jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.1.3"],\
             ["jest-diff", "npm:29.1.2"],\
@@ -8517,12 +8525,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["nise", [\
-        ["npm:5.1.1", {\
-          "packageLocation": "./.yarn/cache/nise-npm-5.1.1-210b3fdf40-d8be29e84a.zip/node_modules/nise/",\
+        ["npm:5.1.4", {\
+          "packageLocation": "./.yarn/cache/nise-npm-5.1.4-66667508d6-bc57c10eae.zip/node_modules/nise/",\
           "packageDependencies": [\
-            ["nise", "npm:5.1.1"],\
-            ["@sinonjs/commons", "npm:1.8.3"],\
-            ["@sinonjs/fake-timers", "npm:9.1.2"],\
+            ["nise", "npm:5.1.4"],\
+            ["@sinonjs/commons", "npm:2.0.0"],\
+            ["@sinonjs/fake-timers", "npm:10.0.2"],\
             ["@sinonjs/text-encoding", "npm:0.7.2"],\
             ["just-extend", "npm:4.2.1"],\
             ["path-to-regexp", "npm:1.8.0"]\
@@ -9329,15 +9337,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["sinon", [\
-        ["npm:11.1.2", {\
-          "packageLocation": "./.yarn/cache/sinon-npm-11.1.2-5325724cb2-1d01377e23.zip/node_modules/sinon/",\
+        ["npm:14.0.2", {\
+          "packageLocation": "./.yarn/cache/sinon-npm-14.0.2-76bb0b1579-de7730cd77.zip/node_modules/sinon/",\
           "packageDependencies": [\
-            ["sinon", "npm:11.1.2"],\
-            ["@sinonjs/commons", "npm:1.8.3"],\
-            ["@sinonjs/fake-timers", "npm:7.1.2"],\
-            ["@sinonjs/samsam", "npm:6.1.1"],\
+            ["sinon", "npm:14.0.2"],\
+            ["@sinonjs/commons", "npm:2.0.0"],\
+            ["@sinonjs/fake-timers", "npm:9.1.2"],\
+            ["@sinonjs/samsam", "npm:7.0.1"],\
             ["diff", "npm:5.1.0"],\
-            ["nise", "npm:5.1.1"],\
+            ["nise", "npm:5.1.4"],\
             ["supports-color", "npm:7.2.0"]\
           ],\
           "linkType": "HARD"\
@@ -9800,7 +9808,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tsconfig/node12", "npm:1.0.11"],\
             ["@tsconfig/node14", "npm:1.0.3"],\
             ["@tsconfig/node16", "npm:1.0.3"],\
-            ["@types/node", "npm:18.7.1"],\
+            ["@types/node", "npm:18.13.0"],\
             ["@types/swc__core", null],\
             ["@types/swc__wasm", null],\
             ["@types/typescript", null],\
