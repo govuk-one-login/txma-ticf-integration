@@ -4453,7 +4453,7 @@ __metadata:
     eslint-plugin-jest: 27.1.3
     husky: 8.0.1
     jest: 28.1.3
-    jest-extended: 3.1.0
+    jest-extended: 3.2.3
     jest-junit: 14.0.1
     jest-when: 3.5.1
     lint-staged: 13.0.3
@@ -6264,15 +6264,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-extended@npm:3.1.0":
-  version: 3.1.0
-  resolution: "jest-extended@npm:3.1.0"
+"jest-extended@npm:3.2.3":
+  version: 3.2.3
+  resolution: "jest-extended@npm:3.2.3"
   dependencies:
     jest-diff: ^29.0.0
     jest-get-type: ^29.0.0
   peerDependencies:
     jest: ">=27.2.5"
-  checksum: 1656670f7c58419f2ab1ff177db03b79e974faae88b4bdeaa4188fe962a623d77a78df0f9f06dc8a8a945c6e8d081fa48a8d3cf220434cc2ef7831dfa4ee9413
+  peerDependenciesMeta:
+    jest:
+      optional: true
+  checksum: af837ca22ed80e9542bb234d137b0d235ef04efb4a071717ec9f41f97533e44e1f1b8de2d47504804bb78e568fafca662a6ccf12b74f66f3b8e8bcb7d460d7aa
   languageName: node
   linkType: hard
 
