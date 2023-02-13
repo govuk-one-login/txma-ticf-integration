@@ -46,7 +46,7 @@
     "@types/aws-lambda": "8.10.102",
     "@types/jest": "28.1.7",
     "@types/jest-when": "3.5.2",
-    "@types/node": "18.7.1",
+    "@types/node": "18.13.0",
     "@typescript-eslint/eslint-plugin": "5.40.1",
     "@typescript-eslint/parser": "5.40.1",
     "aws-sdk-client-mock": "2.0.0",
