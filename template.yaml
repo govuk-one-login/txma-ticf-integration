@@ -239,6 +239,7 @@ Resources:
           TERMINATED_JOB_QUEUE_URL: !Ref TerminatedJobQueue
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           DATABASE_TTL_HOURS: '{{resolve:ssm:DatabaseTtlHours}}'
+          FEATURE_DECRYPT_DATA: false
       Events:
         InitiateDataRequestEvent:
           Type: SQS
