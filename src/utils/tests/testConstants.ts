@@ -69,3 +69,5 @@ export const TEST_CURRENT_EPOCH_SECONDS = 1670335764
 export const TEST_DATABASE_TTL_HOURS = 120
 
 export const ZENDESK_PII_TYPE_PREFIX = 'pii_requested_'
+
+export const TEST_DECRYPTION_LAMBDA_ARN = 'myDecryptionLambdaArn'

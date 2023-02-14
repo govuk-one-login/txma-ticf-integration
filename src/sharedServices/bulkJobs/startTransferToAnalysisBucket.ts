@@ -3,6 +3,7 @@ import {
   CreateJobCommand,
   CreateJobCommandInput
 } from '@aws-sdk/client-s3-control'
+import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import { getEnv } from '../../utils/helpers'
 import { logger } from '../logger'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
@@ -44,6 +45,7 @@ const createS3CopyJob = async (
   manifestFileEtag: string,
   zendeskTicketId: string
 ) => {
+  const decryptDataFlagOn = getFeatureFlagValue('DECRYPT_DATA')
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     ConfirmationRequired: false,
@@ -52,9 +54,17 @@ const createS3CopyJob = async (
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
     Operation: {
-      S3PutObjectCopy: {
-        TargetResource: getEnv('ANALYSIS_BUCKET_ARN')
-      }
+      ...(decryptDataFlagOn
+        ? {
+            LambdaInvoke: {
+              FunctionArn: getEnv('DECRYPTION_LAMBDA_ARN')
+            }
+          }
+        : {
+            S3PutObjectCopy: {
+              TargetResource: getEnv('ANALYSIS_BUCKET_ARN')
+            }
+          })
     },
     Report: {
       Enabled: false

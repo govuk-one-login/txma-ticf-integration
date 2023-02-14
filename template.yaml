@@ -239,6 +239,8 @@ Resources:
           TERMINATED_JOB_QUEUE_URL: !Ref TerminatedJobQueue
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           DATABASE_TTL_HOURS: '{{resolve:ssm:DatabaseTtlHours}}'
+          # TODO: fill in the right value for this lambda here once it's available
+          DECRYPTION_LAMBDA_ARN: ''
           FEATURE_DECRYPT_DATA: false
       Events:
         InitiateDataRequestEvent:
