@@ -66,3 +66,12 @@ export const TEST_CURRENT_EPOCH_SECONDS = 1670335764
 export const TEST_DATABASE_TTL_HOURS = 120
 
 export const ZENDESK_PII_TYPE_PREFIX = 'pii_requested_'
+
+export const TEST_GENERATOR_KEY_ID = 'testEncryptionKey'
+export const TEST_S3_OBJECT_KEY = 'testKey'
+export const TEST_S3_OBJECT_DATA_STRING = 'testData'
+export const TEST_S3_OBJECT_DATA_BUFFER = Buffer.from(
+  TEST_S3_OBJECT_DATA_STRING
+)
+export const TEST_PERMANENT_BUCKET_NAME = 'testPermanentBucket'
+export const TEST_PERMANENT_BUCKET_ARN = 'testPermanentBucketArn'
