@@ -4463,7 +4463,7 @@ __metadata:
     ts-jest: 28.0.8
     ts-node: 10.9.1
     typescript: 4.8.4
-    yaml-cfn: 0.3.1
+    yaml-cfn: 0.3.2
   languageName: unknown
   linkType: soft
 
@@ -8716,14 +8716,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml-cfn@npm:0.3.1":
-  version: 0.3.1
-  resolution: "yaml-cfn@npm:0.3.1"
+"yaml-cfn@npm:0.3.2":
+  version: 0.3.2
+  resolution: "yaml-cfn@npm:0.3.2"
   dependencies:
     js-yaml: ^4.0.0
   bin:
     yaml-cfn: cli.js
-  checksum: 348152162bb8e77225f25bafd0a7199a9628c5fb985fc032f7218b14dea896b55dc6d60ca05ae500f1c46fb62a5436df3f45ce2e383dcf5eb7621e3efc200a7c
+  checksum: 9366f0e008453cb9ffd8d1ab39d1789659ef0db395f4a8c3a8b15e74ef00abfc4bb43b3a6b53b2e34462175a429843ae9ba0814997835a1ffcfb04f40eed9628
   languageName: node
   linkType: hard
 
