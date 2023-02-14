@@ -30,22 +30,27 @@ export const startTransferToAnalysisBucket = async (
   logger.info(
     `Starting S3 standard tier copying for zendesk ticket with id ${zendeskTicketId}`
   )
-  const jobId = await createS3CopyJob(
+  const decryptDataFlagOn = getFeatureFlagValue('DECRYPT_DATA')
+  const jobId = await createS3TransferBatchJob(
     manifestFileName,
     manifestFileEtag,
-    zendeskTicketId
+    zendeskTicketId,
+    decryptDataFlagOn
   )
+
   logger.info(
-    `Started S3 copy job for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
+    `Started ${
+      decryptDataFlagOn ? 'Data decrypt batch job' : 'S3 copy job'
+    } for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
   )
 }
 
-const createS3CopyJob = async (
+const createS3TransferBatchJob = async (
   manifestFileName: string,
   manifestFileEtag: string,
-  zendeskTicketId: string
+  zendeskTicketId: string,
+  decryptData: boolean
 ) => {
-  const decryptDataFlagOn = getFeatureFlagValue('DECRYPT_DATA')
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     ConfirmationRequired: false,
@@ -54,7 +59,7 @@ const createS3CopyJob = async (
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
     Operation: {
-      ...(decryptDataFlagOn
+      ...(decryptData
         ? {
             LambdaInvoke: {
               FunctionArn: getEnv('DECRYPTION_LAMBDA_ARN')
