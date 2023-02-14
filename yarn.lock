@@ -37,7 +37,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/decrypt-node@npm:^3.1.0":
+"@aws-crypto/decrypt-node@npm:3.1.0":
   version: 3.1.0
   resolution: "@aws-crypto/decrypt-node@npm:3.1.0"
   dependencies:
@@ -69,7 +69,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/kms-keyring-node@npm:^3.1.0":
+"@aws-crypto/kms-keyring-node@npm:3.1.0":
   version: 3.1.0
   resolution: "@aws-crypto/kms-keyring-node@npm:3.1.0"
   dependencies:
@@ -103,7 +103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/material-management@npm:^3.1.0":
+"@aws-crypto/material-management@npm:3.1.0, @aws-crypto/material-management@npm:^3.1.0":
   version: 3.1.0
   resolution: "@aws-crypto/material-management@npm:3.1.0"
   dependencies:
@@ -4547,8 +4547,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "di-txma-ticf-integration@workspace:."
   dependencies:
-    "@aws-crypto/decrypt-node": ^3.1.0
-    "@aws-crypto/kms-keyring-node": ^3.1.0
+    "@aws-crypto/decrypt-node": 3.1.0
+    "@aws-crypto/kms-keyring-node": 3.1.0
+    "@aws-crypto/material-management": 3.1.0
     "@aws-lambda-powertools/logger": 1.5.0
     "@aws-sdk/client-athena": 3.163.0
     "@aws-sdk/client-cloudformation": 3.163.0

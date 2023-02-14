@@ -30,6 +30,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@aws-crypto/decrypt-node", "npm:3.1.0"],\
             ["@aws-crypto/kms-keyring-node", "npm:3.1.0"],\
+            ["@aws-crypto/material-management", "npm:3.1.0"],\
             ["@aws-lambda-powertools/logger", "npm:1.5.0"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
@@ -5476,6 +5477,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["di-txma-ticf-integration", "workspace:."],\
             ["@aws-crypto/decrypt-node", "npm:3.1.0"],\
             ["@aws-crypto/kms-keyring-node", "npm:3.1.0"],\
+            ["@aws-crypto/material-management", "npm:3.1.0"],\
             ["@aws-lambda-powertools/logger", "npm:1.5.0"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
