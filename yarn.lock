@@ -4503,7 +4503,7 @@ __metadata:
     jest-when: 3.5.1
     lint-staged: 13.0.3
     node-html-parser: 6.1.4
-    notifications-node-client: 5.1.1
+    notifications-node-client: 5.2.3
     prettier: 2.8.4
     ts-jest: 28.0.8
     ts-node: 10.9.1
@@ -7338,14 +7338,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"notifications-node-client@npm:5.1.1":
-  version: 5.1.1
-  resolution: "notifications-node-client@npm:5.1.1"
+"notifications-node-client@npm:5.2.3":
+  version: 5.2.3
+  resolution: "notifications-node-client@npm:5.2.3"
   dependencies:
     axios: ^0.25.0
     jsonwebtoken: ^8.2.1
-    underscore: ^1.9.0
-  checksum: 86459a06901f5c2bbb50c5298401c23212fce14ea4e966af1664740c39586e20ffd57080e8f3b6da68e46b1b2a8cd513cb12ab8136bf02767cb816563d453cb3
+  checksum: 71982ec89d46113a6125118c3ec908944a4424f79ece37c5b7b3303c83bf075d568d6a9d63f42eb6f8e17ca887db3f2cbc708631eb4883936eda4b175a5d80ec
   languageName: node
   linkType: hard
 
@@ -8511,13 +8510,6 @@ __metadata:
     has-symbols: ^1.0.3
     which-boxed-primitive: ^1.0.2
   checksum: b7a1cf5862b5e4b5deb091672ffa579aa274f648410009c81cca63fed3b62b610c4f3b773f912ce545bb4e31edc3138975b5bc777fc6e4817dca51affb6380e9
-  languageName: node
-  linkType: hard
-
-"underscore@npm:^1.9.0":
-  version: 1.13.4
-  resolution: "underscore@npm:1.13.4"
-  checksum: 6b04f66cd454e8793a552dc49c71e24e5208a29b9d9c0af988a96948af79103399c36fb15db43f3629bfed152f8b1fe94f44e1249e9d196069c0fc7edfadb636
   languageName: node
   linkType: hard
 

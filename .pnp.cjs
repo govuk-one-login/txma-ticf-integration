@@ -63,7 +63,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
             ["node-html-parser", "npm:6.1.4"],\
-            ["notifications-node-client", "npm:5.1.1"],\
+            ["notifications-node-client", "npm:5.2.3"],\
             ["prettier", "npm:2.8.4"],\
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.0.8"],\
             ["ts-node", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:10.9.1"],\
@@ -5424,7 +5424,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.1"],\
             ["lint-staged", "npm:13.0.3"],\
             ["node-html-parser", "npm:6.1.4"],\
-            ["notifications-node-client", "npm:5.1.1"],\
+            ["notifications-node-client", "npm:5.2.3"],\
             ["prettier", "npm:2.8.4"],\
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.0.8"],\
             ["ts-node", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:10.9.1"],\
@@ -8668,13 +8668,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["notifications-node-client", [\
-        ["npm:5.1.1", {\
-          "packageLocation": "./.yarn/cache/notifications-node-client-npm-5.1.1-ca082c4942-86459a0690.zip/node_modules/notifications-node-client/",\
+        ["npm:5.2.3", {\
+          "packageLocation": "./.yarn/cache/notifications-node-client-npm-5.2.3-ac4b8665dd-71982ec89d.zip/node_modules/notifications-node-client/",\
           "packageDependencies": [\
-            ["notifications-node-client", "npm:5.1.1"],\
+            ["notifications-node-client", "npm:5.2.3"],\
             ["axios", "npm:0.25.0"],\
-            ["jsonwebtoken", "npm:8.5.1"],\
-            ["underscore", "npm:1.13.4"]\
+            ["jsonwebtoken", "npm:8.5.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -10002,15 +10001,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["has-bigints", "npm:1.0.2"],\
             ["has-symbols", "npm:1.0.3"],\
             ["which-boxed-primitive", "npm:1.0.2"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["underscore", [\
-        ["npm:1.13.4", {\
-          "packageLocation": "./.yarn/cache/underscore-npm-1.13.4-9195880774-6b04f66cd4.zip/node_modules/underscore/",\
-          "packageDependencies": [\
-            ["underscore", "npm:1.13.4"]\
           ],\
           "linkType": "HARD"\
         }]\
