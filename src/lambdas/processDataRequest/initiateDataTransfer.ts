@@ -5,7 +5,7 @@ import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierRestore'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { addNewDataRequestRecord } from '../../sharedServices/dynamoDB/dynamoDBPut'
-import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
+import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
@@ -47,7 +47,7 @@ export const initiateDataTransfer = async (
       dataRequestParams.zendeskId
     )
   } else if (shouldStartCopyFromAuditBucket) {
-    await startCopyJob(
+    await startTransferToAnalysisBucket(
       bucketData.standardTierLocationsToCopy,
       dataRequestParams.zendeskId
     )

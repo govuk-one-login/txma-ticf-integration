@@ -6,7 +6,7 @@ import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
 import { addNewDataRequestRecord } from '../../sharedServices/dynamoDB/dynamoDBPut'
-import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
+import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 
@@ -36,11 +36,15 @@ jest.mock('../../sharedServices/dynamoDB/dynamoDBPut', () => ({
 
 const mockAddNewDataRequestRecord = addNewDataRequestRecord as jest.Mock
 
-jest.mock('../../sharedServices/bulkJobs/startCopyJob', () => ({
-  startCopyJob: jest.fn()
-}))
+jest.mock(
+  '../../sharedServices/bulkJobs/startTransferToAnalysisBucket',
+  () => ({
+    startTransferToAnalysisBucket: jest.fn()
+  })
+)
 
-const mockStartCopyJob = startCopyJob as jest.Mock
+const mockStartTransferToAnalysisBucket =
+  startTransferToAnalysisBucket as jest.Mock
 
 jest.mock(
   '../../sharedServices/queue/sendContinuePollingDataTransferMessage',
@@ -122,7 +126,7 @@ describe('initiate data transfer', () => {
       false,
       true
     )
-    expect(mockStartCopyJob).toHaveBeenCalledWith(
+    expect(mockStartTransferToAnalysisBucket).toHaveBeenCalledWith(
       filesToCopy,
       ZENDESK_TICKET_ID
     )
@@ -148,7 +152,7 @@ describe('initiate data transfer', () => {
       ZENDESK_TICKET_ID
     )
 
-    expect(startCopyJob).not.toHaveBeenCalled()
+    expect(startTransferToAnalysisBucket).not.toHaveBeenCalled()
     expect(sendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
       EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS
@@ -170,7 +174,7 @@ describe('initiate data transfer', () => {
       ZENDESK_TICKET_ID
     )
 
-    expect(startCopyJob).not.toHaveBeenCalled()
+    expect(startTransferToAnalysisBucket).not.toHaveBeenCalled()
     expect(sendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
       EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS

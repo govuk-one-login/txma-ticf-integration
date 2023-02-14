@@ -9,20 +9,21 @@ import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBuck
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
 
-// currently no trigger for this function
-export const startCopyJob = async (
-  filesToCopy: string[],
+export const startTransferToAnalysisBucket = async (
+  filesToTransfer: string[],
   zendeskTicketId: string
 ) => {
-  if (filesToCopy?.length < 1) {
-    logger.warn('startCopyJob called with no files. Not performing any action')
+  if (filesToTransfer?.length < 1) {
+    logger.warn(
+      'startTransferToAnalysisBucket called with no files. Not performing any action'
+    )
     return
   }
 
   const manifestFileName = `${analysisBucketName}-copy-job-for-ticket-id-${zendeskTicketId}.csv`
   const manifestFileEtag = await writeJobManifestFileToJobBucket(
     getEnv('AUDIT_BUCKET_NAME'),
-    filesToCopy,
+    filesToTransfer,
     manifestFileName
   )
   logger.info(
