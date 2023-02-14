@@ -37,12 +37,92 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-crypto/decrypt-node@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@aws-crypto/decrypt-node@npm:3.1.0"
+  dependencies:
+    "@aws-crypto/material-management-node": ^3.1.0
+    "@aws-crypto/serialize": ^3.1.0
+    "@types/duplexify": ^3.6.0
+    duplexify: ^4.1.1
+    readable-stream: ^3.6.0
+    tslib: ^2.2.0
+  checksum: 84db7c4a3ae33f5a661093d4d9399c0a1a3e52d54d6e2e216a71ff3c6b0656d6e700a31011d5da0536e835a61b8ca74a7608ab19ec115d0c8e33805f3a0e1201
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/hkdf-node@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@aws-crypto/hkdf-node@npm:3.0.0"
+  dependencies:
+    tslib: ^2.2.0
+  checksum: 0b3cd878b82e2ae66401f736aee5ee5f30bd883e4f50db727002d25c9a06681cf6ca83d8e6ed0f91c6990fd76b16dfb6fdd73e17ca53e85cc7678db553e13f25
+  languageName: node
+  linkType: hard
+
 "@aws-crypto/ie11-detection@npm:^2.0.0":
   version: 2.0.0
   resolution: "@aws-crypto/ie11-detection@npm:2.0.0"
   dependencies:
     tslib: ^1.11.1
   checksum: dd15daa1160ecdf28b9c930dcbd7f8bc96e74d7f791134974b672f5d36182274c76db4fff414385cdb8997a8b7ade991988a571aaac3184e226e2ed6428d895f
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/kms-keyring-node@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@aws-crypto/kms-keyring-node@npm:3.1.0"
+  dependencies:
+    "@aws-crypto/kms-keyring": ^3.1.0
+    "@aws-crypto/material-management-node": ^3.1.0
+    aws-sdk: ^2.650.0
+    tslib: ^2.2.0
+  checksum: 40162c1a34647a7b854a1ee814c049c081ef1cb267a70dcb44476a47a6f0a25a6a389713c5e9d3025763a4fad0ab6f128a7d937d851ab746878246b6ecba2fe1
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/kms-keyring@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@aws-crypto/kms-keyring@npm:3.1.0"
+  dependencies:
+    "@aws-crypto/material-management": ^3.1.0
+    tslib: ^2.2.0
+  checksum: 969e29f934368dc0a9fa1387e7741a7358ea9733a35a47aa4bc2c56f9b857fa7b76f510cb97883a48e1cb9005dcc145986d95de70cb89b69cbcc351b1572cdec
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/material-management-node@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@aws-crypto/material-management-node@npm:3.1.0"
+  dependencies:
+    "@aws-crypto/hkdf-node": ^3.0.0
+    "@aws-crypto/material-management": ^3.1.0
+    "@aws-crypto/serialize": ^3.1.0
+    tslib: ^2.2.0
+  checksum: 7c1d8567dc9282997793fd9ede3fd3a8699505ef0b56b3715aeb79019f953d13fbb42e9c645c9845db5d3a6859b5c1388e7a84e4de27a2bee1fee992c1ea3976
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/material-management@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@aws-crypto/material-management@npm:3.1.0"
+  dependencies:
+    asn1.js: ^5.3.0
+    bn.js: ^5.1.1
+    tslib: ^2.2.0
+  checksum: f0ad1b4e30ccdd40ceba5910b8074bc094bb133be6f80cde992996cf3d0c2b5e4222b046fc234e6fecef826a583ee6e6043f564951474eeb4c0139138009bd42
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/serialize@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@aws-crypto/serialize@npm:3.1.0"
+  dependencies:
+    "@aws-crypto/material-management": ^3.1.0
+    asn1.js: ^5.3.0
+    bn.js: ^5.1.1
+    tslib: ^2.2.0
+  checksum: fe0c68ec9abca44535ef585fefa87f59c5a5a58e009937c4ed95d7beadbf5ee45f5e47a92e0d3cb661bd24134698dad07300b5ed1bc034eaf63405cb5b0c6d12
   languageName: node
   linkType: hard
 
@@ -3237,6 +3317,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/duplexify@npm:^3.6.0":
+  version: 3.6.1
+  resolution: "@types/duplexify@npm:3.6.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: 33c43ab4d1d32a2f941d534d65db2cd1c3f93d6a668b00a378585a4d7ec1226f470629e4f8538f9020d0aa7c3dec1847d871fe195c33bbc7d515cb55c66264b7
+  languageName: node
+  linkType: hard
+
 "@types/graceful-fs@npm:^4.1.3":
   version: 4.1.5
   resolution: "@types/graceful-fs@npm:4.1.5"
@@ -3750,6 +3839,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"asn1.js@npm:^5.3.0":
+  version: 5.4.1
+  resolution: "asn1.js@npm:5.4.1"
+  dependencies:
+    bn.js: ^4.0.0
+    inherits: ^2.0.1
+    minimalistic-assert: ^1.0.0
+    safer-buffer: ^2.1.0
+  checksum: 3786a101ac6f304bd4e9a7df79549a7561950a13d4bcaec0c7790d44c80d147c1a94ba3d4e663673406064642a40b23fcd6c82a9952468e386c1a1376d747f9a
+  languageName: node
+  linkType: hard
+
 "astral-regex@npm:^2.0.0":
   version: 2.0.0
   resolution: "astral-regex@npm:2.0.0"
@@ -3791,6 +3892,24 @@ __metadata:
     sinon: ^11.1.1
     tslib: ^2.1.0
   checksum: e6081ca6bb72f5c082dfcd93155bbb7e1c9e8d3d346914ed05d736c495a5ef99ab3d0253507aff2e07b5b995fae63671e53e094437ddfaf8649d69725628ff8f
+  languageName: node
+  linkType: hard
+
+"aws-sdk@npm:^2.650.0":
+  version: 2.1313.0
+  resolution: "aws-sdk@npm:2.1313.0"
+  dependencies:
+    buffer: 4.9.2
+    events: 1.1.1
+    ieee754: 1.1.13
+    jmespath: 0.16.0
+    querystring: 0.2.0
+    sax: 1.2.1
+    url: 0.10.3
+    util: ^0.12.4
+    uuid: 8.0.0
+    xml2js: 0.4.19
+  checksum: 30c7b9a10418a5570cfb0a6eae4a039e6495bfb1d36f39dd98391cf748392418759bb9934a39a03f4ed9706cb6585224a87528a5ef054ac3fa8a49191081683c
   languageName: node
   linkType: hard
 
@@ -3931,6 +4050,20 @@ __metadata:
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
   checksum: 669632eb3745404c2f822a18fc3a0122d2f9a7a13f7fb8b5823ee19d1d2ff9ee5b52c53367176ea4ad093c332fd5ab4bd0ebae5a8e27917a4105a4cfc86b1005
+  languageName: node
+  linkType: hard
+
+"bn.js@npm:^4.0.0":
+  version: 4.12.0
+  resolution: "bn.js@npm:4.12.0"
+  checksum: 39afb4f15f4ea537b55eaf1446c896af28ac948fdcf47171961475724d1bb65118cca49fa6e3d67706e4790955ec0e74de584e45c8f1ef89f46c812bee5b5a12
+  languageName: node
+  linkType: hard
+
+"bn.js@npm:^5.1.1":
+  version: 5.2.1
+  resolution: "bn.js@npm:5.2.1"
+  checksum: 3dd8c8d38055fedfa95c1d5fc3c99f8dd547b36287b37768db0abab3c239711f88ff58d18d155dd8ad902b0b0cee973747b7ae20ea12a09473272b0201c9edd3
   languageName: node
   linkType: hard
 
@@ -4414,6 +4547,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "di-txma-ticf-integration@workspace:."
   dependencies:
+    "@aws-crypto/decrypt-node": ^3.1.0
+    "@aws-crypto/kms-keyring-node": ^3.1.0
     "@aws-lambda-powertools/logger": 1.5.0
     "@aws-sdk/client-athena": 3.163.0
     "@aws-sdk/client-cloudformation": 3.163.0
@@ -4542,6 +4677,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"duplexify@npm:^4.1.1":
+  version: 4.1.2
+  resolution: "duplexify@npm:4.1.2"
+  dependencies:
+    end-of-stream: ^1.4.1
+    inherits: ^2.0.3
+    readable-stream: ^3.1.1
+    stream-shift: ^1.0.0
+  checksum: 964376c61c0e92f6ed0694b3ba97c84f199413dc40ab8dfdaef80b7a7f4982fcabf796214e28ed614a5bc1ec45488a29b81e7d46fa3f5ddf65bcb118c20145ad
+  languageName: node
+  linkType: hard
+
 "eastasianwidth@npm:^0.2.0":
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
@@ -4592,6 +4739,15 @@ __metadata:
   dependencies:
     iconv-lite: ^0.6.2
   checksum: bb98632f8ffa823996e508ce6a58ffcf5856330fde839ae42c9e1f436cc3b5cc651d4aeae72222916545428e54fd0f6aa8862fd8d25bdbcc4589f1e3f3715e7f
+  languageName: node
+  linkType: hard
+
+"end-of-stream@npm:^1.4.1":
+  version: 1.4.4
+  resolution: "end-of-stream@npm:1.4.4"
+  dependencies:
+    once: ^1.4.0
+  checksum: 530a5a5a1e517e962854a31693dbb5c0b2fc40b46dad2a56a2deec656ca040631124f4795823acc68238147805f8b021abbe221f4afed5ef3c8e8efc2024908b
   languageName: node
   linkType: hard
 
@@ -5773,7 +5929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inherits@npm:2, inherits@npm:^2.0.3":
+"inherits@npm:2, inherits@npm:^2.0.1, inherits@npm:^2.0.3":
   version: 2.0.4
   resolution: "inherits@npm:2.0.4"
   checksum: 4a48a733847879d6cf6691860a6b1e3f0f4754176e4d71494c41f3475553768b10f84b5ce1d40fbd0e34e6bfbb864ee35858ad4dd2cf31e02fc4a154b724d7f1
@@ -7064,6 +7220,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minimalistic-assert@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "minimalistic-assert@npm:1.0.1"
+  checksum: cc7974a9268fbf130fb055aff76700d7e2d8be5f761fb5c60318d0ed010d839ab3661a533ad29a5d37653133385204c503bfac995aaa4236f4e847461ea32ba7
+  languageName: node
+  linkType: hard
+
 "minimatch@npm:^3.0.4, minimatch@npm:^3.1.1, minimatch@npm:^3.1.2":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
@@ -7356,7 +7519,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"once@npm:^1.3.0":
+"once@npm:^1.3.0, once@npm:^1.4.0":
   version: 1.4.0
   resolution: "once@npm:1.4.0"
   dependencies:
@@ -7672,7 +7835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:^3.6.0":
+"readable-stream@npm:^3.1.1, readable-stream@npm:^3.6.0":
   version: 3.6.0
   resolution: "readable-stream@npm:3.6.0"
   dependencies:
@@ -7838,7 +8001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safer-buffer@npm:>= 2.1.2 < 3.0.0":
+"safer-buffer@npm:>= 2.1.2 < 3.0.0, safer-buffer@npm:^2.1.0":
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
   checksum: cab8f25ae6f1434abee8d80023d7e72b598cf1327164ddab31003c51215526801e40b66c5e65d658a0af1e9d6478cadcb4c745f4bd6751f97d8644786c0978b0
@@ -8056,6 +8219,13 @@ __metadata:
   dependencies:
     escape-string-regexp: ^2.0.0
   checksum: 76b69da0f5b48a34a0f93c98ee2a96544d2c4ca2557f7eef5ddb961d3bdc33870b46f498a84a7c4f4ffb781df639840e7ebf6639164ed4da5e1aeb659615b9c7
+  languageName: node
+  linkType: hard
+
+"stream-shift@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "stream-shift@npm:1.0.1"
+  checksum: 59b82b44b29ec3699b5519a49b3cedcc6db58c72fb40c04e005525dfdcab1c75c4e0c180b923c380f204bed78211b9bad8faecc7b93dece4d004c3f6ec75737b
   languageName: node
   linkType: hard
 
@@ -8373,6 +8543,13 @@ __metadata:
   version: 2.4.0
   resolution: "tslib@npm:2.4.0"
   checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.2.0":
+  version: 2.5.0
+  resolution: "tslib@npm:2.5.0"
+  checksum: ae3ed5f9ce29932d049908ebfdf21b3a003a85653a9a140d614da6b767a93ef94f460e52c3d787f0e4f383546981713f165037dc2274df212ea9f8a4541004e1
   languageName: node
   linkType: hard
 
