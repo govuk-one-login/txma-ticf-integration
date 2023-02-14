@@ -68,7 +68,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.0.8"],\
             ["ts-node", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=701156"],\
-            ["yaml-cfn", "npm:0.3.1"]\
+            ["yaml-cfn", "npm:0.3.2"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -5377,7 +5377,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:28.0.8"],\
             ["ts-node", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=701156"],\
-            ["yaml-cfn", "npm:0.3.1"]\
+            ["yaml-cfn", "npm:0.3.2"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -10246,10 +10246,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["yaml-cfn", [\
-        ["npm:0.3.1", {\
-          "packageLocation": "./.yarn/cache/yaml-cfn-npm-0.3.1-1935c5227e-348152162b.zip/node_modules/yaml-cfn/",\
+        ["npm:0.3.2", {\
+          "packageLocation": "./.yarn/cache/yaml-cfn-npm-0.3.2-0d4e55f62f-9366f0e008.zip/node_modules/yaml-cfn/",\
           "packageDependencies": [\
-            ["yaml-cfn", "npm:0.3.1"],\
+            ["yaml-cfn", "npm:0.3.2"],\
             ["js-yaml", "npm:4.1.0"]\
           ],\
           "linkType": "HARD"\
