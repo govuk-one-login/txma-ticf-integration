@@ -32,13 +32,19 @@ describe('Invalid requests should not start a data copy', () => {
         initiateDataRequestEvents,
         cloudwatchLogFilters.webhookInvalid
       )
-      expect(isWebhookInvalidMessageInLogs).toBe(true)
+      expect({
+        result: isWebhookInvalidMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: true, events: initiateDataRequestEvents })
 
       const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageInLogs).toBe(false)
+      expect({
+        result: isDataSentToQueueMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: false, events: initiateDataRequestEvents })
     })
   })
 
@@ -70,13 +76,19 @@ describe('Invalid requests should not start a data copy', () => {
         initiateDataRequestEvents,
         cloudwatchLogFilters.webhookInvalid
       )
-      expect(isWebhookInvalidMessageInLogs).toBe(true)
+      expect({
+        result: isWebhookInvalidMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: true, events: initiateDataRequestEvents })
 
       const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageInLogs).toBe(false)
+      expect({
+        result: isDataSentToQueueMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: false, events: initiateDataRequestEvents })
     })
   })
 })

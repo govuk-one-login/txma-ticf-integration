@@ -43,7 +43,10 @@ describe('Data should be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageInLogs).toBe(true)
+      expect({
+        result: isDataSentToQueueMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: true, events: initiateDataRequestEvents })
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
@@ -62,12 +65,18 @@ describe('Data should be copied to analysis bucket', () => {
         processDataRequestEvents,
         cloudwatchLogFilters.standardTierCopy
       )
-      expect(isStandardTierObjectsToCopyMessageInLogs).toBe(true)
+      expect({
+        result: isStandardTierObjectsToCopyMessageInLogs,
+        events: processDataRequestEvents
+      }).toEqual({ result: true, events: processDataRequestEvents })
       const isCopyJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.copyStarted
       )
-      expect(isCopyJobStartedMessageInLogs).toBe(true)
+      expect({
+        result: isCopyJobStartedMessageInLogs,
+        events: processDataRequestEvents
+      }).toEqual({ result: true, events: processDataRequestEvents })
 
       const copyCompletedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -81,7 +90,10 @@ describe('Data should be copied to analysis bucket', () => {
         copyCompletedEvents,
         cloudwatchLogFilters.copyComplete
       )
-      expect(isCopyCompleteMessageInLogs).toBe(true)
+      expect({
+        result: isCopyCompleteMessageInLogs,
+        events: copyCompletedEvents
+      }).toEqual({ result: true, events: copyCompletedEvents })
     })
   })
 
@@ -116,7 +128,10 @@ describe('Data should be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageInLogs).toBe(true)
+      expect({
+        result: isDataSentToQueueMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: true, events: initiateDataRequestEvents })
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
@@ -135,13 +150,19 @@ describe('Data should be copied to analysis bucket', () => {
         processDataRequestEvents,
         cloudwatchLogFilters.glacierTierCopy
       )
-      expect(isGlacierTierObjectCopyMessageInLogs).toBe(true)
+      expect({
+        result: isGlacierTierObjectCopyMessageInLogs,
+        events: processDataRequestEvents
+      }).toEqual({ result: true, events: processDataRequestEvents })
 
       const isGlacierRestoreStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.restoreStarted
       )
-      expect(isGlacierRestoreStartedMessageInLogs).toBe(true)
+      expect({
+        result: isGlacierRestoreStartedMessageInLogs,
+        events: processDataRequestEvents
+      }).toEqual({ result: true, events: processDataRequestEvents })
     })
   })
 
@@ -184,7 +205,10 @@ describe('Data should be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageInLogs).toBe(true)
+      expect({
+        result: isDataSentToQueueMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: true, events: initiateDataRequestEvents })
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
@@ -203,7 +227,10 @@ describe('Data should be copied to analysis bucket', () => {
         processDataRequestEvents,
         cloudwatchLogFilters.mixedTierCopy
       )
-      expect(isMixTierObjectsToCopyMessageInLogs).toBe(true)
+      expect({
+        result: isMixTierObjectsToCopyMessageInLogs,
+        events: processDataRequestEvents
+      }).toEqual({ result: true, events: processDataRequestEvents })
     })
   })
 })

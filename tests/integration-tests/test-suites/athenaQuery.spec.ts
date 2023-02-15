@@ -58,7 +58,6 @@ describe('Athena Query SQL generation and execution', () => {
     let randomTicketId: string
 
     beforeEach(async () => {
-      randomTicketId = generateRandomNumberString(maxRandomTicketId)
       await copyAuditDataFromTestDataBucket(
         getEnv('ANALYSIS_BUCKET_NAME'),
         `firehose/${testData.athenaTestPrefix}/01/${testData.athenaTestFileName}`,
@@ -79,7 +78,8 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having only data paths', async () => {
-      console.log('Test ticket id: ' + randomTicketId)
+      randomTicketId = generateRandomNumberString(maxRandomTicketId)
+
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -99,11 +99,22 @@ describe('Athena Query SQL generation and execution', () => {
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
-      eventIsPresent(athenaQueryEvents, cloudwatchLogFilters.athenaSqlGenerated)
-      eventIsPresent(
+      const isSqlGeneratedMessageInLogs = eventIsPresent(
+        athenaQueryEvents,
+        cloudwatchLogFilters.athenaSqlGenerated
+      )
+      const isQueryInitiatedMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
+      expect({
+        result: isSqlGeneratedMessageInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
+      expect({
+        result: isQueryInitiatedMessageInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -124,7 +135,8 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
-      console.log('Test ticket id: ' + randomTicketId)
+      randomTicketId = generateRandomNumberString(maxRandomTicketId)
+
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -148,13 +160,19 @@ describe('Athena Query SQL generation and execution', () => {
         athenaQueryEvents,
         cloudwatchLogFilters.athenaSqlGenerated
       )
-      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
+      expect({
+        result: isAthenaSqlGeneratedMessageInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
 
       const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
-      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
+      expect({
+        result: isAthenaInitiatedQueryMessageInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -173,7 +191,8 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
-      console.log('Test ticket id: ' + randomTicketId)
+      randomTicketId = generateRandomNumberString(maxRandomTicketId)
+
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -197,13 +216,19 @@ describe('Athena Query SQL generation and execution', () => {
         athenaQueryEvents,
         cloudwatchLogFilters.athenaSqlGenerated
       )
-      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
+      expect({
+        result: isAthenaSqlGeneratedMessageInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
 
       const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
-      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
+      expect({
+        result: isAthenaInitiatedQueryMessageInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -226,7 +251,8 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having multiples dates', async () => {
-      console.log('Test ticket id: ' + randomTicketId)
+      randomTicketId = generateRandomNumberString(maxRandomTicketId)
+
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -250,13 +276,19 @@ describe('Athena Query SQL generation and execution', () => {
         athenaQueryEvents,
         cloudwatchLogFilters.athenaSqlGenerated
       )
-      expect(isAthenaSqlGeneratedMessageInLogs).toBe(true)
+      expect({
+        result: isAthenaSqlGeneratedMessageInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
 
       const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
         athenaQueryEvents,
         cloudwatchLogFilters.athenaQueryInitiated
       )
-      expect(isAthenaInitiatedQueryMessageInLogs).toBe(true)
+      expect({
+        result: isAthenaInitiatedQueryMessageInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -300,34 +332,32 @@ describe('Athena Query SQL generation and execution', () => {
   describe('Query execution unsuccessful', () => {
     let randomTicketId: string
 
-    beforeAll(async () => {
+    it('Lambda should error if ticket details are not in Dynamodb', async () => {
       randomTicketId = generateRandomNumberString(maxRandomTicketId)
+      console.log(randomTicketId)
+
       await addMessageToQueue(
         randomTicketId,
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
-    })
 
-    it('Lambda should error if ticket details are not in Dynamodb', async () => {
       const athenaQueryEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [
-            cloudwatchLogFilters.athenaEventReceived,
-            'body',
-            randomTicketId,
-            `ApproximateReceiveCount\\":`,
-            `\\"2\\"`
-          ]
+          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
         )
+      console.log(athenaQueryEvents)
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
       const isAthenaHandlerInvokeErrorInLogs = eventIsPresent(
         athenaQueryEvents,
-        cloudwatchLogFilters.athenaInvokeError
+        `${cloudwatchLogFilters.athenaInvokeError} '${randomTicketId}'`
       )
-      expect(isAthenaHandlerInvokeErrorInLogs).toBe(true)
+      expect({
+        result: isAthenaHandlerInvokeErrorInLogs,
+        events: athenaQueryEvents
+      }).toEqual({ result: true, events: athenaQueryEvents })
     })
   })
 })
