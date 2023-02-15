@@ -906,8 +906,6 @@ Resources:
                 Effect: Allow
                 Action:
                   - lambda:InvokeFunction
-                  - s3:PutObjectAcl
-                  - s3:PutObjectTagging
                 Resource: !GetAtt DecryptAndCopyFunction.Arn
 
   EmptyS3Buckets:
