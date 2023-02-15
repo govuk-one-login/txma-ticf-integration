@@ -38,4 +38,5 @@ export interface EnvironmentVar {
     | 'VALID_EMAIL_RECIPIENTS_BUCKET'
     | 'QUERY_COMPLETED_QUEUE_URL'
     | 'DATABASE_TTL_HOURS'
+    | 'GENERATOR_KEY_ID'
 }
