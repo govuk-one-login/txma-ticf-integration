@@ -31,7 +31,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-crypto/decrypt-node", "npm:3.1.0"],\
             ["@aws-crypto/kms-keyring-node", "npm:3.1.0"],\
             ["@aws-crypto/material-management", "npm:3.1.0"],\
-            ["@aws-lambda-powertools/logger", "npm:1.5.0"],\
+            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.163.0"],\
@@ -294,13 +294,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@aws-lambda-powertools/logger", [\
-        ["npm:1.5.0", {\
-          "packageLocation": "./.yarn/cache/@aws-lambda-powertools-logger-npm-1.5.0-e1db56c9b0-599128f63a.zip/node_modules/@aws-lambda-powertools/logger/",\
+        ["npm:1.5.1", {\
+          "packageLocation": "./.yarn/cache/@aws-lambda-powertools-logger-npm-1.5.1-c76ac8025e-3bc5e092c6.zip/node_modules/@aws-lambda-powertools/logger/",\
           "packageDependencies": [\
-            ["@aws-lambda-powertools/logger", "npm:1.5.0"],\
+            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
             ["@aws-lambda-powertools/commons", "npm:1.5.1"],\
-            ["lodash.merge", "npm:4.6.2"],\
-            ["lodash.pickby", "npm:4.6.0"]\
+            ["lodash.merge", "npm:4.6.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5538,7 +5537,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-crypto/decrypt-node", "npm:3.1.0"],\
             ["@aws-crypto/kms-keyring-node", "npm:3.1.0"],\
             ["@aws-crypto/material-management", "npm:3.1.0"],\
-            ["@aws-lambda-powertools/logger", "npm:1.5.0"],\
+            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.163.0"],\
@@ -8452,15 +8451,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/lodash.once-npm-4.1.1-d8ba329ead-d768fa9f9b.zip/node_modules/lodash.once/",\
           "packageDependencies": [\
             ["lodash.once", "npm:4.1.1"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["lodash.pickby", [\
-        ["npm:4.6.0", {\
-          "packageLocation": "./.yarn/cache/lodash.pickby-npm-4.6.0-84e9fee0d5-a554d898c1.zip/node_modules/lodash.pickby/",\
-          "packageDependencies": [\
-            ["lodash.pickby", "npm:4.6.0"]\
           ],\
           "linkType": "HARD"\
         }]\

@@ -198,21 +198,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-lambda-powertools/commons@npm:^1.5.0":
+"@aws-lambda-powertools/commons@npm:^1.5.1":
   version: 1.5.1
   resolution: "@aws-lambda-powertools/commons@npm:1.5.1"
   checksum: 4bcde9212aad591b09a3f8199182857fd0124152e882a08a16a694e815968df93e18b75ce453068e0dce9ce9394a18c59af480c75231ab220d4f221f51ae7f25
   languageName: node
   linkType: hard
 
-"@aws-lambda-powertools/logger@npm:1.5.0":
-  version: 1.5.0
-  resolution: "@aws-lambda-powertools/logger@npm:1.5.0"
+"@aws-lambda-powertools/logger@npm:1.5.1":
+  version: 1.5.1
+  resolution: "@aws-lambda-powertools/logger@npm:1.5.1"
   dependencies:
-    "@aws-lambda-powertools/commons": ^1.5.0
+    "@aws-lambda-powertools/commons": ^1.5.1
     lodash.merge: ^4.6.2
-    lodash.pickby: ^4.6.0
-  checksum: 599128f63a2614d8d29ead9bcd4ce6b37f7df9487aec80040f392112b6a042a5840c95cf998525eaad93e4224e093ea9467dd840f9fa89086e9408d9311937e1
+  checksum: 3bc5e092c6b36127a55eb3cd1670e9c9c3da81266d944c009d54cb8bde1111e8d09705eafc757338ac02d2e0ed47c02879ad049966e872a73800f70027835e47
   languageName: node
   linkType: hard
 
@@ -4604,7 +4603,7 @@ __metadata:
     "@aws-crypto/decrypt-node": 3.1.0
     "@aws-crypto/kms-keyring-node": 3.1.0
     "@aws-crypto/material-management": 3.1.0
-    "@aws-lambda-powertools/logger": 1.5.0
+    "@aws-lambda-powertools/logger": 1.5.1
     "@aws-sdk/client-athena": 3.163.0
     "@aws-sdk/client-cloudformation": 3.163.0
     "@aws-sdk/client-cloudwatch-logs": 3.163.0
@@ -7145,13 +7144,6 @@ __metadata:
   version: 4.1.1
   resolution: "lodash.once@npm:4.1.1"
   checksum: d768fa9f9b4e1dc6453be99b753906f58990e0c45e7b2ca5a3b40a33111e5d17f6edf2f768786e2716af90a8e78f8f91431ab8435f761fef00f9b0c256f6d245
-  languageName: node
-  linkType: hard
-
-"lodash.pickby@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "lodash.pickby@npm:4.6.0"
-  checksum: a554d898c15bcd3218e4005b95b5146210bd862010c7d242d17106ee36aed9b9209a858ce974136ab1faadd86a82297761c206fda7f1886278bac827145c5536
   languageName: node
   linkType: hard
 
