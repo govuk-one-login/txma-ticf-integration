@@ -374,6 +374,13 @@ Resources:
                 - logs:CreateLogStream
                 - logs:PutLogEvents
               Resource: !GetAtt DecryptAndCopyLogs.Arn
+            - Sid: UseGeneratorKmsKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+                - kms:GenerateDataKey*
+                - kms:ReEncrypt*
+              Resource: '{{resolve:ssm:EncryptionGeneratorKmsKeyArn}}'
 
   DecryptAndCopyLogs:
     Type: AWS::Logs::LogGroup
