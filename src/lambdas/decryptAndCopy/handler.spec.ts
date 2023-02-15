@@ -1,6 +1,6 @@
 import {
   TEST_ANALYSIS_BUCKET,
-  TEST_PERMANENT_BUCKET_ARN,
+  TEST_PERMANENT_BUCKET_NAME,
   TEST_S3_OBJECT_DATA_BUFFER,
   TEST_S3_OBJECT_DATA_STRING,
   TEST_S3_OBJECT_KEY
@@ -25,9 +25,6 @@ jest.mock('./decryptS3Object', () => ({
 jest.mock('../../sharedServices/s3/putS3Object', () => ({
   putS3Object: jest.fn()
 }))
-jest.mock('../../utils/helpers', () => ({
-  extractS3BucketNameFromArn: jest.fn()
-}))
 
 const mockGetS3ObjectAsStream = getS3ObjectAsStream as jest.Mock
 const mockDecryptS3Object = decryptS3Object as jest.Mock
@@ -46,7 +43,7 @@ describe('DecryptAndCopy', function () {
     await handler(testS3BatchEvent, mockLambdaContext)
 
     expect(mockGetS3ObjectAsStream).toHaveBeenCalledWith(
-      TEST_PERMANENT_BUCKET_ARN,
+      TEST_PERMANENT_BUCKET_NAME,
       TEST_S3_OBJECT_KEY
     )
     expect(mockDecryptS3Object).toHaveBeenCalledWith(s3ObjectStream)

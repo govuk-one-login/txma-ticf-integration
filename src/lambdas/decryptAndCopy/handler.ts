@@ -8,7 +8,7 @@ import { initialiseLogger, logger } from '../../sharedServices/logger'
 import { getS3ObjectAsStream } from '../../sharedServices/s3/getS3ObjectAsStream'
 import { decryptS3Object } from './decryptS3Object'
 import { putS3Object } from '../../sharedServices/s3/putS3Object'
-import { extractS3BucketNameFromArn, getEnv } from '../../utils/helpers'
+import { getEnv, extractS3BucketNameFromArn } from '../../utils/helpers'
 
 export const handler = async (
   event: S3BatchEvent,
