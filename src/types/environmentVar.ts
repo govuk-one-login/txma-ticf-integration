@@ -40,4 +40,5 @@ export interface EnvironmentVar {
     | 'DATABASE_TTL_HOURS'
     | 'DECRYPTION_LAMBDA_ARN'
     | 'PERMANENT_AUDIT_BUCKET_NAME'
+    | 'GENERATOR_KEY_ID'
 }

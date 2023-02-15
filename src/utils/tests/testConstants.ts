@@ -24,7 +24,6 @@ export const TEST_SECURE_DOWNLOAD_URL = 'secureDownload.url.com'
 export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
 export const TEST_ANALYSIS_BUCKET_ARN = 'myAnalysisBucketArn'
 export const TEST_AUDIT_BUCKET = 'myAuditBucket'
-export const TEST_PERMANENENT_AUDIT_BUCKET = 'myPermanentAuditBucket'
 export const TEST_QUERY_RESULTS_BUCKET = 'myQueryResultsBucket'
 
 export const TEST_DATE_1 = '2021-08-21'
@@ -72,3 +71,11 @@ export const TEST_DATABASE_TTL_HOURS = 120
 export const ZENDESK_PII_TYPE_PREFIX = 'pii_requested_'
 
 export const TEST_DECRYPTION_LAMBDA_ARN = 'myDecryptionLambdaArn'
+export const TEST_GENERATOR_KEY_ID = 'testEncryptionKey'
+export const TEST_S3_OBJECT_KEY = 'testKey'
+export const TEST_S3_OBJECT_DATA_STRING = 'testData'
+export const TEST_S3_OBJECT_DATA_BUFFER = Buffer.from(
+  TEST_S3_OBJECT_DATA_STRING
+)
+export const TEST_PERMANENT_BUCKET_NAME = 'testPermanentBucket'
+export const TEST_PERMANENT_BUCKET_ARN = 'arn:aws:s3:::testPermanentBucket'

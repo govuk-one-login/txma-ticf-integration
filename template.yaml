@@ -335,6 +335,65 @@ Resources:
       FilterPattern: ''
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
+  DecryptAndCopyFunction:
+    #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_116:Not triggered by SQS
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: decryptAndCopy.handler
+      MemorySize: 1536
+      Environment:
+        Variables:
+          GENERATOR_KEY_ID: '{{resolve:ssm:EncryptionGeneratorKmsKeyArn}}'
+          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+      FunctionName: !Sub ${AWS::StackName}-decrypt-and-copy
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Policies:
+        - Statement:
+            - Sid: ReadFromPermanentBucket
+              Effect: Allow
+              Action:
+                - s3:ListBucket
+                - s3:GetObject
+              Resource:
+                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
+                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch/*
+            - Sid: WriteToAnalysisBucket
+              Effect: Allow
+              Action:
+                - s3:GetBucketLocation
+                - s3:GetObject
+                - s3:ListBucket
+                - s3:ListBucketMultipartUploads
+                - s3:ListMultipartUploadParts
+                - s3:AbortMultipartUpload
+                - s3:PutObject
+              Resource:
+                - !GetAtt AnalysisBucket.Arn
+                - !Sub ${AnalysisBucket.Arn}/*
+            - Sid: Logs
+              Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt DecryptAndCopyLogs.Arn
+            - Sid: UseGeneratorKmsKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+                - kms:GenerateDataKey*
+                - kms:ReEncrypt*
+              Resource: '{{resolve:ssm:EncryptionGeneratorKmsKeyArn}}'
+
+  DecryptAndCopyLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-decrypt-and-copy'
+      RetentionInDays: 30
+
   InitiateAthenaQueryFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_117:VPC not required
