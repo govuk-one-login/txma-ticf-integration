@@ -13,7 +13,7 @@ interface ILambdaFunction extends IAwsResource {
   }
 }
 
-const handlerPath = 'src/lambdas'
+const lambdasPath = 'src/lambdas'
 
 const { Resources } = yamlParse(
   readFileSync(join(__dirname, 'template.yaml'), 'utf-8')
@@ -26,8 +26,8 @@ const lambdas = awsResources.filter(
 ) as ILambdaFunction[]
 
 const entries = lambdas.map((lambda) => {
-  const handlerName = lambda.Properties.CodeUri.split('/')[1]
-  return `./${handlerPath}/${handlerName}/handler.ts`
+  const lambdaName = lambda.Properties.CodeUri.split('/')[1]
+  return `./${lambdasPath}/${lambdaName}/handler.ts`
 })
 
 esbuild
