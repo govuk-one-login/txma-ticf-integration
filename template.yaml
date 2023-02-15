@@ -345,22 +345,14 @@ Resources:
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
         - Statement:
-            # - Sid: ReadFromAuditBucket
-            #   Effect: Allow
-            #   Action:
-            #     - s3:ListBucket
-            #     - s3:GetObject
-            #   Resource:
-            #     # - !GetAtt AnalysisBucket.Arn
-            #     # - !Sub ${AnalysisBucket.Arn}/*
-            # - Sid: ReadFromPermanentBucket
-            #   Effect: Allow
-            #   Action:
-            #     - s3:ListBucket
-            #     - s3:GetObject
-            #   Resource:
-            #     # - !GetAtt AnalysisBucket.Arn
-            #     # - !Sub ${AnalysisBucket.Arn}/*
+            - Sid: ReadFromPermanentBucket
+              Effect: Allow
+              Action:
+                - s3:ListBucket
+                - s3:GetObject
+              Resource:
+                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
+                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch/*
             - Sid: WriteToAnalysisBucket
               Effect: Allow
               Action:

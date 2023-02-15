@@ -9,7 +9,10 @@ import { createDataStream } from '../../utils/tests/testHelpers'
 import { getS3ObjectAsStream } from '../../sharedServices/s3/getS3ObjectAsStream'
 import { decryptS3Object } from './decryptS3Object'
 import { putS3Object } from '../../sharedServices/s3/putS3Object'
-import { testS3BatchEvent } from '../../utils/tests/events/s3BatchEvent'
+import {
+  testS3BatchEvent,
+  emptyTestS3BatchEvent
+} from '../../utils/tests/events/s3BatchEvent'
 import { handler } from './handler'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 
@@ -51,17 +54,12 @@ describe('DecryptAndCopy', function () {
     )
   })
 
-  // it('throws an error if there is no data in the SQS Event', async () => {
-  //   expect(handler({ Records: [] })).rejects.toThrow('No data in event')
-  //   expect(mockGetS3ObjectAsStream).not.toHaveBeenCalled()
-  //   expect(mockPutS3Object).not.toHaveBeenCalled()
-  // })
-
-  //   it('throws an error if the SQS event comes from the wrong S3 bucket', async () => {
-  //     expect(handler(wrongBucketTestS3SqsEvent)).rejects.toThrow(
-  //       `Incorrect source bucket - ${TEST_WRONG_S3_BUCKET}`
-  //     )
-  //     expect(mockGetS3ObjectAsStream).not.toHaveBeenCalled()
-  //     expect(mockPutS3Object).not.toHaveBeenCalled()
-  //   })
+  it('throws an error if there is no data in the SQS Event', async () => {
+    expect(handler(emptyTestS3BatchEvent, mockLambdaContext)).rejects.toThrow(
+      'No tasks in event'
+    )
+    expect(mockGetS3ObjectAsStream).not.toHaveBeenCalled()
+    expect(mockDecryptS3Object).not.toHaveBeenCalled()
+    expect(mockPutS3Object).not.toHaveBeenCalled()
+  })
 })

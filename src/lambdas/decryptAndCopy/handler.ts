@@ -17,6 +17,10 @@ export const handler = async (
   initialiseLogger(context)
   logger.info('Handling S3BatchEvent decryption', { handledEvent: event })
 
+  if (event.tasks.length === 0) {
+    throw new Error('No tasks in event')
+  }
+
   const key = event.tasks[0].s3Key
   const bucket = event.tasks[0].s3BucketArn
 

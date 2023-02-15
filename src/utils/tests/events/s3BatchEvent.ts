@@ -15,3 +15,12 @@ export const testS3BatchEvent = {
     }
   ]
 }
+
+export const emptyTestS3BatchEvent = {
+  invocationSchemaVersion: '1.0',
+  invocationId: '',
+  job: {
+    id: ''
+  },
+  tasks: []
+}
