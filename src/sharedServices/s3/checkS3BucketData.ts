@@ -5,6 +5,7 @@ import { getEnv } from '../../utils/helpers'
 import { _Object } from '@aws-sdk/client-s3'
 import { logger } from '../logger'
 import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
+import { getAuditDataSourceBucketName } from './getAuditDataSourceBucketName'
 
 export const checkS3BucketData = async (
   dataRequestParams: DataRequestParams
@@ -19,7 +20,7 @@ export const checkS3BucketData = async (
   const requestedAuditBucketObjects = await retrieveS3ObjectsForPrefixes(
     dataRequestParams,
     prefixes,
-    getEnv('AUDIT_BUCKET_NAME')
+    getAuditDataSourceBucketName()
   )
 
   const existingAnalysisBucketObjects = await retrieveS3ObjectsForPrefixes(

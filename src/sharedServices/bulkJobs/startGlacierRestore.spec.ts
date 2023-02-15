@@ -1,6 +1,7 @@
 import { startGlacierRestore } from './startGlacierRestore'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
+import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_AWS_ACCOUNT_ID,
@@ -16,15 +17,31 @@ jest.mock('./writeJobManifestFileToJobBucket', () => ({
   writeJobManifestFileToJobBucket: jest.fn()
 }))
 
+jest.mock('../s3/getAuditDataSourceBucketName', () => ({
+  getAuditDataSourceBucketName: jest.fn()
+}))
+
 const s3ControlClientMock = mockClient(S3ControlClient)
 const testJobId = 'myGlacierRestoreJobId'
 const testEtag = 'myTestEtag'
+const testSourceDataBucket = 'someSourceDataBucket'
+
 describe('startGlacierRestore', () => {
   it('should write the manifest and start the glacier restore if a file list is supplied', async () => {
     s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
+    when(getAuditDataSourceBucketName).mockReturnValue(testSourceDataBucket)
     when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
     const fileList = ['myFile1', 'myFile2']
+
     await startGlacierRestore(fileList, ZENDESK_TICKET_ID)
+
+    const expectedManifestFileName = `${TEST_ANALYSIS_BUCKET}-glacier-restore-for-ticket-id-${ZENDESK_TICKET_ID}.csv`
+    expect(getAuditDataSourceBucketName).toHaveBeenCalled()
+    expect(writeJobManifestFileToJobBucket).toHaveBeenCalledWith(
+      testSourceDataBucket,
+      fileList,
+      expectedManifestFileName
+    )
     expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
       ConfirmationRequired: false,
       ClientRequestToken: `restore-${ZENDESK_TICKET_ID}`,
@@ -46,7 +63,7 @@ describe('startGlacierRestore', () => {
           Fields: ['Bucket', 'Key']
         },
         Location: {
-          ObjectArn: `${TEST_BATCH_JOB_MANIFEST_BUCKET_ARN}/${`${TEST_ANALYSIS_BUCKET}-glacier-restore-for-ticket-id-${ZENDESK_TICKET_ID}.csv`}`,
+          ObjectArn: `${TEST_BATCH_JOB_MANIFEST_BUCKET_ARN}/${expectedManifestFileName}`,
           ETag: testEtag
         }
       }

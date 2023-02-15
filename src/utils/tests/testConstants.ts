@@ -24,6 +24,7 @@ export const TEST_SECURE_DOWNLOAD_URL = 'secureDownload.url.com'
 export const TEST_ANALYSIS_BUCKET = 'myAnalysisBucket'
 export const TEST_ANALYSIS_BUCKET_ARN = 'myAnalysisBucketArn'
 export const TEST_AUDIT_BUCKET = 'myAuditBucket'
+export const TEST_PERMANENENT_AUDIT_BUCKET = 'myPermanentAuditBucket'
 export const TEST_QUERY_RESULTS_BUCKET = 'myQueryResultsBucket'
 
 export const TEST_DATE_1 = '2021-08-21'

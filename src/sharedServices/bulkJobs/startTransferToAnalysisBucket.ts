@@ -6,6 +6,7 @@ import {
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import { getEnv } from '../../utils/helpers'
 import { logger } from '../logger'
+import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
@@ -23,7 +24,7 @@ export const startTransferToAnalysisBucket = async (
 
   const manifestFileName = `${analysisBucketName}-copy-job-for-ticket-id-${zendeskTicketId}.csv`
   const manifestFileEtag = await writeJobManifestFileToJobBucket(
-    getEnv('AUDIT_BUCKET_NAME'),
+    getAuditDataSourceBucketName(),
     filesToTransfer,
     manifestFileName
   )

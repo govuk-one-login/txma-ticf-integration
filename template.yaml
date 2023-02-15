@@ -228,6 +228,7 @@ Resources:
         Variables:
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
           AUDIT_BUCKET_NAME: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
+          PERMANENT_AUDIT_BUCKET_NAME: !Sub audit-${Environment}-permanent-message-batch
           ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           BATCH_JOB_MANIFEST_BUCKET_ARN: '{{resolve:ssm:BatchJobManifestBucketArn}}'

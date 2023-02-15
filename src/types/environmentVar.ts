@@ -39,4 +39,5 @@ export interface EnvironmentVar {
     | 'QUERY_COMPLETED_QUEUE_URL'
     | 'DATABASE_TTL_HOURS'
     | 'DECRYPTION_LAMBDA_ARN'
+    | 'PERMANENT_AUDIT_BUCKET_NAME'
 }

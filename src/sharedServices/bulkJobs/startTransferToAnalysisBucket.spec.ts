@@ -3,7 +3,6 @@ import { when } from 'jest-when'
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_ANALYSIS_BUCKET_ARN,
-  TEST_AUDIT_BUCKET,
   TEST_AWS_ACCOUNT_ID,
   TEST_BATCH_JOB_MANIFEST_BUCKET_ARN,
   TEST_BATCH_JOB_ROLE_ARN,
@@ -13,10 +12,15 @@ import {
 import { startTransferToAnalysisBucket } from './startTransferToAnalysisBucket'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
+import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-jest'
 jest.mock('../../utils/getFeatureFlagValue', () => ({
   getFeatureFlagValue: jest.fn()
+}))
+
+jest.mock('../s3/getAuditDataSourceBucketName', () => ({
+  getAuditDataSourceBucketName: jest.fn()
 }))
 
 jest.mock('./writeJobManifestFileToJobBucket', () => ({
@@ -26,12 +30,15 @@ jest.mock('./writeJobManifestFileToJobBucket', () => ({
 const s3ControlClientMock = mockClient(S3ControlClient)
 const testJobId = 'myCopyJobId'
 const testEtag = 'myTestEtag'
-
+const testAuditSourceDataBucket = 'someAuditSourceDataBucket'
 describe('startTransferToAnalysisBucket', () => {
   it.each([true, false])(
-    'should write the manifest and start the copy job if a file is supplied and decrypt feature flag is set to %p',
+    'should write the manifest and start the copy or decrypt job if a file is supplied and decrypt feature flag is set to %p',
     async (decryptFeatureFlagOn: boolean) => {
       when(getFeatureFlagValue).mockReturnValue(decryptFeatureFlagOn)
+      when(getAuditDataSourceBucketName).mockReturnValue(
+        testAuditSourceDataBucket
+      )
       s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
       when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
       const fileList = ['myFile1', 'myFile2']
@@ -39,7 +46,7 @@ describe('startTransferToAnalysisBucket', () => {
       await startTransferToAnalysisBucket(fileList, ZENDESK_TICKET_ID)
 
       expect(writeJobManifestFileToJobBucket).toBeCalledWith(
-        TEST_AUDIT_BUCKET,
+        testAuditSourceDataBucket,
         fileList,
         `${TEST_ANALYSIS_BUCKET}-copy-job-for-ticket-id-${ZENDESK_TICKET_ID}.csv`
       )
