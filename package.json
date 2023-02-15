@@ -58,7 +58,7 @@
     "aws-testing-library": "2.1.5",
     "axios": "0.27.2",
     "csv-string": "4.1.1",
-    "esbuild": "0.15.12",
+    "esbuild": "0.17.8",
     "eslint": "8.34.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-jest": "27.1.3",
