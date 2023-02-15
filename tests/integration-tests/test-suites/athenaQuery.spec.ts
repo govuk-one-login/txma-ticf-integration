@@ -334,7 +334,6 @@ describe('Athena Query SQL generation and execution', () => {
 
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
       randomTicketId = generateRandomNumberString(maxRandomTicketId)
-      console.log(randomTicketId)
 
       await addMessageToQueue(
         randomTicketId,
@@ -346,7 +345,6 @@ describe('Athena Query SQL generation and execution', () => {
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
           [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
         )
-      console.log(athenaQueryEvents)
       expect(athenaQueryEvents).not.toEqual([])
       expect(athenaQueryEvents.length).toBeGreaterThan(1)
 
