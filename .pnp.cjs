@@ -28,6 +28,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@aws-crypto/decrypt-node", "npm:3.1.0"],\
+            ["@aws-crypto/kms-keyring-node", "npm:3.1.0"],\
+            ["@aws-crypto/material-management", "npm:3.1.0"],\
             ["@aws-lambda-powertools/logger", "npm:1.5.0"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
@@ -108,12 +111,99 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@aws-crypto/decrypt-node", [\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/@aws-crypto-decrypt-node-npm-3.1.0-e3a21018d4-84db7c4a3a.zip/node_modules/@aws-crypto/decrypt-node/",\
+          "packageDependencies": [\
+            ["@aws-crypto/decrypt-node", "npm:3.1.0"],\
+            ["@aws-crypto/material-management-node", "npm:3.1.0"],\
+            ["@aws-crypto/serialize", "npm:3.1.0"],\
+            ["@types/duplexify", "npm:3.6.1"],\
+            ["duplexify", "npm:4.1.2"],\
+            ["readable-stream", "npm:3.6.0"],\
+            ["tslib", "npm:2.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-crypto/hkdf-node", [\
+        ["npm:3.0.0", {\
+          "packageLocation": "./.yarn/cache/@aws-crypto-hkdf-node-npm-3.0.0-4672f3ced7-0b3cd878b8.zip/node_modules/@aws-crypto/hkdf-node/",\
+          "packageDependencies": [\
+            ["@aws-crypto/hkdf-node", "npm:3.0.0"],\
+            ["tslib", "npm:2.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@aws-crypto/ie11-detection", [\
         ["npm:2.0.0", {\
           "packageLocation": "./.yarn/cache/@aws-crypto-ie11-detection-npm-2.0.0-bcdfe29fef-dd15daa116.zip/node_modules/@aws-crypto/ie11-detection/",\
           "packageDependencies": [\
             ["@aws-crypto/ie11-detection", "npm:2.0.0"],\
             ["tslib", "npm:1.14.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-crypto/kms-keyring", [\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/@aws-crypto-kms-keyring-npm-3.1.0-7548557e5e-969e29f934.zip/node_modules/@aws-crypto/kms-keyring/",\
+          "packageDependencies": [\
+            ["@aws-crypto/kms-keyring", "npm:3.1.0"],\
+            ["@aws-crypto/material-management", "npm:3.1.0"],\
+            ["tslib", "npm:2.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-crypto/kms-keyring-node", [\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/@aws-crypto-kms-keyring-node-npm-3.1.0-2c639444f7-40162c1a34.zip/node_modules/@aws-crypto/kms-keyring-node/",\
+          "packageDependencies": [\
+            ["@aws-crypto/kms-keyring-node", "npm:3.1.0"],\
+            ["@aws-crypto/kms-keyring", "npm:3.1.0"],\
+            ["@aws-crypto/material-management-node", "npm:3.1.0"],\
+            ["aws-sdk", "npm:2.1313.0"],\
+            ["tslib", "npm:2.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-crypto/material-management", [\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/@aws-crypto-material-management-npm-3.1.0-3ac98d4b22-f0ad1b4e30.zip/node_modules/@aws-crypto/material-management/",\
+          "packageDependencies": [\
+            ["@aws-crypto/material-management", "npm:3.1.0"],\
+            ["asn1.js", "npm:5.4.1"],\
+            ["bn.js", "npm:5.2.1"],\
+            ["tslib", "npm:2.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-crypto/material-management-node", [\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/@aws-crypto-material-management-node-npm-3.1.0-423b7ddc76-7c1d8567dc.zip/node_modules/@aws-crypto/material-management-node/",\
+          "packageDependencies": [\
+            ["@aws-crypto/material-management-node", "npm:3.1.0"],\
+            ["@aws-crypto/hkdf-node", "npm:3.0.0"],\
+            ["@aws-crypto/material-management", "npm:3.1.0"],\
+            ["@aws-crypto/serialize", "npm:3.1.0"],\
+            ["tslib", "npm:2.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@aws-crypto/serialize", [\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/@aws-crypto-serialize-npm-3.1.0-8fe437914f-fe0c68ec9a.zip/node_modules/@aws-crypto/serialize/",\
+          "packageDependencies": [\
+            ["@aws-crypto/serialize", "npm:3.1.0"],\
+            ["@aws-crypto/material-management", "npm:3.1.0"],\
+            ["asn1.js", "npm:5.4.1"],\
+            ["bn.js", "npm:5.2.1"],\
+            ["tslib", "npm:2.5.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3832,6 +3922,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/duplexify", [\
+        ["npm:3.6.1", {\
+          "packageLocation": "./.yarn/cache/@types-duplexify-npm-3.6.1-f66015bb67-33c43ab4d1.zip/node_modules/@types/duplexify/",\
+          "packageDependencies": [\
+            ["@types/duplexify", "npm:3.6.1"],\
+            ["@types/node", "npm:18.7.9"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/graceful-fs", [\
         ["npm:4.1.5", {\
           "packageLocation": "./.yarn/cache/@types-graceful-fs-npm-4.1.5-91d62e1050-d076bb61f4.zip/node_modules/@types/graceful-fs/",\
@@ -4557,6 +4657,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["asn1.js", [\
+        ["npm:5.4.1", {\
+          "packageLocation": "./.yarn/cache/asn1.js-npm-5.4.1-37c7edbcb0-3786a101ac.zip/node_modules/asn1.js/",\
+          "packageDependencies": [\
+            ["asn1.js", "npm:5.4.1"],\
+            ["bn.js", "npm:4.12.0"],\
+            ["inherits", "npm:2.0.4"],\
+            ["minimalistic-assert", "npm:1.0.1"],\
+            ["safer-buffer", "npm:2.1.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["astral-regex", [\
         ["npm:2.0.0", {\
           "packageLocation": "./.yarn/cache/astral-regex-npm-2.0.0-f30d866aab-876231688c.zip/node_modules/astral-regex/",\
@@ -4589,6 +4702,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/aws-sdk-npm-2.1219.0-8915ea5c80-1cf29ce7d6.zip/node_modules/aws-sdk/",\
           "packageDependencies": [\
             ["aws-sdk", "npm:2.1219.0"],\
+            ["buffer", "npm:4.9.2"],\
+            ["events", "npm:1.1.1"],\
+            ["ieee754", "npm:1.1.13"],\
+            ["jmespath", "npm:0.16.0"],\
+            ["querystring", "npm:0.2.0"],\
+            ["sax", "npm:1.2.1"],\
+            ["url", "npm:0.10.3"],\
+            ["util", "npm:0.12.4"],\
+            ["uuid", "npm:8.0.0"],\
+            ["xml2js", "npm:0.4.19"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:2.1313.0", {\
+          "packageLocation": "./.yarn/cache/aws-sdk-npm-2.1313.0-25d23ee5f4-30c7b9a104.zip/node_modules/aws-sdk/",\
+          "packageDependencies": [\
+            ["aws-sdk", "npm:2.1313.0"],\
             ["buffer", "npm:4.9.2"],\
             ["events", "npm:1.1.1"],\
             ["ieee754", "npm:1.1.13"],\
@@ -4823,6 +4953,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/base64-js-npm-1.5.1-b2f7275641-669632eb37.zip/node_modules/base64-js/",\
           "packageDependencies": [\
             ["base64-js", "npm:1.5.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["bn.js", [\
+        ["npm:4.12.0", {\
+          "packageLocation": "./.yarn/cache/bn.js-npm-4.12.0-3ec6c884f6-39afb4f15f.zip/node_modules/bn.js/",\
+          "packageDependencies": [\
+            ["bn.js", "npm:4.12.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:5.2.1", {\
+          "packageLocation": "./.yarn/cache/bn.js-npm-5.2.1-dc952b1965-3dd8c8d380.zip/node_modules/bn.js/",\
+          "packageDependencies": [\
+            ["bn.js", "npm:5.2.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5389,6 +5535,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["di-txma-ticf-integration", "workspace:."],\
+            ["@aws-crypto/decrypt-node", "npm:3.1.0"],\
+            ["@aws-crypto/kms-keyring-node", "npm:3.1.0"],\
+            ["@aws-crypto/material-management", "npm:3.1.0"],\
             ["@aws-lambda-powertools/logger", "npm:1.5.0"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
@@ -5529,6 +5678,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["duplexify", [\
+        ["npm:4.1.2", {\
+          "packageLocation": "./.yarn/cache/duplexify-npm-4.1.2-7f2140a477-964376c61c.zip/node_modules/duplexify/",\
+          "packageDependencies": [\
+            ["duplexify", "npm:4.1.2"],\
+            ["end-of-stream", "npm:1.4.4"],\
+            ["inherits", "npm:2.0.4"],\
+            ["readable-stream", "npm:3.6.0"],\
+            ["stream-shift", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["eastasianwidth", [\
         ["npm:0.2.0", {\
           "packageLocation": "./.yarn/cache/eastasianwidth-npm-0.2.0-c37eb16bd1-7d00d7cd8e.zip/node_modules/eastasianwidth/",\
@@ -5588,6 +5750,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["encoding", "npm:0.1.13"],\
             ["iconv-lite", "npm:0.6.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["end-of-stream", [\
+        ["npm:1.4.4", {\
+          "packageLocation": "./.yarn/cache/end-of-stream-npm-1.4.4-497fc6dee1-530a5a5a1e.zip/node_modules/end-of-stream/",\
+          "packageDependencies": [\
+            ["end-of-stream", "npm:1.4.4"],\
+            ["once", "npm:1.4.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -8441,6 +8613,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["minimalistic-assert", [\
+        ["npm:1.0.1", {\
+          "packageLocation": "./.yarn/cache/minimalistic-assert-npm-1.0.1-dc8bb23d29-cc7974a926.zip/node_modules/minimalistic-assert/",\
+          "packageDependencies": [\
+            ["minimalistic-assert", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["minimatch", [\
         ["npm:3.1.2", {\
           "packageLocation": "./.yarn/cache/minimatch-npm-3.1.2-9405269906-c154e56640.zip/node_modules/minimatch/",\
@@ -9542,6 +9723,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["stream-shift", [\
+        ["npm:1.0.1", {\
+          "packageLocation": "./.yarn/cache/stream-shift-npm-1.0.1-9526210fa7-59b82b44b2.zip/node_modules/stream-shift/",\
+          "packageDependencies": [\
+            ["stream-shift", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["string-argv", [\
         ["npm:0.3.1", {\
           "packageLocation": "./.yarn/cache/string-argv-npm-0.3.1-b4f6cd3d7b-efbd0289b5.zip/node_modules/string-argv/",\
@@ -9907,6 +10097,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/tslib-npm-2.4.0-9cb6dc5030-8c4aa6a3c5.zip/node_modules/tslib/",\
           "packageDependencies": [\
             ["tslib", "npm:2.4.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:2.5.0", {\
+          "packageLocation": "./.yarn/cache/tslib-npm-2.5.0-bb364efebd-ae3ed5f9ce.zip/node_modules/tslib/",\
+          "packageDependencies": [\
+            ["tslib", "npm:2.5.0"]\
           ],\
           "linkType": "HARD"\
         }]\
