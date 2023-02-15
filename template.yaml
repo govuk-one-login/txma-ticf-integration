@@ -337,6 +337,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: decryptAndCopy.handler
+      MemorySize: 1536
       Environment:
         Variables:
           GENERATOR_KEY_ID: '{{resolve:ssm:EncryptionGeneratorKmsKeyArn}}'
