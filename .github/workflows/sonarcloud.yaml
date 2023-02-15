@@ -9,6 +9,7 @@ on:
 
 jobs:
   sonarcloud:
+    if: startsWith(github.head_ref, 'dependabot') != true
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:

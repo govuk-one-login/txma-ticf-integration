@@ -10,8 +10,7 @@ export interface DataRequestParams {
   requesterName: string
   recipientEmail: string
   recipientName: string
-  dateFrom: string
-  dateTo: string
+  dates: string[]
   identifierType: IdentifierTypes
   sessionIds: string[]
   journeyIds: string[]
@@ -29,8 +28,12 @@ export const isDataRequestParams = (arg: unknown): arg is DataRequestParams => {
     typeof test?.recipientName === 'string' &&
     typeof test?.requesterEmail === 'string' &&
     typeof test?.requesterName === 'string' &&
-    typeof test?.dateFrom === 'string' &&
-    typeof test?.dateTo === 'string' &&
-    typeof test?.identifierType === 'string'
+    typeof test?.identifierType === 'string' &&
+    typeof test?.dates === 'object' &&
+    typeof test?.journeyIds === 'object' &&
+    typeof test?.eventIds === 'object' &&
+    typeof test?.userIds === 'object' &&
+    typeof test?.piiTypes === 'object' &&
+    typeof test?.dataPaths === 'object'
   )
 }

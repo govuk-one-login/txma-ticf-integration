@@ -9,7 +9,7 @@ export const generateZendeskTicketData = (
   const defaultValues: CustomFieldValues = {
     identifier: 'event_id',
     eventIds: testData.eventId,
-    requestDate: testData.date,
+    datesList: testData.date,
     piiTypes: [
       `${zendeskConstants.piiTypesPrefix}name`,
       `${zendeskConstants.piiTypesPrefix}dob`,
@@ -35,6 +35,7 @@ export const generateZendeskTicketData = (
     recipientEmail: zendeskConstants.fieldIds.recipientEmail,
     recipientName: zendeskConstants.fieldIds.recipientName,
     requestDate: zendeskConstants.fieldIds.requestDate,
+    datesList: zendeskConstants.fieldIds.datesList,
     sessionIds: zendeskConstants.fieldIds.sessionIds,
     status: zendeskConstants.fieldIds.status,
     userIds: zendeskConstants.fieldIds.userIds
@@ -94,6 +95,7 @@ type CustomFieldIds = {
   recipientEmail: number
   recipientName: number
   requestDate: number
+  datesList: number
   sessionIds: number
   status: number
   userIds: number
@@ -107,7 +109,7 @@ type CustomFieldValues = {
   piiTypes?: string[] | null
   recipientEmail: string | null
   recipientName: string | null
-  requestDate: string | null
+  datesList: string | null
   sessionIds?: string | null
   status?: string | null
   userIds?: string | null

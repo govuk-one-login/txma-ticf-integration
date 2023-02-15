@@ -28,6 +28,7 @@ export const sendAuditDataRequestMessage = async (
           zendeskId: auditQueryRequestDetails.zendeskId,
           dateFrom: auditQueryRequestDetails.dateFrom,
           dateTo: auditQueryRequestDetails.dateTo,
+          dates: auditQueryRequestDetails.dates,
           identifierType: auditQueryRequestDetails.identifierType,
           requested_sessionIds:
             auditQueryRequestDetails.requested_sessionIds ?? '',

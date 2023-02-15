@@ -69,6 +69,23 @@ const getZendeskCustomSpaceSeparatedStringAsArray = (
   return mapSpaceSeparatedStringToList(fieldValue)
 }
 
+const datesMatch = (
+  ticketDetails: ZendeskTicket,
+  requestParams: DataRequestParams
+) => {
+  const ticketLegacyDateFieldValue = getZendeskCustomFieldValue(
+    ticketDetails,
+    getEnvAsNumber('ZENDESK_FIELD_ID_DATE_FROM')
+  ) as string | null
+  const ticketDates = getZendeskCustomSpaceSeparatedStringAsArray(
+    ticketDetails,
+    getEnvAsNumber('ZENDESK_FIELD_ID_DATES')
+  )
+  return ticketLegacyDateFieldValue
+    ? matchArrayParams([ticketLegacyDateFieldValue], requestParams.dates)
+    : matchArrayParams(ticketDates, requestParams.dates)
+}
+
 const ticketAndRequestDetailsDiffer = (
   ticketDetails: ZendeskTicket,
   requesterDetails: ZendeskUser,
@@ -80,14 +97,6 @@ const ticketAndRequestDetailsDiffer = (
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATA_PATHS')
   ) as string[]
-  const ticketDateFrom = getZendeskCustomFieldValue(
-    ticketDetails,
-    getEnvAsNumber('ZENDESK_FIELD_ID_DATE_FROM')
-  ) as string | null
-  const ticketDateTo = getZendeskCustomFieldValue(
-    ticketDetails,
-    getEnvAsNumber('ZENDESK_FIELD_ID_DATE_TO')
-  ) as string | null
   const ticketEventIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_EVENT_IDS')
@@ -117,7 +126,9 @@ const ticketAndRequestDetailsDiffer = (
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_RECIPIENT_NAME')
   ) as string | null
-
+  if (!datesMatch(ticketDetails, requestParams)) {
+    unmatchedParameters.push('date')
+  }
   if (!matchStringParams(ticketDetails.id.toString(), requestParams.zendeskId))
     unmatchedParameters.push('zendeskId')
   if (!matchStringParams(ticketRecipientEmail, requestParams.recipientEmail))
@@ -128,10 +139,6 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('requesterEmail')
   if (!matchArrayParams(ticketDataPaths, requestParams.dataPaths))
     unmatchedParameters.push('dataPaths')
-  if (!matchStringParams(ticketDateFrom, requestParams.dateFrom))
-    unmatchedParameters.push('dateFrom')
-  if (!matchStringParams(ticketDateTo, requestParams.dateTo))
-    unmatchedParameters.push('dateTo')
   if (!matchArrayParams(ticketEventIds, requestParams.eventIds))
     unmatchedParameters.push('eventIds')
   if (!matchArrayParams(ticketJourneyIds, requestParams.journeyIds))
