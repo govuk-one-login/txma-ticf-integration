@@ -8,7 +8,7 @@ import { initialiseLogger, logger } from '../../sharedServices/logger'
 import { getS3ObjectAsStream } from '../../sharedServices/s3/getS3ObjectAsStream'
 import { decryptS3Object } from './decryptS3Object'
 import { putS3Object } from '../../sharedServices/s3/putS3Object'
-import { getEnv } from '../../utils/helpers'
+import { extractS3BucketNameFromArn, getEnv } from '../../utils/helpers'
 
 export const handler = async (
   event: S3BatchEvent,
@@ -22,7 +22,7 @@ export const handler = async (
   }
 
   const key = event.tasks[0].s3Key
-  const bucket = event.tasks[0].s3BucketArn
+  const bucket = extractS3BucketNameFromArn(event.tasks[0].s3BucketArn)
 
   const encryptedData = await getS3ObjectAsStream(bucket, key)
 

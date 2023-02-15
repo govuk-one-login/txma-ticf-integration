@@ -54,3 +54,7 @@ export const mapSpaceSeparatedStringToList = (input: string): string[] => {
 
 export const removeZendeskPiiTypePrefixFromPiiType = (piiType: string) =>
   piiType.replace(ZENDESK_PII_TYPE_PREFIX, '')
+
+export const extractS3BucketNameFromArn = (arn: string) => {
+  return arn.replace('arn:aws:s3:::', '')
+}

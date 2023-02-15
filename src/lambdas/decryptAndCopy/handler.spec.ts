@@ -25,6 +25,9 @@ jest.mock('./decryptS3Object', () => ({
 jest.mock('../../sharedServices/s3/putS3Object', () => ({
   putS3Object: jest.fn()
 }))
+jest.mock('../../utils/helpers', () => ({
+  extractS3BucketNameFromArn: jest.fn()
+}))
 
 const mockGetS3ObjectAsStream = getS3ObjectAsStream as jest.Mock
 const mockDecryptS3Object = decryptS3Object as jest.Mock
