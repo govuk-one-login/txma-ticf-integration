@@ -34,7 +34,10 @@ describe('Data should not be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageInLogs).toBe(true)
+      expect({
+        result: isDataSentToQueueMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: true, events: initiateDataRequestEvents })
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
@@ -53,7 +56,10 @@ describe('Data should not be copied to analysis bucket', () => {
         processDataRequestEvents,
         cloudwatchLogFilters.nothingToCopyMessage
       )
-      expect(isNothingToCopyMessageInLogs).toBe(true)
+      expect({
+        result: isNothingToCopyMessageInLogs,
+        events: processDataRequestEvents
+      }).toEqual({ result: true, events: processDataRequestEvents })
     })
   })
 
@@ -95,7 +101,10 @@ describe('Data should not be copied to analysis bucket', () => {
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
       )
-      expect(isDataSentToQueueMessageInLogs).toBe(true)
+      expect({
+        result: isDataSentToQueueMessageInLogs,
+        events: initiateDataRequestEvents
+      }).toEqual({ result: true, events: initiateDataRequestEvents })
 
       const messageId = getQueueMessageId(
         initiateDataRequestEvents,
@@ -114,13 +123,19 @@ describe('Data should not be copied to analysis bucket', () => {
         processDataRequestEvents,
         cloudwatchLogFilters.nothingToCopyMessage
       )
-      expect(isNothingToCopyMessageInLogs).toBe(true)
+      expect({
+        result: isNothingToCopyMessageInLogs,
+        events: processDataRequestEvents
+      }).toEqual({ result: true, events: processDataRequestEvents })
 
       const isDataAvailableMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.allDataAvailableQueuingAthenaQuery
       )
-      expect(isDataAvailableMessageInLogs).toBe(true)
+      expect({
+        result: isDataAvailableMessageInLogs,
+        events: processDataRequestEvents
+      }).toEqual({ result: true, events: processDataRequestEvents })
     })
   })
 })

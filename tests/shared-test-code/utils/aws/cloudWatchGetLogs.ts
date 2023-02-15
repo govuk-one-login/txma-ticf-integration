@@ -124,7 +124,7 @@ const waitForEventWithPatterns = async (
     }
 
     if (logEvents.length > 1) {
-      throw Error('More than 1 event matched, check filter patterns')
+      throw new Error('More than 1 event matched, check filter patterns')
     }
 
     console.log(`Found event with patterns: ${eventMessagePatterns}`)
@@ -143,7 +143,7 @@ export const getQueueMessageId = (
 ) => {
   const event = logEvents.find((event) => event.message?.includes(message))
 
-  if (!event || !event.message) throw Error('Message not added to queue')
+  if (!event || !event.message) throw new Error('Message not added to queue')
   const parsedLog = JSON.parse(event.message)
   const messageId = parsedLog.messageId
   console.log('Got messageId', messageId)
