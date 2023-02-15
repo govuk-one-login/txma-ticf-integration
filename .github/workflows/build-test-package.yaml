@@ -121,6 +121,10 @@ jobs:
             --no-fail-on-empty-changeset \
             --resolve-s3
 
+          export STACK_NAME=${stack_name}
+
+          yarn setupDevStackSecrets
+
   package-build:
     name: Package for deployment to build account
     if: github.ref == 'refs/heads/main'
