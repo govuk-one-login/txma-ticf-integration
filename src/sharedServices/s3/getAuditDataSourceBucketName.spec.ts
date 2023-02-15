@@ -2,7 +2,7 @@ import { when } from 'jest-when'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import {
   TEST_AUDIT_BUCKET,
-  TEST_PERMANENENT_AUDIT_BUCKET
+  TEST_PERMANENT_BUCKET_NAME
 } from '../../utils/tests/testConstants'
 import { getAuditDataSourceBucketName } from './getAuditDataSourceBucketName'
 jest.mock('../../utils/getFeatureFlagValue', () => ({
@@ -28,8 +28,6 @@ describe('getAuditDataSourceBucketName', () => {
 
   it('should return the permanent encrypted audit bucket when the decryption feature flag is on', () => {
     givenDecryptionFeatureFlagOn()
-    expect(getAuditDataSourceBucketName()).toEqual(
-      TEST_PERMANENENT_AUDIT_BUCKET
-    )
+    expect(getAuditDataSourceBucketName()).toEqual(TEST_PERMANENT_BUCKET_NAME)
   })
 })
