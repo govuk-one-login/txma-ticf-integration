@@ -35,7 +35,7 @@ export const checkS3BucketData = async (
   )
 
   logger.info(
-    'Objects present in auditBucket',
+    `Objects present in auditBucket ${getAuditDataSourceBucketName()}`,
     JSON.stringify(requestedAuditBucketObjects)
   )
   const objectsToCopy = requestedAuditBucketObjects.filter(
