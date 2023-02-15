@@ -259,6 +259,7 @@ Resources:
               Resource:
                 - !GetAtt AnalysisBucket.Arn
                 - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
+                - !Sub audit-${Environment}-permanent-message-batch
             - Sid: ManifestBucketWrite
               Effect: Allow
               Action:
