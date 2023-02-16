@@ -5,7 +5,7 @@ const config: JestConfigWithTsJest = {
   preset: 'ts-jest',
   setupFiles: ['<rootDir>/src/utils/tests/setup/testEnvVars.ts'],
   setupFilesAfterEnv: ['jest-extended/all'],
-  testMatch: ['src/**/*.test.ts'],
+  testMatch: ['<rootDir>/src/**/*.test.ts'],
   verbose: true
 }
 
