@@ -114,14 +114,13 @@ yarn test:e2e:dev
 ## Running feature tests against a feature branch in the Dev environment
 
 1. Ensure you've got the environment variable STACK_NAME set by running `export STACK_NAME='{STACK_NAME}'` with your CloudFormation stack name.
-
-1. Run the following to set up the secrets under `tests/{STACK_NAME}`
+2. Run the following to set up the secrets under `tests/{STACK_NAME}`
 
    ```bash
    gds aws di-txma-audit-dev yarn setupDevStackSecrets
    ```
 
-1. Then run the test themselves
+3. Then run the test themselves
    ```bash
    gds aws di-txma-audit-dev yarn test:integration
    ```
