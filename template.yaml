@@ -399,6 +399,7 @@ Resources:
     Properties:
       CodeUri: dist/initiateAthenaQuery/
       Handler: handler.handler
+      MemorySize: 512
       Environment:
         Variables:
           ATHENA_DATABASE_NAME: '{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}'
