@@ -1,12 +1,12 @@
-import type { Config } from '@jest/types'
+import type { JestConfigWithTsJest } from 'ts-jest'
 
-const config: Config.InitialOptions = {
-  coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
-  testPathIgnorePatterns: ['/tests/'],
+const config: JestConfigWithTsJest = {
+  coveragePathIgnorePatterns: ['/.yarn/', '/dist/'],
   preset: 'ts-jest',
   setupFiles: ['<rootDir>/src/utils/tests/setup/testEnvVars.ts'],
-  verbose: true,
-  setupFilesAfterEnv: ['jest-extended/all']
+  setupFilesAfterEnv: ['jest-extended/all'],
+  testMatch: ['src/**/*.test.ts'],
+  verbose: true
 }
 
 export default config

@@ -1,7 +1,7 @@
-import type { Config } from '@jest/types'
+import type { JestConfigWithTsJest } from 'ts-jest'
 
-const config: Config.InitialOptions = {
-  coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
+const config: JestConfigWithTsJest = {
+  coveragePathIgnorePatterns: ['/.yarn/', '/dist/'],
   globals: {
     AWS_REGION: 'eu-west-2',
     STACK_NAME: 'txma-ticf-integration',
@@ -25,7 +25,7 @@ const config: Config.InitialOptions = {
     ]
   ],
   setupFiles: ['<rootDir>/../shared-test-code/setup/setup.ts'],
-  testPathIgnorePatterns: ['/src/', '/tests/e2e-tests/'],
+  testMatch: ['<rootDir>/*.spec.ts'],
   testTimeout: 120000,
   verbose: true
 }
