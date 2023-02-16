@@ -24,7 +24,7 @@ const config: JestConfigWithTsJest = {
     ]
   ],
   setupFiles: ['<rootDir>/../shared-test-code/setup/setup.ts'],
-  testMatch: ['<rootDir>/*.spec.ts'],
+  testMatch: ['<rootDir>/**/*.spec.ts'],
   testTimeout: 120000,
   verbose: true
 }
