@@ -50,7 +50,6 @@ Globals:
   Function:
     CodeSigningConfigArn:
       !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
-    CodeUri: dist/
     Environment:
       Variables:
         NODE_OPTIONS: --enable-source-maps
@@ -133,7 +132,8 @@ Resources:
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
-      Handler: initiateDataRequest.handler
+      CodeUri: dist/initiateDataRequest/
+      Handler: handler.handler
       Environment:
         Variables:
           AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
@@ -223,7 +223,8 @@ Resources:
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
-      Handler: processDataRequest.handler
+      CodeUri: dist/processDataRequest/
+      Handler: handler.handler
       Environment:
         Variables:
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
@@ -337,7 +338,8 @@ Resources:
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
-      Handler: decryptAndCopy.handler
+      CodeUri: dist/decryptAndCopy/
+      Handler: handler.handler
       MemorySize: 1536
       Environment:
         Variables:
@@ -395,7 +397,8 @@ Resources:
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
-      Handler: initiateAthenaQuery.handler
+      CodeUri: dist/initiateAthenaQuery/
+      Handler: handler.handler
       Environment:
         Variables:
           ATHENA_DATABASE_NAME: '{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}'
@@ -512,7 +515,8 @@ Resources:
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
-      Handler: sendQueryResultsNotification.handler
+      CodeUri: dist/sendQueryResultsNotification/
+      Handler: handler.handler
       Environment:
         Variables:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
@@ -605,7 +609,8 @@ Resources:
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
-      Handler: closeZendeskTicket.handler
+      CodeUri: dist/closeZendeskTicket
+      Handler: handler.handler
       Role: !GetAtt CloseZendeskTicketFunctionRole.Arn
       Environment:
         Variables:
