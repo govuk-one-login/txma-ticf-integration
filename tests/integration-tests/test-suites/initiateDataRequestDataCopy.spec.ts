@@ -3,13 +3,13 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern,
   getQueueMessageId
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
-import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 import { getEnv } from '../../shared-test-code/utils/helpers'
 import { testData } from '../constants/testData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
+import { setupAuditSourceTestData } from '../../shared-test-code/utils/aws/setupAuditSourceTestData'
 
 describe('Data should be copied to analysis bucket', () => {
   describe('valid requests for standard copy - analysis bucket empty', () => {
@@ -17,13 +17,10 @@ describe('Data should be copied to analysis bucket', () => {
 
     beforeEach(async () => {
       const availableDate = await getAvailableTestDate()
-
-      await copyAuditDataFromTestDataBucket(
-        getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+      await setupAuditSourceTestData(
         testData.dataCopyTestFileName,
-        'STANDARD',
-        true
+        `${availableDate.prefix}/01`,
+        false
       )
       const defaultWebhookRequestData =
         getWebhookRequestDataForTestCaseNumberAndDate(1, availableDate.date)
@@ -90,12 +87,9 @@ describe('Data should be copied to analysis bucket', () => {
 
     beforeEach(async () => {
       const availableDate = await getAvailableTestDate()
-
-      await copyAuditDataFromTestDataBucket(
-        getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+      await setupAuditSourceTestData(
         testData.dataCopyTestFileName,
-        'GLACIER',
+        `${availableDate.prefix}/01`,
         true
       )
       const defaultWebhookRequestData =
@@ -151,20 +145,14 @@ describe('Data should be copied to analysis bucket', () => {
     beforeEach(async () => {
       const availableDate = await getAvailableTestDate()
 
-      await copyAuditDataFromTestDataBucket(
-        getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`,
+      await setupAuditSourceTestData(
         testData.dataCopyTestFileName,
-        'GLACIER',
+        `${availableDate.prefix}/01`,
         true
       )
-
-      await copyAuditDataFromTestDataBucket(
-        getEnv('AUDIT_BUCKET_NAME'),
-        `${availableDate.prefix}/02/${testData.dataCopyTestFileName}`,
+      await setupAuditSourceTestData(
         testData.dataCopyTestFileName,
-        'STANDARD',
-        true
+        `${availableDate.prefix}/02`
       )
       const defaultWebhookRequestData =
         getWebhookRequestDataForTestCaseNumberAndDate(4, availableDate.date)

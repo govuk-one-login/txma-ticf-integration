@@ -1,33 +1,15 @@
-import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { deleteAuditDataWithPrefix } from '../../shared-test-code/utils/aws/s3DeleteAuditDataWithPrefix'
-import { s3WaitForFilePrefix } from '../../shared-test-code/utils/aws/s3WaitForFilePrefix'
+import { setupAuditSourceTestData } from '../../shared-test-code/utils/aws/setupAuditSourceTestData'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
-import { getEnv } from '../../shared-test-code/utils/helpers'
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { pollNotifyMockForDownloadUrl } from '../../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
 
 describe('Decryption of data before query', () => {
-  const setupEncryptedData = async () => {
-    await deleteAuditDataWithPrefix(
-      getEnv('ANALYSIS_BUCKET_NAME'),
-      `firehose/2022/05/01/01`
-    )
-    const testDataFileName = 'encryptionPlainTextData.txt.gz'
-    const destinationPrefix = `firehose/2022/05/01/01/`
-    await copyAuditDataFromTestDataBucket(
-      'audit-dev-temporary-message-batch',
-      `${destinationPrefix}${testDataFileName}`,
-      testDataFileName
-    )
-
-    await s3WaitForFilePrefix(
-      'audit-dev-permanent-message-batch',
-      destinationPrefix
-    )
-  }
   beforeAll(async () => {
-    await setupEncryptedData()
+    await setupAuditSourceTestData(
+      'encryptionPlainTextData.txt.gz',
+      'firehose/2022/05/01/01'
+    )
   })
 
   it('Should be able to query data that arose from an encrypted data store', async () => {
