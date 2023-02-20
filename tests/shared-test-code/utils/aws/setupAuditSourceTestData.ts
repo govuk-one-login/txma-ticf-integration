@@ -40,8 +40,7 @@ export const setupEncryptedData = async (
   sendToGlacier: boolean
 ) => {
   await copyAuditDataFromTestDataBucket(
-    // TODO: read this from an env variable
-    'audit-dev-temporary-message-batch',
+    getEnv('TEMPORARY_AUDIT_BUCKET_NAME'),
     destinationS3Key,
     testDataFileName,
     'STANDARD',
@@ -51,7 +50,7 @@ export const setupEncryptedData = async (
   await s3WaitForFile('audit-dev-permanent-message-batch', destinationS3Key)
   if (sendToGlacier) {
     await s3ChangeStorageClass(
-      'audit-dev-permanent-message-batch',
+      getEnv('PERMANENT_AUDIT_BUCKET_NAME'),
       destinationS3Key,
       'GLACIER'
     )
