@@ -41,7 +41,7 @@ export const startTransferToAnalysisBucket = async (
 
   logger.info(
     `Started ${
-      decryptDataFlagOn ? 'Data decrypt batch job' : 'S3 copy job'
+      decryptDataFlagOn ? 'data decrypt batch job' : 'S3 copy job'
     } for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
   )
 }
