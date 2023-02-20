@@ -29,7 +29,7 @@ export const setupLegacyNonEncryptedData = async (
     getEnv('AUDIT_BUCKET_NAME'),
     destinationS3Key,
     testDataFileName,
-    sendToGlacier ? 'STANDARD' : 'GLACIER',
+    sendToGlacier ? 'GLACIER' : 'STANDARD',
     true
   )
 }
