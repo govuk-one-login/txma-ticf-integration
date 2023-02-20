@@ -1,4 +1,5 @@
 import { getEnv, getFeatureFlagValue } from '../helpers'
+import { s3AddObjectTag } from './s3AddObjectTag'
 import { s3ChangeStorageClass } from './s3ChangeStorageClass'
 import { copyAuditDataFromTestDataBucket } from './s3CopyAuditDataFromTestDataBucket'
 import { s3WaitForFile } from './s3WaitForFile'
@@ -55,4 +56,10 @@ export const setupEncryptedData = async (
       'GLACIER'
     )
   }
+
+  await s3AddObjectTag(
+    getEnv('PERMANENT_AUDIT_BUCKET_NAME'),
+    destinationS3Key,
+    [{ Key: 'autoTest', Value: 'true' }]
+  )
 }
