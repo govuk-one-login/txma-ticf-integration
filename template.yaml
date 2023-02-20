@@ -1051,6 +1051,14 @@ Resources:
       Type: String
       Value: !Sub audit-${Environment}-permanent-message-batch
 
+  IntegrationTestsTemporaryAuditBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/TemporaryAuditBucketName
+      Type: String
+      Value: !Sub audit-${Environment}-temporary-message-batch
+
   IntegrationTestsAuditRequestTableNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
