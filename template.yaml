@@ -241,7 +241,7 @@ Resources:
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           DATABASE_TTL_HOURS: '{{resolve:ssm:DatabaseTtlHours}}'
           DECRYPTION_LAMBDA_ARN: !GetAtt DecryptAndCopyFunction.Arn
-          FEATURE_DECRYPT_DATA: false
+          FEATURE_DECRYPT_DATA: '{{resolve:ssm:FeatureDecryptData}}'
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -1044,6 +1044,14 @@ Resources:
       Name: !Sub /tests/${AWS::StackName}/QueryRequestTableName
       Type: String
       Value: '{{resolve:ssm:QueryRequestTableName}}'
+
+  IntegrationTestsFeatureDecryptDataParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/FeatureDecryptData
+      Type: String
+      Value: '{{resolve:ssm:FeatureDecryptData}}'
 
   IntegrationTestsDynamoOperationsFunctionNameParameter:
     Condition: TestEnvironment
