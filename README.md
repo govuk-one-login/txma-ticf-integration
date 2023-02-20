@@ -127,27 +127,7 @@ yarn test:e2e:dev
 
 ### Test Reports
 
-Running the tests creates a results file in JUnit format at `tests/reports/allure-results`. This file is used to create a report using [Allure](https://docs.qameta.io/allure). Both suites output JUNIT xml to the same location.
-
-In order to create the report run:
-
-```
-yarn allure
-```
-
-This command uses a Docker Compose file to spin up a local Allure server and generate the report. The server willl detect any changes to the `junit.xml` file (i.e. a new test run) and generate a new version.
-
-To view the report locally, while the server is running, in your browser open:
-
-```
-http://localhost:5252
-```
-
-An emailable version of the report is generated at the following location:
-
-```
-tests/reports/allure-reports/emailable-report-allure-docker-service.html
-```
+<!-- Running the tests creates a results file in JUnit format at `tests/reports/results`. Allure integration has been removed. -->
 
 ### Creating and approving a Zendesk ticket
 

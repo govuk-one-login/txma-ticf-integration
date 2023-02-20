@@ -21,5 +21,5 @@ else
   exit 1
 fi
 
-cp tests/reports/allure-results/junit.xml $TEST_REPORT_ABSOLUTE_DIR/junit.xml
+cp tests/reports/results/junit.xml $TEST_REPORT_ABSOLUTE_DIR/junit.xml
 exit $TESTS_EXIT_CODE
