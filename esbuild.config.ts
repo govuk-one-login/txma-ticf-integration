@@ -9,11 +9,11 @@ interface IAwsResource {
 
 interface ILambdaFunction extends IAwsResource {
   Properties: {
-    Handler: string
+    CodeUri: string
   }
 }
 
-const handlerPath = 'src/lambdas'
+const lambdasPath = 'src/lambdas'
 
 const { Resources } = yamlParse(
   readFileSync(join(__dirname, 'template.yaml'), 'utf-8')
@@ -25,13 +25,10 @@ const lambdas = awsResources.filter(
   (resource) => resource.Type === 'AWS::Serverless::Function'
 ) as ILambdaFunction[]
 
-const entries = lambdas.reduce((entries, lambda) => {
-  const handlerName = lambda.Properties.Handler.split('.')[0]
-  const filepath = `./${handlerPath}/${handlerName}/handler.ts`
-
-  entries[handlerName] = filepath
-  return entries
-}, {} as { [key: string]: string })
+const entries = lambdas.map((lambda) => {
+  const lambdaName = lambda.Properties.CodeUri.split('/')[1]
+  return `./${lambdasPath}/${lambdaName}/handler.ts`
+})
 
 esbuild
   .build({
@@ -41,6 +38,7 @@ esbuild
     minify: true,
     platform: 'node',
     outdir: 'dist',
+    outbase: 'src/lambdas',
     sourcesContent: false,
     sourcemap: 'inline',
     target: 'es2022'
