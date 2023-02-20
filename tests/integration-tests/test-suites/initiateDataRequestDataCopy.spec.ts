@@ -4,7 +4,10 @@ import {
   getQueueMessageId
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
-import { getEnv } from '../../shared-test-code/utils/helpers'
+import {
+  getEnv,
+  getFeatureFlagValue
+} from '../../shared-test-code/utils/helpers'
 import { testData } from '../constants/testData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
@@ -60,11 +63,14 @@ describe('Data should be copied to analysis bucket', () => {
         cloudwatchLogFilters.standardTierCopy
       )
       expect(isStandardTierObjectsToCopyMessageInLogs).toBe(true)
-      const isCopyJobStartedMessageInLogs = eventIsPresent(
+
+      const isCopyOrDecryptJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
-        cloudwatchLogFilters.copyStarted
+        getFeatureFlagValue('DECRYPT_DATA')
+          ? cloudwatchLogFilters.decryptStarted
+          : cloudwatchLogFilters.copyStarted
       )
-      expect(isCopyJobStartedMessageInLogs).toBe(true)
+      expect(isCopyOrDecryptJobStartedMessageInLogs).toBe(true)
 
       const copyCompletedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(

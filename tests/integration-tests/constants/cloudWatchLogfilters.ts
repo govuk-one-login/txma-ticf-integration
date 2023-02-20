@@ -4,10 +4,8 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   athenaQueryInitiated: 'Athena query execution initiated',
   athenaSqlGenerated: 'Athena SQL generated',
   copyComplete: 'Restore/copy process complete.',
-  // TODO: switch this message depending on whether we're running with encryption on or not
-  // or alternatively change the log message to be more generic.
-  //  copyStarted: 'Started S3 copy job for zendesk ticket with id',
-  copyStarted: 'Started Data decrypt batch job for zendesk ticket with id',
+  copyStarted: 'Started S3 copy job for zendesk ticket with id',
+  decryptStarted: 'Started data decrypt batch job for zendesk ticket with id',
   dataSentToQueue: 'Sent data transfer queue message',
   glacierTierCopy:
     'Number of standard tier files to copy was 0, glacier tier files to copy was 1',
@@ -31,6 +29,7 @@ type CloudwatchLogFiltersConstants = {
   readonly athenaQueryInitiated: string
   readonly athenaSqlGenerated: string
   readonly copyStarted: string
+  readonly decryptStarted: string
   readonly copyComplete: string
   readonly dataSentToQueue: string
   readonly glacierTierCopy: string

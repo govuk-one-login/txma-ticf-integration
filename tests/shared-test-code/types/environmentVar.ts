@@ -29,4 +29,5 @@ export type EnvironmentVar = {
     | 'ZENDESK_RECIPIENT_NAME'
     | 'ZENDESK_WEBHOOK_API_BASE_URL'
     | 'ZENDESK_WEBHOOK_SECRET_KEY'
+    | 'FEATURE_DECRYPT_DATA'
 }

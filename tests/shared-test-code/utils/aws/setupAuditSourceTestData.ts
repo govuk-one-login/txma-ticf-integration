@@ -1,17 +1,15 @@
-import { getEnv } from '../helpers'
+import { getEnv, getFeatureFlagValue } from '../helpers'
 import { s3ChangeStorageClass } from './s3ChangeStorageClass'
 import { copyAuditDataFromTestDataBucket } from './s3CopyAuditDataFromTestDataBucket'
 import { s3WaitForFile } from './s3WaitForFile'
 
-// TODO: read this from environment
-const ENCRYPTION_ON = true
 export const setupAuditSourceTestData = async (
   testDataFileName: string,
   destinationPrefix: string,
   sendToGlacier = false
 ) => {
   const destinationS3Key = `${destinationPrefix}/${testDataFileName}`
-  if (ENCRYPTION_ON) {
+  if (getFeatureFlagValue('DECRYPT_DATA')) {
     await setupEncryptedData(testDataFileName, destinationS3Key, sendToGlacier)
   } else {
     setupLegacyNonEncryptedData(
