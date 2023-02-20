@@ -1043,6 +1043,14 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
 
+  IntegrationTestsPermanentAuditBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/PermanentAuditBucketName
+      Type: String
+      Value: !Sub audit-${Environment}-permanent-message-batch
+
   IntegrationTestsAuditRequestTableNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
