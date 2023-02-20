@@ -4,7 +4,7 @@ import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebho
 import { pollNotifyMockForDownloadUrl } from '../../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
 
-describe('Decryption of data before query', () => {
+describe('Data flows from audit bucket to output', () => {
   beforeAll(async () => {
     await setupAuditSourceTestData(
       'encryptionPlainTextData.txt.gz',
@@ -12,7 +12,7 @@ describe('Decryption of data before query', () => {
     )
   })
 
-  it('Should be able to query data that arose from an encrypted data store', async () => {
+  it('Should be able to query data that arose from either an encrypted or plain text data store', async () => {
     const webhookRequest = getWebhookRequestDataForTestCaseNumberAndDate(
       3,
       '2022-05-01'
