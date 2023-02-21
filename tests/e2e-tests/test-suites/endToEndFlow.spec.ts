@@ -61,7 +61,7 @@ describe('Query results generated', () => {
     )
     await setupAuditSourceTestData(
       testData.fileName2,
-      `firehose/${testData.prefix}/02`
+      `firehose/${testData.prefix2}/02`
     )
   })
 
