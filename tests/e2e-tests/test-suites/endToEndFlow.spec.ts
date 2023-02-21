@@ -1,4 +1,3 @@
-import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { approveZendeskTicket } from '../../shared-test-code/utils/zendesk/approveZendeskTicket'
 import { createZendeskTicket } from '../../shared-test-code/utils/zendesk/createZendeskTicket'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
@@ -8,6 +7,7 @@ import { getEnv } from '../../shared-test-code/utils/helpers'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
 import { testData } from '../constants/testData'
 import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
+import { setupAuditSourceTestData } from '../../shared-test-code/utils/aws/setupAuditSourceTestData'
 
 const endToEndFlowRequestDataWithEventId = generateZendeskTicketData({
   identifier: 'event_id',
@@ -55,15 +55,13 @@ describe('Query results generated', () => {
   let zendeskId: string
 
   beforeEach(async () => {
-    await copyAuditDataFromTestDataBucket(
-      getEnv('AUDIT_BUCKET_NAME'),
-      `firehose/${testData.prefix}/01/${testData.fileName}`,
-      testData.fileName
+    await setupAuditSourceTestData(
+      testData.fileName,
+      `firehose/${testData.prefix}/01`
     )
-    await copyAuditDataFromTestDataBucket(
-      getEnv('AUDIT_BUCKET_NAME'),
-      `firehose/${testData.prefix2}/01/${testData.fileName2}`,
-      testData.fileName2
+    await setupAuditSourceTestData(
+      testData.fileName2,
+      `firehose/${testData.prefix}/02`
     )
   })
 

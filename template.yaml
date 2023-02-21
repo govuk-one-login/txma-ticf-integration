@@ -229,6 +229,7 @@ Resources:
         Variables:
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
           AUDIT_BUCKET_NAME: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
+          PERMANENT_AUDIT_BUCKET_NAME: !Sub audit-${Environment}-permanent-message-batch
           ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           BATCH_JOB_MANIFEST_BUCKET_ARN: '{{resolve:ssm:BatchJobManifestBucketArn}}'
@@ -240,6 +241,8 @@ Resources:
           TERMINATED_JOB_QUEUE_URL: !Ref TerminatedJobQueue
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           DATABASE_TTL_HOURS: '{{resolve:ssm:DatabaseTtlHours}}'
+          DECRYPTION_LAMBDA_ARN: !GetAtt DecryptAndCopyFunction.Arn
+          FEATURE_DECRYPT_DATA: '{{resolve:ssm:FeatureDecryptData}}'
       Events:
         InitiateDataRequestEvent:
           Type: SQS
@@ -257,6 +260,7 @@ Resources:
               Resource:
                 - !GetAtt AnalysisBucket.Arn
                 - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
+                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
             - Sid: ManifestBucketWrite
               Effect: Allow
               Action:
@@ -901,6 +905,15 @@ Resources:
                   - s3:ListBucket
                 Resource:
                   - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+        - PolicyName: AllowDecryptOperations
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: AllowDecryptLambdaExecute
+                Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: !GetAtt DecryptAndCopyFunction.Arn
 
   EmptyS3Buckets:
     Condition: DevEnvironment
@@ -1030,6 +1043,22 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
 
+  IntegrationTestsPermanentAuditBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/PermanentAuditBucketName
+      Type: String
+      Value: !Sub audit-${Environment}-permanent-message-batch
+
+  IntegrationTestsTemporaryAuditBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/TemporaryAuditBucketName
+      Type: String
+      Value: !Sub audit-${Environment}-temporary-message-batch
+
   IntegrationTestsAuditRequestTableNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
@@ -1037,6 +1066,14 @@ Resources:
       Name: !Sub /tests/${AWS::StackName}/QueryRequestTableName
       Type: String
       Value: '{{resolve:ssm:QueryRequestTableName}}'
+
+  IntegrationTestsFeatureDecryptDataParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/FeatureDecryptData
+      Type: String
+      Value: '{{resolve:ssm:FeatureDecryptData}}'
 
   IntegrationTestsDynamoOperationsFunctionNameParameter:
     Condition: TestEnvironment

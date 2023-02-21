@@ -1,6 +1,6 @@
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
-import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
+import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
@@ -33,9 +33,12 @@ jest.mock('./terminateStatusCheckProcess', () => ({
   terminateStatusCheckProcess: jest.fn()
 }))
 
-jest.mock('../../sharedServices/bulkJobs/startCopyJob', () => ({
-  startCopyJob: jest.fn()
-}))
+jest.mock(
+  '../../sharedServices/bulkJobs/startTransferToAnalysisBucket',
+  () => ({
+    startTransferToAnalysisBucket: jest.fn()
+  })
+)
 
 jest.mock(
   '../../sharedServices/queue/sendContinuePollingDataTransferMessage',
@@ -156,7 +159,10 @@ describe('checkDataTransferStatus', () => {
     expect(logger.info).toHaveBeenLastCalledWith(
       'Glacier restore complete. Starting copy job'
     )
-    expect(startCopyJob).toBeCalledWith(filesToCopy, ZENDESK_TICKET_ID)
+    expect(startTransferToAnalysisBucket).toBeCalledWith(
+      filesToCopy,
+      ZENDESK_TICKET_ID
+    )
     expect(mockIncrementPollingRetryCount).toBeCalledWith(
       ZENDESK_TICKET_ID,
       glacierRestoreIsNotInProgress,
@@ -209,7 +215,7 @@ describe('checkDataTransferStatus', () => {
     givenDataReadyForQuery()
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
-    expect(startCopyJob).not.toHaveBeenCalled()
+    expect(startTransferToAnalysisBucket).not.toHaveBeenCalled()
     expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
   })
 

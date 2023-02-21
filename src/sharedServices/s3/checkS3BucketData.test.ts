@@ -1,11 +1,11 @@
 import { listS3Files } from './listS3Files'
+import { getAuditDataSourceBucketName } from './getAuditDataSourceBucketName'
 import { checkS3BucketData } from './checkS3BucketData'
 import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
 import { StorageClass, _Object } from '@aws-sdk/client-s3'
 import { when } from 'jest-when'
 import {
   TEST_ANALYSIS_BUCKET,
-  TEST_AUDIT_BUCKET,
   TEST_DATE_1,
   TEST_DATE_2,
   ZENDESK_TICKET_ID
@@ -16,6 +16,10 @@ jest.mock('./listS3Files', () => ({
   listS3Files: jest.fn()
 }))
 
+jest.mock('./getAuditDataSourceBucketName', () => ({
+  getAuditDataSourceBucketName: jest.fn()
+}))
+
 jest.mock('./generateS3ObjectPrefixesForDateList', () => ({
   generateS3ObjectPrefixesForDateList: jest.fn()
 }))
@@ -23,6 +27,7 @@ const mockgenerateS3ObjectPrefixesForDateList =
   generateS3ObjectPrefixesForDateList as jest.Mock<string[]>
 
 describe('check objects in analysis bucket', () => {
+  const testAuditSourceDataBucket = 'mySourceDataBucket'
   const prefixes = [
     'firehose/2022/10/10/21',
     'firehose/2022/10/10/22',
@@ -90,6 +95,9 @@ describe('check objects in analysis bucket', () => {
 
   beforeEach(() => {
     when(listS3Files).resetWhenMocks()
+    when(getAuditDataSourceBucketName).mockReturnValue(
+      testAuditSourceDataBucket
+    )
     jest.spyOn(logger, 'info')
     jest.spyOn(logger, 'warn')
   })
@@ -116,7 +124,11 @@ describe('check objects in analysis bucket', () => {
   }
 
   test('all data in analysis bucket', async () => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      prefixes,
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
 
     const result = await checkS3BucketData(testDataRequest)
@@ -129,7 +141,11 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('all data in analysis bucket', async () => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      prefixes,
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
 
     const result = await checkS3BucketData(testDataRequest)
@@ -142,7 +158,11 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, all audit data is standard tier', async () => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      prefixes,
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
 
     const result = await checkS3BucketData(testDataRequest)
@@ -167,10 +187,10 @@ describe('check objects in analysis bucket', () => {
   test('no data in analysis bucket, audit bucket data contains some data with missing keys', async () => {
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
-      TEST_AUDIT_BUCKET,
+      testAuditSourceDataBucket,
       'STANDARD'
     )
-    givenDataInBucketForPrefix(prefixes[1], TEST_AUDIT_BUCKET, [
+    givenDataInBucketForPrefix(prefixes[1], testAuditSourceDataBucket, [
       { StorageClass: 'STANDARD' }
     ])
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
@@ -189,16 +209,16 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0)
-    assertFilesMissingKeysLogged(TEST_AUDIT_BUCKET)
+    assertFilesMissingKeysLogged(testAuditSourceDataBucket)
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with undefined keys', async () => {
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
-      TEST_AUDIT_BUCKET,
+      testAuditSourceDataBucket,
       'STANDARD'
     )
-    givenDataInBucketForPrefix(prefixes[1], TEST_AUDIT_BUCKET, [
+    givenDataInBucketForPrefix(prefixes[1], testAuditSourceDataBucket, [
       { StorageClass: 'STANDARD', Key: undefined }
     ])
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
@@ -217,16 +237,16 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0)
-    assertFilesMissingKeysLogged(TEST_AUDIT_BUCKET)
+    assertFilesMissingKeysLogged(testAuditSourceDataBucket)
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with missing storage class', async () => {
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
-      TEST_AUDIT_BUCKET,
+      testAuditSourceDataBucket,
       'STANDARD'
     )
-    givenDataInBucketForPrefix(prefixes[1], TEST_AUDIT_BUCKET, [
+    givenDataInBucketForPrefix(prefixes[1], testAuditSourceDataBucket, [
       { Key: 'firehose/2022/10/10/22/example-object-1' }
     ])
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
@@ -245,16 +265,16 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0)
-    assertFilesMissingStorageClassLogged(TEST_AUDIT_BUCKET)
+    assertFilesMissingStorageClassLogged(testAuditSourceDataBucket)
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with undefined storage class', async () => {
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
-      TEST_AUDIT_BUCKET,
+      testAuditSourceDataBucket,
       'STANDARD'
     )
-    givenDataInBucketForPrefix(prefixes[1], TEST_AUDIT_BUCKET, [
+    givenDataInBucketForPrefix(prefixes[1], testAuditSourceDataBucket, [
       {
         Key: 'firehose/2022/10/10/22/example-object-1',
         StorageClass: undefined
@@ -276,12 +296,12 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0)
-    assertFilesMissingStorageClassLogged(TEST_AUDIT_BUCKET)
+    assertFilesMissingStorageClassLogged(testAuditSourceDataBucket)
   })
 
   test('no data in analysis bucket, all audit data in glacier tier', async () => {
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'GLACIER')
+    givenDataInBucketForPrefixes(prefixes, testAuditSourceDataBucket, 'GLACIER')
 
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
@@ -306,10 +326,14 @@ describe('check objects in analysis bucket', () => {
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
-      TEST_AUDIT_BUCKET,
+      testAuditSourceDataBucket,
       'GLACIER'
     )
-    givenDataInBucketForPrefixes([prefixes[1]], TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      [prefixes[1]],
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
@@ -331,7 +355,11 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket', async () => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      prefixes,
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     givenNoDataInBucketForPrefixes(
       [prefixes[0], prefixes[1]],
       TEST_ANALYSIS_BUCKET
@@ -359,7 +387,11 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket, some data in analysis bucket missing keys', async () => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      prefixes,
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     givenNoDataInBucketForPrefixes(
       [prefixes[0], prefixes[1]],
       TEST_ANALYSIS_BUCKET
@@ -395,7 +427,11 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket, some data in analysis bucket with undefined keys', async () => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      prefixes,
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     givenNoDataInBucketForPrefixes(
       [prefixes[0], prefixes[1]],
       TEST_ANALYSIS_BUCKET
@@ -431,7 +467,11 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket, some data in analysis bucket missing storage class', async () => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      prefixes,
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     givenNoDataInBucketForPrefixes(
       [prefixes[0], prefixes[1]],
       TEST_ANALYSIS_BUCKET
@@ -467,7 +507,11 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket, some data in analysis bucket with undefined storage class', async () => {
-    givenDataInBucketForPrefixes(prefixes, TEST_AUDIT_BUCKET, 'STANDARD')
+    givenDataInBucketForPrefixes(
+      prefixes,
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
     givenNoDataInBucketForPrefixes(
       [prefixes[0], prefixes[1]],
       TEST_ANALYSIS_BUCKET

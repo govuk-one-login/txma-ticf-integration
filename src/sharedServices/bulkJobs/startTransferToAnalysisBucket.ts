@@ -3,45 +3,54 @@ import {
   CreateJobCommand,
   CreateJobCommandInput
 } from '@aws-sdk/client-s3-control'
+import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import { getEnv } from '../../utils/helpers'
 import { logger } from '../logger'
+import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
 
-// currently no trigger for this function
-export const startCopyJob = async (
-  filesToCopy: string[],
+export const startTransferToAnalysisBucket = async (
+  filesToTransfer: string[],
   zendeskTicketId: string
 ) => {
-  if (filesToCopy?.length < 1) {
-    logger.warn('startCopyJob called with no files. Not performing any action')
+  if (filesToTransfer?.length < 1) {
+    logger.warn(
+      'startTransferToAnalysisBucket called with no files. Not performing any action'
+    )
     return
   }
 
   const manifestFileName = `${analysisBucketName}-copy-job-for-ticket-id-${zendeskTicketId}.csv`
   const manifestFileEtag = await writeJobManifestFileToJobBucket(
-    getEnv('AUDIT_BUCKET_NAME'),
-    filesToCopy,
+    getAuditDataSourceBucketName(),
+    filesToTransfer,
     manifestFileName
   )
   logger.info(
     `Starting S3 standard tier copying for zendesk ticket with id ${zendeskTicketId}`
   )
-  const jobId = await createS3CopyJob(
+  const decryptDataFlagOn = getFeatureFlagValue('DECRYPT_DATA')
+  const jobId = await createS3TransferBatchJob(
     manifestFileName,
     manifestFileEtag,
-    zendeskTicketId
+    zendeskTicketId,
+    decryptDataFlagOn
   )
+
   logger.info(
-    `Started S3 copy job for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
+    `Started ${
+      decryptDataFlagOn ? 'data decrypt batch job' : 'S3 copy job'
+    } for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
   )
 }
 
-const createS3CopyJob = async (
+const createS3TransferBatchJob = async (
   manifestFileName: string,
   manifestFileEtag: string,
-  zendeskTicketId: string
+  zendeskTicketId: string,
+  decryptData: boolean
 ) => {
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
@@ -51,9 +60,17 @@ const createS3CopyJob = async (
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
     Operation: {
-      S3PutObjectCopy: {
-        TargetResource: getEnv('ANALYSIS_BUCKET_ARN')
-      }
+      ...(decryptData
+        ? {
+            LambdaInvoke: {
+              FunctionArn: getEnv('DECRYPTION_LAMBDA_ARN')
+            }
+          }
+        : {
+            S3PutObjectCopy: {
+              TargetResource: getEnv('ANALYSIS_BUCKET_ARN')
+            }
+          })
     },
     Report: {
       Enabled: false

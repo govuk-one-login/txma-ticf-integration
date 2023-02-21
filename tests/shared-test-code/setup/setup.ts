@@ -29,12 +29,30 @@ module.exports = async () => {
     [`tests/${stack}/NotifySecrets`]: ['NOTIFY_API_KEY']
   }
 
+  const formatTestStackSsmParam = (parameterName: string) =>
+    `/tests/${stack}/${parameterName}`
+
   const ssmMappings = {
-    AUDIT_BUCKET_NAME: `/tests/${stack}/AuditBucketName`,
-    AUDIT_REQUEST_DYNAMODB_TABLE: `/tests/${stack}/QueryRequestTableName`,
-    DYNAMO_OPERATIONS_FUNCTION_NAME: `/tests/${stack}/DynamoOperationsFunctionName`,
-    SQS_OPERATIONS_FUNCTION_NAME: `/tests/${stack}/SqsOperationsFunctionName`,
-    TEST_DATA_BUCKET_NAME: `/tests/${stack}/IntegrationTestDataBucketName`
+    AUDIT_BUCKET_NAME: formatTestStackSsmParam('AuditBucketName'),
+    PERMANENT_AUDIT_BUCKET_NAME: formatTestStackSsmParam(
+      'PermanentAuditBucketName'
+    ),
+    TEMPORARY_AUDIT_BUCKET_NAME: formatTestStackSsmParam(
+      'TemporaryAuditBucketName'
+    ),
+    AUDIT_REQUEST_DYNAMODB_TABLE: formatTestStackSsmParam(
+      'QueryRequestTableName'
+    ),
+    DYNAMO_OPERATIONS_FUNCTION_NAME: formatTestStackSsmParam(
+      'DynamoOperationsFunctionName'
+    ),
+    SQS_OPERATIONS_FUNCTION_NAME: formatTestStackSsmParam(
+      'SqsOperationsFunctionName'
+    ),
+    TEST_DATA_BUCKET_NAME: formatTestStackSsmParam(
+      'IntegrationTestDataBucketName'
+    ),
+    FEATURE_DECRYPT_DATA: formatTestStackSsmParam('FeatureDecryptData')
   }
 
   const stackOutputMappings = {
