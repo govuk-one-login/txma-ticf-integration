@@ -824,25 +824,8 @@ Resources:
                   Value: 'true'
             - !Ref AWS::NoValue
       LoggingConfiguration:
-        DestinationBucketName: !Ref AnalysisLogsBucket
-        LogFilePrefix: String
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
-
-  AnalysisLogsBucket:
-    #checkov:skip=CKV_AWS_18:This is the logs bucket
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub ${AWS::StackName}-${Environment}-analysis-logs
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
+        DestinationBucketName: '{{resolve:ssm:S3LogsBucketName}}'
+        LogFilePrefix: !Sub ${AWS::StackName}-${Environment}-analysis-bucket
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
