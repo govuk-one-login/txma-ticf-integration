@@ -5,7 +5,6 @@ import {
 } from '@aws-sdk/client-s3-control'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import { getEnv } from '../../utils/helpers'
-import { updateQueryByZendeskId } from '../dynamoDB/dynamoDBUpdate'
 import { logger } from '../logger'
 import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
@@ -45,12 +44,6 @@ export const startTransferToAnalysisBucket = async (
       decryptDataFlagOn ? 'data decrypt batch job' : 'S3 copy job'
     } for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
   )
-
-  await updateQueryByZendeskId(
-    zendeskTicketId,
-    'transferToAnalysisBucketJobId',
-    jobId as string
-  )
 }
 
 const createS3TransferBatchJob = async (
@@ -66,6 +59,16 @@ const createS3TransferBatchJob = async (
     ClientRequestToken: `copy-${zendeskTicketId}`,
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
+    Tags: [
+      {
+        Key: 'isTransferToAnalysisBucketJob',
+        Value: 'true'
+      },
+      {
+        Key: 'zendeskId',
+        Value: zendeskTicketId
+      }
+    ],
     Operation: {
       ...(decryptData
         ? {
