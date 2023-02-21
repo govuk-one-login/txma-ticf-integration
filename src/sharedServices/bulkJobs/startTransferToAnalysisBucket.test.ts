@@ -11,6 +11,7 @@ import {
 } from '../../utils/tests/testConstants'
 import { startTransferToAnalysisBucket } from './startTransferToAnalysisBucket'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
+import { updateQueryByZendeskId } from '../dynamoDB/dynamoDBUpdate'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import { mockClient } from 'aws-sdk-client-mock'
@@ -25,6 +26,10 @@ jest.mock('../s3/getAuditDataSourceBucketName', () => ({
 
 jest.mock('./writeJobManifestFileToJobBucket', () => ({
   writeJobManifestFileToJobBucket: jest.fn()
+}))
+
+jest.mock('../dynamoDB/dynamoDBUpdate', () => ({
+  updateQueryByZendeskId: jest.fn()
 }))
 
 const s3ControlClientMock = mockClient(S3ControlClient)
@@ -49,6 +54,11 @@ describe('startTransferToAnalysisBucket', () => {
         testAuditSourceDataBucket,
         fileList,
         `${TEST_ANALYSIS_BUCKET}-copy-job-for-ticket-id-${ZENDESK_TICKET_ID}.csv`
+      )
+      expect(updateQueryByZendeskId).toBeCalledWith(
+        ZENDESK_TICKET_ID,
+        'transferToAnalysisBucketJobId',
+        testJobId
       )
       expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
         ConfirmationRequired: false,
