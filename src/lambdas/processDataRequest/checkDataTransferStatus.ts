@@ -1,4 +1,4 @@
-import { startCopyJob } from '../../sharedServices/bulkJobs/startCopyJob'
+import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
@@ -41,7 +41,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
 
   if (!glacierRestoreStillInProgress && !copyJobStarted) {
     logger.info('Glacier restore complete. Starting copy job')
-    await startCopyJob(
+    await startTransferToAnalysisBucket(
       s3BucketDataLocationResult.standardTierLocationsToCopy,
       zendeskId
     )
