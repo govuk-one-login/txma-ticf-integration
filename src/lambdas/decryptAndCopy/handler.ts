@@ -28,9 +28,7 @@ export const handler = async (
 
   const decryptedData = await decryptS3Object(encryptedData)
 
-  const analysisBucket = getEnv('ANALYSIS_BUCKET_NAME')
-
-  await putS3Object(analysisBucket, key, decryptedData)
+  await putS3Object(getEnv('ANALYSIS_BUCKET_NAME'), key, decryptedData)
 
   return {
     invocationSchemaVersion: '1.0',
