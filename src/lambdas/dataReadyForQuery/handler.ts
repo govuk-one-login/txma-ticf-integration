@@ -19,17 +19,23 @@ export const handler = async (
     event.detail.status
   )
   if (!statusIsOfInterest) {
+    logger.info(`Status ${event.detail.status} is not relevant. Exiting.`)
     return
   }
 
   const batchJobTags = await getS3BatchJobTags(event.detail.jobId)
+  logger.info('Got batch job tags', { batchJobTags: batchJobTags })
   if (!batchJobIsTransferToAnalysisBucket(batchJobTags)) {
+    logger.info('Batch job is not transfer to analysis bucket. Exiting')
     return
   }
 
   const zendeskId = getZendeskIdFromTags(batchJobTags)
   if (event.detail.status === 'Complete') {
+    logger.info('Batch job complete')
     await sendInitiateAthenaQueryMessage(zendeskId)
+  } else {
+    logger.info(`Batch job status is ${event.detail.status}`)
   }
 }
 
