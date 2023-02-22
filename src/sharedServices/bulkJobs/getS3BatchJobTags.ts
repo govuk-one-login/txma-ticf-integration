@@ -10,6 +10,11 @@ export const getS3BatchJobTags = async (
 ): Promise<S3Tag[] | undefined> => {
   const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
 
-  const result = await client.send(new GetJobTaggingCommand({ JobId: jobId }))
+  const result = await client.send(
+    new GetJobTaggingCommand({
+      AccountId: getEnv('AWS_ACCOUNT_ID'),
+      JobId: jobId
+    })
+  )
   return result.Tags
 }
