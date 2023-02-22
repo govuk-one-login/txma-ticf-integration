@@ -270,6 +270,7 @@ Resources:
               Effect: Allow
               Action:
                 - s3:CreateJob
+                - s3:PutJobTagging
               Resource: '*'
             - Sid: AssumeBatchJobRole
               Effect: Allow
