@@ -127,7 +127,7 @@ yarn test:e2e:dev
 
 ### Test Reports
 
-Running the tests creates a results file in JUnit format at `tests/reports/results`. Allure integration has been removed.
+Running the tests creates a results file in JUnit format at `tests/reports/results`.
 
 ### Creating and approving a Zendesk ticket
 
