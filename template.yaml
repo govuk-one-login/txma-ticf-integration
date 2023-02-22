@@ -1011,7 +1011,7 @@ Resources:
         source:
           - 'aws.s3'
         detail-type:
-          - 'Batch Job State Change'
+          - 'AWS Service Event via CloudTrail'
         detail:
           eventSource:
             - 's3.amazonaws.com'
