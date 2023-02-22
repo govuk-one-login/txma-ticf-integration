@@ -3,6 +3,7 @@ import {
   CreateJobCommand,
   CreateJobCommandInput
 } from '@aws-sdk/client-s3-control'
+import { batchJobConstants } from '../../constants/batchJobConstants'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import { getEnv } from '../../utils/helpers'
 import { logger } from '../logger'
@@ -61,11 +62,11 @@ const createS3TransferBatchJob = async (
     Priority: 1,
     Tags: [
       {
-        Key: 'isTransferToAnalysisBucketJob',
+        Key: batchJobConstants.transferToAnalysisBucketJobTagName,
         Value: 'true'
       },
       {
-        Key: 'zendeskId',
+        Key: batchJobConstants.zendeskIdTagName,
         Value: zendeskTicketId
       }
     ],

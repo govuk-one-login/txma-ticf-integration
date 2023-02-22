@@ -1,7 +1,6 @@
 import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
-import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import {
@@ -39,43 +38,24 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     copyJobStarted &&
     s3BucketDataLocationResult.standardTierLocationsToCopy.length > 0
 
-  if (!glacierRestoreStillInProgress && !copyJobStarted) {
+  if (!glacierRestoreStillInProgress) {
     logger.info('Glacier restore complete. Starting copy job')
     await startTransferToAnalysisBucket(
       s3BucketDataLocationResult.standardTierLocationsToCopy,
       zendeskId
     )
-    await maintainRetryState(
-      zendeskId,
-      glacierRestoreStillInProgress,
-      copyJobStillInProgress
-    )
-  } else if (glacierRestoreStillInProgress || copyJobStillInProgress) {
+  } else {
     logger.info('Placing zendeskId back on InitiateDataRequestQueue', {
-      glacier_progress: `${
-        glacierRestoreStillInProgress ? 'Glacier restore' : 'Copy job'
-      } still in progress`,
-      number_of_checks: `${
-        copyJobStillInProgress
-          ? addOneToRetryCountForLogs(dbEntry.checkCopyStatusCount)
-          : addOneToRetryCountForLogs(dbEntry.checkGlacierStatusCount)
-      }`
+      glacier_progress: 'Glacier restore still in progress',
+      number_of_checks: addOneToRetryCountForLogs(
+        dbEntry.checkGlacierStatusCount
+      ).toString()
     })
-
     await maintainRetryState(
       zendeskId,
       glacierRestoreStillInProgress,
       copyJobStillInProgress
     )
-  } else if (
-    copyJobStarted &&
-    !copyJobStillInProgress &&
-    !glacierRestoreStillInProgress
-  ) {
-    logger.info(
-      `Restore/copy process complete. Placing zendeskId '${zendeskId}' on InitiateAthenaQueryQueue`
-    )
-    await sendInitiateAthenaQueryMessage(zendeskId)
   }
 }
 

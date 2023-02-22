@@ -56,9 +56,9 @@ export const initiateDataTransfer = async (
   if (!glacierRestoreRequired && !shouldStartCopyFromAuditBucket) {
     logger.info(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
     await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
-  } else {
+  } else if (glacierRestoreRequired) {
     logger.info(interpolateTemplate('queuingMessageLongPoll', loggingCopy))
-    const waitTimeInSeconds = glacierRestoreRequired ? 900 : 30
+    const waitTimeInSeconds = 900
     await sendContinuePollingDataTransferMessage(
       dataRequestParams.zendeskId,
       waitTimeInSeconds

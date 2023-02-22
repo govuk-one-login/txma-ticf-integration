@@ -62,7 +62,6 @@ const mockSendContinuePollingDataTransferMessage =
 
 describe('initiate data transfer', () => {
   const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
-  const EXPECTED_COPY_WAIT_TIME_IN_SECONDS = 30
   const givenDataResult = (
     dataAvailable: boolean,
     standardTierLocationsToCopy: string[],
@@ -131,10 +130,7 @@ describe('initiate data transfer', () => {
       ZENDESK_TICKET_ID
     )
     expect(mockStartGlacierRestore).not.toHaveBeenCalled()
-    expect(mockSendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
-      ZENDESK_TICKET_ID,
-      EXPECTED_COPY_WAIT_TIME_IN_SECONDS
-    )
+    expect(mockSendContinuePollingDataTransferMessage).not.toHaveBeenCalled()
     expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
 

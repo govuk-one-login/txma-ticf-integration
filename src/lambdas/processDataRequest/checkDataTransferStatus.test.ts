@@ -1,12 +1,10 @@
 import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
 import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
-import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import { when } from 'jest-when'
 import {
-  TEST_MAXIMUM_COPY_STATUS_CHECK_COUNT,
   TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT,
   ZENDESK_TICKET_ID
 } from '../../utils/tests/testConstants'
@@ -51,17 +49,12 @@ jest.mock('./incrementPollingRetryCount', () => ({
   incrementPollingRetryCount: jest.fn()
 }))
 
-jest.mock('../../sharedServices/queue/sendInitiateAthenaQueryMessage', () => ({
-  sendInitiateAthenaQueryMessage: jest.fn()
-}))
-
 const mockIncrementPollingRetryCount = incrementPollingRetryCount as jest.Mock
 const mockSendContinuePollingDataTransferMessage =
   sendContinuePollingDataTransferMessage as jest.Mock
 
 describe('checkDataTransferStatus', () => {
   const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
-  const EXPECTED_COPY_WAIT_TIME_IN_SECONDS = 30
 
   beforeEach(() => {
     jest.spyOn(logger, 'info')
@@ -93,10 +86,6 @@ describe('checkDataTransferStatus', () => {
 
   const givenCopyRequired = () => {
     givenDataResult(filesToCopy, [])
-  }
-
-  const givenDataReadyForQuery = () => {
-    givenDataResult([], [])
   }
 
   const givenDatabaseEntryResult = (
@@ -147,8 +136,6 @@ describe('checkDataTransferStatus', () => {
   })
 
   it('should start copy from audit to analysis bucket if no glacier defrost is pending, there are files to copy and no copy is in progress', async () => {
-    const glacierRestoreIsNotInProgress = false
-    const copyJobIsNotInProgress = false
     givenDatabaseEntryResult({
       checkGlacierStatusCount: 1
     })
@@ -163,93 +150,8 @@ describe('checkDataTransferStatus', () => {
       filesToCopy,
       ZENDESK_TICKET_ID
     )
-    expect(mockIncrementPollingRetryCount).toBeCalledWith(
-      ZENDESK_TICKET_ID,
-      glacierRestoreIsNotInProgress,
-      copyJobIsNotInProgress
-    )
-    expect(mockSendContinuePollingDataTransferMessage).toBeCalledWith(
-      ZENDESK_TICKET_ID,
-      EXPECTED_COPY_WAIT_TIME_IN_SECONDS
-    )
-    expect(mockIncrementPollingRetryCount).toHaveBeenCalledBefore(
-      mockSendContinuePollingDataTransferMessage
-    )
-  })
-
-  it('should continue to wait if there are pending files to copy from audit bucket and a copy has already started', async () => {
-    const glacierRestoreIsNotInProgress = false
-    const copyJobIsInProgress = true
-    givenDatabaseEntryResult({
-      checkCopyStatusCount: 1
-    })
-    givenCopyRequired()
-
-    await checkDataTransferStatus(ZENDESK_TICKET_ID)
-
-    expect(logger.info).toHaveBeenLastCalledWith(
-      'Placing zendeskId back on InitiateDataRequestQueue',
-      {
-        glacier_progress: 'Copy job still in progress',
-        number_of_checks: '2'
-      }
-    )
-    expect(mockIncrementPollingRetryCount).toBeCalledWith(
-      ZENDESK_TICKET_ID,
-      glacierRestoreIsNotInProgress,
-      copyJobIsInProgress
-    )
-    expect(mockSendContinuePollingDataTransferMessage).toBeCalledWith(
-      ZENDESK_TICKET_ID,
-      EXPECTED_COPY_WAIT_TIME_IN_SECONDS
-    )
-    expect(mockIncrementPollingRetryCount).toHaveBeenCalledBefore(
-      mockSendContinuePollingDataTransferMessage
-    )
-  })
-
-  it('should queue athena query if all data is now ready following a copy', async () => {
-    givenDatabaseEntryResult({
-      checkCopyStatusCount: 1
-    })
-    givenDataReadyForQuery()
-
-    await checkDataTransferStatus(ZENDESK_TICKET_ID)
-    expect(startTransferToAnalysisBucket).not.toHaveBeenCalled()
-    expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
-  })
-
-  it('should queue athena query if all data is now ready following a glacier restore and copy', async () => {
-    givenDatabaseEntryResult({
-      checkGlacierStatusCount: 1,
-      checkCopyStatusCount: 1
-    })
-    givenDataReadyForQuery()
-
-    await checkDataTransferStatus(ZENDESK_TICKET_ID)
-
-    expect(logger.info).toHaveBeenLastCalledWith(
-      `Restore/copy process complete. Placing zendeskId '${ZENDESK_TICKET_ID}' on InitiateAthenaQueryQueue`
-    )
-    expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
-  })
-
-  it('should stop checking the data transfer status if checkCopyStatusCount exceeds maximum amount', async () => {
-    givenDatabaseEntryResult({
-      checkCopyStatusCount: TEST_MAXIMUM_COPY_STATUS_CHECK_COUNT
-    })
-
-    await checkDataTransferStatus(ZENDESK_TICKET_ID)
-
-    expect(logger.error).toHaveBeenLastCalledWith(
-      'Status check count exceeded. Process terminated'
-    )
-    expect(terminateStatusCheckProcess).toHaveBeenCalledWith(ZENDESK_TICKET_ID)
-    expect(updateZendeskTicketById).toHaveBeenCalledWith(
-      ZENDESK_TICKET_ID,
-      'The data retrieval process timed out and could not be retrieved. Please try again by opening another ticket',
-      'closed'
-    )
+    expect(mockSendContinuePollingDataTransferMessage).not.toBeCalled()
+    expect(mockIncrementPollingRetryCount).not.toHaveBeenCalled()
   })
 
   it('should stop checking the data transfer status if checkGlacierStatusCount exceeds maximum amount', async () => {
