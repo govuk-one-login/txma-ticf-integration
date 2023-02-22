@@ -1022,6 +1022,14 @@ Resources:
         - Arn: !GetAtt DataReadyForQueryFunction.Arn
           Id: BatchJobEventTarget
 
+  PermissionForBatchJobStatusEventToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref DataReadyForQueryFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt BatchJobEventBridgeRule.Arn
+
   ###############
   # SQS Resources
   ###############
