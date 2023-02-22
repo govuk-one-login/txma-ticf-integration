@@ -15,15 +15,15 @@ export const handler = async (
 ) => {
   initialiseLogger(context)
   logger.info('received event', { handledEvent: event })
-  const statusIsOfInterest = ['Complete', 'Failed'].includes(
-    event.detail.status
-  )
+  const eventStatus = event.detail.serviceEventDetails.status
+  const jobId = event.detail.serviceEventDetails.jobId
+  const statusIsOfInterest = ['Complete', 'Failed'].includes(eventStatus)
   if (!statusIsOfInterest) {
-    logger.info(`Status ${event.detail.status} is not relevant. Exiting.`)
+    logger.info(`Status ${eventStatus} is not relevant. Exiting.`)
     return
   }
 
-  const batchJobTags = await getS3BatchJobTags(event.detail.jobId)
+  const batchJobTags = await getS3BatchJobTags(jobId)
   logger.info('Got batch job tags', { batchJobTags: batchJobTags })
   if (!batchJobIsTransferToAnalysisBucket(batchJobTags)) {
     logger.info('Batch job is not transfer to analysis bucket. Exiting')
@@ -31,11 +31,11 @@ export const handler = async (
   }
 
   const zendeskId = getZendeskIdFromTags(batchJobTags)
-  if (event.detail.status === 'Complete') {
+  if (eventStatus === 'Complete') {
     logger.info('Batch job complete')
     await sendInitiateAthenaQueryMessage(zendeskId)
   } else {
-    logger.info(`Batch job status is ${event.detail.status}`)
+    logger.info(`Batch job status is ${eventStatus}`)
   }
 }
 

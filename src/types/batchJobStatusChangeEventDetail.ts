@@ -1,4 +1,6 @@
 export interface BatchJobStatusChangeEventDetail {
-  jobId: string
-  status: string
+  serviceEventDetails: {
+    jobId: string
+    status: string
+  }
 }
