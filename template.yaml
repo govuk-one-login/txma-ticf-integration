@@ -357,6 +357,11 @@ Resources:
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
         - Statement:
+            - Sid: ReadS3BatchJobTags
+              Effect: Allow
+              Action:
+                - s3:GetJobTagging
+              Resource: '*'
             - Sid: S3Read
               Effect: Allow
               Action:
