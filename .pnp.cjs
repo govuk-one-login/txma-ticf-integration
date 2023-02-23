@@ -51,7 +51,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.52.0"],\
             ["aws-sdk-client-mock", "npm:2.0.1"],\
             ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1"],\
-            ["aws-testing-library", "npm:2.1.5"],\
+            ["aws-testing-library", "npm:2.1.7"],\
             ["axios", "npm:0.27.2"],\
             ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.17.8"],\
@@ -4941,15 +4941,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["aws-testing-library", [\
-        ["npm:2.1.5", {\
-          "packageLocation": "./.yarn/cache/aws-testing-library-npm-2.1.5-b54bc8b293-064b690bc4.zip/node_modules/aws-testing-library/",\
+        ["npm:2.1.7", {\
+          "packageLocation": "./.yarn/cache/aws-testing-library-npm-2.1.7-e72265891f-daa62e4db2.zip/node_modules/aws-testing-library/",\
           "packageDependencies": [\
-            ["aws-testing-library", "npm:2.1.5"],\
+            ["aws-testing-library", "npm:2.1.7"],\
             ["aws-sdk", "npm:2.1313.0"],\
             ["axios", "npm:0.27.2"],\
             ["filter-obj", "npm:3.0.0"],\
             ["jest-diff", "npm:28.1.3"],\
-            ["uuid", "npm:8.3.2"]\
+            ["uuid", "npm:9.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5736,7 +5736,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.52.0"],\
             ["aws-sdk-client-mock", "npm:2.0.1"],\
             ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1"],\
-            ["aws-testing-library", "npm:2.1.5"],\
+            ["aws-testing-library", "npm:2.1.7"],\
             ["axios", "npm:0.27.2"],\
             ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.17.8"],\
@@ -10233,6 +10233,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/uuid-npm-8.3.2-eca0baba53-5575a8a75c.zip/node_modules/uuid/",\
           "packageDependencies": [\
             ["uuid", "npm:8.3.2"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:9.0.0", {\
+          "packageLocation": "./.yarn/cache/uuid-npm-9.0.0-46c41e3e43-8dd2c83c43.zip/node_modules/uuid/",\
+          "packageDependencies": [\
+            ["uuid", "npm:9.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
