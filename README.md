@@ -9,14 +9,14 @@ Threat Intelligence and Counter Fraud (TICF) analysts will be able to request au
 To run this project you will need the following:
 
 - [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) - Used to build and deploy the application
-- [Node.js](https://nodejs.org/en/) version 16 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
+- [Node.js](https://nodejs.org/en/) version 18 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
 - [Docker](https://docs.docker.com/get-docker/) - Required to run SAM locally
 - [Yarn](https://yarnpkg.com/getting-started/install) version 3 - The package manager for the project
 - [Checkov](https://www.checkov.io/) - Scans cloud infrastructure configurations to find misconfigurations before they're deployed. Added as a Husky pre-commit hook.
 
 ### Important
 
-- **Node version 16** is required since the runtimes for Lambda functions are fixed.
+- **Node version 18** is required since the runtimes for Lambda functions are fixed.
 - Remove any old versions of Yarn that you may have installed globally if installing via `corepack enable`, or else the global version will override the version coming from Node.
 
 ## Getting started
@@ -127,27 +127,7 @@ yarn test:e2e:dev
 
 ### Test Reports
 
-Running the tests creates a results file in JUnit format at `tests/reports/allure-results`. This file is used to create a report using [Allure](https://docs.qameta.io/allure). Both suites output JUNIT xml to the same location.
-
-In order to create the report run:
-
-```
-yarn allure
-```
-
-This command uses a Docker Compose file to spin up a local Allure server and generate the report. The server willl detect any changes to the `junit.xml` file (i.e. a new test run) and generate a new version.
-
-To view the report locally, while the server is running, in your browser open:
-
-```
-http://localhost:5252
-```
-
-An emailable version of the report is generated at the following location:
-
-```
-tests/reports/allure-reports/emailable-report-allure-docker-service.html
-```
+Running the tests creates a results file in JUnit format at `tests/reports/results`.
 
 ### Creating and approving a Zendesk ticket
 
