@@ -79,3 +79,5 @@ export const TEST_S3_OBJECT_DATA_BUFFER = Buffer.from(
 )
 export const TEST_PERMANENT_BUCKET_NAME = 'testPermanentBucket'
 export const TEST_PERMANENT_BUCKET_ARN = 'arn:aws:s3:::testPermanentBucket'
+export const TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID =
+  'e53df0c4-a91b-4a2a-8084-5bdd32a15403'

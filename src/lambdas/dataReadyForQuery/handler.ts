@@ -8,7 +8,7 @@ import { BatchJobStatusChangeEventDetail } from '../../types/batchJobStatusChang
 
 export const handler = async (
   event: EventBridgeEvent<
-    'Batch Job State Change',
+    'AWS Service Event via CloudTrail',
     BatchJobStatusChangeEventDetail
   >,
   context: Context
