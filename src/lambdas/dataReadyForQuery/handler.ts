@@ -2,8 +2,13 @@ import { S3Tag } from '@aws-sdk/client-s3-control'
 import { Context, EventBridgeEvent } from 'aws-lambda'
 import { batchJobConstants } from '../../constants/batchJobConstants'
 import { getS3BatchJobTags } from '../../sharedServices/bulkJobs/getS3BatchJobTags'
-import { initialiseLogger, logger } from '../../sharedServices/logger'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
+import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { BatchJobStatusChangeEventDetail } from '../../types/batchJobStatusChangeEventDetail'
 
 export const handler = async (
@@ -31,12 +36,24 @@ export const handler = async (
   }
 
   const zendeskId = getZendeskIdFromTags(batchJobTags)
+  appendZendeskIdToLogger(zendeskId)
   if (eventStatus === 'Complete') {
     logger.info('Batch job complete')
     await sendInitiateAthenaQueryMessage(zendeskId)
   } else {
-    logger.info(`Batch job status is ${eventStatus}`)
+    logger.error(
+      `Transfer to analysis bucket job failed for zendesk ID '${zendeskId}', jobID '${jobId}'. Please check the job report and lambda logs for details of what went wrong`
+    )
+    closeTicketOnFailure(zendeskId)
   }
+}
+
+const closeTicketOnFailure = async (zendeskId: string) => {
+  await updateZendeskTicketById(
+    zendeskId,
+    'The data retrieval process errored and the data could not be retrieved. Please try again by opening another ticket, or contact the TxMA team to look into it for you',
+    'closed'
+  )
 }
 
 const getZendeskIdFromTags = (tags: S3Tag[] | undefined): string => {

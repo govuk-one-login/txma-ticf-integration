@@ -353,6 +353,7 @@ Resources:
           ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           INITIATE_ATHENA_QUERY_QUEUE_URL: !Ref InitiateAthenaQueryQueue
+          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       FunctionName: !Sub ${AWS::StackName}-data-ready-for-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
