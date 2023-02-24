@@ -1279,6 +1279,8 @@ Outputs:
     Value: !Ref InitiateDataRequestLogs
   ProcessDataRequestLambdaLogGroupName:
     Value: !Ref ProcessDataRequestLogs
+  DataReadyForQueryLogsLambdaLogGroupName:
+    Value: !Ref DataReadyForQueryLogs
   ZendeskWebhookApiUrl:
     Value:
       !If [
