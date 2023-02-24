@@ -825,7 +825,7 @@ Resources:
             - !Ref AWS::NoValue
       LoggingConfiguration:
         DestinationBucketName: '{{resolve:ssm:S3LogsBucketName}}'
-        LogFilePrefix: !Sub ${AWS::StackName}-${Environment}-analysis-bucket
+        LogFilePrefix: !Sub ${AWS::StackName}-${Environment}-analysis-bucket/
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
