@@ -1,7 +1,8 @@
 import {
   S3ControlClient,
   CreateJobCommand,
-  CreateJobCommandInput
+  CreateJobCommandInput,
+  JobReportScope
 } from '@aws-sdk/client-s3-control'
 import { batchJobConstants } from '../../constants/batchJobConstants'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
@@ -84,7 +85,10 @@ const createS3TransferBatchJob = async (
           })
     },
     Report: {
-      Enabled: false
+      Enabled: true,
+      Bucket: getEnv('BATCH_JOB_MANIFEST_BUCKET_ARN'),
+      Prefix: 'reports',
+      ReportScope: JobReportScope.FailedTasksOnly
     },
     Manifest: {
       Spec: {
