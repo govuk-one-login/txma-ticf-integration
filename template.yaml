@@ -974,6 +974,11 @@ Resources:
                   - s3:GetObject
                   - s3:GetObjectVersion
                 Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
+              - Sid: AllowManifestBucketWriteForReports
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
         - PolicyName: AllowS3Copy
           PolicyDocument:
             Version: '2012-10-17'
