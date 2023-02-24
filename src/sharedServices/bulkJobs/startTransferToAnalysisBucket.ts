@@ -88,6 +88,7 @@ const createS3TransferBatchJob = async (
       Enabled: true,
       Bucket: getEnv('BATCH_JOB_MANIFEST_BUCKET_ARN'),
       Prefix: 'reports',
+      Format: 'Report_CSV_20180820',
       ReportScope: JobReportScope.FailedTasksOnly
     },
     Manifest: {

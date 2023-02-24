@@ -86,6 +86,7 @@ describe('startTransferToAnalysisBucket', () => {
           Enabled: true,
           Bucket: TEST_BATCH_JOB_MANIFEST_BUCKET_ARN,
           Prefix: 'reports',
+          Format: 'Report_CSV_20180820',
           ReportScope: JobReportScope.FailedTasksOnly
         },
         Manifest: {
