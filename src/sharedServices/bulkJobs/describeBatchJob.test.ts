@@ -13,9 +13,11 @@ import { describeBatchJob } from './describeBatchJob'
 
 const s3ControlClientMock = mockClient(S3ControlClient)
 
+const testGivenJob = {}
+
 const describeJobResult: DescribeJobCommandOutput = {
   $metadata: {},
-  Job: {}
+  Job: testGivenJob
 }
 
 describe('describeBatchJob', () => {
@@ -31,6 +33,6 @@ describe('describeBatchJob', () => {
       JobId: TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID
     })
 
-    expect(result).toEqual(describeJobResult)
+    expect(result).toEqual(testGivenJob)
   })
 })

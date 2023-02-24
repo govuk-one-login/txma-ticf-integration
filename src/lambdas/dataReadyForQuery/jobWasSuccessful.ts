@@ -8,12 +8,12 @@ export const jobWasSuccessful = async (
   if (status === 'Failed') {
     return false
   }
-  const jobDescriptionResult = await describeBatchJob(jobId)
-  logger.info('Got batch job description', { jobDescriptionResult })
+  const job = await describeBatchJob(jobId)
+  logger.info('Got batch job description', { job })
   return (
-    !!jobDescriptionResult.Job?.ProgressSummary?.TotalNumberOfTasks &&
-    jobDescriptionResult.Job?.ProgressSummary?.TotalNumberOfTasks > 0 &&
-    jobDescriptionResult.Job?.ProgressSummary?.TotalNumberOfTasks ===
-      jobDescriptionResult.Job?.ProgressSummary?.NumberOfTasksSucceeded
+    !!job.ProgressSummary?.TotalNumberOfTasks &&
+    job.ProgressSummary?.TotalNumberOfTasks > 0 &&
+    job.ProgressSummary?.TotalNumberOfTasks ===
+      job.ProgressSummary?.NumberOfTasksSucceeded
   )
 }
