@@ -1,4 +1,5 @@
 import { getS3BatchJobTags } from '../../sharedServices/bulkJobs/getS3BatchJobTags'
+import { jobWasSuccessful } from './jobWasSuccessful'
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { batchJobStatusChangeEvent } from '../../utils/tests/events/batchJobStatusChangeEvent'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
@@ -23,6 +24,10 @@ jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 
+jest.mock('./jobWasSuccessful', () => ({
+  jobWasSuccessful: jest.fn()
+}))
+
 const TRANSFER_TO_ANALYSIS_BUCKET_JOB_TAG_NAME = 'isTransferToAnalysisBucketJob'
 const ZENDESK_ID_TAG_NAME = 'zendeskId'
 
@@ -45,8 +50,17 @@ describe('dataReadyForQuery', () => {
     ])
   }
 
-  it('Initiates athena query if batch job has completed', async () => {
+  const givenJobWasSuccessful = () => {
+    when(jobWasSuccessful).mockResolvedValue(true)
+  }
+
+  const givenJobWasNotSuccessful = () => {
+    when(jobWasSuccessful).mockResolvedValue(false)
+  }
+
+  it('Initiates athena query if batch job has completed successfully', async () => {
     givenS3BatchJobTagsContainsZendeskId()
+    givenJobWasSuccessful()
     await handler(batchJobStatusChangeEvent('Complete'), mockLambdaContext)
 
     expect(getS3BatchJobTags).toBeCalledWith(
@@ -58,6 +72,7 @@ describe('dataReadyForQuery', () => {
 
   it('Closes the Zendesk ticket if the batch job has failed', async () => {
     givenS3BatchJobTagsContainsZendeskId()
+    givenJobWasNotSuccessful()
     await handler(batchJobStatusChangeEvent('Failed'), mockLambdaContext)
     expect(updateZendeskTicketById).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,

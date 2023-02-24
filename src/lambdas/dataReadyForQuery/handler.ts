@@ -10,6 +10,7 @@ import {
 import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { BatchJobStatusChangeEventDetail } from '../../types/batchJobStatusChangeEventDetail'
+import { jobWasSuccessful } from './jobWasSuccessful'
 
 export const handler = async (
   event: EventBridgeEvent<
@@ -22,6 +23,7 @@ export const handler = async (
   logger.info('received event', { handledEvent: event })
   const eventStatus = event.detail.serviceEventDetails.status
   const jobId = event.detail.serviceEventDetails.jobId
+
   const statusIsOfInterest = ['Complete', 'Failed'].includes(eventStatus)
   if (!statusIsOfInterest) {
     logger.info(`Status ${eventStatus} is not relevant. Exiting.`)
@@ -37,8 +39,8 @@ export const handler = async (
 
   const zendeskId = getZendeskIdFromTags(batchJobTags)
   appendZendeskIdToLogger(zendeskId)
-  if (eventStatus === 'Complete') {
-    logger.info('Batch job complete')
+  if (await jobWasSuccessful(jobId, eventStatus)) {
+    logger.info('Batch job complete, checking success')
     await sendInitiateAthenaQueryMessage(zendeskId)
   } else {
     logger.error(
