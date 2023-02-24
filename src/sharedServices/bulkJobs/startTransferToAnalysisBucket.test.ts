@@ -1,4 +1,8 @@
-import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
+import {
+  S3ControlClient,
+  CreateJobCommand,
+  JobReportScope
+} from '@aws-sdk/client-s3-control'
 import { when } from 'jest-when'
 import {
   TEST_ANALYSIS_BUCKET,
@@ -79,7 +83,10 @@ describe('startTransferToAnalysisBucket', () => {
           })
         },
         Report: {
-          Enabled: false
+          Enabled: true,
+          Bucket: TEST_BATCH_JOB_MANIFEST_BUCKET_ARN,
+          Prefix: 'reports',
+          ReportScope: JobReportScope.FailedTasksOnly
         },
         Manifest: {
           Spec: {
