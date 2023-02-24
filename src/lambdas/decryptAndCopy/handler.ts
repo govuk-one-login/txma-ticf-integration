@@ -29,7 +29,9 @@ export const handler = async (
     await decryptAndCopy(event.tasks[0])
   } catch (err) {
     logger.error('Error during decrypt and copy', err as Error)
-    resultCode = 'TemporaryFailure'
+    //    resultCode = 'TemporaryFailure'
+    // TODO: undo this temporary change
+    resultCode = 'PermanentFailure'
     resultString = `Err: ${JSON.stringify(err)}`
   }
   return {
