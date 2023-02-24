@@ -40,7 +40,7 @@ export const handler = async (
   const zendeskId = getZendeskIdFromTags(batchJobTags)
   appendZendeskIdToLogger(zendeskId)
   if (await jobWasSuccessful(jobId, eventStatus)) {
-    logger.info('Batch job complete, checking success')
+    logger.info('Batch job was successful. Queueing Athena query...')
     await sendInitiateAthenaQueryMessage(zendeskId)
   } else {
     logger.error(
