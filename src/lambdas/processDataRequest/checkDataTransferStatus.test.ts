@@ -90,23 +90,18 @@ describe('checkDataTransferStatus', () => {
 
   const givenDatabaseEntryResult = (
     statusCountObject:
-      | { checkGlacierStatusCount?: number; checkCopyStatusCount?: number }
+      | { checkGlacierStatusCount?: number }
       | undefined = undefined
   ) => {
     when(getDatabaseEntryByZendeskId).mockResolvedValue({
       requestInfo: testDataRequest,
       ...(statusCountObject?.checkGlacierStatusCount && {
         checkGlacierStatusCount: statusCountObject.checkGlacierStatusCount
-      }),
-      ...(statusCountObject?.checkCopyStatusCount && {
-        checkCopyStatusCount: statusCountObject.checkCopyStatusCount
       })
     } as DataRequestDatabaseEntry)
   }
 
   it('should continue polling if a glacier defrost is pending', async () => {
-    const glacierRestoreIsInProgress = true
-    const copyJobIsNotInProgress = false
     givenDatabaseEntryResult({
       checkGlacierStatusCount: 1
     })
@@ -121,11 +116,7 @@ describe('checkDataTransferStatus', () => {
         number_of_checks: '2'
       }
     )
-    expect(mockIncrementPollingRetryCount).toBeCalledWith(
-      ZENDESK_TICKET_ID,
-      glacierRestoreIsInProgress,
-      copyJobIsNotInProgress
-    )
+    expect(mockIncrementPollingRetryCount).toBeCalledWith(ZENDESK_TICKET_ID)
     expect(mockSendContinuePollingDataTransferMessage).toBeCalledWith(
       ZENDESK_TICKET_ID,
       EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS

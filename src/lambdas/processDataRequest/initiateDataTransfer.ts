@@ -31,14 +31,8 @@ export const initiateDataTransfer = async (
   const copyFromAuditToAnalysisBucketRequired =
     bucketData.standardTierLocationsToCopy.length > 0
 
-  const shouldStartCopyFromAuditBucket =
-    copyFromAuditToAnalysisBucketRequired && !glacierRestoreRequired
   logger.info('storing new data request record')
-  await addNewDataRequestRecord(
-    dataRequestParams,
-    glacierRestoreRequired,
-    shouldStartCopyFromAuditBucket
-  )
+  await addNewDataRequestRecord(dataRequestParams, glacierRestoreRequired)
 
   if (!glacierRestoreRequired && !copyFromAuditToAnalysisBucketRequired) {
     logger.info(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))

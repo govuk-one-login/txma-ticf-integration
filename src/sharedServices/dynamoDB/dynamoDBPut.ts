@@ -6,8 +6,7 @@ import { ddbClient } from './dynamoDBClient'
 
 export const addNewDataRequestRecord = (
   dataRequestParams: DataRequestParams,
-  glacierRestoreInitiated: boolean,
-  copyFromAuditBucketInitiated: boolean
+  glacierRestoreInitiated: boolean
 ): Promise<unknown> => {
   const recordExpiryTimeSeconds =
     currentDateEpochSeconds() + parseInt(getEnv('DATABASE_TTL_HOURS')) * 60 * 60
@@ -47,9 +46,6 @@ export const addNewDataRequestRecord = (
 
   if (glacierRestoreInitiated) {
     newRecord.checkGlacierStatusCount = { N: '0' }
-  }
-  if (copyFromAuditBucketInitiated) {
-    newRecord.checkCopyStatusCount = { N: '0' }
   }
 
   return ddbClient.send(

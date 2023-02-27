@@ -104,7 +104,6 @@ describe('initiate data transfer', () => {
     expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
     expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
       testDataRequest,
-      false,
       false
     )
     expect(startGlacierRestore).not.toHaveBeenCalled()
@@ -122,8 +121,7 @@ describe('initiate data transfer', () => {
     expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
     expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
       testDataRequest,
-      false,
-      true
+      false
     )
     expect(mockStartTransferToAnalysisBucket).toHaveBeenCalledWith(
       filesToCopy,
@@ -140,8 +138,7 @@ describe('initiate data transfer', () => {
     await initiateDataTransfer(testDataRequest)
     expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
       testDataRequest,
-      true,
-      false
+      true
     )
     expect(startGlacierRestore).toHaveBeenCalledWith(
       glacierTierLocationsToCopy,
@@ -162,8 +159,7 @@ describe('initiate data transfer', () => {
     await initiateDataTransfer(testDataRequest)
     expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
       testDataRequest,
-      true,
-      false
+      true
     )
     expect(startGlacierRestore).toHaveBeenCalledWith(
       glacierTierLocationsToCopy,
