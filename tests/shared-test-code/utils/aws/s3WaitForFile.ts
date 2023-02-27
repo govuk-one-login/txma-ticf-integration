@@ -11,7 +11,6 @@ export const s3WaitForFile = async (bucket: string, key: string) => {
       break
     }
     if (await s3FileExists(bucket, key)) {
-      console.log(`Found data in bucket ${bucket} for prefix ${key}`)
       break
     }
     console.log(
