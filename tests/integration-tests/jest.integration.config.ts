@@ -18,7 +18,7 @@ const config: JestConfigWithTsJest = {
       'jest-junit',
       {
         suiteName: 'TxMA data retrieval integration tests',
-        outputDirectory: '<rootDir>/../reports/allure-results',
+        outputDirectory: '<rootDir>/../reports/results',
         ancestorSeparator: ',',
         includeConsoleOutput: true
       }

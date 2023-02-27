@@ -10,9 +10,6 @@
   "packageManager": "yarn@3.4.1",
   "private": true,
   "scripts": {
-    "allure": "./tests/run-allure.sh",
-    "allure:stop": "docker-compose -f tests/docker-compose.allure.yaml down",
-    "allure:report": "cp tests/reports/allure-reports/emailable-report-allure-docker-service.html tests/reports/TxMA-Team2-Test-Report-$(date +%d-%m-%Y).html",
     "build": "tsc --noEmit && ts-node ./esbuild.config.ts",
     "createTestTicket": "FIXED_RECIPIENT_EMAIL=$0 FIXED_DATA_REQUEST_DATE=$1 FIXED_SUBJECT_LINE=$2 OVERRIDE_EVENT_IDS=$3 DATA_PATHS=$4 ts-node scripts/createAndApproveZendeskTicket.ts",
     "lint": "prettier . --check || exit 1 ; eslint . --max-warnings=0",
