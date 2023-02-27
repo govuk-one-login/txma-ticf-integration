@@ -79,23 +79,23 @@ describe('Data should be copied to analysis bucket', () => {
         result: isCopyJobStartedMessageInLogs,
         events: processDataRequestEvents
       }).toEqual({ result: true, events: processDataRequestEvents })
-      // TODO: look for an entry in the dataReadyForQuery lambda logs instead
-      // const copyCompletedEvents =
-      //   await getCloudWatchLogEventsGroupByMessagePattern(
-      //     getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-      //     [cloudwatchLogFilters.copyComplete, 'zendeskId', ticketId],
-      //     100
-      //   )
-      // expect(copyCompletedEvents).not.toEqual([])
 
-      // const isCopyCompleteMessageInLogs = eventIsPresent(
-      //   copyCompletedEvents,
-      //   cloudwatchLogFilters.copyComplete
-      // )
-      // expect({
-      //   result: isCopyCompleteMessageInLogs,
-      //   events: copyCompletedEvents
-      // }).toEqual({ result: true, events: copyCompletedEvents })
+      const athenaQueryQueuedEvents =
+        await getCloudWatchLogEventsGroupByMessagePattern(
+          getEnv('DATA_READY_FOR_QUERY_LAMBDA_LOG_GROUP_NAME'),
+          [cloudwatchLogFilters.athenaQueryQueued, 'zendeskId', ticketId],
+          50
+        )
+      expect(athenaQueryQueuedEvents).not.toEqual([])
+
+      const isAthenaQueryQueuedMessageInLogs = eventIsPresent(
+        athenaQueryQueuedEvents,
+        cloudwatchLogFilters.athenaQueryQueued
+      )
+      expect({
+        result: isAthenaQueryQueuedMessageInLogs,
+        events: athenaQueryQueuedEvents
+      }).toEqual({ result: true, events: athenaQueryQueuedEvents })
     })
   })
 

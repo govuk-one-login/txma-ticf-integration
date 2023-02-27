@@ -26,14 +26,12 @@ export const handler = async (
 
   const statusIsOfInterest = ['Complete', 'Failed'].includes(eventStatus)
   if (!statusIsOfInterest) {
-    logger.info(`Status ${eventStatus} is not relevant. Exiting.`)
     return
   }
 
   const batchJobTags = await getS3BatchJobTags(jobId)
   logger.info('Got batch job tags', { batchJobTags: batchJobTags })
   if (!batchJobIsTransferToAnalysisBucket(batchJobTags)) {
-    logger.info('Batch job is not transfer to analysis bucket. Exiting')
     return
   }
 
