@@ -270,6 +270,7 @@ Resources:
               Effect: Allow
               Action:
                 - s3:CreateJob
+                - s3:PutJobTagging
               Resource: '*'
             - Sid: AssumeBatchJobRole
               Effect: Allow
@@ -333,6 +334,95 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref ProcessDataRequestLogs
+      FilterPattern: ''
+      DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
+
+  DataReadyForQueryFunction:
+    #checkov:skip=CKV_AWS_116:Not triggered by SQS
+    #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_117:VPC not required
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/dataReadyForQuery/
+      Handler: handler.handler
+      Environment:
+        Variables:
+          AWS_ACCOUNT_ID: !Ref AWS::AccountId
+          AUDIT_BUCKET_NAME: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
+          PERMANENT_AUDIT_BUCKET_NAME: !Sub audit-${Environment}-permanent-message-batch
+          ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
+          ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          INITIATE_ATHENA_QUERY_QUEUE_URL: !Ref InitiateAthenaQueryQueue
+          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+      FunctionName: !Sub ${AWS::StackName}-data-ready-for-query
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Policies:
+        - Statement:
+            - Sid: ReadS3BatchJobDetails
+              Effect: Allow
+              Action:
+                - s3:GetJobTagging
+                - s3:DescribeJob
+              Resource: '*'
+            - Sid: S3Read
+              Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource:
+                - !GetAtt AnalysisBucket.Arn
+                - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
+                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
+            - Sid: Logs
+              Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !GetAtt DataReadyForQueryLogs.Arn
+            - Sid: ReadSecrets
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+            - Sid: DecryptKmsKeys
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                - '{{resolve:ssm:SecretsKmsKeyArn}}'
+            - Sid: QueryRequestTableReadWrite
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: '{{resolve:ssm:QueryRequestTableArn}}'
+            - Sid: AllowSqsSend
+              Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource:
+                - !GetAtt InitiateAthenaQueryQueue.Arn
+            - Sid: UseSqsKmsKey
+              Effect: Allow
+              Action:
+                - kms:Decrypt
+                - kms:GenerateDataKey*
+                - kms:ReEncrypt*
+              Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+  DataReadyForQueryLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-data-ready-for-query'
+      RetentionInDays: 30
+
+  DataReadyForQueryCslsSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: CslsEgress
+    Properties:
+      LogGroupName: !Ref DataReadyForQueryLogs
       FilterPattern: ''
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
@@ -868,6 +958,11 @@ Resources:
                   - s3:GetObject
                   - s3:GetObjectVersion
                 Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
+              - Sid: AllowManifestBucketWriteForReports
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
         - PolicyName: AllowS3Copy
           PolicyDocument:
             Version: '2012-10-17'
@@ -903,6 +998,33 @@ Resources:
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: '{{resolve:ssm:EmptyS3BucketsFunctionArn}}'
+
+  BatchJobEventBridgeRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: The rule listening for S3 Batch Job Status Change Events and triggering the dataReadyForQuery lambda
+      EventPattern:
+        source:
+          - 'aws.s3'
+        detail-type:
+          - 'AWS Service Event via CloudTrail'
+        detail:
+          eventSource:
+            - 's3.amazonaws.com'
+          eventName:
+            - 'JobStatusChanged'
+      State: 'ENABLED'
+      Targets:
+        - Arn: !GetAtt DataReadyForQueryFunction.Arn
+          Id: BatchJobEventTarget
+
+  PermissionForBatchJobStatusEventToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref DataReadyForQueryFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt BatchJobEventBridgeRule.Arn
 
   ###############
   # SQS Resources
@@ -1146,6 +1268,8 @@ Outputs:
     Value: !Ref InitiateDataRequestLogs
   ProcessDataRequestLambdaLogGroupName:
     Value: !Ref ProcessDataRequestLogs
+  DataReadyForQueryLogsLambdaLogGroupName:
+    Value: !Ref DataReadyForQueryLogs
   ZendeskWebhookApiUrl:
     Value:
       !If [

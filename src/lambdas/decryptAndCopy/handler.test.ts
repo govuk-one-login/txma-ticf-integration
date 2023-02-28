@@ -1,6 +1,7 @@
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_PERMANENT_BUCKET_NAME,
+  TEST_S3_BATCH_TASK_ID,
   TEST_S3_OBJECT_DATA_BUFFER,
   TEST_S3_OBJECT_DATA_STRING,
   TEST_S3_OBJECT_KEY
@@ -15,6 +16,8 @@ import {
 } from '../../utils/tests/events/s3BatchEvent'
 import { handler } from './handler'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+import { when } from 'jest-when'
+import { logger } from '../../sharedServices/logger'
 
 jest.mock('../../sharedServices/s3/getS3ObjectAsStream', () => ({
   getS3ObjectAsStream: jest.fn()
@@ -31,17 +34,24 @@ const mockDecryptS3Object = decryptS3Object as jest.Mock
 const mockPutS3Object = putS3Object as jest.Mock
 
 describe('DecryptAndCopy', function () {
+  const s3ObjectStream = createDataStream(TEST_S3_OBJECT_DATA_STRING)
   beforeEach(() => {
     jest.resetAllMocks()
+    jest.spyOn(logger, 'error')
   })
 
-  it('retrieves, decrypts and copies an S3 object', async () => {
+  const givenS3DataAvailable = () => {
     const s3ObjectStream = createDataStream(TEST_S3_OBJECT_DATA_STRING)
     mockGetS3ObjectAsStream.mockResolvedValue(s3ObjectStream)
     mockDecryptS3Object.mockResolvedValue(TEST_S3_OBJECT_DATA_BUFFER)
+  }
 
-    await handler(testS3BatchEvent, mockLambdaContext)
+  it('retrieves, decrypts and copies an S3 object', async () => {
+    givenS3DataAvailable()
 
+    const response = await handler(testS3BatchEvent, mockLambdaContext)
+    expect(response.results[0].taskId).toEqual(TEST_S3_BATCH_TASK_ID)
+    expect(response.results[0].resultCode).toEqual('Succeeded')
     expect(mockGetS3ObjectAsStream).toHaveBeenCalledWith(
       TEST_PERMANENT_BUCKET_NAME,
       TEST_S3_OBJECT_KEY
@@ -51,6 +61,19 @@ describe('DecryptAndCopy', function () {
       TEST_ANALYSIS_BUCKET,
       TEST_S3_OBJECT_KEY,
       TEST_S3_OBJECT_DATA_BUFFER
+    )
+  })
+
+  it('catches and logs errors, and marks the operation as a temporary failure', async () => {
+    const s3ObjectStream = createDataStream(TEST_S3_OBJECT_DATA_STRING)
+    mockGetS3ObjectAsStream.mockResolvedValue(s3ObjectStream)
+    mockDecryptS3Object.mockResolvedValue(TEST_S3_OBJECT_DATA_BUFFER)
+    when(decryptS3Object).mockRejectedValue('Some decryption error')
+    const response = await handler(testS3BatchEvent, mockLambdaContext)
+    expect(response.results[0].resultCode).toEqual('TemporaryFailure')
+    expect(logger.error).toHaveBeenCalledWith(
+      'Error during decrypt and copy',
+      'Some decryption error'
     )
   })
 

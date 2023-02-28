@@ -31,14 +31,14 @@ export const initiateDataTransfer = async (
   const copyFromAuditToAnalysisBucketRequired =
     bucketData.standardTierLocationsToCopy.length > 0
 
-  const shouldStartCopyFromAuditBucket =
-    copyFromAuditToAnalysisBucketRequired && !glacierRestoreRequired
   logger.info('storing new data request record')
-  await addNewDataRequestRecord(
-    dataRequestParams,
-    glacierRestoreRequired,
-    shouldStartCopyFromAuditBucket
-  )
+  await addNewDataRequestRecord(dataRequestParams, glacierRestoreRequired)
+
+  if (!glacierRestoreRequired && !copyFromAuditToAnalysisBucketRequired) {
+    logger.info(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
+    await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
+    return
+  }
 
   if (glacierRestoreRequired) {
     logger.info(interpolateTemplate('foundGlacierLocations', loggingCopy))
@@ -46,22 +46,16 @@ export const initiateDataTransfer = async (
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId
     )
-  } else if (shouldStartCopyFromAuditBucket) {
-    await startTransferToAnalysisBucket(
-      bucketData.standardTierLocationsToCopy,
-      dataRequestParams.zendeskId
-    )
-  }
-
-  if (!glacierRestoreRequired && !shouldStartCopyFromAuditBucket) {
-    logger.info(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
-    await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
-  } else {
     logger.info(interpolateTemplate('queuingMessageLongPoll', loggingCopy))
-    const waitTimeInSeconds = glacierRestoreRequired ? 900 : 30
+    const waitTimeInSeconds = 900
     await sendContinuePollingDataTransferMessage(
       dataRequestParams.zendeskId,
       waitTimeInSeconds
+    )
+  } else if (copyFromAuditToAnalysisBucketRequired) {
+    await startTransferToAnalysisBucket(
+      bucketData.standardTierLocationsToCopy,
+      dataRequestParams.zendeskId
     )
   }
 }

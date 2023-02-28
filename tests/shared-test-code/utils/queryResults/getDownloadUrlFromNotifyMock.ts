@@ -8,7 +8,7 @@ export const pollNotifyMockForDownloadUrl = async (zendeskId: string) => {
   while (!url && attempts < maxAttempts) {
     attempts++
     url = await getDownloadUrlFromNotifyMock(zendeskId)
-    await pause(3000)
+    await pause(5000)
   }
   return url ?? ''
 }
