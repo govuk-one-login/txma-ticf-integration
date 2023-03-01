@@ -4103,16 +4103,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-testing-library@npm:2.1.5":
-  version: 2.1.5
-  resolution: "aws-testing-library@npm:2.1.5"
+"aws-testing-library@npm:2.1.7":
+  version: 2.1.7
+  resolution: "aws-testing-library@npm:2.1.7"
   dependencies:
     aws-sdk: ^2.678.0
     axios: ^0.27.0
     filter-obj: ^3.0.0
     jest-diff: ^28.0.0
-    uuid: ^8.0.0
-  checksum: 064b690bc48326a634450408fc428bae5266933cc7bc7472c67830e0fcd555041733f48f1e38a0dd741b44ed7e6737b70f50ffab76a7dde38841f92f166d7d34
+    uuid: ^9.0.0
+  checksum: daa62e4db29a4dff0beb142688a0cd8df661b4cd9906e629bee13a6807551172445d85dad74346a182a9f0de6df97e838206402f7edff940658755505f5c6bae
   languageName: node
   linkType: hard
 
@@ -4749,7 +4749,7 @@ __metadata:
     "@typescript-eslint/parser": 5.52.0
     aws-sdk-client-mock: 2.0.1
     aws-sdk-client-mock-jest: 2.0.1
-    aws-testing-library: 2.1.5
+    aws-testing-library: 2.1.7
     axios: 0.27.2
     csv-string: 4.1.1
     esbuild: 0.17.8
@@ -8699,12 +8699,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^8.0.0, uuid@npm:^8.3.2":
+"uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
     uuid: dist/bin/uuid
   checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 
