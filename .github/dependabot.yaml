@@ -3,7 +3,10 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: daily
+      interval: monthly
+    open-pull-requests-limit: 10
+    labels:
+      - 'direct-dependency-update'
     commit-message:
       prefix: dependabot
       include: scope
