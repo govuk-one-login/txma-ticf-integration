@@ -69,7 +69,7 @@ describe('dynamoDbPut', () => {
 
     it('should write a new data request record when we do not require any data to be copied', async () => {
       dynamoMock.on(PutItemCommand).resolves({})
-      await addNewDataRequestRecord(testDataRequest, false, false)
+      await addNewDataRequestRecord(testDataRequest, false)
       expect(dynamoMock).toHaveReceivedCommandWith(
         PutItemCommand,
         basicRecordExpectation
@@ -77,7 +77,7 @@ describe('dynamoDbPut', () => {
     })
 
     it('should write a new data request record when we require a glacier restore', async () => {
-      await addNewDataRequestRecord(testDataRequest, true, false)
+      await addNewDataRequestRecord(testDataRequest, true)
       expect(dynamoMock).toHaveReceivedCommandWith(PutItemCommand, {
         TableName: TEST_QUERY_DATABASE_TABLE_NAME,
         Item: {
@@ -88,12 +88,11 @@ describe('dynamoDbPut', () => {
     })
 
     it('should write a new data request record when we require an audit bucket copy', async () => {
-      await addNewDataRequestRecord(testDataRequest, false, true)
+      await addNewDataRequestRecord(testDataRequest, false)
       expect(dynamoMock).toHaveReceivedCommandWith(PutItemCommand, {
         TableName: TEST_QUERY_DATABASE_TABLE_NAME,
         Item: {
-          ...recordItem,
-          checkCopyStatusCount: { N: '0' }
+          ...recordItem
         }
       })
     })

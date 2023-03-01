@@ -62,7 +62,6 @@ const mockSendContinuePollingDataTransferMessage =
 
 describe('initiate data transfer', () => {
   const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
-  const EXPECTED_COPY_WAIT_TIME_IN_SECONDS = 30
   const givenDataResult = (
     dataAvailable: boolean,
     standardTierLocationsToCopy: string[],
@@ -105,7 +104,6 @@ describe('initiate data transfer', () => {
     expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
     expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
       testDataRequest,
-      false,
       false
     )
     expect(startGlacierRestore).not.toHaveBeenCalled()
@@ -123,18 +121,14 @@ describe('initiate data transfer', () => {
     expect(mockUpdateZendeskTicketById).not.toHaveBeenCalled()
     expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
       testDataRequest,
-      false,
-      true
+      false
     )
     expect(mockStartTransferToAnalysisBucket).toHaveBeenCalledWith(
       filesToCopy,
       ZENDESK_TICKET_ID
     )
     expect(mockStartGlacierRestore).not.toHaveBeenCalled()
-    expect(mockSendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
-      ZENDESK_TICKET_ID,
-      EXPECTED_COPY_WAIT_TIME_IN_SECONDS
-    )
+    expect(mockSendContinuePollingDataTransferMessage).not.toHaveBeenCalled()
     expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
 
@@ -144,8 +138,7 @@ describe('initiate data transfer', () => {
     await initiateDataTransfer(testDataRequest)
     expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
       testDataRequest,
-      true,
-      false
+      true
     )
     expect(startGlacierRestore).toHaveBeenCalledWith(
       glacierTierLocationsToCopy,
@@ -166,8 +159,7 @@ describe('initiate data transfer', () => {
     await initiateDataTransfer(testDataRequest)
     expect(mockAddNewDataRequestRecord).toHaveBeenCalledWith(
       testDataRequest,
-      true,
-      false
+      true
     )
     expect(startGlacierRestore).toHaveBeenCalledWith(
       glacierTierLocationsToCopy,

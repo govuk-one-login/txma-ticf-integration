@@ -80,22 +80,22 @@ describe('Data should be copied to analysis bucket', () => {
         events: processDataRequestEvents
       }).toEqual({ result: true, events: processDataRequestEvents })
 
-      const copyCompletedEvents =
+      const athenaQueryQueuedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.copyComplete, 'zendeskId', ticketId],
-          100
+          getEnv('DATA_READY_FOR_QUERY_LAMBDA_LOG_GROUP_NAME'),
+          [cloudwatchLogFilters.athenaQueryQueued, 'zendeskId', ticketId],
+          50
         )
-      expect(copyCompletedEvents).not.toEqual([])
+      expect(athenaQueryQueuedEvents).not.toEqual([])
 
-      const isCopyCompleteMessageInLogs = eventIsPresent(
-        copyCompletedEvents,
-        cloudwatchLogFilters.copyComplete
+      const isAthenaQueryQueuedMessageInLogs = eventIsPresent(
+        athenaQueryQueuedEvents,
+        cloudwatchLogFilters.athenaQueryQueued
       )
       expect({
-        result: isCopyCompleteMessageInLogs,
-        events: copyCompletedEvents
-      }).toEqual({ result: true, events: copyCompletedEvents })
+        result: isAthenaQueryQueuedMessageInLogs,
+        events: athenaQueryQueuedEvents
+      }).toEqual({ result: true, events: athenaQueryQueuedEvents })
     })
   })
 

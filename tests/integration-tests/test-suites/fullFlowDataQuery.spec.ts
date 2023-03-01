@@ -3,13 +3,14 @@ import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWeb
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { pollNotifyMockForDownloadUrl } from '../../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
 import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
+import { deleteAuditDataWithPrefix } from '../../shared-test-code/utils/aws/s3DeleteAuditDataWithPrefix'
+import { getEnv } from '../../shared-test-code/utils/helpers'
 
 describe('Data flows from audit bucket to output', () => {
   beforeAll(async () => {
-    await setupAuditSourceTestData(
-      'encryptionPlainTextData.txt.gz',
-      'firehose/2022/05/01/01'
-    )
+    const s3Prefix = 'firehose/2022/05/01/01'
+    await deleteAuditDataWithPrefix(getEnv('ANALYSIS_BUCKET_NAME'), s3Prefix)
+    await setupAuditSourceTestData('encryptionPlainTextData.txt.gz', s3Prefix)
   })
 
   it('Should be able to query data that arose from either an encrypted or plain text data store', async () => {

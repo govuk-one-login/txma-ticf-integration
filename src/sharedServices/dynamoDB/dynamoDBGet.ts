@@ -78,7 +78,6 @@ const parseDatabaseItem = (item: Record<string, AttributeValue>) => {
     checkGlacierStatusCount: retrieveNumericValue(
       item?.checkGlacierStatusCount
     ),
-    checkCopyStatusCount: retrieveNumericValue(item?.checkCopyStatusCount),
     athenaQueryId: item?.athenaQueryId?.S
   }
 }
