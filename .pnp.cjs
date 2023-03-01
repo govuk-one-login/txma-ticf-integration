@@ -43,7 +43,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-secrets-manager", "npm:3.163.0"],\
             ["@aws-sdk/client-sqs", "npm:3.170.0"],\
             ["@aws-sdk/client-ssm", "npm:3.163.0"],\
-            ["@types/aws-lambda", "npm:8.10.110"],\
+            ["@types/aws-lambda", "npm:8.10.111"],\
             ["@types/jest", "npm:29.4.0"],\
             ["@types/jest-when", "npm:3.5.2"],\
             ["@types/node", "npm:18.13.0"],\
@@ -4069,10 +4069,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/aws-lambda", [\
-        ["npm:8.10.110", {\
-          "packageLocation": "./.yarn/cache/@types-aws-lambda-npm-8.10.110-3291cba8a5-57be339400.zip/node_modules/@types/aws-lambda/",\
+        ["npm:8.10.111", {\
+          "packageLocation": "./.yarn/cache/@types-aws-lambda-npm-8.10.111-558d196fab-160ae845d5.zip/node_modules/@types/aws-lambda/",\
           "packageDependencies": [\
-            ["@types/aws-lambda", "npm:8.10.110"]\
+            ["@types/aws-lambda", "npm:8.10.111"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5728,7 +5728,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-secrets-manager", "npm:3.163.0"],\
             ["@aws-sdk/client-sqs", "npm:3.170.0"],\
             ["@aws-sdk/client-ssm", "npm:3.163.0"],\
-            ["@types/aws-lambda", "npm:8.10.110"],\
+            ["@types/aws-lambda", "npm:8.10.111"],\
             ["@types/jest", "npm:29.4.0"],\
             ["@types/jest-when", "npm:3.5.2"],\
             ["@types/node", "npm:18.13.0"],\
