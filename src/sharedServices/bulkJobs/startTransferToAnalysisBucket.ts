@@ -1,8 +1,10 @@
 import {
   S3ControlClient,
   CreateJobCommand,
-  CreateJobCommandInput
+  CreateJobCommandInput,
+  JobReportScope
 } from '@aws-sdk/client-s3-control'
+import { batchJobConstants } from '../../constants/batchJobConstants'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import { getEnv } from '../../utils/helpers'
 import { logger } from '../logger'
@@ -59,6 +61,16 @@ const createS3TransferBatchJob = async (
     ClientRequestToken: `copy-${zendeskTicketId}`,
     RoleArn: getEnv('BATCH_JOB_ROLE_ARN'),
     Priority: 1,
+    Tags: [
+      {
+        Key: batchJobConstants.transferToAnalysisBucketJobTagName,
+        Value: 'true'
+      },
+      {
+        Key: batchJobConstants.zendeskIdTagName,
+        Value: zendeskTicketId
+      }
+    ],
     Operation: {
       ...(decryptData
         ? {
@@ -73,7 +85,11 @@ const createS3TransferBatchJob = async (
           })
     },
     Report: {
-      Enabled: false
+      Enabled: true,
+      Bucket: getEnv('BATCH_JOB_MANIFEST_BUCKET_ARN'),
+      Prefix: 'reports',
+      Format: 'Report_CSV_20180820',
+      ReportScope: JobReportScope.FailedTasksOnly
     },
     Manifest: {
       Spec: {

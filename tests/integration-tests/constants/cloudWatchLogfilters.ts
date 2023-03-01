@@ -2,6 +2,7 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   athenaEventReceived: 'Handling Athena Query event',
   athenaInvokeError: 'Cannot find database entry for zendesk ticket',
   athenaQueryInitiated: 'Athena query execution initiated',
+  athenaQueryQueued: 'Queueing athena query',
   athenaSqlGenerated: 'Athena SQL generated',
   copyComplete: 'Restore/copy process complete.',
   copyStarted: 'Started S3 copy job for zendesk ticket with id',
@@ -27,6 +28,7 @@ type CloudwatchLogFiltersConstants = {
   readonly athenaEventReceived: string
   readonly athenaInvokeError: string
   readonly athenaQueryInitiated: string
+  readonly athenaQueryQueued: string
   readonly athenaSqlGenerated: string
   readonly copyStarted: string
   readonly decryptStarted: string

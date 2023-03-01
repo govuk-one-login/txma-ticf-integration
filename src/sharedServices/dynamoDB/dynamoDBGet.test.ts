@@ -30,7 +30,6 @@ describe('dynamoDBGet', () => {
     parameters:
       | {
           checkGlacierStatusCount?: number
-          checkCopyStatusCount?: number
           athenaQueryId?: string
           isLegacyRecordWithDateFromTo?: boolean
         }
@@ -68,9 +67,6 @@ describe('dynamoDBGet', () => {
         checkGlacierStatusCount: {
           N: parameters?.checkGlacierStatusCount.toString()
         }
-      }),
-      ...(parameters?.checkCopyStatusCount && {
-        checkCopyStatusCount: { N: parameters?.checkCopyStatusCount.toString() }
       })
     }
     const mockDbGetContents = {
@@ -106,7 +102,6 @@ describe('dynamoDBGet', () => {
       })
 
       expect(result.checkGlacierStatusCount).toBeUndefined()
-      expect(result.checkCopyStatusCount).toBeUndefined()
     })
 
     test('Supports legacy record with dateFrom instead of dates', async () => {
@@ -130,7 +125,6 @@ describe('dynamoDBGet', () => {
       })
 
       expect(result.checkGlacierStatusCount).toBeUndefined()
-      expect(result.checkCopyStatusCount).toBeUndefined()
     })
 
     test('parses checkGlacierStatusCount if set', async () => {
@@ -139,16 +133,6 @@ describe('dynamoDBGet', () => {
 
       const result = await getDatabaseEntryByZendeskId('12')
       expect(result.checkGlacierStatusCount).toEqual(checkGlacierStatusCount)
-      expect(result.checkCopyStatusCount).toBeUndefined()
-    })
-
-    test('parses checkGlacierStatusCount if set', async () => {
-      const checkCopyStatusCount = 1
-      givenDatabaseReturnsData({ checkCopyStatusCount })
-
-      const result = await getDatabaseEntryByZendeskId('12')
-      expect(result.checkCopyStatusCount).toEqual(checkCopyStatusCount)
-      expect(result.checkGlacierStatusCount).toBeUndefined()
     })
 
     test('parses athenaQueryId if set', async () => {

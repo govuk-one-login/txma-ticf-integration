@@ -64,6 +64,8 @@ module.exports = async () => {
       'InitiateDataRequestLambdaLogGroupName',
     PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME:
       'ProcessDataRequestLambdaLogGroupName',
+    DATA_READY_FOR_QUERY_LAMBDA_LOG_GROUP_NAME:
+      'DataReadyForQueryLogsLambdaLogGroupName',
     ZENDESK_WEBHOOK_API_BASE_URL: 'ZendeskWebhookApiUrl'
   }
 
