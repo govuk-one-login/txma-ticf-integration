@@ -15,7 +15,6 @@ export const handler = async (
   context: Context
 ): Promise<void> => {
   initialiseLogger(context)
-  logger.info('received event', { handledEvent: event })
 
   const queryDetails = event.detail
   const athenaQueryId = queryDetails.queryExecutionId

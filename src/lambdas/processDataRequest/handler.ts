@@ -12,13 +12,11 @@ import {
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import {
   appendZendeskIdToLogger,
-  initialiseLogger,
-  logger
+  initialiseLogger
 } from '../../sharedServices/logger'
 
 export const handler = async (event: SQSEvent, context: Context) => {
   initialiseLogger(context)
-  logger.info('Handling data request SQS event', { handledEvent: event })
   if (event.Records.length === 0) {
     throw new Error('No data in event')
   }

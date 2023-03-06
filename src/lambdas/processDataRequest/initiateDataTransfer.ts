@@ -31,7 +31,6 @@ export const initiateDataTransfer = async (
   const copyFromAuditToAnalysisBucketRequired =
     bucketData.standardTierLocationsToCopy.length > 0
 
-  logger.info('storing new data request record')
   await addNewDataRequestRecord(dataRequestParams, glacierRestoreRequired)
 
   if (!glacierRestoreRequired && !copyFromAuditToAnalysisBucketRequired) {
@@ -41,7 +40,6 @@ export const initiateDataTransfer = async (
   }
 
   if (glacierRestoreRequired) {
-    logger.info(interpolateTemplate('foundGlacierLocations', loggingCopy))
     await startGlacierRestore(
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId
