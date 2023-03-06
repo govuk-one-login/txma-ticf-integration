@@ -60,10 +60,6 @@ describe('retrieveZendeskApiSecrets', () => {
       const secretCollection: { [key: string]: string } = { ...allSecretKeys }
 
       delete secretCollection[keyToOmit]
-      console.log(
-        `missing key ${keyToOmit} this is the secret collection`,
-        secretCollection
-      )
       givenSecretKeysSet(secretCollection)
 
       expect(retrieveZendeskApiSecrets()).rejects.toThrow(
