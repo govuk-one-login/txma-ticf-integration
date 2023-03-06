@@ -3,7 +3,6 @@ import { createZendeskTicket } from '../tests/shared-test-code/utils/zendesk/cre
 import { getEnv } from '../tests/shared-test-code/utils/helpers'
 import { ZendeskRequestData } from '../tests/shared-test-code/types/zendeskRequestData'
 import { zendeskConstants } from '../tests/shared-test-code/constants/zendeskParameters'
-import { logger } from '../src/sharedServices/logger'
 
 const generateTicketData = (): ZendeskRequestData => ({
   request: {
@@ -54,10 +53,10 @@ const createAndApproveTicket = async () => {
     'OVERRIDE_EVENT_IDS'
   ])
   const ticketData = generateTicketData()
-  logger.info(`creating ticket with data ${JSON.stringify(ticketData)}`)
+  console.log('creating ticket')
   const ticketId = await createZendeskTicket(ticketData)
   await makeApproveZendeskTicketRequest(ticketId)
-  logger.info(`approved ticket with id ${ticketId}`)
+  console.log(`approved ticket with id ${ticketId}`)
 }
 
 const checkEnvironmentVariablesSet = (environmentVariables: string[]) =>
@@ -72,6 +71,6 @@ const checkRequiredEnvironmentVariableSet = (environmentVariable: string) => {
 }
 
 createAndApproveTicket().catch((err) => {
-  logger.error('Error', err)
+  console.log('Error', err)
   process.exit(1)
 })
