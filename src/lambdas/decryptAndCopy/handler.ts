@@ -16,19 +16,20 @@ export const handler = async (
   context: Context
 ): Promise<S3BatchResult> => {
   initialiseLogger(context)
-  logger.info('Handling S3BatchEvent decryption', { handledEvent: event })
 
   let resultCode: S3BatchResultResultCode = 'Succeeded'
   let resultString = ''
   if (event.tasks.length === 0) {
-    logger.error('No tasks in event')
     throw new Error('No tasks in event')
   }
 
   try {
     await decryptAndCopy(event.tasks[0])
   } catch (err) {
-    logger.error('Error during decrypt and copy', err as Error)
+    logger.error('Error during decrypt and copy', {
+      err,
+      s3Key: event.tasks[0].s3Key
+    })
     resultCode = 'TemporaryFailure'
     resultString = `Err: ${JSON.stringify(err)}`
   }

@@ -19,7 +19,6 @@ export const handler = async (
   context: Context
 ): Promise<void> => {
   initialiseLogger(context)
-  logger.info('Handling Athena Query event', { handledEvent: event })
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
   appendZendeskIdToLogger(zendeskId)
@@ -72,14 +71,6 @@ const confirmQuerySqlGeneration = async (
     await updateZendeskTicketById(zendeskId, querySql.error, 'closed')
     throw new Error(querySql.error)
   }
-
-  if (querySql.sql) {
-    logger.info('Athena SQL generated', {
-      sql: querySql.sql,
-      parameters: querySql.queryParameters
-    })
-  }
-  return
 }
 
 const confirmQueryExecution = async (

@@ -20,7 +20,6 @@ export const handler = async (
   context: Context
 ) => {
   initialiseLogger(context)
-  logger.info('received event', { handledEvent: event })
   const eventStatus = event.detail.serviceEventDetails.status
   const jobId = event.detail.serviceEventDetails.jobId
 
@@ -30,7 +29,6 @@ export const handler = async (
   }
 
   const batchJobTags = await getS3BatchJobTags(jobId)
-  logger.info('Got batch job tags', { batchJobTags: batchJobTags })
   if (!batchJobIsTransferToAnalysisBucket(batchJobTags)) {
     return
   }

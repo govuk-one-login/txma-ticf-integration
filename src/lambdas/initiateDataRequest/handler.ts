@@ -28,7 +28,6 @@ export const handler = async (
   context: Context
 ): Promise<APIGatewayProxyResult> => {
   initialiseLogger(context)
-  logger.info('received Zendesk webhook', JSON.stringify(event, null, 2))
 
   const parsedEventBody = tryParseJSON(event.body ?? '')
   await sendAuditDataRequestMessage(parsedEventBody)
@@ -91,7 +90,7 @@ const handleInvalidRequest = async (
   logger.info(interpolateTemplate('requestInvalid', loggingCopy))
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
-  logger.info('Validation message: ', validationMessage)
+  logger.info('Invalid ticket data ', { validationMessage })
   const newTicketStatus = 'closed'
   await updateZendeskTicket(
     requestBody,

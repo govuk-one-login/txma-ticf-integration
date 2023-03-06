@@ -71,10 +71,10 @@ describe('DecryptAndCopy', function () {
     when(decryptS3Object).mockRejectedValue('Some decryption error')
     const response = await handler(testS3BatchEvent, mockLambdaContext)
     expect(response.results[0].resultCode).toEqual('TemporaryFailure')
-    expect(logger.error).toHaveBeenCalledWith(
-      'Error during decrypt and copy',
-      'Some decryption error'
-    )
+    expect(logger.error).toHaveBeenCalledWith('Error during decrypt and copy', {
+      err: 'Some decryption error',
+      s3Key: TEST_S3_OBJECT_KEY
+    })
   })
 
   it('throws an error if there is no data in the SQS Event', async () => {
