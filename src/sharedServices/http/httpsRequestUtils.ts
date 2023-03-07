@@ -7,9 +7,17 @@ export const makeHttpsRequest = async (
   return new Promise((resolve, reject) => {
     const req = https.request(options, (response) => {
       if (!response || !response.statusCode)
-        return reject(new Error('Response or statusCode undefined.'))
+        return reject(
+          new Error(
+            `Error making HTTPS request. Response or statusCode undefined. Host:'${options.host}', path:'${options.path}'.`
+          )
+        )
       if (response.statusCode < 200 || response.statusCode >= 300)
-        return reject(new Error('statusCode = ' + response['statusCode']))
+        return reject(
+          new Error(
+            `Error making HTTPS request, response statusCode: '${response['statusCode']}', host:'${options.host}', path:'${options.path}'`
+          )
+        )
 
       response.setEncoding('utf-8')
       let chunks = ''
