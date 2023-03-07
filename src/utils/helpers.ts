@@ -34,7 +34,7 @@ export const tryParseJSON = (jsonString: string) => {
   try {
     return JSON.parse(jsonString)
   } catch (error) {
-    logger.error('Error parsing JSON: ', error as Error)
+    logger.error('Error parsing JSON')
     return {}
   }
 }
