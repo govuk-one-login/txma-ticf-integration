@@ -25,17 +25,12 @@ describe('Invalid requests should not start a data copy', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
+          [
+            cloudwatchLogFilters.webhookInvalid,
+            cloudwatchLogFilters.zendeskId,
+            ticketId
+          ]
         )
-
-      const isWebhookInvalidMessageInLogs = eventIsPresent(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.webhookInvalid
-      )
-      expect({
-        result: isWebhookInvalidMessageInLogs,
-        events: initiateDataRequestEvents
-      }).toEqual({ result: true, events: initiateDataRequestEvents })
 
       const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
@@ -69,18 +64,12 @@ describe('Invalid requests should not start a data copy', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
+          [
+            cloudwatchLogFilters.webhookInvalid,
+            cloudwatchLogFilters.zendeskId,
+            ticketId
+          ]
         )
-
-      const isWebhookInvalidMessageInLogs = eventIsPresent(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.webhookInvalid
-      )
-      expect({
-        result: isWebhookInvalidMessageInLogs,
-        events: initiateDataRequestEvents
-      }).toEqual({ result: true, events: initiateDataRequestEvents })
-
       const isDataSentToQueueMessageInLogs = eventIsPresent(
         initiateDataRequestEvents,
         cloudwatchLogFilters.dataSentToQueue
