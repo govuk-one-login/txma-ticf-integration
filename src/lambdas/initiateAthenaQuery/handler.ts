@@ -36,6 +36,10 @@ export const handler = async (
 
   await confirmQueryExecution(queryExecutionDetails, zendeskId)
 
+  logger.info('Athena query execution initiated', {
+    QueryExecutionId: queryExecutionDetails.queryExecutionId
+  })
+
   return
 }
 
@@ -86,10 +90,10 @@ const confirmQueryExecution = async (
     throw new Error(queryExecutionDetails.error)
   }
 
-  await updateDbAndLog(queryExecutionDetails, zendeskId)
+  await updateDb(queryExecutionDetails, zendeskId)
 }
 
-const updateDbAndLog = async (
+const updateDb = async (
   queryExecutionDetails: StartQueryExecutionResult,
   zendeskId: string
 ): Promise<void> => {
@@ -108,8 +112,5 @@ const updateDbAndLog = async (
       )
       throw new Error(`Error updating db for zendesk ticket: ${zendeskId}`)
     }
-    logger.info('Athena query execution initiated', {
-      QueryExecutionId: queryExecutionDetails.queryExecutionId
-    })
   }
 }
