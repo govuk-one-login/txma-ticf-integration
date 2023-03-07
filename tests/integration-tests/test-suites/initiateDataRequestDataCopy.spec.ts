@@ -1,7 +1,6 @@
 import {
   eventIsPresent,
-  getCloudWatchLogEventsGroupByMessagePattern,
-  getQueueMessageId
+  getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 import {
@@ -35,40 +34,18 @@ describe('Data should be copied to analysis bucket', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.dataSentToQueue, 'zendeskId', ticketId]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
-
-      const isDataSentToQueueMessageInLogs = eventIsPresent(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
-      expect({
-        result: isDataSentToQueueMessageInLogs,
-        events: initiateDataRequestEvents
-      }).toEqual({ result: true, events: initiateDataRequestEvents })
-
-      const messageId = getQueueMessageId(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
+          [cloudwatchLogFilters.standardTierCopy, 'zendeskId', ticketId],
           50
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      const isStandardTierObjectsToCopyMessageInLogs = eventIsPresent(
-        processDataRequestEvents,
-        cloudwatchLogFilters.standardTierCopy
-      )
-      expect({
-        result: isStandardTierObjectsToCopyMessageInLogs,
-        events: processDataRequestEvents
-      }).toEqual({ result: true, events: processDataRequestEvents })
       const isCopyJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         getFeatureFlagValue('DECRYPT_DATA')
@@ -119,40 +96,17 @@ describe('Data should be copied to analysis bucket', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.dataSentToQueue, 'zendeskId', ticketId]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
-
-      const isDataSentToQueueMessageInLogs = eventIsPresent(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
-      expect({
-        result: isDataSentToQueueMessageInLogs,
-        events: initiateDataRequestEvents
-      }).toEqual({ result: true, events: initiateDataRequestEvents })
-
-      const messageId = getQueueMessageId(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
+          [cloudwatchLogFilters.glacierTierCopy, 'zendeskId', ticketId],
           70
         )
       expect(processDataRequestEvents).not.toEqual([])
-
-      const isGlacierTierObjectCopyMessageInLogs = eventIsPresent(
-        processDataRequestEvents,
-        cloudwatchLogFilters.glacierTierCopy
-      )
-      expect({
-        result: isGlacierTierObjectCopyMessageInLogs,
-        events: processDataRequestEvents
-      }).toEqual({ result: true, events: processDataRequestEvents })
 
       const isGlacierRestoreStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
@@ -190,28 +144,14 @@ describe('Data should be copied to analysis bucket', () => {
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
+          [cloudwatchLogFilters.dataSentToQueue, 'zendeskId', ticketId]
         )
       expect(initiateDataRequestEvents).not.toEqual([])
-
-      const isDataSentToQueueMessageInLogs = eventIsPresent(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
-      expect({
-        result: isDataSentToQueueMessageInLogs,
-        events: initiateDataRequestEvents
-      }).toEqual({ result: true, events: initiateDataRequestEvents })
-
-      const messageId = getQueueMessageId(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
 
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
+          [cloudwatchLogFilters.mixedTierCopy, 'zendeskId', ticketId],
           50
         )
       expect(processDataRequestEvents).not.toEqual([])
