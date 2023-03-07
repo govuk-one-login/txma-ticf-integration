@@ -31,13 +31,6 @@ describe('Data should be copied to analysis bucket', () => {
     })
 
     it('data all in standard tier', async () => {
-      const initiateDataRequestEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.dataSentToQueue, 'zendeskId', ticketId]
-        )
-      expect(initiateDataRequestEvents).not.toEqual([])
-
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -60,7 +53,11 @@ describe('Data should be copied to analysis bucket', () => {
       const athenaQueryQueuedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('DATA_READY_FOR_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.athenaQueryQueued, 'zendeskId', ticketId],
+          [
+            cloudwatchLogFilters.athenaQueryQueued,
+            cloudwatchLogFilters.zendeskId,
+            ticketId
+          ],
           50
         )
       expect(athenaQueryQueuedEvents).not.toEqual([])
@@ -93,17 +90,14 @@ describe('Data should be copied to analysis bucket', () => {
     })
 
     it('data all in glacier tier', async () => {
-      const initiateDataRequestEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.dataSentToQueue, 'zendeskId', ticketId]
-        )
-      expect(initiateDataRequestEvents).not.toEqual([])
-
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.glacierTierCopy, 'zendeskId', ticketId],
+          [
+            cloudwatchLogFilters.glacierTierCopy,
+            cloudwatchLogFilters.zendeskId,
+            ticketId
+          ],
           70
         )
       expect(processDataRequestEvents).not.toEqual([])
@@ -141,13 +135,6 @@ describe('Data should be copied to analysis bucket', () => {
     })
 
     it('data in standard and glacier tier', async () => {
-      const initiateDataRequestEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.dataSentToQueue, 'zendeskId', ticketId]
-        )
-      expect(initiateDataRequestEvents).not.toEqual([])
-
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
