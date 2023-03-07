@@ -85,10 +85,6 @@ describe('updating a zendesk ticket', () => {
         }
       }
     )
-    expect(logger.info).toHaveBeenLastCalledWith(
-      'Zendesk ticket update successful.',
-      JSON.stringify({ theReturnData: '123' })
-    )
   }
   it('a single api call fails', async () => {
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()

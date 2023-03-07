@@ -55,11 +55,7 @@ export const updateZendeskTicketById = async (
     }
   }
   try {
-    const data = await makeHttpsRequest(options, postData)
-    logger.info(
-      interpolateTemplate('zendeskSuccessful', loggingCopy),
-      JSON.stringify(data)
-    )
+    await makeHttpsRequest(options, postData)
   } catch (error) {
     logger.error(
       interpolateTemplate('zendeskFailed', loggingCopy),
