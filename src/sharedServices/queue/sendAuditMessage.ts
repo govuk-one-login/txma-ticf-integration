@@ -42,14 +42,12 @@ export const sendAuditDataRequestMessage = async (
       }
     }
 
-    logger.info(
-      'sending audit data request message',
-      JSON.stringify(auditQueryRequestDetails)
-    )
-    await sendSqsMessage(
+    logger.info('sending audit data request message')
+    const sentMessageId = await sendSqsMessage(
       auditDataRequestEvent,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
+    logger.info(`sent audit data request message with ID: ${sentMessageId}`)
   } catch (error) {
     logger.error(
       'An error occurred while sending message to audit queue: ',

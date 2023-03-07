@@ -10,10 +10,7 @@ import { getAuditDataSourceBucketName } from './getAuditDataSourceBucketName'
 export const checkS3BucketData = async (
   dataRequestParams: DataRequestParams
 ): Promise<S3BucketDataLocationResult> => {
-  logger.info(
-    'Looking for S3 data using params',
-    JSON.stringify(dataRequestParams)
-  )
+  logger.info('Looking for S3 data')
 
   const prefixes = generateS3ObjectPrefixesForDateList(dataRequestParams.dates)
 
@@ -29,15 +26,6 @@ export const checkS3BucketData = async (
     getEnv('ANALYSIS_BUCKET_NAME')
   )
 
-  logger.info(
-    'Objects present in analysis bucket:',
-    JSON.stringify(existingAnalysisBucketObjects)
-  )
-
-  logger.info(
-    `Objects present in auditBucket ${getAuditDataSourceBucketName()}`,
-    JSON.stringify(requestedAuditBucketObjects)
-  )
   const objectsToCopy = requestedAuditBucketObjects.filter(
     (object) =>
       !existingAnalysisBucketObjects.map((o) => o.Key).includes(object.Key)
