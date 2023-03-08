@@ -12,6 +12,7 @@ import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { setupAuditSourceTestData } from '../../shared-test-code/utils/aws/setupAuditSourceTestData'
+import { deleteDynamoDBTestItem } from '../../shared-test-code/utils/aws/dynamoDB'
 
 describe('Data should be copied to analysis bucket', () => {
   describe('valid requests for standard copy - analysis bucket empty', () => {
@@ -89,6 +90,12 @@ describe('Data should be copied to analysis bucket', () => {
       await sendWebhookRequest(defaultWebhookRequestData)
     })
 
+    afterEach(async () => {
+      // To stop long polling for database items corresponding to Glacier restores we're no longer interested in,
+      // we delete the entry we created in this test
+      deleteDynamoDBTestItem(getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'), ticketId)
+    })
+
     it('data all in glacier tier', async () => {
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
@@ -132,6 +139,12 @@ describe('Data should be copied to analysis bucket', () => {
         getWebhookRequestDataForTestCaseNumberAndDate(4, availableDate.date)
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
+    })
+
+    afterEach(async () => {
+      // To stop long polling for database items corresponding to Glacier restores we're no longer interested in,
+      // we delete the entry we created in this test
+      deleteDynamoDBTestItem(getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'), ticketId)
     })
 
     it('data in standard and glacier tier', async () => {
