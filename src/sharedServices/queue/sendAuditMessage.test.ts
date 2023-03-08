@@ -169,7 +169,7 @@ describe('sendAuditMessage', () => {
         await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID, errorType)
 
         expect(logger.info).toHaveBeenCalledWith(
-          `sending illegal request audit message for zendeskId ${ZENDESK_TICKET_ID}`
+          'sending illegal request audit message'
         )
         expect(sendSqsMessage).toHaveBeenCalledWith(
           testAuditQueryIllegalRequestDetails,
@@ -206,7 +206,7 @@ describe('sendAuditMessage', () => {
       await sendQueryOutputGeneratedAuditMessage(ZENDESK_TICKET_ID)
 
       expect(logger.info).toHaveBeenCalledWith(
-        `sending query output generated message for zendeskId ${ZENDESK_TICKET_ID}`
+        'sending query output generated message'
       )
       expect(sendSqsMessage).toHaveBeenCalledWith(
         testQueryOutputGeneratedAuditMessageDetails,
