@@ -53,7 +53,7 @@ const createAndApproveTicket = async () => {
     'OVERRIDE_EVENT_IDS'
   ])
   const ticketData = generateTicketData()
-  console.log('creating ticket')
+  console.log('creating ticket with data', JSON.stringify(ticketData, null, 2))
   const ticketId = await createZendeskTicket(ticketData)
   await makeApproveZendeskTicketRequest(ticketId)
   console.log(`approved ticket with id ${ticketId}`)
