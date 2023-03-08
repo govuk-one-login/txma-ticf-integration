@@ -4,6 +4,7 @@ import { isZendeskUserResult, ZendeskUser } from '../../types/zendeskUserResult'
 import { base64Encode, makeHttpsRequest } from '../http/httpsRequestUtils'
 import { loggingCopy } from '../../constants/loggingCopy'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { logger } from '../logger'
 
 export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   const secrets = await retrieveZendeskApiSecrets()
@@ -23,6 +24,6 @@ export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   if (!isZendeskUserResult(data)) {
     throw Error(interpolateTemplate('zendeskUserNotFound', loggingCopy))
   }
-
+  logger.info('Retrieved Zendesk user info successfully')
   return data.user
 }

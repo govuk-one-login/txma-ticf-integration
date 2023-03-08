@@ -27,7 +27,6 @@ export const startGlacierRestore = async (
     filesToRestore,
     manifestFileName
   )
-  logger.info(`Starting Glacier restore`)
   const jobId = await createBulkGlacierRestoreJob(
     manifestFileName,
     manifestFileEtag,

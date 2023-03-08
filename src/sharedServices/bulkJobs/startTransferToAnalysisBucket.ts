@@ -30,7 +30,6 @@ export const startTransferToAnalysisBucket = async (
     filesToTransfer,
     manifestFileName
   )
-  logger.info('Starting S3 standard tier copying')
   const decryptDataFlagOn = getFeatureFlagValue('DECRYPT_DATA')
   const jobId = await createS3TransferBatchJob(
     manifestFileName,

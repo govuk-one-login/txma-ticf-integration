@@ -96,7 +96,7 @@ const handleInvalidRequest = async (
   logger.info(interpolateTemplate('requestInvalid', loggingCopy))
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
-  logger.info('Invalid ticket data ', { validationMessage })
+  logger.info('Invalid ticket data', { validationMessage })
   const newTicketStatus = 'closed'
   await updateZendeskTicket(
     requestBody,

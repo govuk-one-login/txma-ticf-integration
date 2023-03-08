@@ -7,6 +7,7 @@ import {
 import { base64Encode, makeHttpsRequest } from '../http/httpsRequestUtils'
 import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import { zendeskCopy } from '../../constants/zendeskCopy'
+import { logger } from '../logger'
 
 export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
   const secrets = await retrieveZendeskApiSecrets()
@@ -26,6 +27,6 @@ export const getZendeskTicket = async (id: string): Promise<ZendeskTicket> => {
   if (!isZendeskTicketResult(data)) {
     throw Error(interpolateTemplate('throwNotZendeskTicket', zendeskCopy))
   }
-
+  logger.info('Retrieved Zendesk ticket successfully')
   return data.ticket
 }
