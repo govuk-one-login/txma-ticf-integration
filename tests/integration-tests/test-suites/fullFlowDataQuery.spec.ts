@@ -18,6 +18,7 @@ describe('Data flows from audit bucket to output', () => {
       3,
       '2022-05-01'
     )
+    console.log('test ticketId:', webhookRequest.zendeskId)
     sendWebhookRequest(webhookRequest)
     const downloadUrl = await pollNotifyMockForDownloadUrl(
       webhookRequest.zendeskId
