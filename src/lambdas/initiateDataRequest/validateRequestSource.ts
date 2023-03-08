@@ -1,7 +1,7 @@
 import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 import * as crypto from 'crypto'
 import { retrieveZendeskApiSecrets } from '../../sharedServices/secrets/retrieveZendeskApiSecrets'
-
+import { logger } from '../../sharedServices/logger'
 export const isSignatureInvalid = async (
   headers: APIGatewayProxyEventHeaders | undefined,
   body: string | null
@@ -13,6 +13,7 @@ export const isSignatureInvalid = async (
   if (!(headerSignature && body && headerTimestamp)) return true
 
   const secrets = await retrieveZendeskApiSecrets()
+  logger.info('Retrieved zendesk secrets')
   const SIGNING_SECRET_ALGORITHM = 'sha256'
   const hmac = crypto.createHmac(
     SIGNING_SECRET_ALGORITHM,

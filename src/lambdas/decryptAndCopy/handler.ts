@@ -53,8 +53,11 @@ const decryptAndCopy = async (task: S3BatchEventTask) => {
   const bucket = extractS3BucketNameFromArn(task.s3BucketArn)
 
   const encryptedData = await getS3ObjectAsStream(bucket, key)
+  logger.info('Successfully retrived S3 object', { key })
 
   const decryptedData = await decryptS3Object(encryptedData)
+  logger.info('Successfully decrypted S3 object', { key })
 
   await putS3Object(getEnv('ANALYSIS_BUCKET_NAME'), key, decryptedData)
+  logger.info('S3 object successfully written to analysis bucket', { key })
 }

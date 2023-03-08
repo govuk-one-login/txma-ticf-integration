@@ -10,8 +10,6 @@ import { getAuditDataSourceBucketName } from './getAuditDataSourceBucketName'
 export const checkS3BucketData = async (
   dataRequestParams: DataRequestParams
 ): Promise<S3BucketDataLocationResult> => {
-  logger.info('Looking for S3 data')
-
   const prefixes = generateS3ObjectPrefixesForDateList(dataRequestParams.dates)
 
   const requestedAuditBucketObjects = await retrieveS3ObjectsForPrefixes(

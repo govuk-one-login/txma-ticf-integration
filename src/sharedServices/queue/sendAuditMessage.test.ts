@@ -10,7 +10,8 @@ import {
   TEST_RECIPIENT_NAME,
   TEST_REQUESTER_EMAIL,
   TEST_REQUESTER_NAME,
-  ZENDESK_TICKET_ID
+  ZENDESK_TICKET_ID,
+  TEST_SQS_MESSAGE_ID
 } from '../../utils/tests/testConstants'
 import { logger } from '../logger'
 import {
@@ -36,6 +37,10 @@ const givenSendSqsError = () => {
   when(sendSqsMessage).mockImplementation(() => {
     throw new Error(errorMessage)
   })
+}
+
+const givenSendSQSMessageReturnsMessageId = () => {
+  when(sendSqsMessage).mockResolvedValue(TEST_SQS_MESSAGE_ID)
 }
 
 describe('sendAuditMessage', () => {
@@ -163,13 +168,15 @@ describe('sendAuditMessage', () => {
     ])(
       'calls the sendSqsMessage function with the correct parameters when errorType is %p',
       async (errorType: ErrorType, errorDescription) => {
+        givenSendSQSMessageReturnsMessageId()
         const testAuditQueryIllegalRequestDetails =
           createTestAuditQueryIllegalRequestDetails(errorType, errorDescription)
 
         await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID, errorType)
 
         expect(logger.info).toHaveBeenCalledWith(
-          'sending illegal request audit message'
+          'Sent TXMA_AUDIT_QUERY_ILLEGAL_REQUEST event',
+          { messageId: TEST_SQS_MESSAGE_ID }
         )
         expect(sendSqsMessage).toHaveBeenCalledWith(
           testAuditQueryIllegalRequestDetails,
@@ -203,10 +210,12 @@ describe('sendAuditMessage', () => {
       }
     }
     it('calls the sendSqsMessage function with the correct parameters', async () => {
+      givenSendSQSMessageReturnsMessageId()
       await sendQueryOutputGeneratedAuditMessage(ZENDESK_TICKET_ID)
 
       expect(logger.info).toHaveBeenCalledWith(
-        'sending query output generated message'
+        'Sent TXMA_AUDIT_QUERY_OUTPUT_GENERATED event',
+        { messageId: TEST_SQS_MESSAGE_ID }
       )
       expect(sendSqsMessage).toHaveBeenCalledWith(
         testQueryOutputGeneratedAuditMessageDetails,

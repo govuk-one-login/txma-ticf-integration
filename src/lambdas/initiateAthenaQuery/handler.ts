@@ -28,7 +28,7 @@ export const handler = async (
 
   const requestData = await getDatabaseEntryByZendeskId(zendeskId)
 
-  logger.info('Retrieved request details from database.')
+  logger.info('Retrieved request details from database')
 
   const querySql = createQuerySql(requestData.requestInfo)
 
@@ -37,9 +37,6 @@ export const handler = async (
   const queryExecutionDetails = await startQueryExecution(querySql)
 
   await confirmQueryExecution(queryExecutionDetails, zendeskId)
-  logger.info('Database updated and Athena query execution initiated', {
-    QueryExecutionId: queryExecutionDetails.queryExecutionId
-  })
 }
 
 const retrieveZendeskIdFromEvent = (event: SQSEvent): string => {
@@ -87,7 +84,9 @@ const confirmQueryExecution = async (
     )
     throw new Error(queryExecutionDetails.error)
   }
-
+  logger.info('Athena query execution initiated', {
+    queryExecutionId: queryExecutionDetails.queryExecutionId
+  })
   await updateDb(queryExecutionDetails, zendeskId)
 }
 
@@ -102,6 +101,9 @@ const updateDb = async (
         'athenaQueryId',
         queryExecutionDetails.queryExecutionId
       )
+      logger.info('Updated database successfully', {
+        queryExecutionId: queryExecutionDetails.queryExecutionId
+      })
     } catch (error) {
       await updateZendeskTicketById(
         zendeskId,
