@@ -93,7 +93,10 @@ describe('Data should be copied to analysis bucket', () => {
     afterEach(async () => {
       // To stop long polling for database items corresponding to Glacier restores we're no longer interested in,
       // we delete the entry we created in this test
-      deleteDynamoDBTestItem(getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'), ticketId)
+      await deleteDynamoDBTestItem(
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
+        ticketId
+      )
     })
 
     it('data all in glacier tier', async () => {
@@ -144,7 +147,10 @@ describe('Data should be copied to analysis bucket', () => {
     afterEach(async () => {
       // To stop long polling for database items corresponding to Glacier restores we're no longer interested in,
       // we delete the entry we created in this test
-      deleteDynamoDBTestItem(getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'), ticketId)
+      await deleteDynamoDBTestItem(
+        getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
+        ticketId
+      )
     })
 
     it('data in standard and glacier tier', async () => {
