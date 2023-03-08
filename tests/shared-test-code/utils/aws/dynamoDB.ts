@@ -28,6 +28,7 @@ export const populateDynamoDBWithTestItemDetails = async (
     operation: 'PUT',
     params: {
       tableName,
+      zendeskId,
       itemToPut: generateDynamoTableEntry(
         zendeskId,
         zendeskTicketData.request.custom_fields
