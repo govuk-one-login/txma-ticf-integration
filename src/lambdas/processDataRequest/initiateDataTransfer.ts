@@ -32,7 +32,7 @@ export const initiateDataTransfer = async (
     bucketData.standardTierLocationsToCopy.length > 0
 
   await addNewDataRequestRecord(dataRequestParams, glacierRestoreRequired)
-
+  logger.info('Added data request to query request database')
   if (!glacierRestoreRequired && !copyFromAuditToAnalysisBucketRequired) {
     logger.info(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
     await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)

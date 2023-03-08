@@ -12,7 +12,8 @@ import {
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import {
   appendZendeskIdToLogger,
-  initialiseLogger
+  initialiseLogger,
+  logger
 } from '../../sharedServices/logger'
 
 export const handler = async (event: SQSEvent, context: Context) => {
@@ -28,6 +29,7 @@ export const handler = async (event: SQSEvent, context: Context) => {
 
   if (isDataRequestParams(eventData)) {
     await initiateDataTransfer(eventData as DataRequestParams)
+    logger.info('Data transfer process initiated')
   } else if (isContinueDataTransferParams(eventData)) {
     const params = eventData as ContinueDataTransferParams
     await checkDataTransferStatus(params.zendeskId)

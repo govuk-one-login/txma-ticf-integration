@@ -25,6 +25,9 @@ export const handler = async (
 
   try {
     await decryptAndCopy(event.tasks[0])
+    logger.info('Decrypt and copy completed successfully', {
+      s3Key: event.tasks[0].s3Key
+    })
   } catch (err) {
     logger.error('Error during decrypt and copy', {
       err,

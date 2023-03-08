@@ -29,6 +29,7 @@ export const handler = async (
   }
 
   const batchJobTags = await getS3BatchJobTags(jobId)
+  logger.info('Successfully fetched batchJobTags', { jobId, batchJobTags })
   if (!batchJobIsTransferToAnalysisBucket(batchJobTags)) {
     return
   }
@@ -36,10 +37,12 @@ export const handler = async (
   const zendeskId = getZendeskIdFromTags(batchJobTags)
   appendZendeskIdToLogger(zendeskId)
   if (await jobWasSuccessful(jobId, eventStatus)) {
+    logger.info('Transfer to analysis bucket job was successful', { jobId })
     await sendInitiateAthenaQueryMessage(zendeskId)
   } else {
     logger.error(
-      `Transfer to analysis bucket job failed for zendesk ID '${zendeskId}', jobID '${jobId}'. Please check the job report and lambda logs for details of what went wrong`
+      'Transfer to analysis bucket job failed for jobID. Please check the job report and lambda logs for details of what went wrong',
+      { jobId }
     )
     closeTicketOnFailure(zendeskId)
   }

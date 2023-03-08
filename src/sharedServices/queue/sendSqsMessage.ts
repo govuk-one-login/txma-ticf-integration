@@ -4,6 +4,7 @@ import {
   SendMessageCommand
 } from '@aws-sdk/client-sqs'
 import { getEnv } from '../../utils/helpers'
+import { logger } from '../logger'
 
 export const sendSqsMessage = async (
   messageBody: object,
@@ -31,5 +32,6 @@ export const sendSqsMessageWithStringBody = async (
     message.DelaySeconds = delaySendInSeconds
   }
   const result = await client.send(new SendMessageCommand(message))
+  logger.info('Sent SQS Message successfully')
   return result.MessageId
 }

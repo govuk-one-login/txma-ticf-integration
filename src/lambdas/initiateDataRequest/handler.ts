@@ -21,7 +21,11 @@ import {
   sendIllegalRequestAuditMessage
 } from '../../sharedServices/queue/sendAuditMessage'
 import { tryParseJSON } from '../../utils/helpers'
-import { initialiseLogger, logger } from '../../sharedServices/logger'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 
 export const handler = async (
   event: APIGatewayProxyEvent,
@@ -30,6 +34,8 @@ export const handler = async (
   initialiseLogger(context)
 
   const parsedEventBody = tryParseJSON(event.body ?? '')
+  appendZendeskIdToLogger(parsedEventBody.zendeskId)
+
   await sendAuditDataRequestMessage(parsedEventBody)
 
   if (await isSignatureInvalid(event.headers, event.body)) {

@@ -56,6 +56,7 @@ export const updateZendeskTicketById = async (
   }
   try {
     await makeHttpsRequest(options, postData)
+    logger.info('Updated Zendesk ticket', { ticketStatus })
   } catch (error) {
     logger.error(
       interpolateTemplate('zendeskFailed', loggingCopy),

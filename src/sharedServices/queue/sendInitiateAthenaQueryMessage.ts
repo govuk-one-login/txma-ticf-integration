@@ -5,7 +5,7 @@ import { sendSqsMessageWithStringBody } from './sendSqsMessage'
 export const sendInitiateAthenaQueryMessage = (
   zendeskId: string
 ): Promise<string | undefined> => {
-  logger.info(`Queueing athena query for zendeskId ${zendeskId}`)
+  logger.info('Queueing athena query')
   return sendSqsMessageWithStringBody(
     zendeskId,
     getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')

@@ -67,9 +67,7 @@ export const sendIllegalRequestAuditMessage = async (
     }
     auditQueryIllegalRequestDetails.extensions.error = getErrorObject(errorType)
 
-    logger.info(
-      `sending illegal request audit message for zendeskId ${zendeskId}`
-    )
+    logger.info('sending illegal request audit message')
     await sendSqsMessage(
       auditQueryIllegalRequestDetails,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
@@ -91,9 +89,7 @@ export const sendQueryOutputGeneratedAuditMessage = async (
       ...createAuditMessageBaseObjectDetails(zendeskId)
     }
 
-    logger.info(
-      `sending query output generated message for zendeskId ${zendeskId}`
-    )
+    logger.info('sending query output generated message')
     await sendSqsMessage(
       queryOutputGeneratedAuditMessageDetails,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
