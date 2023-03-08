@@ -24,7 +24,6 @@ describe('Data flows from audit bucket to output', () => {
     )
     expect(downloadUrl.startsWith('https')).toBe(true)
     const csvRows = await downloadResultsFileAndParseData(downloadUrl)
-    console.log('Got data ', csvRows)
     expect(csvRows.length).toEqual(1)
     expect(csvRows[0].drivers_license).toEqual(
       '[{"expirydate":"2024-06-19","issuenumber":"96","personalnumber":"BINNS902235OW9TF","issuedby":"DVLA","issuedate":"2014-06-20"}]'
