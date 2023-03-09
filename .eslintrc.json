@@ -10,11 +10,11 @@
     "node": true
   },
   "rules": { "no-console": "error" },
-  "plugins": ["jest"],
   "overrides": [
     {
       "files": ["scripts/**/*", "tests/**"],
       "rules": { "no-console": ["off"] }
     }
-  ]
+  ],
+  "plugins": ["jest"]
 }
