@@ -85,10 +85,6 @@ describe('updating a zendesk ticket', () => {
         }
       }
     )
-    expect(logger.info).toHaveBeenLastCalledWith(
-      'Zendesk ticket update successful.',
-      JSON.stringify({ theReturnData: '123' })
-    )
   }
   it('a single api call fails', async () => {
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()
@@ -135,10 +131,7 @@ describe('updating a zendesk ticket', () => {
 
   it('returns from the function if eventBody is not JSON', async () => {
     await updateZendeskTicket('hello', zendeskTicketMessage)
-    expect(logger.error).toHaveBeenCalledWith(
-      'Error parsing JSON: ',
-      new SyntaxError('Unexpected token h in JSON at position 0')
-    )
+    expect(logger.error).toHaveBeenCalledWith('Error parsing JSON')
     expect(logger.error).toHaveBeenLastCalledWith(
       'No Zendesk ticket ID present. Cannot update ticket.'
     )

@@ -1,5 +1,4 @@
 import { describeBatchJob } from '../../sharedServices/bulkJobs/describeBatchJob'
-import { logger } from '../../sharedServices/logger'
 
 export const jobWasSuccessful = async (
   jobId: string,
@@ -14,7 +13,6 @@ export const jobWasSuccessful = async (
   // If the status isn't "Failed" we instead make sure that the total number of tasks
   // equals the number of succeeded tasks.
   const job = await describeBatchJob(jobId)
-  logger.info('Got batch job description', { job })
   return (
     !!job.ProgressSummary?.TotalNumberOfTasks &&
     job.ProgressSummary?.TotalNumberOfTasks > 0 &&

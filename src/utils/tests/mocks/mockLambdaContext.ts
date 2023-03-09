@@ -10,13 +10,7 @@ export const mockLambdaContext: Context = {
   logGroupName: 'someLogGroupName',
   logStreamName: 'someLogStreamName',
   getRemainingTimeInMillis: () => 1,
-  done: () => {
-    console.log('context.done called')
-  },
-  fail: () => {
-    console.log('context.failed called')
-  },
-  succeed: () => {
-    console.log('context.succeed called')
-  }
+  done: jest.fn(),
+  fail: jest.fn(),
+  succeed: jest.fn()
 }

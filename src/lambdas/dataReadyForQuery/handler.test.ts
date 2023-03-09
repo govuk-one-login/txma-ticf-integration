@@ -80,7 +80,8 @@ describe('dataReadyForQuery', () => {
       'closed'
     )
     expect(logger.error).toHaveBeenLastCalledWith(
-      `Transfer to analysis bucket job failed for zendesk ID '${ZENDESK_TICKET_ID}', jobID '${TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID}'. Please check the job report and lambda logs for details of what went wrong`
+      'Transfer to analysis bucket job failed for jobID. Please check the job report and lambda logs for details of what went wrong',
+      { jobId: TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID }
     )
   })
 

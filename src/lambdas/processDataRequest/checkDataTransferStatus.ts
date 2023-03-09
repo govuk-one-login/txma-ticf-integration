@@ -10,6 +10,7 @@ import { logger } from '../../sharedServices/logger'
 
 export const checkDataTransferStatus = async (zendeskId: string) => {
   const dbEntry = await getDatabaseEntryByZendeskId(zendeskId)
+  logger.info('Retrieved request details from database')
   const s3BucketDataLocationResult = await checkS3BucketData(
     dbEntry.requestInfo
   )
@@ -36,12 +37,14 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
       zendeskId
     )
   } else {
-    logger.info('Placing zendeskId back on InitiateDataRequestQueue', {
-      glacier_progress: 'Glacier restore still in progress',
-      number_of_checks: addOneToRetryCountForLogs(
-        dbEntry.checkGlacierStatusCount
-      ).toString()
-    })
+    logger.info(
+      'Placing zendeskId back on InitiateDataRequestQueue because Glacier restore is still in progress',
+      {
+        numberOfChecks: addOneToRetryCountForLogs(
+          dbEntry.checkGlacierStatusCount
+        )
+      }
+    )
     await maintainRetryState(zendeskId)
   }
 }
@@ -53,7 +56,7 @@ const maintainRetryState = async (zendeskId: string) => {
   await sendContinuePollingDataTransferMessage(zendeskId, waitTimeInSeconds)
 }
 
-const addOneToRetryCountForLogs = (checkCount: number | undefined) => {
+const addOneToRetryCountForLogs = (checkCount: number | undefined): string => {
   if (!checkCount) return ''
-  return ++checkCount
+  return (++checkCount).toString()
 }

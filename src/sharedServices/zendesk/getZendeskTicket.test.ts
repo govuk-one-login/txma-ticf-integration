@@ -51,14 +51,10 @@ describe('get zendesk ticket information', () => {
 
   test('show ticket call succeeds', async () => {
     mockHttpsRequestUtils.givenSuccessfulApiCall(successResponse)
-    await getZendeskTicket(ZENDESK_TICKET_ID)
+    const ticket = await getZendeskTicket(ZENDESK_TICKET_ID)
 
     expectSuccessfulApiCallToBeMade()
-
-    expect(logger.info).toHaveBeenLastCalledWith(
-      'Zendesk ticket with matching id found',
-      JSON.stringify(successResponse.ticket)
-    )
+    expect(ticket).toEqual(successResponse.ticket)
   })
 
   test('throws error if response is not a zendesk ticket', async () => {

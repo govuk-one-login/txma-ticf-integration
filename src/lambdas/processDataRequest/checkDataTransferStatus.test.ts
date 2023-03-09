@@ -110,10 +110,9 @@ describe('checkDataTransferStatus', () => {
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
     expect(logger.info).toHaveBeenLastCalledWith(
-      'Placing zendeskId back on InitiateDataRequestQueue',
+      'Placing zendeskId back on InitiateDataRequestQueue because Glacier restore is still in progress',
       {
-        glacier_progress: 'Glacier restore still in progress',
-        number_of_checks: '2'
+        numberOfChecks: '2'
       }
     )
     expect(mockIncrementPollingRetryCount).toBeCalledWith(ZENDESK_TICKET_ID)

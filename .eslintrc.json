@@ -9,5 +9,12 @@
     "jest/globals": true,
     "node": true
   },
+  "rules": { "no-console": "error" },
+  "overrides": [
+    {
+      "files": ["scripts/**/*", "tests/**"],
+      "rules": { "no-console": ["off"] }
+    }
+  ],
   "plugins": ["jest"]
 }

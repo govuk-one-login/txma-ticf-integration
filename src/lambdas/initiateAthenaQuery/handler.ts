@@ -19,7 +19,6 @@ export const handler = async (
   context: Context
 ): Promise<void> => {
   initialiseLogger(context)
-  logger.info('Handling Athena Query event', { handledEvent: event })
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
   appendZendeskIdToLogger(zendeskId)
@@ -29,6 +28,8 @@ export const handler = async (
 
   const requestData = await getDatabaseEntryByZendeskId(zendeskId)
 
+  logger.info('Retrieved request details from database')
+
   const querySql = createQuerySql(requestData.requestInfo)
 
   await confirmQuerySqlGeneration(querySql, zendeskId)
@@ -36,8 +37,6 @@ export const handler = async (
   const queryExecutionDetails = await startQueryExecution(querySql)
 
   await confirmQueryExecution(queryExecutionDetails, zendeskId)
-
-  return
 }
 
 const retrieveZendeskIdFromEvent = (event: SQSEvent): string => {
@@ -61,7 +60,6 @@ const checkAthenaTableExists = async (
     await updateZendeskTicketById(zendeskId, athenaTable.message, 'closed')
     throw new Error(athenaTable.message)
   }
-  return
 }
 
 const confirmQuerySqlGeneration = async (
@@ -72,14 +70,6 @@ const confirmQuerySqlGeneration = async (
     await updateZendeskTicketById(zendeskId, querySql.error, 'closed')
     throw new Error(querySql.error)
   }
-
-  if (querySql.sql) {
-    logger.info('Athena SQL generated', {
-      sql: querySql.sql,
-      parameters: querySql.queryParameters
-    })
-  }
-  return
 }
 
 const confirmQueryExecution = async (
@@ -94,11 +84,13 @@ const confirmQueryExecution = async (
     )
     throw new Error(queryExecutionDetails.error)
   }
-
-  await updateDbAndLog(queryExecutionDetails, zendeskId)
+  logger.info('Athena query execution initiated', {
+    queryExecutionId: queryExecutionDetails.queryExecutionId
+  })
+  await updateDb(queryExecutionDetails, zendeskId)
 }
 
-const updateDbAndLog = async (
+const updateDb = async (
   queryExecutionDetails: StartQueryExecutionResult,
   zendeskId: string
 ): Promise<void> => {
@@ -109,6 +101,9 @@ const updateDbAndLog = async (
         'athenaQueryId',
         queryExecutionDetails.queryExecutionId
       )
+      logger.info('Updated database successfully', {
+        queryExecutionId: queryExecutionDetails.queryExecutionId
+      })
     } catch (error) {
       await updateZendeskTicketById(
         zendeskId,
@@ -117,8 +112,5 @@ const updateDbAndLog = async (
       )
       throw new Error(`Error updating db for zendesk ticket: ${zendeskId}`)
     }
-    logger.info('Athena query execution initiated', {
-      QueryExecutionId: queryExecutionDetails.queryExecutionId
-    })
   }
 }
