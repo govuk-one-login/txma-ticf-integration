@@ -7,14 +7,16 @@ export const s3WaitForFile = async (bucket: string, key: string) => {
   let attempts = 0
   while (attempts < maxAttempts) {
     attempts++
-    if (attempts > maxAttempts) {
-      break
+    if (attempts >= maxAttempts) {
+      throw Error(
+        `Failed to find file with key ${key} in bucket ${bucket} after ${maxAttempts} attempts`
+      )
     }
     if (await s3FileExists(bucket, key)) {
       break
     }
     console.log(
-      `Waiting for 2 seconds for file with prefix ${key} in bucket ${bucket}`
+      `Waiting for 2 seconds for file with prefix ${key} in bucket ${bucket}. ${attempts} attempts`
     )
     await pause(2000)
   }
