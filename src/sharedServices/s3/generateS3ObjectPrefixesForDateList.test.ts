@@ -93,8 +93,6 @@ describe('object prefixes', () => {
       '2022-08-21',
       '2022-08-22'
     ])
-    console.log('actual', result)
-    console.log('expected', expectedResult)
     expect(result).toEqual(expectedResult)
   })
 

@@ -5,7 +5,7 @@ import {
 } from '../../shared-test-code/utils/aws/dynamoDB'
 import { addMessageToQueue } from '../../shared-test-code/utils/aws/sqs'
 import {
-  eventIsPresent,
+  waitForEventWithPatterns,
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
@@ -90,31 +90,18 @@ describe('Athena Query SQL generation and execution', () => {
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
 
-      const athenaQueryEvents =
+      const athenaQueryInitiatedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
+          [
+            cloudwatchLogFilters.athenaQueryInitiated,
+            cloudwatchLogFilters.zendeskId,
+            randomTicketId
+          ]
         )
 
-      expect(athenaQueryEvents).not.toEqual([])
-      expect(athenaQueryEvents.length).toBeGreaterThan(1)
-
-      const isSqlGeneratedMessageInLogs = eventIsPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaSqlGenerated
-      )
-      const isQueryInitiatedMessageInLogs = eventIsPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaQueryInitiated
-      )
-      expect({
-        result: isSqlGeneratedMessageInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
-      expect({
-        result: isQueryInitiatedMessageInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
+      expect(athenaQueryInitiatedEvents).not.toEqual([])
+      expect(athenaQueryInitiatedEvents.length).toBeGreaterThan(1)
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -145,32 +132,18 @@ describe('Athena Query SQL generation and execution', () => {
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
 
-      const athenaQueryEvents =
+      const athenaQueryInitiatedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
+          [
+            cloudwatchLogFilters.athenaQueryInitiated,
+            cloudwatchLogFilters.zendeskId,
+            randomTicketId
+          ]
         )
 
-      expect(athenaQueryEvents).not.toEqual([])
-      expect(athenaQueryEvents.length).toBeGreaterThan(1)
-
-      const isAthenaSqlGeneratedMessageInLogs = eventIsPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaSqlGenerated
-      )
-      expect({
-        result: isAthenaSqlGeneratedMessageInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
-
-      const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaQueryInitiated
-      )
-      expect({
-        result: isAthenaInitiatedQueryMessageInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
+      expect(athenaQueryInitiatedEvents).not.toEqual([])
+      expect(athenaQueryInitiatedEvents.length).toBeGreaterThan(1)
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -199,32 +172,18 @@ describe('Athena Query SQL generation and execution', () => {
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
 
-      const athenaQueryEvents =
+      const athenaQueryInitiatedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
+          [
+            cloudwatchLogFilters.athenaQueryInitiated,
+            cloudwatchLogFilters.zendeskId,
+            randomTicketId
+          ]
         )
 
-      expect(athenaQueryEvents).not.toEqual([])
-      expect(athenaQueryEvents.length).toBeGreaterThan(1)
-
-      const isAthenaSqlGeneratedMessageInLogs = eventIsPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaSqlGenerated
-      )
-      expect({
-        result: isAthenaSqlGeneratedMessageInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
-
-      const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaQueryInitiated
-      )
-      expect({
-        result: isAthenaInitiatedQueryMessageInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
+      expect(athenaQueryInitiatedEvents).not.toEqual([])
+      expect(athenaQueryInitiatedEvents.length).toBeGreaterThan(1)
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -257,32 +216,18 @@ describe('Athena Query SQL generation and execution', () => {
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
 
-      const athenaQueryEvents =
+      const athenaQueryInitiatedEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
+          [
+            cloudwatchLogFilters.athenaQueryInitiated,
+            cloudwatchLogFilters.zendeskId,
+            randomTicketId
+          ]
         )
 
-      expect(athenaQueryEvents).not.toEqual([])
-      expect(athenaQueryEvents.length).toBeGreaterThan(1)
-
-      const isAthenaSqlGeneratedMessageInLogs = eventIsPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaSqlGenerated
-      )
-      expect({
-        result: isAthenaSqlGeneratedMessageInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
-
-      const isAthenaInitiatedQueryMessageInLogs = eventIsPresent(
-        athenaQueryEvents,
-        cloudwatchLogFilters.athenaQueryInitiated
-      )
-      expect({
-        result: isAthenaInitiatedQueryMessageInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
+      expect(athenaQueryInitiatedEvents).not.toEqual([])
+      expect(athenaQueryInitiatedEvents.length).toBeGreaterThan(1)
 
       const value = await getValueFromDynamoDB(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -336,22 +281,12 @@ describe('Athena Query SQL generation and execution', () => {
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
       )
 
-      const athenaQueryEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.athenaEventReceived, 'body', randomTicketId]
-        )
-      expect(athenaQueryEvents).not.toEqual([])
-      expect(athenaQueryEvents.length).toBeGreaterThan(1)
-
-      const isAthenaHandlerInvokeErrorInLogs = eventIsPresent(
-        athenaQueryEvents,
-        `${cloudwatchLogFilters.athenaInvokeError} '${randomTicketId}'`
+      const athenaQueryInvokeErrorEvents = await waitForEventWithPatterns(
+        getEnv('INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME'),
+        [`Cannot find database entry for zendesk ticket '${randomTicketId}'`],
+        10
       )
-      expect({
-        result: isAthenaHandlerInvokeErrorInLogs,
-        events: athenaQueryEvents
-      }).toEqual({ result: true, events: athenaQueryEvents })
+      expect(athenaQueryInvokeErrorEvents).not.toEqual([])
     })
   })
 })

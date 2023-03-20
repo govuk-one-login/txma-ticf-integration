@@ -2,11 +2,11 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   athenaEventReceived: 'Handling Athena Query event',
   athenaInvokeError: 'Cannot find database entry for zendesk ticket',
   athenaQueryInitiated: 'Athena query execution initiated',
-  athenaQueryQueued: 'Queueing athena query',
+  athenaQueryQueued: 'Sent message to initiate Athena query queue',
   athenaSqlGenerated: 'Athena SQL generated',
   copyComplete: 'Restore/copy process complete.',
-  copyStarted: 'Started S3 copy job for zendesk ticket with id',
-  decryptStarted: 'Started data decrypt batch job for zendesk ticket with id',
+  copyStarted: 'Started S3 copy job',
+  decryptStarted: 'Started data decrypt batch job',
   dataSentToQueue: 'Sent data transfer queue message',
   glacierTierCopy:
     'Number of standard tier files to copy was 0, glacier tier files to copy was 1',
@@ -14,14 +14,16 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
     'Number of standard tier files to copy was 0, glacier tier files to copy was 0',
   mixedTierCopy:
     'Number of standard tier files to copy was 1, glacier tier files to copy was 1',
-  restoreStarted: 'Started Glacier restore for zendesk ticket with id',
+  restoreStarted: 'Started Glacier restore',
   standardTierCopy:
     'Number of standard tier files to copy was 1, glacier tier files to copy was 0',
   sqsEventReceived: 'Handling data request SQS event',
   webhookInvalid: 'Zendesk request was invalid',
   webhookReceived: 'received Zendesk webhook',
   zendeskRequestInvalid: 'Zendesk request was invalid',
-  allDataAvailableQueuingAthenaQuery: 'All data available, queuing Athena query'
+  allDataAvailableQueuingAthenaQuery:
+    'All data available, queuing Athena query',
+  zendeskId: 'zendeskId'
 }
 
 type CloudwatchLogFiltersConstants = {
@@ -44,4 +46,5 @@ type CloudwatchLogFiltersConstants = {
   readonly webhookReceived: string
   readonly zendeskRequestInvalid: string
   readonly allDataAvailableQueuingAthenaQuery: string
+  readonly zendeskId: string
 }

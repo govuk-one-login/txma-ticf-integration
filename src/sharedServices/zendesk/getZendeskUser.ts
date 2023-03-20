@@ -24,12 +24,6 @@ export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   if (!isZendeskUserResult(data)) {
     throw Error(interpolateTemplate('zendeskUserNotFound', loggingCopy))
   }
-
-  const userInfo = data.user
-  logger.info(
-    interpolateTemplate('zendeskUserFound', loggingCopy),
-    JSON.stringify(userInfo)
-  )
-
-  return userInfo
+  logger.info('Retrieved Zendesk user info successfully')
+  return data.user
 }

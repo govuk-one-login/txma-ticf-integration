@@ -19,6 +19,9 @@ export const writeJobManifestFileToJobBucket = async (
       Body: createManifestFileText(sourceBucket, fileList)
     })
   )
-  logger.info('wrote manifest to S3 with etag ', { etag: response.ETag })
+  logger.info('Succesfully wrote manifest to S3', {
+    manifestFileName,
+    etag: response.ETag
+  })
   return response.ETag as string
 }

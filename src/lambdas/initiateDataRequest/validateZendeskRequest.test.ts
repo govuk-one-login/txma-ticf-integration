@@ -537,7 +537,6 @@ describe('validateZendeskRequest', () => {
       const validationResult = await validateZendeskRequest(
         JSON.stringify(buildRequestBodyWithDates(date, '2021-08-01'))
       )
-      console.log(validationResult.validationMessage)
       expect(validationResult.isValid).toEqual(false)
       expect(validationResult.validationMessage).toEqual('From date is invalid')
     }
@@ -555,7 +554,6 @@ describe('validateZendeskRequest', () => {
       const validationResult = await validateZendeskRequest(
         JSON.stringify(buildRequestBodyWithDateList(dateListString))
       )
-      console.log(validationResult.validationMessage)
       expect(validationResult.isValid).toEqual(false)
       expect(validationResult.validationMessage).toEqual(
         'dates list is invalid'

@@ -1115,6 +1115,31 @@ Resources:
               Bool:
                 'aws:SecureTransport': 'true'
 
+  TemporaryAuditBucketTestPolicy:
+    Condition: TestRoleResources
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Sub 'audit-${Environment}-temporary-message-batch'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Test role S3 access
+            Effect: 'Allow'
+            Action:
+              - s3:DeleteObject*
+              - s3:GetObject*
+              - s3:ListBucket
+              - s3:PutObject*
+            Resource:
+              - !Sub 'arn:aws:s3:::audit-${Environment}-temporary-message-batch'
+              - !Sub 'arn:aws:s3:::audit-${Environment}-temporary-message-batch/*'
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+            Condition:
+              Bool:
+                'aws:SecureTransport': 'true'
+
   DynamoOperationsLambdaPolicy:
     Condition: TestRoleResources
     Type: AWS::Lambda::Permission

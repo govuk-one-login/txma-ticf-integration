@@ -27,17 +27,12 @@ export const startGlacierRestore = async (
     filesToRestore,
     manifestFileName
   )
-  logger.info(
-    `Starting Glacier restore for zendesk ticket with id '${zendeskTicketId}'`
-  )
   const jobId = await createBulkGlacierRestoreJob(
     manifestFileName,
     manifestFileEtag,
     zendeskTicketId
   )
-  logger.info(
-    `Started Glacier restore for zendesk ticket with id '${zendeskTicketId}', with jobId '${jobId}'`
-  )
+  logger.info('Started Glacier restore batch job', { jobId })
 }
 
 const createBulkGlacierRestoreJob = async (

@@ -16,19 +16,23 @@ export const handler = async (
   context: Context
 ): Promise<S3BatchResult> => {
   initialiseLogger(context)
-  logger.info('Handling S3BatchEvent decryption', { handledEvent: event })
 
   let resultCode: S3BatchResultResultCode = 'Succeeded'
   let resultString = ''
   if (event.tasks.length === 0) {
-    logger.error('No tasks in event')
     throw new Error('No tasks in event')
   }
 
   try {
     await decryptAndCopy(event.tasks[0])
+    logger.info('Decrypt and copy completed successfully', {
+      s3Key: event.tasks[0].s3Key
+    })
   } catch (err) {
-    logger.error('Error during decrypt and copy', err as Error)
+    logger.error('Error during decrypt and copy', {
+      err,
+      s3Key: event.tasks[0].s3Key
+    })
     resultCode = 'TemporaryFailure'
     resultString = `Err: ${JSON.stringify(err)}`
   }
@@ -49,8 +53,11 @@ const decryptAndCopy = async (task: S3BatchEventTask) => {
   const bucket = extractS3BucketNameFromArn(task.s3BucketArn)
 
   const encryptedData = await getS3ObjectAsStream(bucket, key)
+  logger.info('Successfully retrived S3 object', { key })
 
   const decryptedData = await decryptS3Object(encryptedData)
+  logger.info('Successfully decrypted S3 object', { key })
 
   await putS3Object(getEnv('ANALYSIS_BUCKET_NAME'), key, decryptedData)
+  logger.info('S3 object successfully written to analysis bucket', { key })
 }

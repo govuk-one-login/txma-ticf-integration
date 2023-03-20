@@ -101,7 +101,7 @@ const extractRequestIdFromEventMessage = (message: string) => {
   return requestId
 }
 
-const waitForEventWithPatterns = async (
+export const waitForEventWithPatterns = async (
   logGroupName: string,
   eventMessagePatterns: string[],
   maxAttempts: number

@@ -21,16 +21,21 @@ import {
   sendIllegalRequestAuditMessage
 } from '../../sharedServices/queue/sendAuditMessage'
 import { tryParseJSON } from '../../utils/helpers'
-import { initialiseLogger, logger } from '../../sharedServices/logger'
+import {
+  appendZendeskIdToLogger,
+  initialiseLogger,
+  logger
+} from '../../sharedServices/logger'
 
 export const handler = async (
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> => {
   initialiseLogger(context)
-  logger.info('received Zendesk webhook', JSON.stringify(event, null, 2))
 
   const parsedEventBody = tryParseJSON(event.body ?? '')
+  appendZendeskIdToLogger(parsedEventBody.zendeskId)
+
   await sendAuditDataRequestMessage(parsedEventBody)
 
   if (await isSignatureInvalid(event.headers, event.body)) {
@@ -91,7 +96,7 @@ const handleInvalidRequest = async (
   logger.info(interpolateTemplate('requestInvalid', loggingCopy))
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
-  logger.info('Validation message: ', validationMessage)
+  logger.info('Invalid ticket data', { validationMessage })
   const newTicketStatus = 'closed'
   await updateZendeskTicket(
     requestBody,
