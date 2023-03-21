@@ -48,7 +48,7 @@ export const setupEncryptedData = async (
     true
   )
 
-  await s3WaitForFile('audit-dev-permanent-message-batch', destinationS3Key)
+  await s3WaitForFile(getEnv('PERMANENT_AUDIT_BUCKET_NAME'), destinationS3Key)
   if (sendToGlacier) {
     await s3ChangeStorageClass(
       getEnv('PERMANENT_AUDIT_BUCKET_NAME'),
