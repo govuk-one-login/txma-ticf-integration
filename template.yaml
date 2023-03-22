@@ -1140,6 +1140,30 @@ Resources:
               Bool:
                 'aws:SecureTransport': 'true'
 
+  PermanentAuditBucketTestPolicy:
+    Condition: TestRoleResources
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Sub 'audit-${Environment}-permanent-message-batch'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Test role allow S3 read
+            Effect: 'Allow'
+            Action:
+              - s3:GetObject*
+              # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
+              - s3:ListBucket
+            Resource:
+              - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch'
+              - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+            Condition:
+              Bool:
+                'aws:SecureTransport': 'true'
+
   DynamoOperationsLambdaPolicy:
     Condition: TestRoleResources
     Type: AWS::Lambda::Permission
