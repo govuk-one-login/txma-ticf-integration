@@ -1027,6 +1027,44 @@ Resources:
       SourceArn: !GetAtt BatchJobEventBridgeRule.Arn
 
   ###############
+  # Email to Slack Resources
+  ###############
+
+  SNSKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action:
+              - 'kms:*'
+            Resource:
+              - '*'
+          - Effect: 'Allow'
+            Principal:
+              Service: 'sns.amazonaws.com'
+            Action:
+              - 'kms:*'
+            Resource:
+              - '*'
+
+  SNSKMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub 'alias/${AWS::StackName}/${Environment}/SNSKMSKey'
+      TargetKeyId: !Ref SNSKMSKey
+
+  SelfEventProcessingTestSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${AWS::StackName}-email-to-slack-topic'
+      KmsMasterKeyId: !GetAtt SNSKMSKey.Arn
+
+  ###############
   # SQS Resources
   ###############
 

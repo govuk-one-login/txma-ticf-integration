@@ -22,6 +22,11 @@ export const handler = async (
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
   appendZendeskIdToLogger(zendeskId)
+
+  if (zendeskId.startsWith('MR')) {
+    logger.warn('Manual query detected, no need to run athena query')
+    return
+  }
   const athenaTable = await confirmAthenaTable()
 
   await checkAthenaTableExists(athenaTable, zendeskId)
