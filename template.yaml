@@ -501,6 +501,7 @@ Resources:
           ATHENA_WORKGROUP_NAME: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupName}}'
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          EMAIL_TO_SLACK_SNS_TOPIC_ARN: !GetAtt EmailToSlackSNSTopic.TopicArn
       Events:
         InitiateAthenaQueryEvent:
           Type: SQS
@@ -585,6 +586,18 @@ Resources:
                 - events:PutEvents
               Resource:
                 - '*'
+            - Sid: SNSEmailTopic
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource:
+                - !GetAtt EmailToSlackSNSTopic.TopicArn
+            - Sid: SNSEmailTopicKMS
+              Effect: Allow
+              Action:
+                - 'kms:Decrypt'
+              Resource:
+                - !GetAtt EmailToSlackSNSTopic.arn
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
@@ -1058,7 +1071,7 @@ Resources:
       AliasName: !Sub 'alias/${AWS::StackName}/${Environment}/SNSKMSKey'
       TargetKeyId: !Ref SNSKMSKey
 
-  SelfEventProcessingTestSNSTopic:
+  EmailToSlackSNSTopic:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: !Sub '${AWS::StackName}-email-to-slack-topic'
