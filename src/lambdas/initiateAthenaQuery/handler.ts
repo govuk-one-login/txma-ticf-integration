@@ -29,7 +29,7 @@ export const handler = async (
     logger.warn('Manual query detected, no need to run athena query')
     await publishToSNS(
       getEnv('EMAIL_TO_SLACK_SNS_TOPIC_ARN'),
-      `Retreived Data for zendeskID: ${zendeskId}`
+      `Retreived data for zendeskID: ${zendeskId}`
     )
     return
   }
