@@ -19,6 +19,7 @@ import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
 import { when } from 'jest-when'
 import { getEnv } from '../../utils/helpers'
+import { logger } from '../../sharedServices/logger'
 
 jest.mock('./confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
@@ -61,6 +62,7 @@ describe('initiate athena query handler', () => {
     mockGetDatabaseEntryByZendeskId.mockResolvedValue({
       requestInfo: testDataRequest
     })
+    jest.spyOn(logger, 'warn')
   })
 
   it('confirms whether the athena data source exists and whether query sql has been generated', async () => {
@@ -204,6 +206,9 @@ describe('initiate athena query handler', () => {
     expect(mockPublishToSNS).toHaveBeenCalledWith(
       emailSNSTopicARN,
       `Retrieved data for zendeskID: ${testZendeskId}`
+    )
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Manual query detected, no need to run athena query'
     )
     expect(returnVal).toEqual(undefined)
   })
