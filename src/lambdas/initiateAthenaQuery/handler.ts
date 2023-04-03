@@ -13,8 +13,8 @@ import {
   initialiseLogger,
   logger
 } from '../../sharedServices/logger'
-import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
-import { getEnv } from '../../utils/helpers'
+// import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
+// import { getEnv } from '../../utils/helpers'
 
 export const handler = async (
   event: SQSEvent,
@@ -27,10 +27,10 @@ export const handler = async (
 
   if (zendeskId.startsWith('MR')) {
     logger.warn('Manual query detected, no need to run athena query')
-    await publishToSNS(
-      getEnv('EMAIL_TO_SLACK_SNS_TOPIC_ARN'),
-      `Retreived data for zendeskID: ${zendeskId}`
-    )
+    // await publishToSNS(
+    //   getEnv('EMAIL_TO_SLACK_SNS_TOPIC_ARN'),
+    //   `Retreived data for zendeskID: ${zendeskId}`
+    // )
     return
   }
   const athenaTable = await confirmAthenaTable()
