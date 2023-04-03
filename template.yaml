@@ -589,7 +589,11 @@ Resources:
             - Sid: SNSEmailTopicKMS
               Effect: Allow
               Action:
-                - 'kms:Decrypt'
+                - 'kms:Encrypt*'
+                - 'kms:Decrypt*'
+                - 'kms:ReEncrypt*'
+                - 'kms:GenerateDataKey*'
+                - 'kms:Describe*'
               Resource:
                 - !GetAtt SNSKMSKey.Arn
             - Sid: SNSEmailTopic
