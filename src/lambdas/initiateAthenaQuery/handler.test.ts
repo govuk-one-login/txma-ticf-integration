@@ -1,7 +1,10 @@
 import { handler } from './handler'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import { startQueryExecution } from './startQueryExecution'
-import { testAthenaQueryEvent } from '../../utils/tests/events/initiateAthenaQueryEvent'
+import {
+  testAthenaQueryEvent,
+  testManualAthenaQueryEvent
+} from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { createQuerySql } from './createQuerySql'
@@ -13,6 +16,10 @@ import {
   testDataRequest
 } from '../../utils/tests/testDataRequest'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
+import { when } from 'jest-when'
+import { getEnv } from '../../utils/helpers'
+
 jest.mock('./confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
 }))
@@ -31,6 +38,12 @@ jest.mock('../../sharedServices/dynamoDB/dynamoDBUpdate', () => ({
 jest.mock('./startQueryExecution', () => ({
   startQueryExecution: jest.fn()
 }))
+jest.mock('../../sharedServices/sns/publishToSNS', () => ({
+  publishToSNS: jest.fn()
+}))
+jest.mock('../../utils/helpers', () => ({
+  getEnv: jest.fn()
+}))
 
 const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
   Promise<ConfirmAthenaTableResult>
@@ -40,6 +53,7 @@ const mockGetDatabaseEntryByZendeskId = getDatabaseEntryByZendeskId as jest.Mock
 const mockCreateQuerySql = createQuerySql as jest.Mock
 const mockUpdateQueryByZendeskId = updateQueryByZendeskId as jest.Mock
 const mockStartQueryExecution = startQueryExecution as jest.Mock
+const mockPublishToSNS = publishToSNS as jest.Mock
 
 describe('initiate athena query handler', () => {
   beforeEach(() => {
@@ -173,5 +187,24 @@ describe('initiate athena query handler', () => {
       'closed'
     )
     expect(mockUpdateQueryByZendeskId).not.toHaveBeenCalled()
+  })
+
+  it('returns an empty object as it is a manual query', async () => {
+    const testZendeskId = testManualAthenaQueryEvent.Records[0].body
+    const emailSNSTopicARN =
+      'arn:aws:sns:eu-west-2:123456789012:email-to-slack-topic'
+    when(getEnv)
+      .calledWith('EMAIL_TO_SLACK_SNS_TOPIC_ARN')
+      .mockReturnValue(emailSNSTopicARN)
+    mockPublishToSNS.mockResolvedValue('messageID')
+    const returnVal = await handler(
+      testManualAthenaQueryEvent,
+      mockLambdaContext
+    )
+    expect(mockPublishToSNS).toHaveBeenCalledWith(
+      emailSNSTopicARN,
+      `Retrieved data for zendeskID: ${testZendeskId}`
+    )
+    expect(returnVal).toEqual(undefined)
   })
 })
