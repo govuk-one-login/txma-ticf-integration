@@ -1,7 +1,6 @@
 import {
   eventIsPresent,
-  getCloudWatchLogEventsGroupByMessagePattern,
-  getQueueMessageId
+  getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
@@ -23,43 +22,17 @@ describe('Data should not be copied to analysis bucket', () => {
     })
 
     it('request for valid data, no files present', async () => {
-      const initiateDataRequestEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
-        )
-      expect(initiateDataRequestEvents).not.toEqual([])
-
-      const isDataSentToQueueMessageInLogs = eventIsPresent(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
-      expect({
-        result: isDataSentToQueueMessageInLogs,
-        events: initiateDataRequestEvents
-      }).toEqual({ result: true, events: initiateDataRequestEvents })
-
-      const messageId = getQueueMessageId(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
-
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
+          [
+            cloudwatchLogFilters.nothingToCopyMessage,
+            cloudwatchLogFilters.zendeskId,
+            ticketId
+          ],
           50
         )
       expect(processDataRequestEvents).not.toEqual([])
-
-      const isNothingToCopyMessageInLogs = eventIsPresent(
-        processDataRequestEvents,
-        cloudwatchLogFilters.nothingToCopyMessage
-      )
-      expect({
-        result: isNothingToCopyMessageInLogs,
-        events: processDataRequestEvents
-      }).toEqual({ result: true, events: processDataRequestEvents })
     })
   })
 
@@ -90,44 +63,17 @@ describe('Data should not be copied to analysis bucket', () => {
     })
 
     it('request for valid data already in analysis bucket', async () => {
-      const initiateDataRequestEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.webhookReceived, 'zendeskId', `${ticketId}\\\\`]
-        )
-      expect(initiateDataRequestEvents).not.toEqual([])
-
-      const isDataSentToQueueMessageInLogs = eventIsPresent(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
-      expect({
-        result: isDataSentToQueueMessageInLogs,
-        events: initiateDataRequestEvents
-      }).toEqual({ result: true, events: initiateDataRequestEvents })
-
-      const messageId = getQueueMessageId(
-        initiateDataRequestEvents,
-        cloudwatchLogFilters.dataSentToQueue
-      )
-
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.sqsEventReceived, 'messageId', messageId],
+          [
+            cloudwatchLogFilters.nothingToCopyMessage,
+            cloudwatchLogFilters.zendeskId,
+            ticketId
+          ],
           70
         )
       expect(processDataRequestEvents).not.toEqual([])
-
-      const isNothingToCopyMessageInLogs = eventIsPresent(
-        processDataRequestEvents,
-        cloudwatchLogFilters.nothingToCopyMessage
-      )
-      expect({
-        result: isNothingToCopyMessageInLogs,
-        events: processDataRequestEvents
-      }).toEqual({ result: true, events: processDataRequestEvents })
-
       const isDataAvailableMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         cloudwatchLogFilters.allDataAvailableQueuingAthenaQuery

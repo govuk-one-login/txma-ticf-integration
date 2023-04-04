@@ -18,7 +18,6 @@ import {
 
 export const handler = async (event: SQSEvent, context: Context) => {
   initialiseLogger(context)
-  logger.info('Handling data request SQS event', { handledEvent: event })
   if (event.Records.length === 0) {
     throw new Error('No data in event')
   }
@@ -30,6 +29,7 @@ export const handler = async (event: SQSEvent, context: Context) => {
 
   if (isDataRequestParams(eventData)) {
     await initiateDataTransfer(eventData as DataRequestParams)
+    logger.info('Data transfer process initiated')
   } else if (isContinueDataTransferParams(eventData)) {
     const params = eventData as ContinueDataTransferParams
     await checkDataTransferStatus(params.zendeskId)

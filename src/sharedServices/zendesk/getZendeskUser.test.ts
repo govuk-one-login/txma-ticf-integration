@@ -37,14 +37,10 @@ describe('get zendesk ticket information', () => {
 
   test('show user call succeeds', async () => {
     mockHttpsRequestUtils.givenSuccessfulApiCall(successResponse)
-    await getZendeskUser(userId)
+    const user = await getZendeskUser(userId)
 
     expectSuccessfulApiCallToBeMade()
-
-    expect(logger.info).toHaveBeenLastCalledWith(
-      'Zendesk user with matching id found',
-      JSON.stringify(successResponse.user)
-    )
+    expect(user).toEqual(successResponse.user)
   })
 
   test('show user call fails', async () => {

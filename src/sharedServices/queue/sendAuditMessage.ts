@@ -42,14 +42,11 @@ export const sendAuditDataRequestMessage = async (
       }
     }
 
-    logger.info(
-      'sending audit data request message',
-      JSON.stringify(auditQueryRequestDetails)
-    )
-    await sendSqsMessage(
+    const messageId = await sendSqsMessage(
       auditDataRequestEvent,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
+    logger.info('sent audit data request message', { messageId })
   } catch (error) {
     logger.error(
       'An error occurred while sending message to audit queue: ',
@@ -69,13 +66,11 @@ export const sendIllegalRequestAuditMessage = async (
     }
     auditQueryIllegalRequestDetails.extensions.error = getErrorObject(errorType)
 
-    logger.info(
-      `sending illegal request audit message for zendeskId ${zendeskId}`
-    )
-    await sendSqsMessage(
+    const messageId = await sendSqsMessage(
       auditQueryIllegalRequestDetails,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
+    logger.info('Sent TXMA_AUDIT_QUERY_ILLEGAL_REQUEST event', { messageId })
   } catch (error) {
     logger.error(
       'An error occurred while sending message to audit queue: ',
@@ -93,13 +88,11 @@ export const sendQueryOutputGeneratedAuditMessage = async (
       ...createAuditMessageBaseObjectDetails(zendeskId)
     }
 
-    logger.info(
-      `sending query output generated message for zendeskId ${zendeskId}`
-    )
-    await sendSqsMessage(
+    const messageId = await sendSqsMessage(
       queryOutputGeneratedAuditMessageDetails,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
+    logger.info('Sent TXMA_AUDIT_QUERY_OUTPUT_GENERATED event', { messageId })
   } catch (error) {
     logger.error(
       'An error occurred while sending message to audit queue: ',

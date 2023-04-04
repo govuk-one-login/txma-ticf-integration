@@ -402,7 +402,7 @@ describe('match zendesk ticket details', () => {
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        JSON.stringify([parameterName])
+        { unmatchedParameters: [parameterName] }
       )
     }
   )
@@ -414,7 +414,7 @@ describe('match zendesk ticket details', () => {
     expect(await zendeskTicketDiffersFromRequest(testRequest)).toEqual(true)
     expect(logger.warn).toHaveBeenCalledWith(
       'Request does not match values on Ticket, the following parameters do not match:',
-      JSON.stringify(['date'])
+      { unmatchedParameters: ['date'] }
     )
   })
 
@@ -425,7 +425,7 @@ describe('match zendesk ticket details', () => {
     expect(await zendeskTicketDiffersFromRequest(testRequest)).toEqual(true)
     expect(logger.warn).toHaveBeenCalledWith(
       'Request does not match values on Ticket, the following parameters do not match:',
-      JSON.stringify(['date'])
+      { unmatchedParameters: ['date'] }
     )
   })
 
@@ -445,7 +445,7 @@ describe('match zendesk ticket details', () => {
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        JSON.stringify([parameterName])
+        { unmatchedParameters: [parameterName] }
       )
     }
   )
@@ -466,7 +466,7 @@ describe('match zendesk ticket details', () => {
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(logger.warn).toHaveBeenCalledWith(
         'Request does not match values on Ticket, the following parameters do not match:',
-        JSON.stringify([parameterName])
+        { unmatchedParameters: [parameterName] }
       )
     }
   )

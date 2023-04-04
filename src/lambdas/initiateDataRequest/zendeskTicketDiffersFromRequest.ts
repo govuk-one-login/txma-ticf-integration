@@ -15,7 +15,6 @@ import { interpolateTemplate } from '../../utils/interpolateTemplate'
 export const zendeskTicketDiffersFromRequest = async (
   requestParams: DataRequestParams
 ) => {
-  logger.info(interpolateTemplate('requestMatchesZendeskTickets', loggingCopy))
   const ticketDetails = await getZendeskTicket(requestParams.zendeskId)
   const requesterDetails = await getZendeskUser(ticketDetails.requester_id)
 
@@ -158,13 +157,9 @@ const ticketAndRequestDetailsDiffer = (
   if (unmatchedParameters.length > 0) {
     logger.warn(
       interpolateTemplate('requestDoesntMatcheZendeskTickets', loggingCopy),
-      JSON.stringify(unmatchedParameters)
+      { unmatchedParameters }
     )
     return true
-  } else {
-    logger.info(
-      interpolateTemplate('requestMatchesExistingZendeskTickets', loggingCopy)
-    )
-    return false
   }
+  return false
 }
