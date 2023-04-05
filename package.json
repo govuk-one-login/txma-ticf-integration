@@ -25,7 +25,7 @@
     "test:integration:dev": "jest --setupFiles '<rootDir>/.env' -c tests/integration-tests/jest.integration.config.ts --expand"
   },
   "dependencies": {
-    "@aws-crypto/decrypt-node": "3.1.0",
+    "@aws-crypto/decrypt-node": "3.2.0",
     "@aws-crypto/kms-keyring-node": "3.2.0",
     "@aws-crypto/material-management": "3.2.0",
     "@aws-lambda-powertools/logger": "1.5.1",
