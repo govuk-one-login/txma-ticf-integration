@@ -69,25 +69,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/kms-keyring-node@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@aws-crypto/kms-keyring-node@npm:3.1.0"
+"@aws-crypto/kms-keyring-node@npm:3.2.0":
+  version: 3.2.0
+  resolution: "@aws-crypto/kms-keyring-node@npm:3.2.0"
   dependencies:
-    "@aws-crypto/kms-keyring": ^3.1.0
-    "@aws-crypto/material-management-node": ^3.1.0
+    "@aws-crypto/kms-keyring": ^3.2.0
+    "@aws-crypto/material-management-node": ^3.2.0
     aws-sdk: ^2.650.0
     tslib: ^2.2.0
-  checksum: 40162c1a34647a7b854a1ee814c049c081ef1cb267a70dcb44476a47a6f0a25a6a389713c5e9d3025763a4fad0ab6f128a7d937d851ab746878246b6ecba2fe1
+  checksum: 029837b2d015decbba5c87845518ac7b4c7b79ba1960c67fcfdfb25e4574127a6d7f586296e6f35c9fa0d2d72ed659f2d0256faf1e9b4309700956783c34a15c
   languageName: node
   linkType: hard
 
-"@aws-crypto/kms-keyring@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@aws-crypto/kms-keyring@npm:3.1.0"
+"@aws-crypto/kms-keyring@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@aws-crypto/kms-keyring@npm:3.2.0"
   dependencies:
-    "@aws-crypto/material-management": ^3.1.0
+    "@aws-crypto/material-management": ^3.2.0
     tslib: ^2.2.0
-  checksum: 969e29f934368dc0a9fa1387e7741a7358ea9733a35a47aa4bc2c56f9b857fa7b76f510cb97883a48e1cb9005dcc145986d95de70cb89b69cbcc351b1572cdec
+  checksum: 5394babb500e69422f63e92f2a59a8150d3f8adb543db6d04ae1dc46b012cb1a74cabe4a38611a2b1155ba927aef6de331cedf0b5b8f4b61cda7f149e903b412
   languageName: node
   linkType: hard
 
@@ -103,7 +103,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/material-management@npm:3.2.0":
+"@aws-crypto/material-management-node@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@aws-crypto/material-management-node@npm:3.2.0"
+  dependencies:
+    "@aws-crypto/hkdf-node": ^3.0.0
+    "@aws-crypto/material-management": ^3.2.0
+    "@aws-crypto/serialize": ^3.2.0
+    tslib: ^2.2.0
+  checksum: 5d0533ac434b03d92d043d0a4201f9d8b120b016fdf8dd061d89b3ec8f12c5933ebba1d2db07f8ea2c4823403851a9b65e22a96e59d62a1092b9e0453af364bb
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/material-management@npm:3.2.0, @aws-crypto/material-management@npm:^3.2.0":
   version: 3.2.0
   resolution: "@aws-crypto/material-management@npm:3.2.0"
   dependencies:
@@ -134,6 +146,18 @@ __metadata:
     bn.js: ^5.1.1
     tslib: ^2.2.0
   checksum: fe0c68ec9abca44535ef585fefa87f59c5a5a58e009937c4ed95d7beadbf5ee45f5e47a92e0d3cb661bd24134698dad07300b5ed1bc034eaf63405cb5b0c6d12
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/serialize@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@aws-crypto/serialize@npm:3.2.0"
+  dependencies:
+    "@aws-crypto/material-management": ^3.2.0
+    asn1.js: ^5.3.0
+    bn.js: ^5.1.1
+    tslib: ^2.2.0
+  checksum: 41a4c2d186406329163880aeaacaba954cc11d909be5cc465cef4aa6f7872420f472f595d4fbfd3cd6117218a9da934a49dba03cfe89b326acb3fb8dabeb2458
   languageName: node
   linkType: hard
 
@@ -4758,7 +4782,7 @@ __metadata:
   resolution: "di-txma-ticf-integration@workspace:."
   dependencies:
     "@aws-crypto/decrypt-node": 3.1.0
-    "@aws-crypto/kms-keyring-node": 3.1.0
+    "@aws-crypto/kms-keyring-node": 3.2.0
     "@aws-crypto/material-management": 3.2.0
     "@aws-lambda-powertools/logger": 1.5.1
     "@aws-sdk/client-athena": 3.163.0
