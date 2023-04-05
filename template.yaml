@@ -952,6 +952,7 @@ Resources:
                   - s3:RestoreObject
                 Resource:
                   - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+                  - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
               - Sid: AllowManifestBucketRead
                 Effect: Allow
                 Action:
@@ -1154,6 +1155,10 @@ Resources:
               - s3:GetObject*
               # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
               - s3:ListBucket
+              # We change storage tier in the tests, so we need PutObject
+              - s3:PutObject
+              # At one point we add tags to an existing file, so we need the PutObjectTagging permission
+              - s3:PutObjectTagging
             Resource:
               - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch'
               - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
