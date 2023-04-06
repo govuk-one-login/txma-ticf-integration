@@ -13,6 +13,7 @@ import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebho
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { setupAuditSourceTestData } from '../../shared-test-code/utils/aws/setupAuditSourceTestData'
 import { deleteDynamoDBTestItem } from '../../shared-test-code/utils/aws/dynamoDB'
+import { waitForAuditFileRestore } from '../../shared-test-code/utils/aws/glacierRestoreCheck/waitForAuditFileRestore'
 
 describe('Data should be copied to analysis bucket', () => {
   describe('valid requests for standard copy - analysis bucket empty', () => {
@@ -76,7 +77,7 @@ describe('Data should be copied to analysis bucket', () => {
 
   describe('glacier copy - analysis bucket empty', () => {
     let ticketId: string
-
+    let testDataFileKey: string
     beforeEach(async () => {
       const availableDate = await getAvailableTestDate()
       await setupAuditSourceTestData(
@@ -84,6 +85,8 @@ describe('Data should be copied to analysis bucket', () => {
         `${availableDate.prefix}/01`,
         true
       )
+      testDataFileKey = `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`
+
       const defaultWebhookRequestData =
         getWebhookRequestDataForTestCaseNumberAndDate(3, availableDate.date)
       ticketId = defaultWebhookRequestData.zendeskId
@@ -120,6 +123,10 @@ describe('Data should be copied to analysis bucket', () => {
         result: isGlacierRestoreStartedMessageInLogs,
         events: processDataRequestEvents
       }).toEqual({ result: true, events: processDataRequestEvents })
+      const auditFileRestoringStatusFound = await waitForAuditFileRestore(
+        testDataFileKey
+      )
+      expect(auditFileRestoringStatusFound).toEqual(true)
     })
   })
 
