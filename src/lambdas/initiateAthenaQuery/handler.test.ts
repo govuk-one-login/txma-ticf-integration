@@ -17,8 +17,6 @@ import {
 } from '../../utils/tests/testDataRequest'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
-import { when } from 'jest-when'
-import { getEnv } from '../../utils/helpers'
 import { logger } from '../../sharedServices/logger'
 
 jest.mock('./confirmAthenaTable', () => ({
@@ -41,9 +39,6 @@ jest.mock('./startQueryExecution', () => ({
 }))
 jest.mock('../../sharedServices/sns/publishToSNS', () => ({
   publishToSNS: jest.fn()
-}))
-jest.mock('../../utils/helpers', () => ({
-  getEnv: jest.fn()
 }))
 
 const mockConfirmAthenaTable = confirmAthenaTable as jest.Mock<
@@ -191,17 +186,12 @@ describe('initiate athena query handler', () => {
     expect(mockUpdateQueryByZendeskId).not.toHaveBeenCalled()
   })
 
-  it('returns an empty object as it is a manual query', async () => {
+  it('checks that the lambda exits early and does not run an athena query as it is a manual query', async () => {
     const testZendeskId = testManualAthenaQueryEvent.Records[0].body
-    const emailSNSTopicARN =
-      'arn:aws:sns:eu-west-2:123456789012:email-to-slack-topic'
-    when(getEnv)
-      .calledWith('EMAIL_TO_SLACK_SNS_TOPIC_ARN')
-      .mockReturnValue(emailSNSTopicARN)
     mockPublishToSNS.mockResolvedValue('messageID')
     await handler(testManualAthenaQueryEvent, mockLambdaContext)
     expect(mockPublishToSNS).toHaveBeenCalledWith(
-      emailSNSTopicARN,
+      'arn:aws:sns:eu-west-2:123456789012:email-to-slack-topic',
       `Retrieved data for zendeskID: ${testZendeskId}`
     )
     expect(logger.info).toHaveBeenCalledWith(

@@ -501,7 +501,7 @@ Resources:
           ATHENA_WORKGROUP_NAME: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupName}}'
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
-          EMAIL_TO_SLACK_SNS_TOPIC_ARN: !GetAtt EmailToSlackSNSTopic.TopicArn
+          EMAIL_TO_SLACK_SNS_TOPIC_ARN: '{{resolve:ssm:EmailToSlackSNSTopicArn}}'
       Events:
         InitiateAthenaQueryEvent:
           Type: SQS
