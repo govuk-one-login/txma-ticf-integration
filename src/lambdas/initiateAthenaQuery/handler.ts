@@ -26,7 +26,7 @@ export const handler = async (
   appendZendeskIdToLogger(zendeskId)
 
   if (zendeskId.startsWith('MR')) {
-    logger.warn('Manual query detected, no need to run athena query')
+    logger.info('Manual query detected, no need to run athena query')
     await publishToSNS(
       getEnv('EMAIL_TO_SLACK_SNS_TOPIC_ARN'),
       `Retrieved data for zendeskID: ${zendeskId}`

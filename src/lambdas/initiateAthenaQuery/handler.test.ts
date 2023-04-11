@@ -62,7 +62,7 @@ describe('initiate athena query handler', () => {
     mockGetDatabaseEntryByZendeskId.mockResolvedValue({
       requestInfo: testDataRequest
     })
-    jest.spyOn(logger, 'warn')
+    jest.spyOn(logger, 'info')
   })
 
   it('confirms whether the athena data source exists and whether query sql has been generated', async () => {
@@ -199,17 +199,14 @@ describe('initiate athena query handler', () => {
       .calledWith('EMAIL_TO_SLACK_SNS_TOPIC_ARN')
       .mockReturnValue(emailSNSTopicARN)
     mockPublishToSNS.mockResolvedValue('messageID')
-    const returnVal = await handler(
-      testManualAthenaQueryEvent,
-      mockLambdaContext
-    )
+    await handler(testManualAthenaQueryEvent, mockLambdaContext)
     expect(mockPublishToSNS).toHaveBeenCalledWith(
       emailSNSTopicARN,
       `Retrieved data for zendeskID: ${testZendeskId}`
     )
-    expect(logger.warn).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       'Manual query detected, no need to run athena query'
     )
-    expect(returnVal).toEqual(undefined)
+    expect(confirmAthenaTable).not.toHaveBeenCalled()
   })
 })
