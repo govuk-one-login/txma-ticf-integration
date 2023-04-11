@@ -1,6 +1,15 @@
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
+import { AxiosResponse } from 'axios'
+
+const assertSecurityHeadersSet = (result: AxiosResponse) => {
+  expect(result.headers && result.headers['strict-transport-security']).toEqual(
+    'max-age=31536000; includeSubDomains; preload'
+  )
+
+  expect(result.headers && result.headers['x-frame-options']).toEqual('DENY')
+}
 
 describe('Zendesk request integrity', () => {
   it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
@@ -18,6 +27,7 @@ describe('Zendesk request integrity', () => {
 
     expect(errorResponse.status).toEqual(400)
     expect(errorResponse.data.message).toEqual('Invalid request source')
+    assertSecurityHeadersSet(errorResponse)
   })
 })
 
@@ -35,6 +45,7 @@ describe('Zendesk ticket check', () => {
 
     expect(response.status).toEqual(200)
     expect(response.data.message).toEqual('data transfer initiated')
+    assertSecurityHeadersSet(response)
   })
 
   it('API Gateway returns a 404 response if the request refers to a non-existent Zendesk ticket', async () => {
@@ -44,6 +55,7 @@ describe('Zendesk ticket check', () => {
 
     expect(errorResponse.status).toEqual(404)
     expect(errorResponse.data.message).toEqual('Zendesk ticket not found')
+    assertSecurityHeadersSet(errorResponse)
   })
 
   it('API Gateway returns a 400 response if the request does not match info in corresponding Zendesk ticket', async () => {
@@ -56,5 +68,6 @@ describe('Zendesk ticket check', () => {
     expect(errorResponse.data.message).toEqual(
       'Request parameters do not match a Zendesk Ticket'
     )
+    assertSecurityHeadersSet(errorResponse)
   })
 })
