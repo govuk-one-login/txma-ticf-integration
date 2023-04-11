@@ -19,6 +19,7 @@ import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
 import { tryParseJSON } from '../../utils/helpers'
 import { logger } from '../../sharedServices/logger'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+import { APIGatewayProxyResult } from 'aws-lambda'
 
 const mockValidateZendeskRequest = validateZendeskRequest as jest.Mock<
   Promise<ValidatedDataRequestParamsResult>
@@ -116,13 +117,23 @@ describe('initiate data request handler', () => {
   const callHandlerWithBody = async (customBody?: {
     [key: string]: string
   }) => {
-    return await handler(
+    const response = await handler(
       {
         ...defaultApiRequest,
         body: JSON.stringify(customBody) ?? requestBody
       },
       mockLambdaContext
     )
+    assertSecurityHeadersSet(response)
+    return response
+  }
+
+  const assertSecurityHeadersSet = (result: APIGatewayProxyResult) => {
+    expect(
+      result.headers && result.headers['Strict-Transport-Security']
+    ).toEqual('max-age=31536000; includeSubDomains; preload')
+
+    expect(result.headers && result.headers['X-Frame-Options']).toEqual('DENY')
   }
 
   beforeEach(() => {
@@ -136,12 +147,14 @@ describe('initiate data request handler', () => {
 
     const handlerCallResult = await callHandlerWithBody()
 
-    expect(handlerCallResult).toEqual({
-      statusCode: 200,
-      body: JSON.stringify({
+    expect(handlerCallResult.statusCode).toEqual(200)
+
+    expect(handlerCallResult.body).toEqual(
+      JSON.stringify({
         message: 'data transfer initiated'
       })
-    })
+    )
+
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
     expect(mockSendInitiateDataTransferMessage).toHaveBeenCalledWith(
       testDataRequest
@@ -158,12 +171,14 @@ describe('initiate data request handler', () => {
 
     const handlerCallResult = await callHandlerWithBody()
 
-    expect(handlerCallResult).toEqual({
-      statusCode: 400,
-      body: JSON.stringify({
+    expect(handlerCallResult.statusCode).toEqual(400)
+
+    expect(handlerCallResult.body).toEqual(
+      JSON.stringify({
         message: 'Invalid request source'
       })
-    })
+    )
+
     expect(logger.warn).toHaveBeenLastCalledWith(
       'Request received with invalid webhook signature'
     )
@@ -185,12 +200,14 @@ describe('initiate data request handler', () => {
 
     const handlerCallResult = await callHandlerWithBody(customBody)
 
-    expect(handlerCallResult).toEqual({
-      statusCode: 400,
-      body: JSON.stringify({
+    expect(handlerCallResult.statusCode).toEqual(400)
+
+    expect(handlerCallResult.body).toEqual(
+      JSON.stringify({
         message: 'Invalid request source'
       })
-    })
+    )
+
     expect(logger.warn).toHaveBeenLastCalledWith(
       'Request received with invalid webhook signature'
     )
@@ -214,12 +231,14 @@ describe('initiate data request handler', () => {
 
     const handlerCallResult = await callHandlerWithBody()
 
-    expect(handlerCallResult).toEqual({
-      statusCode: 400,
-      body: JSON.stringify({
+    expect(handlerCallResult.statusCode).toEqual(400)
+
+    expect(handlerCallResult.body).toEqual(
+      JSON.stringify({
         message: validationMessage
       })
-    })
+    )
+
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       requestBody,
@@ -243,12 +262,14 @@ describe('initiate data request handler', () => {
 
     const handlerCallResult = await callHandlerWithBody()
 
-    expect(handlerCallResult).toEqual({
-      statusCode: 400,
-      body: JSON.stringify({
+    expect(handlerCallResult.statusCode).toEqual(400)
+
+    expect(handlerCallResult.body).toEqual(
+      JSON.stringify({
         message: validationMessage
       })
-    })
+    )
+
     expect(validateZendeskRequest).toHaveBeenCalledWith(requestBody)
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       requestBody,
@@ -270,12 +291,14 @@ describe('initiate data request handler', () => {
 
     const handlerCallResult = await callHandlerWithBody(customBody)
 
-    expect(handlerCallResult).toEqual({
-      statusCode: 400,
-      body: JSON.stringify({
+    expect(handlerCallResult.statusCode).toEqual(400)
+
+    expect(handlerCallResult.body).toEqual(
+      JSON.stringify({
         message: 'Request parameters do not match a Zendesk Ticket'
       })
-    })
+    )
+
     expect(zendeskTicketDiffersFromRequest).toHaveBeenCalledWith(
       testDataRequest
     )
@@ -300,13 +323,14 @@ describe('initiate data request handler', () => {
     givenZendeskTicketDoesNotExist()
 
     const handlerCallResult = await callHandlerWithBody()
+    expect(handlerCallResult.statusCode).toEqual(404)
 
-    expect(handlerCallResult).toEqual({
-      statusCode: 404,
-      body: JSON.stringify({
+    expect(handlerCallResult.body).toEqual(
+      JSON.stringify({
         message: 'Zendesk ticket not found'
       })
-    })
+    )
+
     expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(parsedEventBody)
     expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
       mockIsSignatureInvalid
