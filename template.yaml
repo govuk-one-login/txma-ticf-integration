@@ -969,6 +969,7 @@ Resources:
                   - s3:RestoreObject
                 Resource:
                   - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+                  - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
               - Sid: AllowManifestBucketRead
                 Effect: Allow
                 Action:
