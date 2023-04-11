@@ -69,24 +69,24 @@ export const handler = async (
       requestParams.zendeskId,
       'non-existent-ticket'
     )
-    return {
+    return createApiResponse({
       statusCode: 404,
       body: JSON.stringify({
         message: interpolateTemplate('ticketNotFound', zendeskCopy)
       })
-    }
+    })
   }
 
   const messageId = (await sendInitiateDataTransferMessage(requestParams)) ?? ''
 
   logger.info('Sent data transfer queue message', { messageId })
 
-  return {
+  return createApiResponse({
     statusCode: 200,
     body: JSON.stringify({
       message: interpolateTemplate('transferInitiated', zendeskCopy)
     })
-  }
+  })
 }
 
 const handleInvalidRequest = async (
@@ -105,22 +105,22 @@ const handleInvalidRequest = async (
     }),
     newTicketStatus
   )
-  return {
+  return createApiResponse({
     statusCode: 400,
     body: JSON.stringify({
       message: validationMessage
     })
-  }
+  })
 }
 
 const handleInvalidSignature = async () => {
   logger.warn(interpolateTemplate('invalidWebhookSignature', loggingCopy))
-  return {
+  return createApiResponse({
     statusCode: 400,
     body: JSON.stringify({
       message: interpolateTemplate('invalidSignature', zendeskCopy)
     })
-  }
+  })
 }
 
 const handleUnmatchedRequest = async (zendeskId: string) => {
@@ -132,7 +132,7 @@ const handleUnmatchedRequest = async (zendeskId: string) => {
     newTicketStatus
   )
 
-  return {
+  return createApiResponse({
     statusCode: 400,
     body: JSON.stringify({
       message: interpolateTemplate(
@@ -140,5 +140,23 @@ const handleUnmatchedRequest = async (zendeskId: string) => {
         zendeskCopy
       )
     })
+  })
+}
+
+const createApiResponse = (
+  response: APIGatewayProxyResult
+): APIGatewayProxyResult => {
+  return appendSecurityHeadersToResponse(response)
+}
+
+const appendSecurityHeadersToResponse = (
+  response: APIGatewayProxyResult
+): APIGatewayProxyResult => {
+  if (!response.headers) {
+    response.headers = {}
   }
+  response.headers['Strict-Transport-Security'] =
+    'max-age=31536000; includeSubDomains; preload'
+  response.headers['X-Frame-Options'] = 'DENY'
+  return response
 }
