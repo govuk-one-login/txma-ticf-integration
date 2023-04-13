@@ -31,8 +31,12 @@ export const handler = async (
       getEnv('EMAIL_TO_SLACK_SNS_TOPIC_ARN'),
       `Retrieved data for zendeskID: ${zendeskId}`
     )
-    return
+  } else {
+    await initiateQuery(zendeskId)
   }
+}
+
+export const initiateQuery = async (zendeskId: string) => {
   const athenaTable = await confirmAthenaTable()
 
   await checkAthenaTableExists(athenaTable, zendeskId)

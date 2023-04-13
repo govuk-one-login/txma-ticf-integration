@@ -1,4 +1,5 @@
 import { handler } from './handler'
+import * as initiateQueryImportWrapper from './handler'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import { startQueryExecution } from './startQueryExecution'
 import {
@@ -185,6 +186,14 @@ describe('initiate athena query handler', () => {
     )
     expect(mockUpdateQueryByZendeskId).not.toHaveBeenCalled()
   })
+})
+
+describe('tests related to running manual queries', () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+    jest.spyOn(logger, 'info')
+    jest.spyOn(initiateQueryImportWrapper, 'initiateQuery')
+  })
 
   it('checks that the lambda exits early and does not run an athena query as it is a manual query', async () => {
     const testZendeskId = testManualAthenaQueryEvent.Records[0].body
@@ -197,6 +206,6 @@ describe('initiate athena query handler', () => {
     expect(logger.info).toHaveBeenCalledWith(
       'Manual query detected, no need to run athena query'
     )
-    expect(confirmAthenaTable).not.toHaveBeenCalled()
+    expect(initiateQueryImportWrapper.initiateQuery).not.toHaveBeenCalled()
   })
 })
