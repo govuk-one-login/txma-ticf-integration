@@ -1,9 +1,14 @@
 import { handler } from './handler'
 import * as initiateQueryImportWrapper from './initiateQuery'
-import { testManualAthenaQueryEvent } from '../../utils/tests/events/initiateAthenaQueryEvent'
+import {
+  testAthenaQueryEvent,
+  testManualAthenaQueryEvent
+} from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
 import { logger } from '../../sharedServices/logger'
+import { initiateQuery } from './initiateQuery'
+import { when } from 'jest-when'
 
 jest.mock('./confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
@@ -48,5 +53,19 @@ describe('tests related to running manual queries', () => {
       'Manual query detected, no need to run athena query'
     )
     expect(initiateQueryImportWrapper.initiateQuery).not.toHaveBeenCalled()
+  })
+})
+
+describe('tests related to running automated queries', () => {
+  it('checks that the lambda continues as normal as its an automated query', async () => {
+    jest.mock('./initiateQuery', () => ({
+      initiateQuery: jest.fn()
+    }))
+    const mockInitiateQuery = initiateQuery as jest.Mock
+    when(initiateQuery).mockResolvedValue()
+    const testZendeskId = testAthenaQueryEvent.Records[0].body
+    await handler(testAthenaQueryEvent, mockLambdaContext)
+    expect(mockInitiateQuery).toHaveBeenCalledTimes(1)
+    expect(mockInitiateQuery).toHaveBeenCalledWith(testZendeskId)
   })
 })
