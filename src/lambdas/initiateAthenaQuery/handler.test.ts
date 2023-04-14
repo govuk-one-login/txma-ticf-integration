@@ -1,5 +1,4 @@
 import { handler } from './handler'
-import * as initiateQueryImportWrapper from './initiateQuery'
 import {
   testAthenaQueryEvent,
   testManualAthenaQueryEvent
@@ -31,14 +30,17 @@ jest.mock('./startQueryExecution', () => ({
 jest.mock('../../sharedServices/sns/publishToSNS', () => ({
   publishToSNS: jest.fn()
 }))
+jest.mock('./initiateQuery', () => ({
+  initiateQuery: jest.fn()
+}))
 
 const mockPublishToSNS = publishToSNS as jest.Mock
+const mockInitiateQuery = initiateQuery as jest.Mock
 
 describe('tests related to running manual queries', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     jest.spyOn(logger, 'info')
-    jest.spyOn(initiateQueryImportWrapper, 'initiateQuery')
   })
 
   it('checks that the lambda exits early and does not run an athena query as it is a manual query', async () => {
@@ -52,16 +54,12 @@ describe('tests related to running manual queries', () => {
     expect(logger.info).toHaveBeenCalledWith(
       'Manual query detected, no need to run athena query'
     )
-    expect(initiateQueryImportWrapper.initiateQuery).not.toHaveBeenCalled()
+    expect(mockInitiateQuery).not.toHaveBeenCalled()
   })
 })
 
 describe('tests related to running automated queries', () => {
   it('checks that the lambda continues as normal as its an automated query', async () => {
-    jest.mock('./initiateQuery', () => ({
-      initiateQuery: jest.fn()
-    }))
-    const mockInitiateQuery = initiateQuery as jest.Mock
     when(initiateQuery).mockResolvedValue()
     const testZendeskId = testAthenaQueryEvent.Records[0].body
     await handler(testAthenaQueryEvent, mockLambdaContext)
