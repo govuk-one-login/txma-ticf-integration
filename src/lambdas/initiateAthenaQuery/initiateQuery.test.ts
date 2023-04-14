@@ -52,7 +52,7 @@ const mockUpdateQueryByZendeskId = updateQueryByZendeskId as jest.Mock
 const mockStartQueryExecution = startQueryExecution as jest.Mock
 const mockPublishToSNS = publishToSNS as jest.Mock
 
-describe('initiate athena query handler', () => {
+describe('initiateQuery', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     mockGetDatabaseEntryByZendeskId.mockResolvedValue({
