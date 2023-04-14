@@ -1,6 +1,8 @@
 import { handler } from './handler'
 import {
   testAthenaQueryEvent,
+  testAthenaQueryEventNoRecords,
+  testAthenaQueryEventSmallZendeskId,
   testManualAthenaQueryEvent
 } from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
@@ -65,5 +67,19 @@ describe('tests related to running automated queries', () => {
     await handler(testAthenaQueryEvent, mockLambdaContext)
     expect(mockInitiateQuery).toHaveBeenCalledTimes(1)
     expect(mockInitiateQuery).toHaveBeenCalledWith(testZendeskId)
+  })
+})
+
+describe('misc tests', () => {
+  it('checks if error is thrown when sqs event has no records', async () => {
+    expect(
+      handler(testAthenaQueryEventNoRecords, mockLambdaContext)
+    ).rejects.toThrow('No data in Athena Query event')
+  })
+
+  it('checks if error is thrown when zendeskID has length < 1', async () => {
+    expect(
+      handler(testAthenaQueryEventSmallZendeskId, mockLambdaContext)
+    ).rejects.toThrow('No zendeskId received from SQS')
   })
 })

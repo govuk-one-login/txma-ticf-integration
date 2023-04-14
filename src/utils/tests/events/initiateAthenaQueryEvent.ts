@@ -41,3 +41,29 @@ export const testManualAthenaQueryEvent = {
     }
   ]
 }
+
+export const testAthenaQueryEventNoRecords = {
+  Records: []
+}
+
+export const testAthenaQueryEventSmallZendeskId = {
+  Records: [
+    {
+      messageId: '',
+      receiptHandle: '',
+      body: '',
+      attributes: {
+        ApproximateReceiveCount: '1',
+        AWSTraceHeader: '',
+        SentTimestamp: '',
+        SenderId: '',
+        ApproximateFirstReceiveTimestamp: ''
+      },
+      messageAttributes: {},
+      md5OfBody: '',
+      eventSource: '',
+      eventSourceARN: '',
+      awsRegion: ''
+    }
+  ]
+}
