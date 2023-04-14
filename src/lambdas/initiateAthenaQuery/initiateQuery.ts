@@ -8,7 +8,6 @@ import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutionResult'
 import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
 import { logger } from '../../sharedServices/logger'
-import { SQSEvent } from 'aws-lambda'
 
 export const initiateQuery = async (zendeskId: string) => {
   const athenaTable = await confirmAthenaTable()
@@ -26,19 +25,6 @@ export const initiateQuery = async (zendeskId: string) => {
   const queryExecutionDetails = await startQueryExecution(querySql)
 
   await confirmQueryExecution(queryExecutionDetails, zendeskId)
-}
-
-export const retrieveZendeskIdFromEvent = (event: SQSEvent): string => {
-  if (event.Records.length < 1) {
-    throw new Error('No data in Athena Query event')
-  }
-
-  const zendeskId = event.Records[0].body
-  if (zendeskId.length < 1) {
-    throw new Error('No zendeskId received from SQS')
-  }
-
-  return zendeskId
 }
 
 const checkAthenaTableExists = async (

@@ -6,7 +6,7 @@ import {
 } from '../../sharedServices/logger'
 import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
 import { getEnv } from '../../utils/helpers'
-import { initiateQuery, retrieveZendeskIdFromEvent } from './initiateQuery'
+import { initiateQuery } from './initiateQuery'
 
 export const handler = async (
   event: SQSEvent,
@@ -26,4 +26,17 @@ export const handler = async (
   } else {
     await initiateQuery(zendeskId)
   }
+}
+
+export const retrieveZendeskIdFromEvent = (event: SQSEvent): string => {
+  if (event.Records.length < 1) {
+    throw new Error('No data in Athena Query event')
+  }
+
+  const zendeskId = event.Records[0].body
+  if (zendeskId.length < 1) {
+    throw new Error('No zendeskId received from SQS')
+  }
+
+  return zendeskId
 }
