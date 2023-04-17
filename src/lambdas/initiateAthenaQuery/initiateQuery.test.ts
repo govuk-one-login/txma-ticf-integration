@@ -2,7 +2,6 @@ import { handler } from './handler'
 import { initiateQuery } from './initiateQuery'
 import { confirmAthenaTable } from './confirmAthenaTable'
 import { startQueryExecution } from './startQueryExecution'
-import { testAthenaQueryEvent } from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
 import { createQuerySql } from './createQuerySql'
@@ -15,6 +14,7 @@ import {
 } from '../../utils/tests/testDataRequest'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
 import { logger } from '../../sharedServices/logger'
+import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
 
 jest.mock('./confirmAthenaTable', () => ({
   confirmAthenaTable: jest.fn()
@@ -75,8 +75,7 @@ describe('initiateQuery', () => {
       queryExecutionId: 'test_id'
     })
 
-    const testZendeskId = testAthenaQueryEvent.Records[0].body
-    await initiateQuery(testZendeskId)
+    await initiateQuery(ZENDESK_TICKET_ID)
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockCreateQuerySql).toHaveBeenCalledWith(dataPathsTestDataRequest)
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
@@ -85,7 +84,7 @@ describe('initiateQuery', () => {
       queryParameters: ['123']
     })
     expect(mockUpdateQueryByZendeskId).toHaveBeenCalledWith(
-      testZendeskId,
+      ZENDESK_TICKET_ID,
       'athenaQueryId',
       'test_id'
     )
@@ -103,13 +102,12 @@ describe('initiateQuery', () => {
       tableAvailable: false,
       message: 'test error message'
     })
-    const testZendeskId = testAthenaQueryEvent.Records[0].body
-    await expect(initiateQuery(testZendeskId)).rejects.toThrow(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
       'test error message'
     )
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
-      testZendeskId,
+      ZENDESK_TICKET_ID,
       'test error message',
       'closed'
     )
@@ -127,16 +125,17 @@ describe('initiateQuery', () => {
       sqlGenerated: false,
       error: 'sql error message'
     })
-    const testZendeskId = testAthenaQueryEvent.Records[0].body
 
-    await expect(initiateQuery(testZendeskId)).rejects.toThrow(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
       'sql error message'
     )
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
-    expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(testZendeskId)
+    expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
     expect(mockCreateQuerySql).toHaveBeenCalledWith(noIdTestDataRequest)
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
-      testZendeskId,
+      ZENDESK_TICKET_ID,
       'sql error message',
       'closed'
     )
@@ -161,13 +160,13 @@ describe('initiateQuery', () => {
       error: 'test athena error'
     })
 
-    const testZendeskId = testAthenaQueryEvent.Records[0].body
-
-    await expect(initiateQuery(testZendeskId)).rejects.toThrow(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
       'test athena error'
     )
     expect(mockConfirmAthenaTable).toHaveBeenCalled()
-    expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(testZendeskId)
+    expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
     expect(mockCreateQuerySql).toHaveBeenCalledWith(dataPathsTestDataRequest)
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
       sqlGenerated: true,
@@ -175,7 +174,7 @@ describe('initiateQuery', () => {
       queryParameters: ['123']
     })
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
-      testZendeskId,
+      ZENDESK_TICKET_ID,
       'test athena error',
       'closed'
     )
