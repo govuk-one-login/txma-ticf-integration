@@ -41,4 +41,5 @@ export interface EnvironmentVar {
     | 'DECRYPTION_LAMBDA_ARN'
     | 'PERMANENT_AUDIT_BUCKET_NAME'
     | 'GENERATOR_KEY_ID'
+    | 'EMAIL_TO_SLACK_SNS_TOPIC_ARN'
 }

@@ -501,6 +501,7 @@ Resources:
           ATHENA_WORKGROUP_NAME: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupName}}'
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          EMAIL_TO_SLACK_SNS_TOPIC_ARN: '{{resolve:ssm:EmailToSlackSNSTopicArn}}'
       Events:
         InitiateAthenaQueryEvent:
           Type: SQS
@@ -585,6 +586,22 @@ Resources:
                 - events:PutEvents
               Resource:
                 - '*'
+            - Sid: SNSEmailTopicKMS
+              Effect: Allow
+              Action:
+                - 'kms:Encrypt*'
+                - 'kms:Decrypt*'
+                - 'kms:ReEncrypt*'
+                - 'kms:GenerateDataKey*'
+                - 'kms:Describe*'
+              Resource:
+                - '{{resolve:ssm:CoreSnsKmsKeyArn}}'
+            - Sid: SNSEmailTopic
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource:
+                - '{{resolve:ssm:EmailToSlackSNSTopicArn}}'
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
