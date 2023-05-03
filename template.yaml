@@ -576,101 +576,123 @@ Resources:
             BatchSize: 1
       FunctionName: !Sub ${AWS::StackName}-initiate-athena-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: GetGlueTables
-              Effect: Allow
-              Action:
-                - glue:GetTable
-              Resource:
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
-                - '{{resolve:ssm:AuditDataAnalysisGlueDatabaseArn}}'
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}/${AuditAnalysisTable}
-            - Sid: StartAthenaQuery
-              Effect: Allow
-              Action:
-                - athena:StartQueryExecution
-              Resource: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupArn}}'
-            - Sid: ReadFromAnalysisBucket
-              Effect: Allow
-              Action:
-                - s3:ListBucket
-                - s3:GetObject
-              Resource:
-                - !GetAtt AnalysisBucket.Arn
-                - !Sub ${AnalysisBucket.Arn}/*
-            - Sid: WriteToResultsBucket
-              Effect: Allow
-              Action:
-                - s3:GetBucketLocation
-                - s3:GetObject
-                - s3:ListBucket
-                - s3:ListBucketMultipartUploads
-                - s3:ListMultipartUploadParts
-                - s3:AbortMultipartUpload
-                - s3:PutObject
-              Resource:
-                - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
-                - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt InitiateAthenaQueryLogs.Arn
-            - Sid: ReadSecrets
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: DecryptKmsKeys
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource:
-                - '{{resolve:ssm:DatabaseKmsKeyArn}}'
-                - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                - '{{resolve:ssm:SqsKmsKeyArn}}'
-            - Sid: QueryRequestTableReadWrite
-              Effect: Allow
-              Action:
-                - dynamodb:PutItem
-                - dynamodb:GetItem
-                - dynamodb:UpdateItem
-              Resource: '{{resolve:ssm:QueryRequestTableArn}}'
-            - Sid: AthenaOutputEncryptKmsKey
-              Effect: Allow
-              Action:
-                - kms:GenerateDataKey
-                - kms:Encrypt
-                - kms:Decrypt
-              Resource: '{{resolve:ssm:AthenaQueryOutputBucketKmsKeyArn}}'
-            - Sid: Events
-              Effect: Allow
-              Action:
-                - events:PutEvents
-              Resource:
-                - '*'
-            - Sid: SNSEmailTopicKMS
-              Effect: Allow
-              Action:
-                - 'kms:Encrypt*'
-                - 'kms:Decrypt*'
-                - 'kms:ReEncrypt*'
-                - 'kms:GenerateDataKey*'
-                - 'kms:Describe*'
-              Resource:
-                - '{{resolve:ssm:CoreSnsKmsKeyArn}}'
-            - Sid: SNSEmailTopic
-              Effect: Allow
-              Action:
-                - sns:Publish
-              Resource:
-                - '{{resolve:ssm:EmailToSlackSNSTopicArn}}'
+      Role: !GetAtt InitiateAthenaQueryFunctionRole.Arn
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
+
+  InitiateAthenaQueryFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-initiate-athena-query-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref InitiateAthenaQueryFunctionPolicy
+
+  InitiateAthenaQueryFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-initiate-athena-query-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: GetGlueTables
+            Effect: Allow
+            Action:
+              - glue:GetTable
+            Resource:
+              - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
+              - '{{resolve:ssm:AuditDataAnalysisGlueDatabaseArn}}'
+              - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}/${AuditAnalysisTable}
+          - Sid: AllowQueueAccess
+            Effect: Allow
+            Action:
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Resource: !GetAtt InitiateAthenaQueryQueue.Arn
+          - Sid: StartAthenaQuery
+            Effect: Allow
+            Action:
+              - athena:StartQueryExecution
+            Resource: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupArn}}'
+          - Sid: ReadFromAnalysisBucket
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+            Resource:
+              - !GetAtt AnalysisBucket.Arn
+              - !Sub ${AnalysisBucket.Arn}/*
+          - Sid: WriteToResultsBucket
+            Effect: Allow
+            Action:
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:AbortMultipartUpload
+              - s3:PutObject
+            Resource:
+              - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
+              - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
+          - Sid: ReadSecrets
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          - Sid: DecryptKmsKeys
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - '{{resolve:ssm:DatabaseKmsKeyArn}}'
+              - '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
+          - Sid: QueryRequestTableReadWrite
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+            Resource: '{{resolve:ssm:QueryRequestTableArn}}'
+          - Sid: AthenaOutputEncryptKmsKey
+            Effect: Allow
+            Action:
+              - kms:GenerateDataKey
+              - kms:Encrypt
+              - kms:Decrypt
+            Resource: '{{resolve:ssm:AthenaQueryOutputBucketKmsKeyArn}}'
+          - Sid: SNSEmailTopicKMS
+            Effect: Allow
+            Action:
+              - 'kms:Encrypt*'
+              - 'kms:Decrypt*'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:Describe*'
+            Resource:
+              - '{{resolve:ssm:CoreSnsKmsKeyArn}}'
+          - Sid: SNSEmailTopic
+            Effect: Allow
+            Action:
+              - sns:Publish
+            Resource:
+              - '{{resolve:ssm:EmailToSlackSNSTopicArn}}'
 
   InitiateAthenaQueryLogs:
     Type: AWS::Logs::LogGroup
