@@ -31,7 +31,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-crypto/decrypt-node", "npm:3.2.0"],\
             ["@aws-crypto/kms-keyring-node", "npm:3.2.0"],\
             ["@aws-crypto/material-management", "npm:3.2.0"],\
-            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
+            ["@aws-lambda-powertools/logger", "npm:1.8.0"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.163.0"],\
@@ -336,20 +336,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@aws-lambda-powertools/commons", [\
-        ["npm:1.5.1", {\
-          "packageLocation": "./.yarn/cache/@aws-lambda-powertools-commons-npm-1.5.1-d6037631ee-4bcde9212a.zip/node_modules/@aws-lambda-powertools/commons/",\
+        ["npm:1.8.0", {\
+          "packageLocation": "./.yarn/cache/@aws-lambda-powertools-commons-npm-1.8.0-15b644fd44-50a6231d1b.zip/node_modules/@aws-lambda-powertools/commons/",\
           "packageDependencies": [\
-            ["@aws-lambda-powertools/commons", "npm:1.5.1"]\
+            ["@aws-lambda-powertools/commons", "npm:1.8.0"]\
           ],\
           "linkType": "HARD"\
         }]\
       ]],\
       ["@aws-lambda-powertools/logger", [\
-        ["npm:1.5.1", {\
-          "packageLocation": "./.yarn/cache/@aws-lambda-powertools-logger-npm-1.5.1-c76ac8025e-3bc5e092c6.zip/node_modules/@aws-lambda-powertools/logger/",\
+        ["npm:1.8.0", {\
+          "packageLocation": "./.yarn/cache/@aws-lambda-powertools-logger-npm-1.8.0-4b994f1acc-3e8b082979.zip/node_modules/@aws-lambda-powertools/logger/",\
           "packageDependencies": [\
-            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
-            ["@aws-lambda-powertools/commons", "npm:1.5.1"],\
+            ["@aws-lambda-powertools/logger", "npm:1.8.0"],\
+            ["@aws-lambda-powertools/commons", "npm:1.8.0"],\
             ["lodash.merge", "npm:4.6.2"]\
           ],\
           "linkType": "HARD"\
@@ -6519,7 +6519,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-crypto/decrypt-node", "npm:3.2.0"],\
             ["@aws-crypto/kms-keyring-node", "npm:3.2.0"],\
             ["@aws-crypto/material-management", "npm:3.2.0"],\
-            ["@aws-lambda-powertools/logger", "npm:1.5.1"],\
+            ["@aws-lambda-powertools/logger", "npm:1.8.0"],\
             ["@aws-sdk/client-athena", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudformation", "npm:3.163.0"],\
             ["@aws-sdk/client-cloudwatch-logs", "npm:3.163.0"],\
