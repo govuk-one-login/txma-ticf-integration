@@ -4894,26 +4894,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk-client-mock-jest@npm:2.0.1":
-  version: 2.0.1
-  resolution: "aws-sdk-client-mock-jest@npm:2.0.1"
+"aws-sdk-client-mock-jest@npm:2.1.1":
+  version: 2.1.1
+  resolution: "aws-sdk-client-mock-jest@npm:2.1.1"
   dependencies:
     "@types/jest": ^28.1.3
     tslib: ^2.1.0
   peerDependencies:
-    aws-sdk-client-mock: 2.0.1
-  checksum: 7a45ace039f0d506bdebb8941f43dc0108061fed76601a369874550ef3b0ce65228702c848f945b0d38075fa2581987fa3abc88941b869a0086fd65df16af631
+    aws-sdk-client-mock: 2.1.1
+  checksum: 4b5ca96bbcaa60ea3ea947821c7ff1f073c1342a12ce5c778b70832bdcc6106e10591e98e09b22c5b0d83dfc6fe554e8a08d5df5cf067a7eaadb804087b891ed
   languageName: node
   linkType: hard
 
-"aws-sdk-client-mock@npm:2.0.1":
-  version: 2.0.1
-  resolution: "aws-sdk-client-mock@npm:2.0.1"
+"aws-sdk-client-mock@npm:2.1.1":
+  version: 2.1.1
+  resolution: "aws-sdk-client-mock@npm:2.1.1"
   dependencies:
     "@types/sinon": ^10.0.10
     sinon: ^14.0.2
     tslib: ^2.1.0
-  checksum: 447502ba9270777db129ddcf0245502771c1415d4293f7b001e0a3dc18ab0ce778a7f2d40a86dadb2637d3b83be2df4e833d7f4f6c49678495c932340558c465
+  checksum: 8330b88cdaeae401390ece094344ed727db0b007369d862a88afc0a29249828b95cce809faa0c2289c1af99528af0e765b4aba8156b948d01a12299390195cea
   languageName: node
   linkType: hard
 
@@ -5580,8 +5580,8 @@ __metadata:
     "@types/node": 18.16.3
     "@typescript-eslint/eslint-plugin": 5.59.2
     "@typescript-eslint/parser": 5.59.2
-    aws-sdk-client-mock: 2.0.1
-    aws-sdk-client-mock-jest: 2.0.1
+    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock-jest: 2.1.1
     aws-testing-library: 2.1.7
     axios: 0.27.2
     csv-string: 4.1.1
