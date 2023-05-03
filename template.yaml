@@ -166,7 +166,7 @@ Resources:
   InitiateDataRequestFunctionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '${AWS::StackName}-initiate-data-request-function-role'
+      RoleName: !Sub '${AWS::StackName}-initiate-data-request-role'
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
