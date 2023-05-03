@@ -161,47 +161,59 @@ Resources:
             RestApiId: !Ref ZendeskWebhookApi
       FunctionName: !Sub ${AWS::StackName}-initiate-data-request
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt InitiateDataRequestLogs.Arn
-            - Sid: ReadSecrets
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: DecryptSecrets
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
-            - Sid: AllowSqsSend
-              Effect: Allow
-              Action:
-                - sqs:SendMessage
-              Resource:
-                - !GetAtt InitiateDataRequestQueue.Arn
-                - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
-            - Sid: UseSqsKmsKey
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-                - kms:GenerateDataKey*
-                - kms:ReEncrypt*
-              Resource:
-                - '{{resolve:ssm:SqsKmsKeyArn}}'
-                - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
-            - Sid: S3ReadEmailRecipients
-              Effect: Allow
-              Action:
-                - s3:GetObject
-              Resource:
-                - '{{resolve:ssm:ValidEmailRecipientsBucketArn}}/*'
+      Role: !GetAtt InitiateDataRequestFunctionRole.Arn
+
+  InitiateDataRequestFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-initiate-data-request-function-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref ZendeskSecretsPolicy
+        - !Ref InitiateDataRequestFunctionPolicy
+
+  InitiateDataRequestFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-initiate-data-request-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowSqsSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt InitiateDataRequestQueue.Arn
+              - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource:
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
+              - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
+          - Sid: S3ReadEmailRecipients
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - '{{resolve:ssm:ValidEmailRecipientsBucketArn}}/*'
 
   InitiateDataRequestLogs:
     Type: AWS::Logs::LogGroup
@@ -899,6 +911,27 @@ Resources:
       Targets:
         - Arn: !GetAtt SendQueryResultsNotificationFunction.Arn
           Id: AthenaEventTarget
+
+  ####################
+  # Shared IAM policies
+  #####################
+  ZendeskSecretsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-zendesk-secrets-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ReadSecrets
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          - Sid: DecryptSecrets
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
   ##############
   # S3 Resources
