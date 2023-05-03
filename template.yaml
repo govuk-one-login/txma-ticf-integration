@@ -726,67 +726,95 @@ Resources:
           AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: WriteToResultsBucket
-              Effect: Allow
-              Action:
-                - s3:AbortMultipartUpload
-                - s3:GetBucketLocation
-                - s3:GetObject
-                - s3:ListBucket
-                - s3:ListBucketMultipartUploads
-                - s3:ListMultipartUploadParts
-                - s3:PutObject
-              Resource:
-                - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket
-                - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket/*
-            - Sid: DecryptKmsKeys
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource:
-                - '{{resolve:ssm:DatabaseKmsKeyArn}}'
-                - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                - '{{resolve:ssm:SqsKmsKeyArn}}'
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt SendQueryResultsNotificationLogs.Arn
-            - Sid: SecretsManager
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: QueryRequestTableReadWrite
-              Effect: Allow
-              Action:
-                - dynamodb:PutItem
-                - dynamodb:GetItem
-                - dynamodb:UpdateItem
-                - dynamodb:Query
-              Resource:
-                - '{{resolve:ssm:QueryRequestTableArn}}'
-                - '{{resolve:ssm:QueryRequestTableArn}}/index/athenaQueryIdIndex'
-            - Sid: AllowSqsSend
-              Effect: Allow
-              Action:
-                - sqs:SendMessage
-              Resource:
-                - '{{resolve:ssm:QueryCompletedQueueArn}}'
-                - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
-            - Sid: UseSqsKmsKey
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-                - kms:GenerateDataKey*
-                - kms:ReEncrypt*
-              Resource:
-                - '{{resolve:ssm:QueryCompletedQueueKmsKeyArn}}'
-                - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
+      Role: !GetAtt SendQueryResultsNotificationFunctionRole.Arn
+
+  SendQueryResultsNotificationFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-initiate-athena-query-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref SendQueryResultsNotificationFunctionPolicy
+
+  SendQueryResultsNotificationFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-send-query-results-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: WriteToResultsBucket
+            Effect: Allow
+            Action:
+              - s3:AbortMultipartUpload
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:PutObject
+            Resource:
+              - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket
+              - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket/*
+          - Sid: DecryptKmsKeys
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - '{{resolve:ssm:DatabaseKmsKeyArn}}'
+              - '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !GetAtt SendQueryResultsNotificationLogs.Arn
+          - Sid: SecretsManager
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          - Sid: QueryRequestTableReadWrite
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+              - dynamodb:Query
+            Resource:
+              - '{{resolve:ssm:QueryRequestTableArn}}'
+              - '{{resolve:ssm:QueryRequestTableArn}}/index/athenaQueryIdIndex'
+          - Sid: AllowSqsSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - '{{resolve:ssm:QueryCompletedQueueArn}}'
+              - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource:
+              - '{{resolve:ssm:QueryCompletedQueueKmsKeyArn}}'
+              - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
 
   SendQueryResultsNotificationLogs:
     Type: AWS::Logs::LogGroup
