@@ -50,8 +50,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.16.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.59.2"],\
             ["@typescript-eslint/parser", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.59.2"],\
-            ["aws-sdk-client-mock", "npm:2.0.1"],\
-            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1"],\
+            ["aws-sdk-client-mock", "npm:2.1.1"],\
+            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.1.1"],\
             ["aws-testing-library", "npm:2.1.7"],\
             ["axios", "npm:0.27.2"],\
             ["csv-string", "npm:4.1.1"],\
@@ -5708,10 +5708,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["aws-sdk-client-mock", [\
-        ["npm:2.0.1", {\
-          "packageLocation": "./.yarn/cache/aws-sdk-client-mock-npm-2.0.1-ea5b74f647-447502ba92.zip/node_modules/aws-sdk-client-mock/",\
+        ["npm:2.1.1", {\
+          "packageLocation": "./.yarn/cache/aws-sdk-client-mock-npm-2.1.1-ae2be51797-8330b88cda.zip/node_modules/aws-sdk-client-mock/",\
           "packageDependencies": [\
-            ["aws-sdk-client-mock", "npm:2.0.1"],\
+            ["aws-sdk-client-mock", "npm:2.1.1"],\
             ["@types/sinon", "npm:10.0.13"],\
             ["sinon", "npm:14.0.2"],\
             ["tslib", "npm:2.5.0"]\
@@ -5720,20 +5720,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["aws-sdk-client-mock-jest", [\
-        ["npm:2.0.1", {\
-          "packageLocation": "./.yarn/cache/aws-sdk-client-mock-jest-npm-2.0.1-6c76fdf93a-7a45ace039.zip/node_modules/aws-sdk-client-mock-jest/",\
+        ["npm:2.1.1", {\
+          "packageLocation": "./.yarn/cache/aws-sdk-client-mock-jest-npm-2.1.1-8be9145fdc-4b5ca96bbc.zip/node_modules/aws-sdk-client-mock-jest/",\
           "packageDependencies": [\
-            ["aws-sdk-client-mock-jest", "npm:2.0.1"]\
+            ["aws-sdk-client-mock-jest", "npm:2.1.1"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1", {\
-          "packageLocation": "./.yarn/__virtual__/aws-sdk-client-mock-jest-virtual-c902ec3ab3/0/cache/aws-sdk-client-mock-jest-npm-2.0.1-6c76fdf93a-7a45ace039.zip/node_modules/aws-sdk-client-mock-jest/",\
+        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.1.1", {\
+          "packageLocation": "./.yarn/__virtual__/aws-sdk-client-mock-jest-virtual-7d79682e24/0/cache/aws-sdk-client-mock-jest-npm-2.1.1-8be9145fdc-4b5ca96bbc.zip/node_modules/aws-sdk-client-mock-jest/",\
           "packageDependencies": [\
-            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1"],\
+            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.1.1"],\
             ["@types/aws-sdk-client-mock", null],\
             ["@types/jest", "npm:28.1.8"],\
-            ["aws-sdk-client-mock", "npm:2.0.1"],\
+            ["aws-sdk-client-mock", "npm:2.1.1"],\
             ["tslib", "npm:2.5.0"]\
           ],\
           "packagePeers": [\
@@ -6538,8 +6538,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.16.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.59.2"],\
             ["@typescript-eslint/parser", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:5.59.2"],\
-            ["aws-sdk-client-mock", "npm:2.0.1"],\
-            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.0.1"],\
+            ["aws-sdk-client-mock", "npm:2.1.1"],\
+            ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:2.1.1"],\
             ["aws-testing-library", "npm:2.1.7"],\
             ["axios", "npm:0.27.2"],\
             ["csv-string", "npm:4.1.1"],\
