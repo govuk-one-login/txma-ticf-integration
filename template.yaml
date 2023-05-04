@@ -1080,6 +1080,7 @@ Resources:
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub ${AWS::StackName}-${Environment}-batch-jobs-role
       PermissionsBoundary:
         !If [
           UsePermissionsBoundary,
@@ -1094,58 +1095,55 @@ Resources:
               Service:
                 - batchoperations.s3.amazonaws.com
             Action: sts:AssumeRole
-      Policies:
-        - PolicyName: AllowS3GlacierRestore
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: AllowAuditBucketRestore
-                Effect: Allow
-                Action:
-                  - s3:RestoreObject
-                Resource:
-                  - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
-                  - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
-              - Sid: AllowManifestBucketRead
-                Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:GetObjectVersion
-                Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
-              - Sid: AllowManifestBucketWriteForReports
-                Effect: Allow
-                Action:
-                  - s3:PutObject
-                Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
-        - PolicyName: AllowS3Copy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: AllowAnalysisBucketWrite
-                Effect: Allow
-                Action:
-                  - s3:PutObject
-                  - s3:PutObjectAcl
-                  - s3:PutObjectTagging
-                Resource: !Sub ${AnalysisBucket.Arn}/*
-              - Sid: AllowAuditBucketRead
-                Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:GetObjectAcl
-                  - s3:GetObjectTagging
-                  - s3:ListBucket
-                Resource:
-                  - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
-        - PolicyName: AllowDecryptOperations
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: AllowDecryptLambdaExecute
-                Effect: Allow
-                Action:
-                  - lambda:InvokeFunction
-                Resource: !GetAtt DecryptAndCopyFunction.Arn
+      ManagedPolicyArns:
+        - !Ref DataTransferBatchJobPermissionsPolicy
+
+  DataTransferBatchJobPermissionsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-data-transfer-job-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowAuditBucketRestore
+            Effect: Allow
+            Action:
+              - s3:RestoreObject
+            Resource:
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+              - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
+          - Sid: AllowManifestBucketRead
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:GetObjectVersion
+            Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
+          - Sid: AllowManifestBucketWriteForReports
+            Effect: Allow
+            Action:
+              - s3:PutObject
+            Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
+          - Sid: AllowAnalysisBucketWrite
+            Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+              - s3:PutObjectTagging
+            Resource: !Sub ${AnalysisBucket.Arn}/*
+          - Sid: AllowAuditBucketRead
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:GetObjectAcl
+              - s3:GetObjectTagging
+              - s3:ListBucket
+            Resource:
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+          - Sid: AllowDecryptLambdaExecute
+            Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource: !GetAtt DecryptAndCopyFunction.Arn
 
   EmptyS3Buckets:
     Condition: DevEnvironment
