@@ -161,47 +161,59 @@ Resources:
             RestApiId: !Ref ZendeskWebhookApi
       FunctionName: !Sub ${AWS::StackName}-initiate-data-request
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt InitiateDataRequestLogs.Arn
-            - Sid: ReadSecrets
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: DecryptSecrets
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
-            - Sid: AllowSqsSend
-              Effect: Allow
-              Action:
-                - sqs:SendMessage
-              Resource:
-                - !GetAtt InitiateDataRequestQueue.Arn
-                - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
-            - Sid: UseSqsKmsKey
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-                - kms:GenerateDataKey*
-                - kms:ReEncrypt*
-              Resource:
-                - '{{resolve:ssm:SqsKmsKeyArn}}'
-                - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
-            - Sid: S3ReadEmailRecipients
-              Effect: Allow
-              Action:
-                - s3:GetObject
-              Resource:
-                - '{{resolve:ssm:ValidEmailRecipientsBucketArn}}/*'
+      Role: !GetAtt InitiateDataRequestFunctionRole.Arn
+
+  InitiateDataRequestFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-initiate-data-request-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref ZendeskSecretsPolicy
+        - !Ref InitiateDataRequestFunctionPolicy
+
+  InitiateDataRequestFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-initiate-data-request-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowSqsSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt InitiateDataRequestQueue.Arn
+              - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource:
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
+              - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
+          - Sid: S3ReadEmailRecipients
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - '{{resolve:ssm:ValidEmailRecipientsBucketArn}}/*'
 
   InitiateDataRequestLogs:
     Type: AWS::Logs::LogGroup
@@ -251,76 +263,98 @@ Resources:
             BatchSize: 1
       FunctionName: !Sub ${AWS::StackName}-process-data
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: S3Read
-              Effect: Allow
-              Action:
-                - s3:ListBucket
-              Resource:
-                - !GetAtt AnalysisBucket.Arn
-                - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
-                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
-            - Sid: ManifestBucketWrite
-              Effect: Allow
-              Action:
-                - s3:PutObject
-              Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
-            - Sid: AllowCreateS3BatchJobs
-              Effect: Allow
-              Action:
-                - s3:CreateJob
-                - s3:PutJobTagging
-              Resource: '*'
-            - Sid: AssumeBatchJobRole
-              Effect: Allow
-              Action:
-                - iam:PassRole
-              Resource: !GetAtt BatchJobsRole.Arn
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt ProcessDataRequestLogs.Arn
-            - Sid: ReadSecrets
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: DecryptKmsKeys
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource:
-                - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                - '{{resolve:ssm:DatabaseKmsKeyArn}}'
-            - Sid: QueryRequestTableReadWrite
-              Effect: Allow
-              Action:
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-              Resource: '{{resolve:ssm:QueryRequestTableArn}}'
-            - Sid: AllowSqsSend
-              Effect: Allow
-              Action:
-                - sqs:SendMessage
-              Resource:
-                - !GetAtt InitiateAthenaQueryQueue.Arn
-                - !GetAtt InitiateDataRequestQueue.Arn
-                - !GetAtt TerminatedJobQueue.Arn
-            - Sid: UseSqsKmsKey
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-                - kms:GenerateDataKey*
-                - kms:ReEncrypt*
-              Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+      Role: !GetAtt ProcessDataRequestFunctionRole.Arn
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
+
+  ProcessDataRequestFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-process-data-request-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref ZendeskSecretsPolicy
+        - !Ref ProcessDataRequestFunctionPolicy
+
+  ProcessDataRequestFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-process-data-request-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: S3Read
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource:
+              - !GetAtt AnalysisBucket.Arn
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
+              - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
+          - Sid: ManifestBucketWrite
+            Effect: Allow
+            Action:
+              - s3:PutObject
+            Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
+          - Sid: AllowCreateS3BatchJobs
+            Effect: Allow
+            Action:
+              - s3:CreateJob
+              - s3:PutJobTagging
+            Resource: '*'
+          - Sid: AssumeBatchJobRole
+            Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: !GetAtt BatchJobsRole.Arn
+          - Sid: DecryptDatabaseKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource: '{{resolve:ssm:DatabaseKmsKeyArn}}'
+          - Sid: QueryRequestTableReadWrite
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+            Resource: '{{resolve:ssm:QueryRequestTableArn}}'
+          - Sid: AllowSqsSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt InitiateAthenaQueryQueue.Arn
+              - !GetAtt InitiateDataRequestQueue.Arn
+              - !GetAtt TerminatedJobQueue.Arn
+          - Sid: AllowSqsListenToInitiateQueue
+            Effect: Allow
+            Action:
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Resource: !GetAtt InitiateDataRequestQueue.Arn
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
 
   ProcessDataRequestLogs:
     Type: AWS::Logs::LogGroup
@@ -356,60 +390,71 @@ Resources:
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       FunctionName: !Sub ${AWS::StackName}-data-ready-for-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: ReadS3BatchJobDetails
-              Effect: Allow
-              Action:
-                - s3:GetJobTagging
-                - s3:DescribeJob
-              Resource: '*'
-            - Sid: S3Read
-              Effect: Allow
-              Action:
-                - s3:ListBucket
-              Resource:
-                - !GetAtt AnalysisBucket.Arn
-                - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
-                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt DataReadyForQueryLogs.Arn
-            - Sid: ReadSecrets
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: DecryptKmsKeys
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource:
-                - '{{resolve:ssm:SecretsKmsKeyArn}}'
-            - Sid: QueryRequestTableReadWrite
-              Effect: Allow
-              Action:
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-              Resource: '{{resolve:ssm:QueryRequestTableArn}}'
-            - Sid: AllowSqsSend
-              Effect: Allow
-              Action:
-                - sqs:SendMessage
-              Resource:
-                - !GetAtt InitiateAthenaQueryQueue.Arn
-            - Sid: UseSqsKmsKey
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-                - kms:GenerateDataKey*
-                - kms:ReEncrypt*
-              Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+      Role: !GetAtt DataReadyForQueryFunctionRole.Arn
+
+  DataReadyForQueryFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-data-ready-for-query-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref ZendeskSecretsPolicy
+        - !Ref DataReadyForQueryFunctionPolicy
+
+  DataReadyForQueryFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-data-ready-for-query-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ReadS3BatchJobDetails
+            Effect: Allow
+            Action:
+              - s3:GetJobTagging
+              - s3:DescribeJob
+            Resource: '*'
+          - Sid: S3Read
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource:
+              - !GetAtt AnalysisBucket.Arn
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
+              - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
+          - Sid: QueryRequestTableReadWrite
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+            Resource: '{{resolve:ssm:QueryRequestTableArn}}'
+          - Sid: AllowSqsSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt InitiateAthenaQueryQueue.Arn
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
 
   DataReadyForQueryLogs:
     Type: AWS::Logs::LogGroup
@@ -441,43 +486,64 @@ Resources:
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
       FunctionName: !Sub ${AWS::StackName}-decrypt-and-copy
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: ReadFromPermanentBucket
-              Effect: Allow
-              Action:
-                - s3:ListBucket
-                - s3:GetObject
-              Resource:
-                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
-                - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch/*
-            - Sid: WriteToAnalysisBucket
-              Effect: Allow
-              Action:
-                - s3:GetBucketLocation
-                - s3:GetObject
-                - s3:ListBucket
-                - s3:ListBucketMultipartUploads
-                - s3:ListMultipartUploadParts
-                - s3:AbortMultipartUpload
-                - s3:PutObject
-              Resource:
-                - !GetAtt AnalysisBucket.Arn
-                - !Sub ${AnalysisBucket.Arn}/*
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt DecryptAndCopyLogs.Arn
-            - Sid: UseGeneratorKmsKey
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-                - kms:GenerateDataKey*
-                - kms:ReEncrypt*
-              Resource: '{{resolve:ssm:EncryptionGeneratorKmsKeyArn}}'
+      Role: !GetAtt DecryptAndCopyFunctionRole.Arn
+
+  DecryptAndCopyFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-decrypt-and-copy-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref DecryptAndCopyFunctionPolicy
+
+  DecryptAndCopyFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-decrypt-and-copy-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ReadFromPermanentBucket
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+            Resource:
+              - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch
+              - !Sub arn:aws:s3:::audit-${Environment}-permanent-message-batch/*
+          - Sid: WriteToAnalysisBucket
+            Effect: Allow
+            Action:
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:AbortMultipartUpload
+              - s3:PutObject
+            Resource:
+              - !GetAtt AnalysisBucket.Arn
+              - !Sub ${AnalysisBucket.Arn}/*
+          - Sid: UseGeneratorKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource: '{{resolve:ssm:EncryptionGeneratorKmsKeyArn}}'
 
   DecryptAndCopyLogs:
     Type: AWS::Logs::LogGroup
@@ -501,6 +567,7 @@ Resources:
           ATHENA_WORKGROUP_NAME: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupName}}'
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          EMAIL_TO_SLACK_SNS_TOPIC_ARN: '{{resolve:ssm:EmailToSlackSNSTopicArn}}'
       Events:
         InitiateAthenaQueryEvent:
           Type: SQS
@@ -509,85 +576,123 @@ Resources:
             BatchSize: 1
       FunctionName: !Sub ${AWS::StackName}-initiate-athena-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: GetGlueTables
-              Effect: Allow
-              Action:
-                - glue:GetTable
-              Resource:
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
-                - '{{resolve:ssm:AuditDataAnalysisGlueDatabaseArn}}'
-                - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}/${AuditAnalysisTable}
-            - Sid: StartAthenaQuery
-              Effect: Allow
-              Action:
-                - athena:StartQueryExecution
-              Resource: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupArn}}'
-            - Sid: ReadFromAnalysisBucket
-              Effect: Allow
-              Action:
-                - s3:ListBucket
-                - s3:GetObject
-              Resource:
-                - !GetAtt AnalysisBucket.Arn
-                - !Sub ${AnalysisBucket.Arn}/*
-            - Sid: WriteToResultsBucket
-              Effect: Allow
-              Action:
-                - s3:GetBucketLocation
-                - s3:GetObject
-                - s3:ListBucket
-                - s3:ListBucketMultipartUploads
-                - s3:ListMultipartUploadParts
-                - s3:AbortMultipartUpload
-                - s3:PutObject
-              Resource:
-                - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
-                - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt InitiateAthenaQueryLogs.Arn
-            - Sid: ReadSecrets
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: DecryptKmsKeys
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource:
-                - '{{resolve:ssm:DatabaseKmsKeyArn}}'
-                - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                - '{{resolve:ssm:SqsKmsKeyArn}}'
-            - Sid: QueryRequestTableReadWrite
-              Effect: Allow
-              Action:
-                - dynamodb:PutItem
-                - dynamodb:GetItem
-                - dynamodb:UpdateItem
-              Resource: '{{resolve:ssm:QueryRequestTableArn}}'
-            - Sid: AthenaOutputEncryptKmsKey
-              Effect: Allow
-              Action:
-                - kms:GenerateDataKey
-                - kms:Encrypt
-                - kms:Decrypt
-              Resource: '{{resolve:ssm:AthenaQueryOutputBucketKmsKeyArn}}'
-            - Sid: Events
-              Effect: Allow
-              Action:
-                - events:PutEvents
-              Resource:
-                - '*'
+      Role: !GetAtt InitiateAthenaQueryFunctionRole.Arn
       DeadLetterQueue:
         Type: SQS
         TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
+
+  InitiateAthenaQueryFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-initiate-athena-query-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref InitiateAthenaQueryFunctionPolicy
+
+  InitiateAthenaQueryFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-initiate-athena-query-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: GetGlueTables
+            Effect: Allow
+            Action:
+              - glue:GetTable
+            Resource:
+              - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
+              - '{{resolve:ssm:AuditDataAnalysisGlueDatabaseArn}}'
+              - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/{{resolve:ssm:AuditDataAnalysisGlueDatabaseName}}/${AuditAnalysisTable}
+          - Sid: AllowQueueAccess
+            Effect: Allow
+            Action:
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Resource: !GetAtt InitiateAthenaQueryQueue.Arn
+          - Sid: StartAthenaQuery
+            Effect: Allow
+            Action:
+              - athena:StartQueryExecution
+            Resource: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupArn}}'
+          - Sid: ReadFromAnalysisBucket
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+            Resource:
+              - !GetAtt AnalysisBucket.Arn
+              - !Sub ${AnalysisBucket.Arn}/*
+          - Sid: WriteToResultsBucket
+            Effect: Allow
+            Action:
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:AbortMultipartUpload
+              - s3:PutObject
+            Resource:
+              - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
+              - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
+          - Sid: ReadSecrets
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          - Sid: DecryptKmsKeys
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - '{{resolve:ssm:DatabaseKmsKeyArn}}'
+              - '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
+          - Sid: QueryRequestTableReadWrite
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+            Resource: '{{resolve:ssm:QueryRequestTableArn}}'
+          - Sid: AthenaOutputEncryptKmsKey
+            Effect: Allow
+            Action:
+              - kms:GenerateDataKey
+              - kms:Encrypt
+              - kms:Decrypt
+            Resource: '{{resolve:ssm:AthenaQueryOutputBucketKmsKeyArn}}'
+          - Sid: SNSEmailTopicKMS
+            Effect: Allow
+            Action:
+              - 'kms:Encrypt*'
+              - 'kms:Decrypt*'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:Describe*'
+            Resource:
+              - '{{resolve:ssm:CoreSnsKmsKeyArn}}'
+          - Sid: SNSEmailTopic
+            Effect: Allow
+            Action:
+              - sns:Publish
+            Resource:
+              - '{{resolve:ssm:EmailToSlackSNSTopicArn}}'
 
   InitiateAthenaQueryLogs:
     Type: AWS::Logs::LogGroup
@@ -621,67 +726,95 @@ Resources:
           AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Policies:
-        - Statement:
-            - Sid: WriteToResultsBucket
-              Effect: Allow
-              Action:
-                - s3:AbortMultipartUpload
-                - s3:GetBucketLocation
-                - s3:GetObject
-                - s3:ListBucket
-                - s3:ListBucketMultipartUploads
-                - s3:ListMultipartUploadParts
-                - s3:PutObject
-              Resource:
-                - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket
-                - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket/*
-            - Sid: DecryptKmsKeys
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-              Resource:
-                - '{{resolve:ssm:DatabaseKmsKeyArn}}'
-                - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                - '{{resolve:ssm:SqsKmsKeyArn}}'
-            - Sid: Logs
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource: !GetAtt SendQueryResultsNotificationLogs.Arn
-            - Sid: SecretsManager
-              Effect: Allow
-              Action:
-                - secretsmanager:GetSecretValue
-              Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
-            - Sid: QueryRequestTableReadWrite
-              Effect: Allow
-              Action:
-                - dynamodb:PutItem
-                - dynamodb:GetItem
-                - dynamodb:UpdateItem
-                - dynamodb:Query
-              Resource:
-                - '{{resolve:ssm:QueryRequestTableArn}}'
-                - '{{resolve:ssm:QueryRequestTableArn}}/index/athenaQueryIdIndex'
-            - Sid: AllowSqsSend
-              Effect: Allow
-              Action:
-                - sqs:SendMessage
-              Resource:
-                - '{{resolve:ssm:QueryCompletedQueueArn}}'
-                - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
-            - Sid: UseSqsKmsKey
-              Effect: Allow
-              Action:
-                - kms:Decrypt
-                - kms:GenerateDataKey*
-                - kms:ReEncrypt*
-              Resource:
-                - '{{resolve:ssm:QueryCompletedQueueKmsKeyArn}}'
-                - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
+      Role: !GetAtt SendQueryResultsNotificationFunctionRole.Arn
+
+  SendQueryResultsNotificationFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-send-query-results-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref SendQueryResultsNotificationFunctionPolicy
+
+  SendQueryResultsNotificationFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-send-query-results-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: WriteToResultsBucket
+            Effect: Allow
+            Action:
+              - s3:AbortMultipartUpload
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:ListMultipartUploadParts
+              - s3:PutObject
+            Resource:
+              - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket
+              - !Sub arn:aws:s3:::txma-qr-infra-${Environment}-query-results-bucket/*
+          - Sid: DecryptKmsKeys
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - '{{resolve:ssm:DatabaseKmsKeyArn}}'
+              - '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - '{{resolve:ssm:SqsKmsKeyArn}}'
+          - Sid: Logs
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !GetAtt SendQueryResultsNotificationLogs.Arn
+          - Sid: SecretsManager
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          - Sid: QueryRequestTableReadWrite
+            Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:UpdateItem
+              - dynamodb:Query
+            Resource:
+              - '{{resolve:ssm:QueryRequestTableArn}}'
+              - '{{resolve:ssm:QueryRequestTableArn}}/index/athenaQueryIdIndex'
+          - Sid: AllowSqsSend
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - '{{resolve:ssm:QueryCompletedQueueArn}}'
+              - '{{resolve:ssm:AuditDataRequestEventsQueueArn}}'
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource:
+              - '{{resolve:ssm:QueryCompletedQueueKmsKeyArn}}'
+              - '{{resolve:ssm:AuditDataRequestEventsQueueKmsKeyArn}}'
 
   SendQueryResultsNotificationLogs:
     Type: AWS::Logs::LogGroup
@@ -737,38 +870,37 @@ Resources:
               Service:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
-      Policies:
-        - PolicyName: AllowCloseZendeskActions
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: Logs
-                Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt CloseZendeskTicketLogs.Arn
-              - Sid: ReadSecrets
-                Effect: Allow
-                Action:
-                  - secretsmanager:GetSecretValue
-                Resource:
-                  - '{{resolve:ssm:ZendeskSecretSetArn}}'
-              - Sid: AllowCloseZendeskTicketQueueRead
-                Effect: Allow
-                Action:
-                  - sqs:ReceiveMessage
-                  - sqs:DeleteMessage
-                  - sqs:GetQueueAttributes
-                Resource: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
-              - Sid: DecryptKmsKeys
-                Effect: Allow
-                Action:
-                  - kms:Decrypt
-                Resource:
-                  - '{{resolve:ssm:SecretsKmsKeyArn}}'
-                  - !Sub 'arn:aws:kms:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Ref CloseZendeskTicketFunctionPolicy
+
+  CloseZendeskTicketFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-close-zendesk-ticket-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ReadSecrets
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - '{{resolve:ssm:ZendeskSecretSetArn}}'
+          - Sid: AllowCloseZendeskTicketQueueRead
+            Effect: Allow
+            Action:
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+            Resource: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
+          - Sid: DecryptKmsKeys
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource:
+              - '{{resolve:ssm:SecretsKmsKeyArn}}'
+              - !Sub 'arn:aws:kms:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:*'
 
   CloseZendeskTicketLogs:
     Type: AWS::Logs::LogGroup
@@ -883,6 +1015,27 @@ Resources:
         - Arn: !GetAtt SendQueryResultsNotificationFunction.Arn
           Id: AthenaEventTarget
 
+  ####################
+  # Shared IAM policies
+  #####################
+  ZendeskSecretsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-zendesk-secrets-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ReadSecrets
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          - Sid: DecryptSecrets
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource: '{{resolve:ssm:SecretsKmsKeyArn}}'
+
   ##############
   # S3 Resources
   ##############
@@ -927,6 +1080,7 @@ Resources:
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub ${AWS::StackName}-${Environment}-batch-jobs-role
       PermissionsBoundary:
         !If [
           UsePermissionsBoundary,
@@ -941,58 +1095,55 @@ Resources:
               Service:
                 - batchoperations.s3.amazonaws.com
             Action: sts:AssumeRole
-      Policies:
-        - PolicyName: AllowS3GlacierRestore
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: AllowAuditBucketRestore
-                Effect: Allow
-                Action:
-                  - s3:RestoreObject
-                Resource:
-                  - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
-                  - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
-              - Sid: AllowManifestBucketRead
-                Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:GetObjectVersion
-                Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
-              - Sid: AllowManifestBucketWriteForReports
-                Effect: Allow
-                Action:
-                  - s3:PutObject
-                Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
-        - PolicyName: AllowS3Copy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: AllowAnalysisBucketWrite
-                Effect: Allow
-                Action:
-                  - s3:PutObject
-                  - s3:PutObjectAcl
-                  - s3:PutObjectTagging
-                Resource: !Sub ${AnalysisBucket.Arn}/*
-              - Sid: AllowAuditBucketRead
-                Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:GetObjectAcl
-                  - s3:GetObjectTagging
-                  - s3:ListBucket
-                Resource:
-                  - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
-        - PolicyName: AllowDecryptOperations
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Sid: AllowDecryptLambdaExecute
-                Effect: Allow
-                Action:
-                  - lambda:InvokeFunction
-                Resource: !GetAtt DecryptAndCopyFunction.Arn
+      ManagedPolicyArns:
+        - !Ref DataTransferBatchJobPermissionsPolicy
+
+  DataTransferBatchJobPermissionsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-data-transfer-job-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowAuditBucketRestore
+            Effect: Allow
+            Action:
+              - s3:RestoreObject
+            Resource:
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+              - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
+          - Sid: AllowManifestBucketRead
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:GetObjectVersion
+            Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
+          - Sid: AllowManifestBucketWriteForReports
+            Effect: Allow
+            Action:
+              - s3:PutObject
+            Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
+          - Sid: AllowAnalysisBucketWrite
+            Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+              - s3:PutObjectTagging
+            Resource: !Sub ${AnalysisBucket.Arn}/*
+          - Sid: AllowAuditBucketRead
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:GetObjectAcl
+              - s3:GetObjectTagging
+              - s3:ListBucket
+            Resource:
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+          - Sid: AllowDecryptLambdaExecute
+            Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource: !GetAtt DecryptAndCopyFunction.Arn
 
   EmptyS3Buckets:
     Condition: DevEnvironment

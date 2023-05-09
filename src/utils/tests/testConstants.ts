@@ -83,3 +83,5 @@ export const TEST_PERMANENT_BUCKET_ARN = 'arn:aws:s3:::testPermanentBucket'
 export const TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID =
   'e53df0c4-a91b-4a2a-8084-5bdd32a15403'
 export const TEST_SQS_MESSAGE_ID = 'myTestSQSMessageID'
+export const EMAIL_TO_SLACK_SNS_TOPIC_ARN =
+  'arn:aws:sns:eu-west-2:123456789012:email-to-slack-topic'

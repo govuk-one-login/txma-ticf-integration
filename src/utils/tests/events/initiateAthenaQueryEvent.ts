@@ -19,3 +19,51 @@ export const testAthenaQueryEvent = {
     }
   ]
 }
+
+export const testManualAthenaQueryEvent = {
+  Records: [
+    {
+      messageId: '',
+      receiptHandle: '',
+      body: 'MR12',
+      attributes: {
+        ApproximateReceiveCount: '1',
+        AWSTraceHeader: '',
+        SentTimestamp: '',
+        SenderId: '',
+        ApproximateFirstReceiveTimestamp: ''
+      },
+      messageAttributes: {},
+      md5OfBody: '',
+      eventSource: '',
+      eventSourceARN: '',
+      awsRegion: ''
+    }
+  ]
+}
+
+export const testAthenaQueryEventNoRecords = {
+  Records: []
+}
+
+export const testAthenaQueryEventSmallZendeskId = {
+  Records: [
+    {
+      messageId: '',
+      receiptHandle: '',
+      body: '',
+      attributes: {
+        ApproximateReceiveCount: '1',
+        AWSTraceHeader: '',
+        SentTimestamp: '',
+        SenderId: '',
+        ApproximateFirstReceiveTimestamp: ''
+      },
+      messageAttributes: {},
+      md5OfBody: '',
+      eventSource: '',
+      eventSourceARN: '',
+      awsRegion: ''
+    }
+  ]
+}
