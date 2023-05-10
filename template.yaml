@@ -61,7 +61,7 @@ Globals:
   Api:
     OpenApiVersion: 3.0.1
   Architectures:
-    - arm64
+    - 'arm64'
 
 Resources:
   ###############
