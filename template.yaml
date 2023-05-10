@@ -60,6 +60,8 @@ Globals:
     Timeout: 30
   Api:
     OpenApiVersion: 3.0.1
+  Architectures:
+    - arm64
 
 Resources:
   ###############
