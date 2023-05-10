@@ -58,10 +58,10 @@ Globals:
     ReservedConcurrentExecutions: 10
     Runtime: nodejs18.x
     Timeout: 30
+    Architectures:
+      - 'arm64'
   Api:
     OpenApiVersion: 3.0.1
-  Architectures:
-    - 'arm64'
 
 Resources:
   ###############
