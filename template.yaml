@@ -1322,7 +1322,7 @@ Resources:
     Condition: TestRoleResources
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: '{{resolve:SSM:AthenaQueryOutputBucketArn}}'
+      Bucket: '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -1333,8 +1333,8 @@ Resources:
               # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
               - s3:ListBucket
             Resource:
-              - '{{resolve:SSM:AthenaQueryOutputBucketArn}}'
-              - '{{resolve:SSM:AthenaQueryOutputBucketArn}}/*'
+              - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
+              - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
             Principal:
               AWS:
                 - !Ref TestRoleArn
