@@ -1415,6 +1415,14 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/IntegrationTestDataBucketArn}}'
 
+  IntegrationTestsAthenaOutputBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/IntegrationTestsAthenaOutputBucketName
+      Type: String
+      Value: '{{resolve:ssm:AthenaQueryOutputBucketName}}'
+
   IntegrationTestsNotifySecretSet:
     Condition: TestEnvironment
     Type: AWS::SecretsManager::Secret
@@ -1428,7 +1436,6 @@ Resources:
     Properties:
       Name: !Sub tests/${AWS::StackName}/ZendeskSecrets
       KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
-
   SqsOperationsLambdaPolicy:
     Condition: TestRoleResources
     Type: AWS::Lambda::Permission
