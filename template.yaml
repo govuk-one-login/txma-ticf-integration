@@ -1322,7 +1322,7 @@ Resources:
     Condition: TestRoleResources
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
+      Bucket: '{{resolve:ssm:AthenaQueryOutputBucketName}}'
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
