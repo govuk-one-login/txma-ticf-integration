@@ -58,6 +58,8 @@ Globals:
     ReservedConcurrentExecutions: 10
     Runtime: nodejs18.x
     Timeout: 30
+    Architectures:
+      - 'arm64'
   Api:
     OpenApiVersion: 3.0.1
 
@@ -232,6 +234,7 @@ Resources:
 
   ProcessDataRequestFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_116:SQS has DLQ, so Lambda DLQ not required
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
@@ -264,9 +267,6 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-process-data
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt ProcessDataRequestFunctionRole.Arn
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
 
   ProcessDataRequestFunctionRole:
     Type: AWS::IAM::Role
@@ -555,6 +555,7 @@ Resources:
   InitiateAthenaQueryFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_117:VPC not required
+    #checkov:skip=CKV_AWS_116:SQS has DLQ, so Lambda DLQ not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/initiateAthenaQuery/
@@ -577,9 +578,6 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-initiate-athena-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt InitiateAthenaQueryFunctionRole.Arn
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
 
   InitiateAthenaQueryFunctionRole:
     Type: AWS::IAM::Role
@@ -1320,6 +1318,30 @@ Resources:
               Bool:
                 'aws:SecureTransport': 'true'
 
+  AthenaQueryOutputBucketTestPolicy:
+    Condition: TestRoleResources
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: '{{resolve:SSM:AthenaQueryOutputBucketArn}}'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Test role allow S3 read
+            Effect: 'Allow'
+            Action:
+              - s3:GetObject*
+              # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
+              - s3:ListBucket
+            Resource:
+              - '{{resolve:SSM:AthenaQueryOutputBucketArn}}'
+              - '{{resolve:SSM:AthenaQueryOutputBucketArn}}/*'
+            Principal:
+              AWS:
+                - !Ref TestRoleArn
+            Condition:
+              Bool:
+                'aws:SecureTransport': 'true'
+
   DynamoOperationsLambdaPolicy:
     Condition: TestRoleResources
     Type: AWS::Lambda::Permission
@@ -1417,6 +1439,14 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/IntegrationTestDataBucketArn}}'
 
+  IntegrationTestsAthenaOutputBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/IntegrationTestsAthenaOutputBucketName
+      Type: String
+      Value: '{{resolve:ssm:AthenaQueryOutputBucketName}}'
+
   IntegrationTestsNotifySecretSet:
     Condition: TestEnvironment
     Type: AWS::SecretsManager::Secret
@@ -1430,7 +1460,6 @@ Resources:
     Properties:
       Name: !Sub tests/${AWS::StackName}/ZendeskSecrets
       KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
-
   SqsOperationsLambdaPolicy:
     Condition: TestRoleResources
     Type: AWS::Lambda::Permission

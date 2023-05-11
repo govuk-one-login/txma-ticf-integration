@@ -52,7 +52,10 @@ module.exports = async () => {
     TEST_DATA_BUCKET_NAME: formatTestStackSsmParam(
       'IntegrationTestDataBucketName'
     ),
-    FEATURE_DECRYPT_DATA: formatTestStackSsmParam('FeatureDecryptData')
+    FEATURE_DECRYPT_DATA: formatTestStackSsmParam('FeatureDecryptData'),
+    ATHENA_OUTPUT_BUCKET_NAME: formatTestStackSsmParam(
+      'IntegrationTestsAthenaOutputBucketName'
+    )
   }
 
   const stackOutputMappings = {
