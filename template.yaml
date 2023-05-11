@@ -234,6 +234,7 @@ Resources:
 
   ProcessDataRequestFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_116:SQS has DLQ, so Lambda DLQ not required
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
@@ -266,9 +267,6 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-process-data
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt ProcessDataRequestFunctionRole.Arn
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
 
   ProcessDataRequestFunctionRole:
     Type: AWS::IAM::Role
@@ -557,6 +555,7 @@ Resources:
   InitiateAthenaQueryFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_117:VPC not required
+    #checkov:skip=CKV_AWS_116:SQS has DLQ, so Lambda DLQ not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/initiateAthenaQuery/
@@ -579,9 +578,6 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-initiate-athena-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt InitiateAthenaQueryFunctionRole.Arn
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
 
   InitiateAthenaQueryFunctionRole:
     Type: AWS::IAM::Role
