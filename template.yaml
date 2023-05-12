@@ -1345,22 +1345,22 @@ Resources:
               AWS: '{{resolve:ssm:QueryResultsAccountRootArn}}'
           - !If
             - TestRoleResources
-            - - Sid: Test role allow S3 read
-                Effect: 'Allow'
-                Action:
-                  - s3:GetObject*
-                  # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
-                  - s3:ListBucket
-                Resource:
-                  - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
-                  - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
-                Principal:
-                  AWS:
-                    - !Ref TestRoleArn
-                Condition:
-                  Bool:
-                    'aws:SecureTransport': 'true'
-            - - !Ref AWS::NoValue
+            - Sid: Test role allow S3 read
+              Effect: 'Allow'
+              Action:
+                - s3:GetObject*
+                # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
+                - s3:ListBucket
+              Resource:
+                - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
+                - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
+              Principal:
+                AWS:
+                  - !Ref TestRoleArn
+              Condition:
+                Bool:
+                  'aws:SecureTransport': 'true'
+            - !Ref AWS::NoValue
 
   DynamoOperationsLambdaPolicy:
     Condition: TestRoleResources
