@@ -1318,29 +1318,49 @@ Resources:
               Bool:
                 'aws:SecureTransport': 'true'
 
-  AthenaQueryOutputBucketTestPolicy:
-    Condition: TestRoleResources
+  AthenaQueryOutputBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: '{{resolve:ssm:AthenaQueryOutputBucketName}}'
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Sid: Test role allow S3 read
-            Effect: 'Allow'
-            Action:
-              - s3:GetObject*
-              # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
-              - s3:ListBucket
+          - Sid: 'AllowSSLRequestsOnly'
+            Effect: Deny
+            Action: s3:*
             Resource:
-              - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
               - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
-            Principal:
-              AWS:
-                - !Ref TestRoleArn
+            Principal: '*'
             Condition:
               Bool:
-                'aws:SecureTransport': 'true'
+                aws:SecureTransport: 'false'
+          - Sid: AllowQueryResultsAccountAccess
+            Action:
+              - s3:GetObject
+              - s3:GetObjectAcl
+              - s3:GetObjectTagging
+            Effect: Allow
+            Resource: '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
+            Principal:
+              AWS: '{{resolve:ssm:QueryResultsAccountRootArn}}'
+          - !If
+            - TestRoleResources
+            - - Sid: Test role allow S3 read
+                Effect: 'Allow'
+                Action:
+                  - s3:GetObject*
+                  # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
+                  - s3:ListBucket
+                Resource:
+                  - '{{resolve:ssm:AthenaQueryOutputBucketArn}}'
+                  - '{{resolve:ssm:AthenaQueryOutputBucketArn}}/*'
+                Principal:
+                  AWS:
+                    - !Ref TestRoleArn
+                Condition:
+                  Bool:
+                    'aws:SecureTransport': 'true'
+            - - !Ref AWS::NoValue
 
   DynamoOperationsLambdaPolicy:
     Condition: TestRoleResources
