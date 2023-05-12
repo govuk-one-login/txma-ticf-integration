@@ -14,9 +14,12 @@ export const pollNotifyApiForDownloadUrl = async (zendeskId: string) => {
   while (!url && attempts < maxAttempts) {
     attempts++
     url = await getDownloadUrlFromNotifyApi(zendeskId)
+    if (url) {
+      return url
+    }
     await pause(3000)
   }
-  return url ?? ''
+  throw new Error(`Could not get download URL after ${maxAttempts} attempts`)
 }
 
 const getDownloadUrlFromNotifyApi = async (
