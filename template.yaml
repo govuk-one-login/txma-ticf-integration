@@ -1326,6 +1326,14 @@ Resources:
       FunctionName: !GetAtt IntegrationTestsDynamoOperationsFunctionNameParameter.Value
       Principal: !Ref TestRoleArn
 
+  S3ReadFileLambdaPolicy:
+    Condition: TestRoleResources
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt IntegrationTestsReadS3FileToStringFunctionNameParameter.Value
+      Principal: !Ref TestRoleArn
+
   InitiateAthenaQueryQueuePolicy:
     Condition: TestRoleResources
     Type: AWS::SQS::QueuePolicy
@@ -1391,7 +1399,7 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/DynamoOperationsFunctionName}}'
 
-  ReadS3FileToStringFunctionNameParameter:
+  IntegrationTestsReadS3FileToStringFunctionNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
     Properties:
