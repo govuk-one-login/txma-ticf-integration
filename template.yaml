@@ -1391,6 +1391,14 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/DynamoOperationsFunctionName}}'
 
+  ReadS3FileToStringFunctionNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/ReadS3FileToStringFunctionName
+      Type: String
+      Value: '{{resolve:ssm:/tests/ReadS3FileToStringFunctionName}}'
+
   IntegrationTestsSqsOperationsFunctionNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
@@ -1436,6 +1444,7 @@ Resources:
     Properties:
       Name: !Sub tests/${AWS::StackName}/ZendeskSecrets
       KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
+
   SqsOperationsLambdaPolicy:
     Condition: TestRoleResources
     Type: AWS::Lambda::Permission
