@@ -55,6 +55,9 @@ module.exports = async () => {
     FEATURE_DECRYPT_DATA: formatTestStackSsmParam('FeatureDecryptData'),
     ATHENA_OUTPUT_BUCKET_NAME: formatTestStackSsmParam(
       'IntegrationTestsAthenaOutputBucketName'
+    ),
+    S3_READ_FILE_FUNCTION_NAME: formatTestStackSsmParam(
+      'ReadS3FileToStringFunctionName'
     )
   }
 

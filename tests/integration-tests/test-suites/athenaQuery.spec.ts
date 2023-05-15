@@ -64,7 +64,7 @@ const waitForAthenaQueryOutputFile = async (
     getEnv('ATHENA_OUTPUT_BUCKET_NAME'),
     `ticf-automated-audit-data-queries/${athenaQueryId}.csv`
   )
-  const csvRows = CSV.parse(csvData, { output: 'objects' })
+  const csvRows = CSV.parse(csvData as string, { output: 'objects' })
   return csvRows
 }
 
