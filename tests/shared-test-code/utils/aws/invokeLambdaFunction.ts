@@ -1,11 +1,9 @@
 import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda'
-import { DynamoDbOperation } from '../../types/dynamoDbOperations'
-import { SqsMessage } from '../../types/sqsMessage'
 import { getEnv } from '../helpers'
 
 export const invokeLambdaFunction = async (
   functionName: string,
-  payload: DynamoDbOperation | SqsMessage
+  payload: unknown
 ) => {
   const client = new LambdaClient({ region: getEnv('AWS_REGION') })
   const input = {
@@ -16,7 +14,7 @@ export const invokeLambdaFunction = async (
   return uint8ArrayToJson(result.Payload)
 }
 
-const jsonToUint8Array = (json: DynamoDbOperation | SqsMessage) => {
+const jsonToUint8Array = (json: unknown) => {
   const str = JSON.stringify(json, null, 0)
   const ret = new Uint8Array(str.length)
 

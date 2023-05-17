@@ -58,6 +58,8 @@ Globals:
     ReservedConcurrentExecutions: 10
     Runtime: nodejs18.x
     Timeout: 30
+    Architectures:
+      - 'arm64'
   Api:
     OpenApiVersion: 3.0.1
 
@@ -232,6 +234,7 @@ Resources:
 
   ProcessDataRequestFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
+    #checkov:skip=CKV_AWS_116:SQS has DLQ, so Lambda DLQ not required
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
@@ -264,9 +267,6 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-process-data
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt ProcessDataRequestFunctionRole.Arn
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
 
   ProcessDataRequestFunctionRole:
     Type: AWS::IAM::Role
@@ -555,6 +555,7 @@ Resources:
   InitiateAthenaQueryFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     #checkov:skip=CKV_AWS_117:VPC not required
+    #checkov:skip=CKV_AWS_116:SQS has DLQ, so Lambda DLQ not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/initiateAthenaQuery/
@@ -577,9 +578,6 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-initiate-athena-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt InitiateAthenaQueryFunctionRole.Arn
-      DeadLetterQueue:
-        Type: SQS
-        TargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
 
   InitiateAthenaQueryFunctionRole:
     Type: AWS::IAM::Role
@@ -1328,6 +1326,14 @@ Resources:
       FunctionName: !GetAtt IntegrationTestsDynamoOperationsFunctionNameParameter.Value
       Principal: !Ref TestRoleArn
 
+  S3ReadFileLambdaPolicy:
+    Condition: TestRoleResources
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt IntegrationTestsReadS3FileToStringFunctionNameParameter.Value
+      Principal: !Ref TestRoleArn
+
   InitiateAthenaQueryQueuePolicy:
     Condition: TestRoleResources
     Type: AWS::SQS::QueuePolicy
@@ -1393,6 +1399,14 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/DynamoOperationsFunctionName}}'
 
+  IntegrationTestsReadS3FileToStringFunctionNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/ReadS3FileToStringFunctionName
+      Type: String
+      Value: '{{resolve:ssm:/tests/ReadS3FileToStringFunctionName}}'
+
   IntegrationTestsSqsOperationsFunctionNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
@@ -1416,6 +1430,14 @@ Resources:
       Name: !Sub /tests/${AWS::StackName}/IntegrationTestDataBucketArn
       Type: String
       Value: '{{resolve:ssm:/tests/IntegrationTestDataBucketArn}}'
+
+  IntegrationTestsAthenaOutputBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/IntegrationTestsAthenaOutputBucketName
+      Type: String
+      Value: '{{resolve:ssm:AthenaQueryOutputBucketName}}'
 
   IntegrationTestsNotifySecretSet:
     Condition: TestEnvironment
