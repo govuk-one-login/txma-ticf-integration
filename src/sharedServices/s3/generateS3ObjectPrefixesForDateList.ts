@@ -38,9 +38,9 @@ const timeRangeToObjectPrefixes = (timeRange: Date[]): string[] => {
       const year = date.getUTCFullYear()
       const month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
       const day = date.getUTCDate().toString().padStart(2, '0')
-      const hours = date.getUTCHours().toString().padStart(2, '0')
+      // const hours = date.getUTCHours().toString().padStart(2, '0')
 
-      return `firehose/${year}/${month}/${day}/${hours}`
+      return `firehose/${year}/${month}/${day}`
     })
   )
 }
