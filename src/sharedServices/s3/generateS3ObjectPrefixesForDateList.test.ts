@@ -29,9 +29,7 @@ describe('object prefixes', () => {
       // 'firehose/2022/08/21/22',
       // 'firehose/2022/08/21/23',
       // 'firehose/2022/08/22/00'
-      'firehose/2022/08/20',
-      'firehose/2022/08/21',
-      'firehose/2022/08/22'
+      'firehose/2022/08/21'
     ]
 
     const result = generateS3ObjectPrefixesForDateList(['2022-08-21'])
@@ -90,10 +88,8 @@ describe('object prefixes', () => {
       // 'firehose/2022/08/22/22',
       // 'firehose/2022/08/22/23',
       // 'firehose/2022/08/23/00'
-      'firehose/2022/08/20',
       'firehose/2022/08/21',
-      'firehose/2022/08/22',
-      'firehose/2022/08/23'
+      'firehose/2022/08/22'
     ]
 
     const result = generateS3ObjectPrefixesForDateList([
@@ -157,12 +153,8 @@ describe('object prefixes', () => {
       // 'firehose/2022/09/01/22',
       // 'firehose/2022/09/01/23',
       // 'firehose/2022/09/02/00'
-      'firehose/2022/08/20',
       'firehose/2022/08/21',
-      'firehose/2022/08/22',
-      'firehose/2022/08/31',
-      'firehose/2022/09/01',
-      'firehose/2022/09/02'
+      'firehose/2022/09/01'
     ]
 
     const result = generateS3ObjectPrefixesForDateList([
@@ -200,9 +192,7 @@ describe('object prefixes', () => {
       // 'firehose/2022/11/21/22',
       // 'firehose/2022/11/21/23',
       // 'firehose/2022/11/22/00'
-      'firehose/2022/11/20',
-      'firehose/2022/11/21',
-      'firehose/2022/11/22'
+      'firehose/2022/11/21'
     ]
 
     const result = generateS3ObjectPrefixesForDateList(['2022-11-21'])
