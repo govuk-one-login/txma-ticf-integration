@@ -54,3 +54,5 @@ const closeZendeskTicket = async (ticketId: string, message: string) => {
     )
   }
 }
+
+logger.info('Hi')
