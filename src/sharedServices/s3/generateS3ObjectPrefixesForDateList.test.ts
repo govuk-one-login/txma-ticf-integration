@@ -35,6 +35,12 @@ describe('object prefixes', () => {
     expect(result).toEqual(expectedResult)
   })
 
+  test('invalid date', () => {
+    expect(() => {
+      generateS3ObjectPrefixesForDateList(['2022343-130-32'])
+    }).toThrow("String '2022343-130-32' is not a valid date")
+  })
+
   test('invalid date string', () => {
     expect(() => {
       generateS3ObjectPrefixesForDateList(['invalid'])
