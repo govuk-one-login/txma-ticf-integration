@@ -193,7 +193,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref ZendeskSecretsPolicy
         - !Ref InitiateDataRequestFunctionPolicy
 
@@ -299,7 +299,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref ZendeskSecretsPolicy
         - !Ref ProcessDataRequestFunctionPolicy
 
@@ -426,7 +426,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref ZendeskSecretsPolicy
         - !Ref DataReadyForQueryFunctionPolicy
 
@@ -525,7 +525,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref DecryptAndCopyFunctionPolicy
 
   DecryptAndCopyFunctionPolicy:
@@ -619,7 +619,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref InitiateAthenaQueryFunctionPolicy
 
   InitiateAthenaQueryFunctionPolicy:
@@ -769,7 +769,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref SendQueryResultsNotificationFunctionPolicy
 
   SendQueryResultsNotificationFunctionPolicy:
@@ -897,7 +897,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref CloseZendeskTicketFunctionPolicy
 
   CloseZendeskTicketFunctionPolicy:
