@@ -24,6 +24,7 @@ export const handler = async (
       `Retrieved data for zendeskID: ${zendeskId}`
     )
   } else {
+    logger.info('Automated query detected, running athena query')
     await initiateQuery(zendeskId)
   }
 }
