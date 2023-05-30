@@ -33,6 +33,9 @@ const mockCreateQuerySql = createQuerySql as jest.Mock
 const mockUpdateQueryByZendeskId = updateQueryByZendeskId as jest.Mock
 const mockStartQueryExecution = startQueryExecution as jest.Mock
 
+const testAthenaQueryParameters = ['test-query-parameter']
+const testAthenaQueryExecutionId = 'test-query-execution-id'
+
 describe('initiateQuery', () => {
   beforeEach(() => {
     jest.resetAllMocks()
@@ -45,11 +48,11 @@ describe('initiateQuery', () => {
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
-      queryParameters: ['123']
+      queryParameters: testAthenaQueryParameters
     })
     mockStartQueryExecution.mockReturnValue({
       queryExecuted: true,
-      queryExecutionId: '123'
+      queryExecutionId: testAthenaQueryExecutionId
     })
 
     await initiateQuery(ZENDESK_TICKET_ID)
@@ -60,12 +63,12 @@ describe('initiateQuery', () => {
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
       sqlGenerated: true,
       sql: 'test sql string',
-      queryParameters: ['123']
+      queryParameters: testAthenaQueryParameters
     })
     expect(mockUpdateQueryByZendeskId).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
       'athenaQueryId',
-      '123'
+      testAthenaQueryExecutionId
     )
   })
 
@@ -73,11 +76,11 @@ describe('initiateQuery', () => {
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
-      queryParameters: ['234']
+      queryParameters: testAthenaQueryParameters
     })
     mockStartQueryExecution.mockReturnValue({
       queryExecuted: true,
-      queryExecutionId: '123'
+      queryExecutionId: testAthenaQueryExecutionId
     })
     mockUpdateQueryByZendeskId.mockRejectedValue(new Error('test error'))
 
@@ -91,12 +94,12 @@ describe('initiateQuery', () => {
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
       sqlGenerated: true,
       sql: 'test sql string',
-      queryParameters: ['234']
+      queryParameters: testAthenaQueryParameters
     })
     expect(mockUpdateQueryByZendeskId).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
       'athenaQueryId',
-      '123'
+      testAthenaQueryExecutionId
     )
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
@@ -156,7 +159,7 @@ describe('initiateQuery', () => {
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
-      queryParameters: ['234']
+      queryParameters: testAthenaQueryParameters
     })
     mockStartQueryExecution.mockResolvedValue({
       queryExecuted: false,
@@ -173,7 +176,7 @@ describe('initiateQuery', () => {
     expect(mockStartQueryExecution).toHaveBeenCalledWith({
       sqlGenerated: true,
       sql: 'test sql string',
-      queryParameters: ['234']
+      queryParameters: testAthenaQueryParameters
     })
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
