@@ -1,39 +1,35 @@
 import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
-import { confirmAthenaTable } from './confirmAthenaTable'
 import { createQuerySql } from './createQuerySql'
 import { startQueryExecution } from './startQueryExecution'
 import { updateQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBUpdate'
 import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutionResult'
-import { ConfirmAthenaTableResult } from '../../types/athena/confirmAthenaTableResult'
 import { logger } from '../../sharedServices/logger'
+import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 
 export const initiateQuery = async (zendeskId: string) => {
-  const athenaTable = await confirmAthenaTable()
-
-  await checkAthenaTableExists(athenaTable, zendeskId)
-
-  const requestData = await getDatabaseEntryByZendeskId(zendeskId)
-
-  logger.info('Retrieved request details from database')
+  const requestData = await getRequestData(zendeskId)
 
   const querySql = createQuerySql(requestData.requestInfo)
-
   await confirmQuerySqlGeneration(querySql, zendeskId)
 
   const queryExecutionDetails = await startQueryExecution(querySql)
-
   await confirmQueryExecution(queryExecutionDetails, zendeskId)
 }
 
-const checkAthenaTableExists = async (
-  athenaTable: ConfirmAthenaTableResult,
+const getRequestData = async (
   zendeskId: string
-): Promise<void> => {
-  if (!athenaTable.tableAvailable) {
-    await updateZendeskTicketById(zendeskId, athenaTable.message, 'closed')
-    throw new Error(athenaTable.message)
+): Promise<DataRequestDatabaseEntry> => {
+  try {
+    const requestData = await getDatabaseEntryByZendeskId(zendeskId)
+    logger.info('Retrieved request details from database')
+
+    return requestData
+  } catch {
+    const errorMessage = `Error retrieving request details from database for zendesk ticket: ${zendeskId}`
+    await updateZendeskTicketById(zendeskId, errorMessage, 'closed')
+    throw new Error(errorMessage)
   }
 }
 
@@ -54,10 +50,10 @@ const confirmQueryExecution = async (
   if (!queryExecutionDetails.queryExecuted && queryExecutionDetails.error) {
     await updateZendeskTicketById(
       zendeskId,
-      queryExecutionDetails.error,
+      `Athena query execution failed for zendesk ticket: ${zendeskId}`,
       'closed'
     )
-    throw new Error(queryExecutionDetails.error)
+    throw queryExecutionDetails.error
   }
   logger.info('Athena query execution initiated', {
     queryExecutionId: queryExecutionDetails.queryExecutionId
@@ -80,12 +76,9 @@ const updateDb = async (
         queryExecutionId: queryExecutionDetails.queryExecutionId
       })
     } catch (error) {
-      await updateZendeskTicketById(
-        zendeskId,
-        `Error updating db for zendesk ticket: ${zendeskId}`,
-        'closed'
-      )
-      throw new Error(`Error updating db for zendesk ticket: ${zendeskId}`)
+      const errorMessage = `Error updating database for zendesk ticket: ${zendeskId}`
+      await updateZendeskTicketById(zendeskId, errorMessage, 'closed')
+      throw new Error(errorMessage)
     }
   }
 }

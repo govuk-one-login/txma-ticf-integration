@@ -24,6 +24,10 @@ Parameters:
     Type: String
     Description: The ARN of the role that will used for integration tests
     Default: none
+  VpcStackName:
+    Type: String
+    Description: The name of the stack containing the VPC
+    Default: none
 
 Conditions:
   ApiCustomDomain: !Not [!Equals [!Ref Environment, dev]]
@@ -48,6 +52,8 @@ Conditions:
 
 Globals:
   Function:
+    Architectures:
+      - 'arm64'
     CodeSigningConfigArn:
       !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
     Environment:
@@ -58,8 +64,9 @@ Globals:
     ReservedConcurrentExecutions: 10
     Runtime: nodejs18.x
     Timeout: 30
-    Architectures:
-      - 'arm64'
+    VpcConfig:
+      SecurityGroupIds:
+        - Fn::ImportValue: !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
   Api:
     OpenApiVersion: 3.0.1
 
@@ -130,8 +137,6 @@ Resources:
 
   InitiateDataRequestFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_116:Lambda is behind an API gateway, so repeated processing of the same message isn't a problem
-    #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/initiateDataRequest/
@@ -164,6 +169,11 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-initiate-data-request
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt InitiateDataRequestFunctionRole.Arn
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
 
   InitiateDataRequestFunctionRole:
     Type: AWS::IAM::Role
@@ -183,7 +193,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref ZendeskSecretsPolicy
         - !Ref InitiateDataRequestFunctionPolicy
 
@@ -234,8 +244,6 @@ Resources:
 
   ProcessDataRequestFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_116:SQS has DLQ, so Lambda DLQ not required
-    #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/processDataRequest/
@@ -267,6 +275,11 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-process-data
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt ProcessDataRequestFunctionRole.Arn
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
 
   ProcessDataRequestFunctionRole:
     Type: AWS::IAM::Role
@@ -286,7 +299,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref ZendeskSecretsPolicy
         - !Ref ProcessDataRequestFunctionPolicy
 
@@ -372,9 +385,7 @@ Resources:
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   DataReadyForQueryFunction:
-    #checkov:skip=CKV_AWS_116:Not triggered by SQS
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/dataReadyForQuery/
@@ -391,6 +402,11 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-data-ready-for-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt DataReadyForQueryFunctionRole.Arn
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
 
   DataReadyForQueryFunctionRole:
     Type: AWS::IAM::Role
@@ -410,7 +426,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref ZendeskSecretsPolicy
         - !Ref DataReadyForQueryFunctionPolicy
 
@@ -473,8 +489,6 @@ Resources:
 
   DecryptAndCopyFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_116:Not triggered by SQS
-    #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/decryptAndCopy/
@@ -487,6 +501,11 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-decrypt-and-copy
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt DecryptAndCopyFunctionRole.Arn
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
 
   DecryptAndCopyFunctionRole:
     Type: AWS::IAM::Role
@@ -506,7 +525,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref DecryptAndCopyFunctionPolicy
 
   DecryptAndCopyFunctionPolicy:
@@ -554,8 +573,6 @@ Resources:
 
   InitiateAthenaQueryFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_117:VPC not required
-    #checkov:skip=CKV_AWS_116:SQS has DLQ, so Lambda DLQ not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/initiateAthenaQuery/
@@ -578,6 +595,11 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-initiate-athena-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt InitiateAthenaQueryFunctionRole.Arn
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
 
   InitiateAthenaQueryFunctionRole:
     Type: AWS::IAM::Role
@@ -597,7 +619,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref InitiateAthenaQueryFunctionPolicy
 
   InitiateAthenaQueryFunctionPolicy:
@@ -709,8 +731,6 @@ Resources:
 
   SendQueryResultsNotificationFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_116:Not triggered by SQS
-    #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/sendQueryResultsNotification/
@@ -725,6 +745,11 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt SendQueryResultsNotificationFunctionRole.Arn
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
 
   SendQueryResultsNotificationFunctionRole:
     Type: AWS::IAM::Role
@@ -744,7 +769,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref SendQueryResultsNotificationFunctionPolicy
 
   SendQueryResultsNotificationFunctionPolicy:
@@ -831,8 +856,6 @@ Resources:
 
   CloseZendeskTicketFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    #checkov:skip=CKV_AWS_116:The SQS queue itself will be responsible for its own DLQ
-    #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/closeZendeskTicket
@@ -849,6 +872,11 @@ Resources:
           Properties:
             Queue: !Sub 'arn:aws:sqs:${AWS::Region}:{{resolve:ssm:QueryResultsAccountNumber}}:txma-qr-infra-${Environment}-close-zendesk-ticket-queue'
             BatchSize: 1
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
 
   CloseZendeskTicketFunctionRole:
     Type: AWS::IAM::Role
@@ -869,7 +897,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - !Ref CloseZendeskTicketFunctionPolicy
 
   CloseZendeskTicketFunctionPolicy:

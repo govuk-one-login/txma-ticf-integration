@@ -13,7 +13,7 @@ describe('start Query execution', () => {
     athenaMock.reset()
   })
 
-  test('returns a QueryExecutionId if a query is successfully initiated', async () => {
+  it('returns a QueryExecutionId if a query is successfully initiated', async () => {
     athenaMock.on(StartQueryExecutionCommand).resolves({
       QueryExecutionId: '123'
     })
@@ -37,7 +37,7 @@ describe('start Query execution', () => {
     })
   })
 
-  test('returns an error message if a query is not initiated', async () => {
+  it('returns an error if a query execution id is not returned', async () => {
     athenaMock.on(StartQueryExecutionCommand).resolves({})
 
     const result = await startQueryExecution({
@@ -47,7 +47,23 @@ describe('start Query execution', () => {
     })
     expect(result).toEqual({
       queryExecuted: false,
-      error: 'Athena query execution initiation failed'
+      error: new Error('Athena query execution id not found in response')
+    })
+  })
+
+  it('returns an error if the StartQueryExecutionCommand fails', async () => {
+    athenaMock
+      .on(StartQueryExecutionCommand)
+      .rejects('Athena query execution initiation failed')
+
+    const result = await startQueryExecution({
+      sqlGenerated: true,
+      queryParameters: ['test_parameter'],
+      sql: 'test sql'
+    })
+    expect(result).toEqual({
+      queryExecuted: false,
+      error: new Error('Athena query execution initiation failed')
     })
   })
 })

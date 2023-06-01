@@ -11,9 +11,6 @@ import { logger } from '../../sharedServices/logger'
 import { initiateQuery } from './initiateQuery'
 import { when } from 'jest-when'
 
-jest.mock('./confirmAthenaTable', () => ({
-  confirmAthenaTable: jest.fn()
-}))
 jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
