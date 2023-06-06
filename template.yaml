@@ -160,6 +160,7 @@ Resources:
             Method: POST
             RestApiId: !Ref ZendeskWebhookApi
       FunctionName: !Sub ${AWS::StackName}-initiate-data-request
+      MemorySize: 512
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
         - Statement:
@@ -250,6 +251,7 @@ Resources:
             Queue: !GetAtt InitiateDataRequestQueue.Arn
             BatchSize: 1
       FunctionName: !Sub ${AWS::StackName}-process-data
+      MemorySize: 1024
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
         - Statement:
@@ -343,6 +345,7 @@ Resources:
     #checkov:skip=CKV_AWS_117:VPC not required
     Type: AWS::Serverless::Function
     Properties:
+      MemorySize: 512
       CodeUri: dist/dataReadyForQuery/
       Handler: handler.handler
       Environment:
@@ -637,6 +640,7 @@ Resources:
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
           AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
+      MemorySize: 256
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Policies:
         - Statement:
@@ -728,6 +732,7 @@ Resources:
         Variables:
           ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
       FunctionName: !Sub ${AWS::StackName}-close-zendesk-ticket
+      MemorySize: 512
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Events:
         CloseZendeskTicketEvent:
