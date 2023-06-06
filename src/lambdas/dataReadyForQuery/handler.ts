@@ -23,6 +23,11 @@ export const handler = async (
   const eventStatus = event.detail.serviceEventDetails.status
   const jobId = event.detail.serviceEventDetails.jobId
 
+  logger.info('Received batch job status change event', {
+    jobId,
+    eventStatus
+  })
+
   const statusIsOfInterest = ['Complete', 'Failed'].includes(eventStatus)
   if (!statusIsOfInterest) {
     return

@@ -7,5 +7,6 @@ capabilities = "CAPABILITY_NAMED_IAM"
 parameter_overrides=[
     "Environment=dev",
     "CodeSigningConfigArn=none",
-    "PermissionsBoundary=none"
+    "PermissionsBoundary=none",
+    "VpcStackName=vpc"
 ]

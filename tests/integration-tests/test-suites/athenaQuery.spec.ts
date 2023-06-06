@@ -9,8 +9,6 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
-import { downloadResultsFileAndParseData } from '../../shared-test-code/utils/queryResults/downloadAndParseResults'
-import { pollNotifyMockForDownloadUrl } from '../../shared-test-code/utils/queryResults/getDownloadUrlFromNotifyMock'
 import {
   generateRandomNumberString,
   getEnv
@@ -18,6 +16,8 @@ import {
 import { testData } from '../constants/testData'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
+import * as CSV from 'csv-string'
+import { s3WaitForFileContents } from '../../shared-test-code/utils/aws/s3WaitForFileContents'
 
 const ticketWithDataPathAndPiiTypes = generateZendeskTicketData({
   identifier: 'event_id',
@@ -52,6 +52,21 @@ const ticketWithMultipleDates = generateZendeskTicketData({
 })
 
 const maxRandomTicketId = 1000000000000
+
+const waitForAthenaQueryOutputFile = async (
+  athenaQueryId: string
+): Promise<
+  {
+    [k: string]: string
+  }[]
+> => {
+  const csvData = await s3WaitForFileContents(
+    getEnv('ATHENA_OUTPUT_BUCKET_NAME'),
+    `ticf-automated-audit-data-queries/${athenaQueryId}.csv`
+  )
+  const csvRows = CSV.parse(csvData as string, { output: 'objects' })
+  return csvRows
+}
 
 describe('Athena Query SQL generation and execution', () => {
   describe('Query SQL generation and execution successful', () => {
@@ -108,11 +123,10 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         'athenaQueryId'
       )
-      expect(value?.athenaQueryId.S).toBeDefined()
+      const athenaQueryId = value?.athenaQueryId.S
+      expect(athenaQueryId).toBeDefined()
 
-      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
-      expect(downloadUrl.startsWith('https')).toBe(true)
-      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
+      const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
@@ -150,11 +164,10 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         'athenaQueryId'
       )
-      expect(value?.athenaQueryId.S).toBeDefined()
+      const athenaQueryId = value?.athenaQueryId.S
+      expect(athenaQueryId).toBeDefined()
 
-      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
-      expect(downloadUrl.startsWith('https')).toBe(true)
-      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
+      const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].name).toEqual(testData.athenaTestName)
@@ -190,11 +203,10 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         'athenaQueryId'
       )
-      expect(value?.athenaQueryId.S).toBeDefined()
+      const athenaQueryId = value?.athenaQueryId.S
+      expect(athenaQueryId).toBeDefined()
 
-      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
-      expect(downloadUrl.startsWith('https')).toBe(true)
-      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
+      const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
       expect(csvRows.length).toEqual(1)
       expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
@@ -234,11 +246,11 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         'athenaQueryId'
       )
-      expect(value?.athenaQueryId.S).toBeDefined()
 
-      const downloadUrl = await pollNotifyMockForDownloadUrl(randomTicketId)
-      expect(downloadUrl.startsWith('https')).toBe(true)
-      const csvRows = await downloadResultsFileAndParseData(downloadUrl)
+      const athenaQueryId = value?.athenaQueryId.S
+      expect(athenaQueryId).toBeDefined()
+
+      const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
       expect(csvRows.length).toEqual(2)
       const event1Data = csvRows.find(
