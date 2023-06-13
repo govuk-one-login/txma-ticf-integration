@@ -40,11 +40,11 @@
     "notifications-node-client": "5.2.3"
   },
   "devDependencies": {
-    "@aws-sdk/client-cloudformation": "3.163.0",
-    "@aws-sdk/client-cloudwatch-logs": "3.163.0",
-    "@aws-sdk/client-lambda": "3.163.0",
-    "@aws-sdk/client-ssm": "3.163.0",
-    "@types/aws-lambda": "8.10.111",
+    "@aws-sdk/client-cloudformation": "3.350.0",
+    "@aws-sdk/client-cloudwatch-logs": "3.350.0",
+    "@aws-sdk/client-lambda": "3.350.0",
+    "@aws-sdk/client-ssm": "3.350.0",
+    "@types/aws-lambda": "8.10.117",
     "@types/jest": "29.5.1",
     "@types/jest-when": "3.5.2",
     "@types/node": "18.16.3",
