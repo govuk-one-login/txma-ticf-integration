@@ -43,6 +43,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-sns", "npm:3.350.0"],\
             ["@aws-sdk/client-sqs", "npm:3.350.0"],\
             ["@aws-sdk/client-ssm", "npm:3.350.0"],\
+            ["@aws-sdk/util-endpoints", "npm:3.347.0"],\
             ["@types/aws-lambda", "npm:8.10.117"],\
             ["@types/jest", "npm:29.5.1"],\
             ["@types/jest-when", "npm:3.5.2"],\
@@ -5151,6 +5152,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-sns", "npm:3.350.0"],\
             ["@aws-sdk/client-sqs", "npm:3.350.0"],\
             ["@aws-sdk/client-ssm", "npm:3.350.0"],\
+            ["@aws-sdk/util-endpoints", "npm:3.347.0"],\
             ["@types/aws-lambda", "npm:8.10.117"],\
             ["@types/jest", "npm:29.5.1"],\
             ["@types/jest-when", "npm:3.5.2"],\
