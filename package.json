@@ -64,7 +64,7 @@
     "jest-extended": "3.2.4",
     "jest-junit": "14.0.1",
     "jest-when": "3.5.2",
-    "lint-staged": "13.1.2",
+    "lint-staged": "13.2.2",
     "node-html-parser": "6.1.5",
     "prettier": "2.8.8",
     "ts-jest": "29.0.5",
