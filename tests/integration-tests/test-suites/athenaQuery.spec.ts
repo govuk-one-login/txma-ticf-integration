@@ -123,7 +123,7 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         'athenaQueryId'
       )
-      const athenaQueryId = value?.athenaQueryId.S
+      const athenaQueryId = value?.athenaQueryId
       expect(athenaQueryId).toBeDefined()
 
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
@@ -164,7 +164,7 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         'athenaQueryId'
       )
-      const athenaQueryId = value?.athenaQueryId.S
+      const athenaQueryId = value?.athenaQueryId
       expect(athenaQueryId).toBeDefined()
 
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
@@ -203,7 +203,7 @@ describe('Athena Query SQL generation and execution', () => {
         randomTicketId,
         'athenaQueryId'
       )
-      const athenaQueryId = value?.athenaQueryId.S
+      const athenaQueryId = value?.athenaQueryId
       expect(athenaQueryId).toBeDefined()
 
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
@@ -247,7 +247,7 @@ describe('Athena Query SQL generation and execution', () => {
         'athenaQueryId'
       )
 
-      const athenaQueryId = value?.athenaQueryId.S
+      const athenaQueryId = value?.athenaQueryId
       expect(athenaQueryId).toBeDefined()
 
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)

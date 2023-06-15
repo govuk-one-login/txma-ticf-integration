@@ -7,14 +7,14 @@ import { CustomField, ZendeskRequestData } from '../../types/zendeskRequestData'
 export const getValueFromDynamoDB = async (
   tableName: string,
   zendeskId: string,
-  attributeName?: string
+  desiredAttributeName?: string
 ) => {
   return await invokeLambdaFunction(getEnv('DYNAMO_OPERATIONS_FUNCTION_NAME'), {
     operation: 'GET',
     params: {
       tableName,
-      zendeskId,
-      ...(attributeName && { attributeName })
+      key: { zendeskId },
+      ...(desiredAttributeName && { desiredAttributeName })
     }
   })
 }
@@ -28,7 +28,6 @@ export const populateDynamoDBWithTestItemDetails = async (
     operation: 'PUT',
     params: {
       tableName,
-      zendeskId,
       itemToPut: generateDynamoTableEntry(
         zendeskId,
         zendeskTicketData.request.custom_fields
@@ -43,7 +42,7 @@ export const deleteDynamoDBTestItem = async (
 ) => {
   return await invokeLambdaFunction(getEnv('DYNAMO_OPERATIONS_FUNCTION_NAME'), {
     operation: 'DELETE',
-    params: { tableName, zendeskId }
+    params: { tableName, key: { zendeskId } }
   })
 }
 
@@ -52,11 +51,9 @@ const getFieldListValues = (customFields: CustomField[], id: number) => {
   if (value == null) {
     return []
   } else if (typeof value === 'string') {
-    return value.split(' ').map((item: string) => ({ S: item }))
+    return value.split(' ').map((item: string) => item)
   } else if (Array.isArray(value)) {
-    return value.map((item: string) => ({
-      S: item
-    }))
+    return value.map((item: string) => item)
   } else {
     throw Error('Data request parameter not of valid type')
   }
@@ -78,72 +75,55 @@ const generateDynamoTableEntry = (
   zendeskId: string,
   customFields: CustomField[]
 ) => ({
-  ttl: { N: calculateDatabaseExpiryTime().toString() },
-  zendeskId: { S: `${zendeskId}` },
+  ttl: calculateDatabaseExpiryTime().toString(),
+  zendeskId,
   requestInfo: {
-    M: {
-      zendeskId: { S: `${zendeskId}` },
-      dates: {
-        L: getFieldListValues(customFields, zendeskConstants.fieldIds.datesList)
-      },
-      identifierType: {
-        S: `${getFieldValue(
-          customFields,
-          zendeskConstants.fieldIds.identifier
-        )}`
-      },
-      recipientEmail: {
-        S: `${getFieldValue(
-          customFields,
-          zendeskConstants.fieldIds.recipientEmail
-        )}`
-      },
-      recipientName: {
-        S: `${getFieldValue(
-          customFields,
-          zendeskConstants.fieldIds.recipientName
-        )}`
-      },
-      requesterEmail: {
-        S: `${getEnv('ZENDESK_END_USER_EMAIL')}`
-      },
-      requesterName: {
-        S: `${getEnv('ZENDESK_END_USER_NAME')}`
-      },
-      dataPaths: {
-        L: getFieldListValues(
-          customFields,
-          zendeskConstants.fieldIds.customDataPath
-        )
-      },
-      eventIds: {
-        L: getFieldListValues(customFields, zendeskConstants.fieldIds.eventIds)
-      },
-      sessionIds: {
-        L: getFieldListValues(
-          customFields,
-          zendeskConstants.fieldIds.sessionIds
-        )
-      },
-      journeyIds: {
-        L: getFieldListValues(
-          customFields,
-          zendeskConstants.fieldIds.journeyIds
-        )
-      },
-      userIds: {
-        L: getFieldListValues(customFields, zendeskConstants.fieldIds.userIds)
-      },
-      piiTypes: {
-        L: getFieldListValues(
-          customFields,
-          zendeskConstants.fieldIds.piiTypes
-        ).map((item) => ({
-          // Need to cater for the fact that the Zendesk ticket
-          // will have a prefix before the PII type that we store in the database
-          S: item.S.replace(zendeskConstants.piiTypesPrefix, '')
-        }))
-      }
-    }
+    zendeskId,
+    dates: getFieldListValues(
+      customFields,
+      zendeskConstants.fieldIds.datesList
+    ),
+    identifierType: `${getFieldValue(
+      customFields,
+      zendeskConstants.fieldIds.identifier
+    )}`,
+    recipientEmail: `${getFieldValue(
+      customFields,
+      zendeskConstants.fieldIds.recipientEmail
+    )}`,
+    recipientName: `${getFieldValue(
+      customFields,
+      zendeskConstants.fieldIds.recipientName
+    )}`,
+    requesterEmail: `${getEnv('ZENDESK_END_USER_EMAIL')}`,
+    requesterName: `${getEnv('ZENDESK_END_USER_NAME')}`,
+    dataPaths: getFieldListValues(
+      customFields,
+      zendeskConstants.fieldIds.customDataPath
+    ),
+    eventIds: getFieldListValues(
+      customFields,
+      zendeskConstants.fieldIds.eventIds
+    ),
+    sessionIds: getFieldListValues(
+      customFields,
+      zendeskConstants.fieldIds.sessionIds
+    ),
+    journeyIds: getFieldListValues(
+      customFields,
+      zendeskConstants.fieldIds.journeyIds
+    ),
+    userIds: getFieldListValues(
+      customFields,
+      zendeskConstants.fieldIds.userIds
+    ),
+    piiTypes: getFieldListValues(
+      customFields,
+      zendeskConstants.fieldIds.piiTypes
+    ).map((item) =>
+      // Need to cater for the fact that the Zendesk ticket
+      // will have a prefix before the PII type that we store in the database
+      item.replace(zendeskConstants.piiTypesPrefix, '')
+    )
   }
 })
