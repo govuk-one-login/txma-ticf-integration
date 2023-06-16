@@ -499,8 +499,8 @@ Resources:
       MemorySize: 1536
       Environment:
         Variables:
-          GENERATOR_KEY_ID: '{{resolve:ssm:EncryptionGeneratorKmsKeyArn}}'
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
+          GENERATOR_KEY_ID: '{{resolve:ssm:/audit/S3EncryptionGeneratorKmsKeyArn}}'
       FunctionName: !Sub ${AWS::StackName}-decrypt-and-copy
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt DecryptAndCopyFunctionRole.Arn
@@ -565,7 +565,7 @@ Resources:
               - kms:Decrypt
               - kms:GenerateDataKey*
               - kms:ReEncrypt*
-            Resource: '{{resolve:ssm:EncryptionGeneratorKmsKeyArn}}'
+            Resource: '{{resolve:ssm:/audit/S3EncryptionGeneratorKmsKeyArn}}'
 
   DecryptAndCopyLogs:
     Type: AWS::Logs::LogGroup
