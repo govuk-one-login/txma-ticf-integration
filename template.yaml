@@ -109,7 +109,7 @@ Resources:
               tags:
                 - Unauthenticated
               responses:
-                302:
+                '302':
                   description: 'security.txt redirect'
                   headers:
                     Location:
@@ -131,7 +131,7 @@ Resources:
               tags:
                 - Unauthenticated
               responses:
-                302:
+                '302':
                   description: 'security.txt redirect'
                   headers:
                     Location:
@@ -153,7 +153,7 @@ Resources:
               tags:
                 - Unauthenticated
               responses:
-                302:
+                '302':
                   description: 'thanks.txt redirect'
                   headers:
                     Location:
@@ -175,7 +175,7 @@ Resources:
               tags:
                 - Unauthenticated
               responses:
-                302:
+                '302':
                   description: 'thanks.txt redirect'
                   headers:
                     Location:
