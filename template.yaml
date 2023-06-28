@@ -101,6 +101,95 @@ Resources:
       Name: !Sub ${AWS::StackName}-zendesk-webhook-api
       TracingEnabled: true
       StageName: !Ref Environment
+      DefinitionBody:
+        paths:
+          /security.txt:
+            get:
+              summary: 'security.txt redirect'
+              tags:
+                - Unauthenticated
+              responses:
+                302:
+                  description: 'security.txt redirect'
+                  headers:
+                    Location:
+                      type: string
+                  content: {}
+              x-amazon-apigateway-integration:
+                type: mock
+                responses:
+                  default:
+                    statusCode: '302'
+                    responseParameters:
+                      method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/security.txt'"
+                requestTemplates:
+                  application/json: '{"statusCode": 200}'
+
+          /.well-known/security.txt:
+            get:
+              summary: 'security.txt redirect'
+              tags:
+                - Unauthenticated
+              responses:
+                302:
+                  description: 'security.txt redirect'
+                  headers:
+                    Location:
+                      type: string
+                  content: {}
+              x-amazon-apigateway-integration:
+                type: mock
+                responses:
+                  default:
+                    statusCode: '302'
+                    responseParameters:
+                      method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/security.txt'"
+                requestTemplates:
+                  application/json: '{"statusCode": 200}'
+
+          /thanks.txt:
+            get:
+              summary: 'thanks.txt redirect'
+              tags:
+                - Unauthenticated
+              responses:
+                302:
+                  description: 'thanks.txt redirect'
+                  headers:
+                    Location:
+                      type: string
+                  content: {}
+              x-amazon-apigateway-integration:
+                type: mock
+                responses:
+                  default:
+                    statusCode: '302'
+                    responseParameters:
+                      method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/thanks.txt'"
+                requestTemplates:
+                  application/json: '{"statusCode": 200}'
+
+          /.well-known/thanks.txt:
+            get:
+              summary: 'thanks.txt redirect'
+              tags:
+                - Unauthenticated
+              responses:
+                302:
+                  description: 'thanks.txt redirect'
+                  headers:
+                    Location:
+                      type: string
+                  content: {}
+              x-amazon-apigateway-integration:
+                type: mock
+                responses:
+                  default:
+                    statusCode: '302'
+                    responseParameters:
+                      method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/thanks.txt'"
+                requestTemplates:
+                  application/json: '{"statusCode": 200}'
 
   ZendeskWebhookApiBasePathMapping:
     Condition: ApiCustomDomain
