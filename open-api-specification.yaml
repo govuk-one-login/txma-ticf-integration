@@ -96,4 +96,3 @@ paths:
             responseTemplates:
               application/json: |
                 {}
-components: {}
