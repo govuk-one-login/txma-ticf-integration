@@ -1,0 +1,98 @@
+openapi: '3.0.1'
+info:
+  version: '1.0.0'
+  title: 'Zendesk Webhook API'
+paths:
+  /security.txt:
+    get:
+      summary: 'security.txt redirect'
+      responses:
+        302:
+          description: 'security.txt redirect'
+          headers:
+            Location:
+              type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        responses:
+          default:
+            statusCode: '302'
+            responseParameters:
+              method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/security.txt'"
+        requestTemplates:
+          application/json: '{"statusCode": 302}'
+
+  /.well-known/security.txt:
+    get:
+      summary: 'security.txt redirect'
+      responses:
+        302:
+          description: 'security.txt redirect'
+          headers:
+            Location:
+              type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        responses:
+          default:
+            statusCode: '302'
+            responseParameters:
+              method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/security.txt'"
+        requestTemplates:
+          application/json: '{"statusCode": 302}'
+
+  /thanks.txt:
+    get:
+      summary: 'thanks.txt redirect'
+      responses:
+        302:
+          description: 'thanks.txt redirect'
+          headers:
+            Location:
+              type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        responses:
+          default:
+            statusCode: '302'
+            responseParameters:
+              method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/thanks.txt'"
+        requestTemplates:
+          application/json: '{"statusCode": 302}'
+
+  /.well-known/thanks.txt:
+    get:
+      summary: 'thanks.txt redirect'
+      responses:
+        302:
+          description: 'thanks.txt redirect'
+          headers:
+            Location:
+              type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        responses:
+          default:
+            statusCode: '302'
+            responseParameters:
+              method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/thanks.txt'"
+        requestTemplates:
+          application/json: '{"statusCode": 302}'
+
+  /zendesk-webhook:
+    post:
+      x-amazon-apigateway-integration:
+        type: 'aws_proxy'
+        httpMethod: 'POST'
+        uri:
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${InitiateDataRequestFunction.Arn}/invocations'
+        responses:
+          default:
+            statusCode: '200'
+            responseTemplates:
+              application/json: |
+                {}

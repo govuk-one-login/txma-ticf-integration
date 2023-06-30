@@ -101,6 +101,11 @@ Resources:
       Name: !Sub ${AWS::StackName}-zendesk-webhook-api
       TracingEnabled: true
       StageName: !Ref Environment
+      DefinitionBody:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: dist/open-api-specification.yaml
 
   ZendeskWebhookApiBasePathMapping:
     Condition: ApiCustomDomain
