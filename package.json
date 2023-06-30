@@ -10,7 +10,8 @@
   "packageManager": "yarn@3.4.1",
   "private": true,
   "scripts": {
-    "build": "mkdir -p dist && cp -f open-api-specification.yaml dist/open-api-specification.yaml && tsc --noEmit && ts-node ./esbuild.config.ts",
+    "build": "yarn bundleApiSpecs && tsc --noEmit && ts-node ./esbuild.config.ts",
+    "bundleApiSpecs": "mkdir -p dist && cp -f open-api-specification.yaml dist/open-api-specification.yaml",
     "createTestTicket": "FIXED_RECIPIENT_EMAIL=$0 FIXED_DATA_REQUEST_DATE=$1 FIXED_SUBJECT_LINE=$2 OVERRIDE_EVENT_IDS=$3 DATA_PATHS=$4 ts-node scripts/createAndApproveZendeskTicket.ts",
     "lint": "prettier . --check || exit 1 ; eslint . --max-warnings=0",
     "lint:fix": "prettier . --write ; eslint . --fix",
