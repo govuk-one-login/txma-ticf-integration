@@ -50,7 +50,7 @@
     "@types/jest-when": "3.5.2",
     "@types/node": "18.16.18",
     "@typescript-eslint/eslint-plugin": "5.59.11",
-    "@typescript-eslint/parser": "5.59.11",
+    "@typescript-eslint/parser": "5.60.1",
     "aws-sdk-client-mock": "2.1.1",
     "aws-sdk-client-mock-jest": "2.1.1",
     "aws-testing-library": "4.0.6",
