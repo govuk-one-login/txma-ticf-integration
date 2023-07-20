@@ -177,6 +177,30 @@ To run the linting:
 yarn lint
 ```
 
+## Valid email recipients management
+
+The Scaled Audit Log system includes a step that checks if the email address of the user requesting data is in a preset list, which we manage via a file in an S3 bucket. To manage the contents of this file, we have a yarn script.
+
+To run this script, you need to be logged in to the relevant `audit` account on the command line (e.g. with `aws sso login --profile=audit-{environment}`).
+
+To show the current list:
+
+```
+yarn validRecipientsManager --env <environment name> --showCurrent
+```
+
+To add a new email to the list:
+
+```
+yarn validRecipientsManager --env <environment name> --addEmail <userEmail>
+```
+
+To remove an email from the list:
+
+```
+yarn validRecipientsManager --env production --removeEmail <userEmail>
+```
+
 ## Licence
 
 [MIT License](LICENCE)

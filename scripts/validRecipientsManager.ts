@@ -21,9 +21,18 @@ const showCurrentList: boolean = options.showCurrent
 
 const environment = options.env
 
+const environmentIsValid = (environmentToCheck: string) =>
+  ['dev', 'build', 'staging', 'integration', 'production'].includes(
+    environmentToCheck
+  )
+
 if (!environment) {
   console.error(
     'No environment specified with the --env parameter, should be one of dev, build, staging, production, integration'
+  )
+} else if (!environmentIsValid(environment)) {
+  console.error(
+    `Invalid environment '${environment}' specified, should be one of dev, build, staging, integration, production`
   )
 } else if (showCurrentList) {
   listCurrentEmailRecipients(environment)
