@@ -59,27 +59,7 @@ paths:
           default:
             statusCode: '302'
             responseParameters:
-              method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/thanks.txt'"
-        requestTemplates:
-          application/json: '{"statusCode": 302}'
-
-  /.well-known/thanks.txt:
-    get:
-      summary: 'thanks.txt redirect'
-      responses:
-        302:
-          description: 'thanks.txt redirect'
-          headers:
-            Location:
-              type: string
-          content: {}
-      x-amazon-apigateway-integration:
-        type: mock
-        responses:
-          default:
-            statusCode: '302'
-            responseParameters:
-              method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/.well-known/thanks.txt'"
+              method.response.header.Location: "'https://vdp.cabinetoffice.gov.uk/thanks.txt'"
         requestTemplates:
           application/json: '{"statusCode": 302}'
 
