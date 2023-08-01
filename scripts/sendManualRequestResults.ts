@@ -51,7 +51,7 @@ if (!environment) {
   copyManualRequestData(sqsJSON.athenaQueryId).then(() =>
     console.log('Copied data within output bucket')
   )
-  sendSQSMessageToCompletedQueue(sqsJSON, environment).then(() =>
+  sendSQSMessageToCompletedQueue(sqsJSON).then(() =>
     console.log('Sent SQS payload to query completed queue')
   )
 }
