@@ -1,0 +1,13 @@
+import { copyS3Object } from '../../src/sharedServices/s3/copyS3Object'
+import { getEnv } from '../../src/utils/helpers'
+import { getBucketFileName } from './getBucketFileName'
+
+export const copyManualRequestData = async (
+  athenaQueryId: string
+): Promise<void> => {
+  const fileName = getBucketFileName(athenaQueryId)
+  const outputBucketName = getEnv('ANALYSIS_BUCKET_NAME')
+  const sourcePath = `${outputBucketName}/manual-audit-data-queries`
+  const destinationPath = `${outputBucketName}/ticf-automated-audit-data-queries`
+  await copyS3Object(fileName, sourcePath, destinationPath)
+}
