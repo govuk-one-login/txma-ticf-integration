@@ -8,6 +8,6 @@ export const copyManualRequestData = async (
   const fileName = getBucketFileName(athenaQueryId)
   const outputBucketName = getEnv('ANALYSIS_BUCKET_NAME')
   const sourcePath = `${outputBucketName}/manual-audit-data-queries`
-  const destinationPath = `${outputBucketName}/ticf-automated-audit-data-queries`
+  const destinationPath = `${outputBucketName}`
   await copyS3Object(fileName, sourcePath, destinationPath)
 }

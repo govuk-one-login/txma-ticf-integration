@@ -1,6 +1,0 @@
-{
-  "athenaQueryId": "{FILE NAME WITHOUT EXTENSION}",
-  "recipientEmail": "{REQUESTER EMAIL AS SEEN ON ZENDESK}",
-  "recipientName": "{REQUESTER NAME AS SEEN ON ZENDESK}",
-  "zendeskTicketId": "{ZENDESK ID AS SEEN ON ZENDESK}"
-}

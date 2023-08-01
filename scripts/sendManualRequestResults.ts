@@ -1,50 +1,46 @@
 import { program } from 'commander'
-import { readFileSync } from 'fs'
-import { getEnv } from '../src/utils/helpers'
 import { copyManualRequestData } from './manualRequests/copyManualRequestData'
-import { getQueueUrl } from './manualRequests/getQueueUrl'
-import {
-  sendManualQueryPayload,
-  validateSendManualQueryPayload
-} from './manualRequests/sendManualQueryPayload'
 import { sendSQSMessageToCompletedQueue } from './manualRequests/sendSQSMessageToCompletedQueue'
 
 process.env.AWS_Region = 'eu-west-2'
 
 program
   .option(
-    '--path <path>',
-    'Path of SQS JSON file containing the ZendeskId, AthenaQueryId, Recipient Name, and Email'
+    '--athenaQueryId <path>',
+    'The athenaQuery Id of the query that was ran against the audit data'
   )
-  .option(
-    '--queueName <url>',
-    'The query complete queueName for the environment you want to use'
-  )
-  .option('--analysisBucketName <name>', 'The name of the analysis bucket')
+  .option('--zendeskTicketId <path>', 'The zendesk Ticket Id for the request')
+  .option('--recipientName <path>', 'The recipient name')
+  .option('--recipientEmail <path>', 'Therecipient email')
 
 program.parse(process.argv)
 
 const options = program.opts()
 
-const queueName: string = options.queueName
-const path: string = options.path
+const {
+  athenaQueryId,
+  zendeskTicketId,
+  recipientName,
+  recipientEmail
+}: Record<string, string> = options
+console.log(athenaQueryId)
 
-process.env.ANALYSIS_BUCKET_NAME = options.analysisBucketName
-getQueueUrl(queueName).then(
-  (queueName) => (process.env.QUERY_COMPLETED_QUEUE_URL = queueName)
-)
-const sqsJSON: sendManualQueryPayload = JSON.parse(readFileSync(path, 'utf-8'))
-if (!validateSendManualQueryPayload(sqsJSON)) {
+if (!athenaQueryId || !zendeskTicketId || !recipientName || !recipientEmail) {
   console.error(
-    `Invalid sqsPayload at path:'${path}', please ensure all fields are present.`
+    'Invalid input parameters, please ensure all parameters are assigned a value'
   )
-} else if (!getEnv('QUERY_COMPLETED_QUEUE_URL')) {
-  console.error('Queue url not set, please check queue name is correct')
 } else {
-  copyManualRequestData(sqsJSON.athenaQueryId).then(() =>
+  copyManualRequestData(athenaQueryId).then(() =>
     console.log('Copied data within output bucket')
   )
-  sendSQSMessageToCompletedQueue(sqsJSON).then(() =>
+  const sqsMessage = {
+    athenaQueryId,
+    zendeskTicketId,
+    recipientName,
+    recipientEmail
+  }
+
+  sendSQSMessageToCompletedQueue(sqsMessage).then(() =>
     console.log('Sent SQS payload to query completed queue')
   )
 }

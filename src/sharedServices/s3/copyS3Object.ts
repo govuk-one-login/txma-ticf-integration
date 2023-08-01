@@ -8,14 +8,14 @@ import { getEnv } from '../../utils/helpers'
 export const copyS3Object = async (
   fileName: string,
   fileLocationPath: string,
-  fileDestinationPath: string
+  fileDestinationBucket: string
 ): Promise<void> => {
   const s3Client = new S3Client({ region: getEnv('AWS_REGION') })
 
   const copyCommand: CopyObjectCommandInput = {
-    Key: fileName,
+    Key: `ticf-automated-audit-data-queries/${fileName}`,
     CopySource: `${fileLocationPath}/${fileName}`,
-    Bucket: fileDestinationPath
+    Bucket: fileDestinationBucket
   }
   await s3Client.send(new CopyObjectCommand(copyCommand))
 }
