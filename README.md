@@ -201,6 +201,25 @@ To remove an email from the list:
 yarn validRecipientsManager --env production --removeEmail <userEmail>
 ```
 
+## Sending manual query results to recipient
+
+When running a manual query, the athena query output ends up in in the `manual-query/` folder. To send the results of the manual query and close the zendesk ticket, you can reuse the SAL- Notify mechanism.
+
+To run this script, you need to be logged in to the relevant `audit` account on the command line (e.g. with `aws sso login --profile=audit-{environment}`) and you need to have set two environment variables:
+
+```sh
+export ANALYSIS_BUCKET_NAME=analysis-bucket-name-in-relevant-env
+export QUERY_COMPLETED_QUEUE_URL=queue-url-for-query-completed-queue-in-relevant-env
+```
+
+You can now run the CLI tool:
+
+```sh
+yarn sendManualQueryResults --athenaQueryId <athenaQueryId> --zendeskId <zendeskId> --recepientName <recepientName> --recepientEmail <recepientEmail>
+```
+
+This will send the recipient an email with a secure download link to retrieve the data.
+
 ## Licence
 
 [MIT License](LICENCE)
