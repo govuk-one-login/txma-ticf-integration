@@ -23,7 +23,6 @@ const {
   recipientName,
   recipientEmail
 }: Record<string, string> = options
-console.log(athenaQueryId)
 
 if (!athenaQueryId || !zendeskTicketId || !recipientName || !recipientEmail) {
   console.error(
