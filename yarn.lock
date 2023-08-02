@@ -4172,7 +4172,7 @@ __metadata:
     jest-when: 3.5.2
     lint-staged: 13.2.3
     node-html-parser: 6.1.5
-    notifications-node-client: 7.0.0
+    notifications-node-client: 7.0.3
     prettier: 2.8.8
     ts-jest: 29.1.1
     ts-node: 10.9.1
@@ -6799,13 +6799,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"notifications-node-client@npm:7.0.0":
-  version: 7.0.0
-  resolution: "notifications-node-client@npm:7.0.0"
+"notifications-node-client@npm:7.0.3":
+  version: 7.0.3
+  resolution: "notifications-node-client@npm:7.0.3"
   dependencies:
     axios: ^0.25.0
     jsonwebtoken: ^9.0.0
-  checksum: c0a4528bfd0a8c9e6e8c9869712bcf759dc579a5ccc66cb88794db1ef5a4cd8be4d0f67673ffb2860ef991cf9332578dad53594c99220dbe2d4d95f64b415151
+  checksum: 5e3ab2bd02c8ca72b9b77fde2c3be67690dad4b00564506846fc80a375aa8919ed3a04d0475509d15de275f3c9af5209ad0ebd0b146cae78440f0c441d1824e4
   languageName: node
   linkType: hard
 

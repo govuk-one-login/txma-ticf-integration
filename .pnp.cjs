@@ -67,7 +67,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.2"],\
             ["lint-staged", "npm:13.2.3"],\
             ["node-html-parser", "npm:6.1.5"],\
-            ["notifications-node-client", "npm:7.0.0"],\
+            ["notifications-node-client", "npm:7.0.3"],\
             ["prettier", "npm:2.8.8"],\
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:29.1.1"],\
             ["ts-node", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:10.9.1"],\
@@ -5202,7 +5202,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.5.2"],\
             ["lint-staged", "npm:13.2.3"],\
             ["node-html-parser", "npm:6.1.5"],\
-            ["notifications-node-client", "npm:7.0.0"],\
+            ["notifications-node-client", "npm:7.0.3"],\
             ["prettier", "npm:2.8.8"],\
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:29.1.1"],\
             ["ts-node", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:10.9.1"],\
@@ -8165,10 +8165,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["notifications-node-client", [\
-        ["npm:7.0.0", {\
-          "packageLocation": "./.yarn/cache/notifications-node-client-npm-7.0.0-088216ba64-c0a4528bfd.zip/node_modules/notifications-node-client/",\
+        ["npm:7.0.3", {\
+          "packageLocation": "./.yarn/cache/notifications-node-client-npm-7.0.3-b20ee09601-5e3ab2bd02.zip/node_modules/notifications-node-client/",\
           "packageDependencies": [\
-            ["notifications-node-client", "npm:7.0.0"],\
+            ["notifications-node-client", "npm:7.0.3"],\
             ["axios", "npm:0.25.0"],\
             ["jsonwebtoken", "npm:9.0.0"]\
           ],\
