@@ -59,7 +59,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["esbuild", "npm:0.18.11"],\
             ["eslint", "npm:8.44.0"],\
             ["eslint-config-prettier", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:8.8.0"],\
-            ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.2.2"],\
+            ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.2.3"],\
             ["husky", "npm:8.0.3"],\
             ["jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:29.5.0"],\
             ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:4.0.0"],\
@@ -5194,7 +5194,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["esbuild", "npm:0.18.11"],\
             ["eslint", "npm:8.44.0"],\
             ["eslint-config-prettier", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:8.8.0"],\
-            ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.2.2"],\
+            ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.2.3"],\
             ["husky", "npm:8.0.3"],\
             ["jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:29.5.0"],\
             ["jest-extended", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:4.0.0"],\
@@ -5608,17 +5608,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["eslint-plugin-jest", [\
-        ["npm:27.2.2", {\
-          "packageLocation": "./.yarn/cache/eslint-plugin-jest-npm-27.2.2-d70121bf24-98b63252d9.zip/node_modules/eslint-plugin-jest/",\
+        ["npm:27.2.3", {\
+          "packageLocation": "./.yarn/cache/eslint-plugin-jest-npm-27.2.3-eeb5f3c7e9-4c7e07f52f.zip/node_modules/eslint-plugin-jest/",\
           "packageDependencies": [\
-            ["eslint-plugin-jest", "npm:27.2.2"]\
+            ["eslint-plugin-jest", "npm:27.2.3"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.2.2", {\
-          "packageLocation": "./.yarn/__virtual__/eslint-plugin-jest-virtual-9753d2653d/0/cache/eslint-plugin-jest-npm-27.2.2-d70121bf24-98b63252d9.zip/node_modules/eslint-plugin-jest/",\
+        ["virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.2.3", {\
+          "packageLocation": "./.yarn/__virtual__/eslint-plugin-jest-virtual-9f8becbaa5/0/cache/eslint-plugin-jest-npm-27.2.3-eeb5f3c7e9-4c7e07f52f.zip/node_modules/eslint-plugin-jest/",\
           "packageDependencies": [\
-            ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.2.2"],\
+            ["eslint-plugin-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:27.2.3"],\
             ["@types/eslint", null],\
             ["@types/jest", "npm:29.5.2"],\
             ["@types/typescript-eslint__eslint-plugin", null],\
