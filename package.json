@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@aws-crypto/decrypt-node": "3.2.0",
-    "@aws-crypto/kms-keyring-node": "3.2.0",
+    "@aws-crypto/kms-keyring-node": "3.2.2",
     "@aws-crypto/material-management": "3.2.0",
     "@aws-lambda-powertools/logger": "1.11.0",
     "@aws-sdk/client-athena": "3.352.0",
