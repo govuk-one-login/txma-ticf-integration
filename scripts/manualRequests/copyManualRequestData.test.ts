@@ -14,12 +14,12 @@ describe('copyManualRequestData function tests', () => {
     const fileName = getBucketFileName(TEST_ATHENA_QUERY_ID)
     const outputBucketName = getEnv('ANALYSIS_BUCKET_NAME')
     const sourcePath = `${outputBucketName}/manual-audit-data-queries`
-    const destinationPath = `${outputBucketName}/ticf-automated-audit-data-queries`
+    const destinationBucket = `${outputBucketName}`
     await copyManualRequestData(TEST_ATHENA_QUERY_ID)
     expect(copyS3Object).toHaveBeenCalledWith(
       fileName,
       sourcePath,
-      destinationPath
+      destinationBucket
     )
   })
 })

@@ -8,9 +8,9 @@ import { copyS3Object } from './copyS3Object'
 import 'aws-sdk-client-mock-jest'
 
 const s3Mock = mockClient(S3Client)
-const TEST_S3_BUCKET_DESTINATION = '/aTestBucket/data/folder'
+const TEST_S3_BUCKET_DESTINATION = 'aTestBucket'
 const TEST_FILE_NAME = '46e34211-f930-4e15-a9fb-802f2ae77052.csv'
-const TEST_FILE_PATH = '/sourcebucket/data/'
+const TEST_FILE_PATH = '/sourcebucket/data'
 
 describe('copyS3Object tests', () => {
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe('copyS3Object tests', () => {
 
   const copyCommandInput: CopyObjectCommandInput = {
     Bucket: TEST_S3_BUCKET_DESTINATION,
-    Key: TEST_FILE_NAME,
+    Key: `ticf-automated-audit-data-queries/${TEST_FILE_NAME}`,
     CopySource: `${TEST_FILE_PATH}/${TEST_FILE_NAME}`
   }
 
