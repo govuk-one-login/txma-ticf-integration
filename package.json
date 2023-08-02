@@ -24,7 +24,8 @@
     "test:e2e:dev": "jest --setupFiles '<rootDir>/.env' -c tests/e2e-tests/jest.e2e.config.ts --expand",
     "test:integration": "jest -c tests/integration-tests/jest.integration.config.ts --expand",
     "test:integration:dev": "jest --setupFiles '<rootDir>/.env' -c tests/integration-tests/jest.integration.config.ts --expand",
-    "validRecipientsManager": "yarn ts-node scripts/validRecipientsManager.ts"
+    "validRecipientsManager": "yarn ts-node scripts/validRecipientsManager.ts",
+    "sendManualQueryResults": "yarn ts-node scripts/sendManualRequestResults.ts"
   },
   "dependencies": {
     "@aws-crypto/decrypt-node": "3.2.0",
