@@ -110,7 +110,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/material-management@npm:3.2.0, @aws-crypto/material-management@npm:^3.2.0":
+"@aws-crypto/material-management@npm:3.2.2":
+  version: 3.2.2
+  resolution: "@aws-crypto/material-management@npm:3.2.2"
+  dependencies:
+    asn1.js: ^5.3.0
+    bn.js: ^5.1.1
+    tslib: ^2.2.0
+  checksum: 3ec2be395e259a36afe643aeaabb95308f9423bc691e16d18518a87c9cc4b3098521bde9e3a3f1c5df9afbca152431f679d58b062097d4d812ffa176c1c11edb
+  languageName: node
+  linkType: hard
+
+"@aws-crypto/material-management@npm:^3.2.0":
   version: 3.2.0
   resolution: "@aws-crypto/material-management@npm:3.2.0"
   dependencies:
@@ -4135,7 +4146,7 @@ __metadata:
   dependencies:
     "@aws-crypto/decrypt-node": 3.2.0
     "@aws-crypto/kms-keyring-node": 3.2.0
-    "@aws-crypto/material-management": 3.2.0
+    "@aws-crypto/material-management": 3.2.2
     "@aws-lambda-powertools/logger": 1.11.0
     "@aws-sdk/client-athena": 3.352.0
     "@aws-sdk/client-cloudformation": 3.352.0
