@@ -19,7 +19,7 @@ describe('copyS3Object tests', () => {
 
   const copyCommandInput: CopyObjectCommandInput = {
     Bucket: TEST_S3_BUCKET_DESTINATION,
-    Key: `ticf-automated-audit-data-queries/${TEST_FILE_NAME}`,
+    Key: TEST_FILE_NAME,
     CopySource: `${TEST_FILE_PATH}/${TEST_FILE_NAME}`
   }
 

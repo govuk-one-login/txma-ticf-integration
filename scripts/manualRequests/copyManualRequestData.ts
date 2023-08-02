@@ -5,7 +5,9 @@ import { getBucketFileName } from './getBucketFileName'
 export const copyManualRequestData = async (
   athenaQueryId: string
 ): Promise<void> => {
-  const fileName = getBucketFileName(athenaQueryId)
+  const fileName = `ticf-automated-audit-data-queries/${getBucketFileName(
+    athenaQueryId
+  )}`
   const outputBucketName = getEnv('ANALYSIS_BUCKET_NAME')
   const sourcePath = `${outputBucketName}/manual-audit-data-queries`
   const destinationPath = `${outputBucketName}`

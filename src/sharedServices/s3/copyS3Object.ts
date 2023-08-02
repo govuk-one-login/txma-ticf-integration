@@ -13,7 +13,7 @@ export const copyS3Object = async (
   const s3Client = new S3Client({ region: getEnv('AWS_REGION') })
 
   const copyCommand: CopyObjectCommandInput = {
-    Key: `ticf-automated-audit-data-queries/${fileName}`,
+    Key: `${fileName}`,
     CopySource: `${fileLocationPath}/${fileName}`,
     Bucket: fileDestinationBucket
   }

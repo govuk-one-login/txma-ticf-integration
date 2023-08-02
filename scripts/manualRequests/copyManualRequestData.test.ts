@@ -11,7 +11,9 @@ jest.mock('../../src/sharedServices/s3/copyS3Object', () => ({
 
 describe('copyManualRequestData function tests', () => {
   it('copies manual request data based on an Athena query ID', async () => {
-    const fileName = getBucketFileName(TEST_ATHENA_QUERY_ID)
+    const fileName = `ticf-automated-audit-data-queries/${getBucketFileName(
+      TEST_ATHENA_QUERY_ID
+    )}`
     const outputBucketName = getEnv('ANALYSIS_BUCKET_NAME')
     const sourcePath = `${outputBucketName}/manual-audit-data-queries`
     const destinationBucket = `${outputBucketName}`
