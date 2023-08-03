@@ -20,7 +20,7 @@ describe('copyS3Object tests', () => {
   const copyCommandInput: CopyObjectCommandInput = {
     Bucket: TEST_S3_BUCKET_DESTINATION,
     Key: TEST_FILE_NAME,
-    CopySource: `${TEST_FILE_PATH}/${TEST_FILE_NAME}`
+    CopySource: `${TEST_FILE_PATH}`
   }
 
   it('copies an s3 Object', async () => {
