@@ -28,7 +28,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
-            ["@aws-crypto/decrypt-node", "npm:3.2.0"],\
+            ["@aws-crypto/decrypt-node", "npm:4.0.0"],\
             ["@aws-crypto/kms-keyring-node", "npm:4.0.0"],\
             ["@aws-crypto/material-management", "npm:4.0.0"],\
             ["@aws-lambda-powertools/logger", "npm:1.11.0"],\
@@ -122,12 +122,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@aws-crypto/decrypt-node", [\
-        ["npm:3.2.0", {\
-          "packageLocation": "./.yarn/cache/@aws-crypto-decrypt-node-npm-3.2.0-af39f83870-c95cabc5f6.zip/node_modules/@aws-crypto/decrypt-node/",\
+        ["npm:4.0.0", {\
+          "packageLocation": "./.yarn/cache/@aws-crypto-decrypt-node-npm-4.0.0-2c733bbe6d-a7b899c9f8.zip/node_modules/@aws-crypto/decrypt-node/",\
           "packageDependencies": [\
-            ["@aws-crypto/decrypt-node", "npm:3.2.0"],\
-            ["@aws-crypto/material-management-node", "npm:3.2.0"],\
-            ["@aws-crypto/serialize", "npm:3.2.0"],\
+            ["@aws-crypto/decrypt-node", "npm:4.0.0"],\
+            ["@aws-crypto/material-management-node", "npm:4.0.0"],\
+            ["@aws-crypto/serialize", "npm:4.0.0"],\
             ["@types/duplexify", "npm:3.6.1"],\
             ["duplexify", "npm:4.1.2"],\
             ["readable-stream", "npm:3.6.0"],\
@@ -137,14 +137,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@aws-crypto/hkdf-node", [\
-        ["npm:3.0.0", {\
-          "packageLocation": "./.yarn/cache/@aws-crypto-hkdf-node-npm-3.0.0-4672f3ced7-0b3cd878b8.zip/node_modules/@aws-crypto/hkdf-node/",\
-          "packageDependencies": [\
-            ["@aws-crypto/hkdf-node", "npm:3.0.0"],\
-            ["tslib", "npm:2.5.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:4.0.0", {\
           "packageLocation": "./.yarn/cache/@aws-crypto-hkdf-node-npm-4.0.0-21411c157c-f288770783.zip/node_modules/@aws-crypto/hkdf-node/",\
           "packageDependencies": [\
@@ -189,16 +181,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@aws-crypto/material-management", [\
-        ["npm:3.2.0", {\
-          "packageLocation": "./.yarn/cache/@aws-crypto-material-management-npm-3.2.0-1e2b2f8093-e5cbb18c7a.zip/node_modules/@aws-crypto/material-management/",\
-          "packageDependencies": [\
-            ["@aws-crypto/material-management", "npm:3.2.0"],\
-            ["asn1.js", "npm:5.4.1"],\
-            ["bn.js", "npm:5.2.1"],\
-            ["tslib", "npm:2.5.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:4.0.0", {\
           "packageLocation": "./.yarn/cache/@aws-crypto-material-management-npm-4.0.0-54688a1b68-677a612488.zip/node_modules/@aws-crypto/material-management/",\
           "packageDependencies": [\
@@ -211,17 +193,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@aws-crypto/material-management-node", [\
-        ["npm:3.2.0", {\
-          "packageLocation": "./.yarn/cache/@aws-crypto-material-management-node-npm-3.2.0-5ee58ddbbc-5d0533ac43.zip/node_modules/@aws-crypto/material-management-node/",\
-          "packageDependencies": [\
-            ["@aws-crypto/material-management-node", "npm:3.2.0"],\
-            ["@aws-crypto/hkdf-node", "npm:3.0.0"],\
-            ["@aws-crypto/material-management", "npm:3.2.0"],\
-            ["@aws-crypto/serialize", "npm:3.2.0"],\
-            ["tslib", "npm:2.5.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:4.0.0", {\
           "packageLocation": "./.yarn/cache/@aws-crypto-material-management-node-npm-4.0.0-b4ddb5ebca-78be6d0287.zip/node_modules/@aws-crypto/material-management-node/",\
           "packageDependencies": [\
@@ -235,17 +206,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@aws-crypto/serialize", [\
-        ["npm:3.2.0", {\
-          "packageLocation": "./.yarn/cache/@aws-crypto-serialize-npm-3.2.0-de8ee90d1a-41a4c2d186.zip/node_modules/@aws-crypto/serialize/",\
-          "packageDependencies": [\
-            ["@aws-crypto/serialize", "npm:3.2.0"],\
-            ["@aws-crypto/material-management", "npm:3.2.0"],\
-            ["asn1.js", "npm:5.4.1"],\
-            ["bn.js", "npm:5.2.1"],\
-            ["tslib", "npm:2.5.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:4.0.0", {\
           "packageLocation": "./.yarn/cache/@aws-crypto-serialize-npm-4.0.0-2e330f20b2-6fe72c0d98.zip/node_modules/@aws-crypto/serialize/",\
           "packageDependencies": [\
@@ -6202,7 +6162,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["di-txma-ticf-integration", "workspace:."],\
-            ["@aws-crypto/decrypt-node", "npm:3.2.0"],\
+            ["@aws-crypto/decrypt-node", "npm:4.0.0"],\
             ["@aws-crypto/kms-keyring-node", "npm:4.0.0"],\
             ["@aws-crypto/material-management", "npm:4.0.0"],\
             ["@aws-lambda-powertools/logger", "npm:1.11.0"],\

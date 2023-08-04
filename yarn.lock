@@ -44,26 +44,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/decrypt-node@npm:3.2.0":
-  version: 3.2.0
-  resolution: "@aws-crypto/decrypt-node@npm:3.2.0"
+"@aws-crypto/decrypt-node@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@aws-crypto/decrypt-node@npm:4.0.0"
   dependencies:
-    "@aws-crypto/material-management-node": ^3.2.0
-    "@aws-crypto/serialize": ^3.2.0
+    "@aws-crypto/material-management-node": ^4.0.0
+    "@aws-crypto/serialize": ^4.0.0
     "@types/duplexify": ^3.6.0
     duplexify: ^4.1.1
     readable-stream: ^3.6.0
     tslib: ^2.2.0
-  checksum: c95cabc5f6c4e9729e7fea925dc625f52cdd959e1dbd3ed3451ea7b1fa11c65064f5443c89222582c42d5ee2fe0f633f3e90eeae459ab18749386d27d9f79e47
-  languageName: node
-  linkType: hard
-
-"@aws-crypto/hkdf-node@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@aws-crypto/hkdf-node@npm:3.0.0"
-  dependencies:
-    tslib: ^2.2.0
-  checksum: 0b3cd878b82e2ae66401f736aee5ee5f30bd883e4f50db727002d25c9a06681cf6ca83d8e6ed0f91c6990fd76b16dfb6fdd73e17ca53e85cc7678db553e13f25
+  checksum: a7b899c9f80c88bafc38fb887b0156beff97f3634b0058ede5afa13b2bc4aadf8e1a078569de11218896dda3aaf93ada4bc9512812c246348f42f17aac4484a6
   languageName: node
   linkType: hard
 
@@ -107,18 +98,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-crypto/material-management-node@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@aws-crypto/material-management-node@npm:3.2.0"
-  dependencies:
-    "@aws-crypto/hkdf-node": ^3.0.0
-    "@aws-crypto/material-management": ^3.2.0
-    "@aws-crypto/serialize": ^3.2.0
-    tslib: ^2.2.0
-  checksum: 5d0533ac434b03d92d043d0a4201f9d8b120b016fdf8dd061d89b3ec8f12c5933ebba1d2db07f8ea2c4823403851a9b65e22a96e59d62a1092b9e0453af364bb
-  languageName: node
-  linkType: hard
-
 "@aws-crypto/material-management-node@npm:^4.0.0":
   version: 4.0.0
   resolution: "@aws-crypto/material-management-node@npm:4.0.0"
@@ -139,29 +118,6 @@ __metadata:
     bn.js: ^5.1.1
     tslib: ^2.2.0
   checksum: 677a61248854c5009d0d54fe220d1dce5915cfb4a75f4bc8a97453830ff125f070a344fe7ec9d5eb4643c06856450c9c6ca4005141a9a6eab907ce2c48902af7
-  languageName: node
-  linkType: hard
-
-"@aws-crypto/material-management@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@aws-crypto/material-management@npm:3.2.0"
-  dependencies:
-    asn1.js: ^5.3.0
-    bn.js: ^5.1.1
-    tslib: ^2.2.0
-  checksum: e5cbb18c7ab874306fd6c408cadba7cb10aaa5c552fcb94f3cc962f287a0e1baa4b1bf54be33570c12e7079592021c088fb02d410fb1f314c690eaac4e42fa5d
-  languageName: node
-  linkType: hard
-
-"@aws-crypto/serialize@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@aws-crypto/serialize@npm:3.2.0"
-  dependencies:
-    "@aws-crypto/material-management": ^3.2.0
-    asn1.js: ^5.3.0
-    bn.js: ^5.1.1
-    tslib: ^2.2.0
-  checksum: 41a4c2d186406329163880aeaacaba954cc11d909be5cc465cef4aa6f7872420f472f595d4fbfd3cd6117218a9da934a49dba03cfe89b326acb3fb8dabeb2458
   languageName: node
   linkType: hard
 
@@ -5134,7 +5090,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "di-txma-ticf-integration@workspace:."
   dependencies:
-    "@aws-crypto/decrypt-node": 3.2.0
+    "@aws-crypto/decrypt-node": 4.0.0
     "@aws-crypto/kms-keyring-node": 4.0.0
     "@aws-crypto/material-management": 4.0.0
     "@aws-lambda-powertools/logger": 1.11.0

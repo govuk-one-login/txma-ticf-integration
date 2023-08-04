@@ -28,7 +28,7 @@
     "sendManualQueryResults": "yarn ts-node scripts/sendManualRequestResults.ts"
   },
   "dependencies": {
-    "@aws-crypto/decrypt-node": "3.2.0",
+    "@aws-crypto/decrypt-node": "4.0.0",
     "@aws-crypto/kms-keyring-node": "4.0.0",
     "@aws-crypto/material-management": "4.0.0",
     "@aws-lambda-powertools/logger": "1.11.0",
