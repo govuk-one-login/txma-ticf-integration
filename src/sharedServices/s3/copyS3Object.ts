@@ -6,16 +6,16 @@ import {
 import { getEnv } from '../../utils/helpers'
 
 export const copyS3Object = async (
-  fileName: string,
-  fileLocationPath: string,
-  fileDestinationBucket: string
+  key: string,
+  copySource: string,
+  bucket: string
 ): Promise<void> => {
   const s3Client = new S3Client({ region: getEnv('AWS_REGION') })
 
   const copyCommand: CopyObjectCommandInput = {
-    Key: `${fileName}`,
-    CopySource: `${fileLocationPath}/${fileName}`,
-    Bucket: fileDestinationBucket
+    Key: key,
+    CopySource: copySource,
+    Bucket: bucket
   }
   await s3Client.send(new CopyObjectCommand(copyCommand))
 }

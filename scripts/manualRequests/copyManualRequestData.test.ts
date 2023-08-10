@@ -15,7 +15,9 @@ describe('copyManualRequestData function tests', () => {
       TEST_ATHENA_QUERY_ID
     )}`
     const outputBucketName = getEnv('ANALYSIS_BUCKET_NAME')
-    const sourcePath = `${outputBucketName}/manual-audit-data-queries`
+    const sourcePath = `${outputBucketName}/manual-audit-data-queries/${getBucketFileName(
+      TEST_ATHENA_QUERY_ID
+    )}`
     const destinationBucket = `${outputBucketName}`
     await copyManualRequestData(TEST_ATHENA_QUERY_ID)
     expect(copyS3Object).toHaveBeenCalledWith(

@@ -9,7 +9,9 @@ export const copyManualRequestData = async (
     athenaQueryId
   )}`
   const outputBucketName = getEnv('ANALYSIS_BUCKET_NAME')
-  const sourcePath = `${outputBucketName}/manual-audit-data-queries`
+  const sourcePath = `${outputBucketName}/manual-audit-data-queries/${getBucketFileName(
+    athenaQueryId
+  )}`
   const destinationPath = `${outputBucketName}`
   await copyS3Object(fileName, sourcePath, destinationPath)
 }
