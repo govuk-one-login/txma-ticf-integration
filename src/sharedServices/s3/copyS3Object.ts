@@ -17,6 +17,5 @@ export const copyS3Object = async (
     CopySource: copySource,
     Bucket: bucket
   }
-  // console.log(copyCommand)
   await s3Client.send(new CopyObjectCommand(copyCommand))
 }
