@@ -66,7 +66,7 @@ const getZendeskIdFromTags = (tags: S3Tag[] | undefined): string => {
     (t) => t.Key === batchJobConstants.zendeskIdTagName
   )
 
-  if (!zendeskId || !zendeskId.Value) {
+  if (!zendeskId?.Value) {
     throw new Error('Could not find ZendeskId in tag collection')
   }
 
