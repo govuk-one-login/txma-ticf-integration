@@ -4,12 +4,12 @@ import { isDatesArray } from './manualAuditDataRequests/initiateCopyAndDecrypt/i
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './manualAuditDataRequests/initiateCopyAndDecrypt/sendManualAuditDataRequestPayloadToInitiateQueue'
 
 program
-  .option(
+  .requiredOption(
     '--dates [dates...]',
     'The dates of audit files to copy for analysis in the format "YYYY-MM-DD"'
   )
   .option(
-    '--zendeskId',
+    '--zendeskId <id>',
     'The Zendesk ticket id for the request',
     Math.floor(Math.random() * 1000000).toString()
   )
@@ -20,7 +20,7 @@ const options = program.opts()
 const dates: string[] = options.dates
 const zendeskId: string = options.zendeskId
 
-if ((!dates && !isDatesArray(dates)) || !zendeskId) {
+if (!isDatesArray(dates) || !zendeskId) {
   console.error(
     'Invalid input parameters, please ensure all parameters are assigned the correct value'
   )

@@ -40,4 +40,9 @@ describe('isDatesArray', () => {
     const testArray = ['2020/01/01', '2020/01/02']
     expect(isDatesArray(testArray)).toBe(false)
   })
+
+  it('should return false if the array is undefined', () => {
+    const testArray = undefined
+    expect(isDatesArray(testArray)).toBe(false)
+  })
 })
