@@ -1222,6 +1222,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      QueueName: !Sub ${AWS::StackName}-initiate-data-request-queue
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
         maxReceiveCount: 5
@@ -1230,16 +1231,19 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      QueueName: !Sub ${AWS::StackName}-initiate-data-request-dlq
 
   TerminatedJobQueue:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      QueueName: !Sub ${AWS::StackName}-terminated-job-queue
 
   InitiateAthenaQueryQueue:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      QueueName: !Sub ${AWS::StackName}-initiate-athena-query-queue
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt InitiateAthenaQueryDeadLetterQueue.Arn
         maxReceiveCount: 5
@@ -1248,6 +1252,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
+      QueueName: !Sub ${AWS::StackName}-initiate-athena-query-dlq
 
   ############################
   # Integration Test Resources
