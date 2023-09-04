@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import { generateInitiateCopyAndDecryptPayload } from './manualAuditDataRequests/initiateCopyAndDecrypt/generateInitiateCopyAndDecryptPayload'
-import { isStringArray } from './utils/isStringArray'
+import { isDatesArray } from './manualAuditDataRequests/initiateCopyAndDecrypt/isDatesArray'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './manualAuditDataRequests/initiateCopyAndDecrypt/sendManualAuditDataRequestPayloadToInitiateQueue'
 
 program
@@ -20,7 +20,7 @@ const options = program.opts()
 const dates: string[] = options.dates
 const zendeskId: string = options.zendeskId
 
-if ((!dates && !isStringArray(dates)) || !zendeskId) {
+if ((!dates && !isDatesArray(dates)) || !zendeskId) {
   console.error(
     'Invalid input parameters, please ensure all parameters are assigned the correct value'
   )
