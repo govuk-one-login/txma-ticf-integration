@@ -1,8 +1,8 @@
 import { sendSQSMessageToCompletedQueue } from './sendSQSMessageToCompletedQueue'
-import { sendSqsMessage } from '../../src/sharedServices/queue/sendSqsMessage'
-import { MOCK_QUERY_COMPLETED_QUEUE_URL } from '../../src/utils/tests/testConstants'
+import { sendSqsMessage } from '../../../src/sharedServices/queue/sendSqsMessage'
+import { MOCK_QUERY_COMPLETED_QUEUE_URL } from '../../../src/utils/tests/testConstants'
 
-jest.mock('../../src/sharedServices/queue/sendSqsMessage', () => ({
+jest.mock('../../../src/sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessage: jest.fn()
 }))
 

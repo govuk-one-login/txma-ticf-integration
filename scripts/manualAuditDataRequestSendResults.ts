@@ -1,6 +1,6 @@
 import { program } from 'commander'
-import { copyManualRequestData } from './manualRequests/copyManualRequestData'
-import { sendSQSMessageToCompletedQueue } from './manualRequests/sendSQSMessageToCompletedQueue'
+import { copyManualRequestData } from './manualAuditDataRequests/sendResults/copyManualRequestData'
+import { sendSQSMessageToCompletedQueue } from './manualAuditDataRequests/sendResults/sendSQSMessageToCompletedQueue'
 
 process.env.AWS_Region = 'eu-west-2'
 

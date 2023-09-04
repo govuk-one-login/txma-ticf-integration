@@ -1,5 +1,5 @@
-import { copyS3Object } from '../../src/sharedServices/s3/copyS3Object'
-import { getEnv } from '../../src/utils/helpers'
+import { copyS3Object } from '../../../src/sharedServices/s3/copyS3Object'
+import { getEnv } from '../../../src/utils/helpers'
 import { getBucketFileName } from './getBucketFileName'
 
 export const copyManualRequestData = async (
