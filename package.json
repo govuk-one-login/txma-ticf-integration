@@ -15,6 +15,8 @@
     "createTestTicket": "FIXED_RECIPIENT_EMAIL=$0 FIXED_DATA_REQUEST_DATE=$1 FIXED_SUBJECT_LINE=$2 OVERRIDE_EVENT_IDS=$3 DATA_PATHS=$4 ts-node scripts/createAndApproveZendeskTicket.ts",
     "lint": "prettier . --check || exit 1 ; eslint . --max-warnings=0",
     "lint:fix": "prettier . --write ; eslint . --fix",
+    "manualAuditDataRequest:initiateCopyAndDecrypt": "ts-node scripts/manualAuditDataRequestInitiateCopyAndDecrypt.ts",
+    "manualAuditDataRequest:sendResults": "ts-node scripts/manualAuditDataRequestSendResults.ts",
     "postinstall": "husky install",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
     "setupDevStackSecrets": "ts-node scripts/setupDevStackSecrets.ts",
@@ -24,8 +26,7 @@
     "test:e2e:dev": "jest --setupFiles '<rootDir>/.env' -c tests/e2e-tests/jest.e2e.config.ts --expand",
     "test:integration": "jest -c tests/integration-tests/jest.integration.config.ts --expand",
     "test:integration:dev": "jest --setupFiles '<rootDir>/.env' -c tests/integration-tests/jest.integration.config.ts --expand",
-    "validRecipientsManager": "yarn ts-node scripts/validRecipientsManager.ts",
-    "sendManualQueryResults": "yarn ts-node scripts/sendManualRequestResults.ts"
+    "validRecipientsManager": "ts-node scripts/validRecipientsManager.ts"
   },
   "dependencies": {
     "@aws-crypto/decrypt-node": "4.0.0",
@@ -47,6 +48,7 @@
     "@aws-sdk/client-cloudwatch-logs": "3.398.0",
     "@aws-sdk/client-lambda": "3.398.0",
     "@aws-sdk/client-ssm": "3.398.0",
+    "@aws-sdk/client-sts": "3.398.0",
     "@types/aws-lambda": "8.10.119",
     "@types/jest": "29.5.4",
     "@types/jest-when": "3.5.2",

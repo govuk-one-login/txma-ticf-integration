@@ -16,7 +16,9 @@ export const initiateDataTransfer = async (
 ) => {
   const bucketData = await checkS3BucketData(dataRequestParams)
   if (!bucketData.dataAvailable) {
-    logger.info(interpolateTemplate('noDataFound', loggingCopy))
+    logger.info(interpolateTemplate('noDataFound', loggingCopy), {
+      dates: dataRequestParams.dates
+    })
     await updateZendeskTicketById(
       dataRequestParams.zendeskId,
       interpolateTemplate('bucketDataUnavailable', zendeskCopy),
