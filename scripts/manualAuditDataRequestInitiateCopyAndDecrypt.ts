@@ -11,11 +11,7 @@ program
     '--dates [dates...]',
     'The dates of audit files to copy for analysis in the format "YYYY-MM-DD"'
   )
-  .option(
-    '--zendeskId <id>',
-    'The Zendesk ticket id for the request',
-    Math.floor(Math.random() * 1000000).toString()
-  )
+  .requiredOption('--zendeskId <id>', 'The Zendesk ticket id for the request')
 
 program.parse(process.argv)
 
