@@ -1,7 +1,9 @@
+import { ManualAuditDataRequestPayload } from '../../types/manualAuditDataRequestPayload'
+
 export const generateInitiateCopyAndDecryptPayload = (
   dates: string[],
   zendeskId: string
-) => ({
+): ManualAuditDataRequestPayload => ({
   zendeskId: `MR${zendeskId}`,
   dates,
   requesterEmail: 'manualquery@test.gov.uk',

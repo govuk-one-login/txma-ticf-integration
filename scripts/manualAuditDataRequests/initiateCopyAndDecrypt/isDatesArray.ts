@@ -1,4 +1,4 @@
-export const isDatesArray = (array: unknown) => {
+export const isDatesArray = (array: unknown): boolean => {
   const dateFormatRegex = /^\d{4}-\d{2}-\d{2}$/
 
   return (
