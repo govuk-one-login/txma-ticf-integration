@@ -1,49 +1,71 @@
 import { program } from 'commander'
 import { copyManualRequestData } from './manualAuditDataRequests/sendResults/copyManualRequestData'
 import { sendSQSMessageToCompletedQueue } from './manualAuditDataRequests/sendResults/sendSQSMessageToCompletedQueue'
+import { AWS_REGION } from './utils/constants'
 
-process.env.AWS_Region = 'eu-west-2'
+process.env.AWS_REGION = AWS_REGION
 
 program
-  .option(
-    '--athenaQueryId <path>',
+  .requiredOption(
+    '-e, --environment <env>',
+    'The environment to run the script in. Valid options are: dev, build,, staging, integration, and production'
+  )
+  .requiredOption(
+    '--athenaQueryId <id>',
     'The athenaQuery Id of the query that was ran against the audit data'
   )
-  .option('--zendeskTicketId <path>', 'The zendesk Ticket Id for the request')
-  .option('--recipientName <path>', 'The recipient name')
-  .option('--recipientEmail <path>', 'Therecipient email')
+  .requiredOption('--zendeskId <id>', 'The Zendesk ticket id for the request')
+  .requiredOption('--recipientName <name>', 'The recipient name')
+  .requiredOption('--recipientEmail <email>', 'The recipient email')
 
 program.parse(process.argv)
 
 const options = program.opts()
 
 const {
+  environment,
   athenaQueryId,
-  zendeskTicketId,
+  zendeskId,
   recipientName,
   recipientEmail
 }: Record<string, string> = options
 
-if (!athenaQueryId || !zendeskTicketId || !recipientName || !recipientEmail) {
+if (
+  (!environment &&
+    !['dev', 'build', 'staging', 'integration', 'production'].includes(
+      environment
+    )) ||
+  !athenaQueryId ||
+  !zendeskId ||
+  !recipientName ||
+  !recipientEmail
+) {
   console.error(
     'Invalid input parameters, please ensure all parameters are assigned a value'
   )
 } else {
-  copyManualRequestData(athenaQueryId).then(() =>
-    console.log('Copied data within output bucket')
-  )
+  copyManualRequestData(environment, athenaQueryId)
+    .then(() =>
+      console.log(
+        'Successfully copied data to automated queries folder, within Athena output bucket'
+      )
+    )
+    .catch((error: unknown) => {
+      console.error('Failed to copy data within output bucket', error)
+      process.exit(1)
+    })
+
   const sqsMessage = {
     athenaQueryId,
-    zendeskTicketId,
+    zendeskTicketId: zendeskId,
     recipientName,
     recipientEmail
   }
 
-  sendSQSMessageToCompletedQueue(sqsMessage).then(() =>
-    console.log('Sent SQS payload to query completed queue')
-  )
+  sendSQSMessageToCompletedQueue(environment, sqsMessage)
+    .then(() => console.log('Sent SQS payload to query completed queue'))
+    .catch((error: unknown) => {
+      console.error('Failed to send payload to query completed queue', error)
+      process.exit(1)
+    })
 }
-
-console.log(
-  'Successfully sent SQS message to completed query queue, recipient will recieve email with download link'
-)

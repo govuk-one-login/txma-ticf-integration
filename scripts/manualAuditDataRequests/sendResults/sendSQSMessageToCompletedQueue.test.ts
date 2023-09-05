@@ -1,6 +1,5 @@
 import { sendSQSMessageToCompletedQueue } from './sendSQSMessageToCompletedQueue'
 import { sendSqsMessage } from '../../../src/sharedServices/queue/sendSqsMessage'
-import { MOCK_QUERY_COMPLETED_QUEUE_URL } from '../../../src/utils/tests/testConstants'
 
 jest.mock('../../../src/sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessage: jest.fn()
@@ -16,17 +15,16 @@ describe('sendSQSMessageToCompletedQueue function tests', () => {
     jest.resetAllMocks()
   })
 
-  const TEST_QUEUE_PAYLOAD = {
+  const environment = 'test'
+  const queueUrl = `txma-data-analysis-${environment}-query-completed-queue`
+  const payload = {
     athenaQueryId: TEST_ATHENA_QUERY_ID,
     recipientName: TEST_RECIPIENT_NAME,
     recipientEmail: TEST_RCIPIENT_EMAIL,
     zendeskTicketId: TEST_ZENDESK_TICKET_ID
   }
   it('sends an sqs message containing the relevant information to the completed SQS queue', async () => {
-    await sendSQSMessageToCompletedQueue(TEST_QUEUE_PAYLOAD)
-    expect(sendSqsMessage).toHaveBeenCalledWith(
-      TEST_QUEUE_PAYLOAD,
-      MOCK_QUERY_COMPLETED_QUEUE_URL
-    )
+    await sendSQSMessageToCompletedQueue(environment, payload)
+    expect(sendSqsMessage).toHaveBeenCalledWith(payload, queueUrl)
   })
 })
