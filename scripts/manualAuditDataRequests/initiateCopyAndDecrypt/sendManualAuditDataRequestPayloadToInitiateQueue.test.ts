@@ -1,10 +1,10 @@
 import { when } from 'jest-when'
-import { sendSqsMessage } from '../../sharedServices/aws/sqs/sendSqsMessage'
+import { sendSqsMessage } from '../../../src/sharedServices/queue/sendSqsMessage'
 import { getAwsAccountNumber } from '../../sharedServices/aws/sts/getAwsAccountNumber'
 import { ManualAuditDataRequestPayload } from '../../types/manualAuditDataRequestPayload'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './sendManualAuditDataRequestPayloadToInitiateQueue'
 
-jest.mock('../../sharedServices/aws/sqs/sendSqsMessage', () => ({
+jest.mock('../../../src/sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessage: jest.fn()
 }))
 

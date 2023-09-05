@@ -2,6 +2,9 @@ import { program } from 'commander'
 import { generateInitiateCopyAndDecryptPayload } from './manualAuditDataRequests/initiateCopyAndDecrypt/generateInitiateCopyAndDecryptPayload'
 import { isDatesArray } from './manualAuditDataRequests/initiateCopyAndDecrypt/isDatesArray'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './manualAuditDataRequests/initiateCopyAndDecrypt/sendManualAuditDataRequestPayloadToInitiateQueue'
+import { AWS_REGION } from './utils/constants'
+
+process.env.AWS_REGION = AWS_REGION
 
 program
   .requiredOption(
