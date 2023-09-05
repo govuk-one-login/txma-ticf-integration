@@ -15,7 +15,7 @@
     "createTestTicket": "FIXED_RECIPIENT_EMAIL=$0 FIXED_DATA_REQUEST_DATE=$1 FIXED_SUBJECT_LINE=$2 OVERRIDE_EVENT_IDS=$3 DATA_PATHS=$4 ts-node scripts/createAndApproveZendeskTicket.ts",
     "lint": "prettier . --check || exit 1 ; eslint . --max-warnings=0",
     "lint:fix": "prettier . --write ; eslint . --fix",
-    "manualAuditDataRequest:initiateCopyAndDecrypt": "ts-node scripts/manualAuditDataDataRequestInitiateCopyAndDecrypt.ts",
+    "manualAuditDataRequest:initiateCopyAndDecrypt": "ts-node scripts/manualAuditDataRequestInitiateCopyAndDecrypt.ts",
     "manualAuditDataRequest:sendResults": "ts-node scripts/manualAuditDataRequestSendResults.ts",
     "postinstall": "husky install",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {if (e.code !== 'MODULE_NOT_FOUND') throw e}\"",
