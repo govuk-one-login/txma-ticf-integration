@@ -1,6 +1,6 @@
 import { ManualAuditDataRequestPayload } from '../../types/manualAuditDataRequestPayload'
 
-export const testDataRequest = {
+export const MOCK_DATA_REQUEST = {
   zendeskId: '123456',
   dates: ['2023-01-01', '2023-01-02'],
   requesterEmail: 'manualquery@test.gov.uk',
