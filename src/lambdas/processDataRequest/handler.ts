@@ -1,14 +1,8 @@
 import { Context, SQSEvent } from 'aws-lambda'
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { tryParseJSON, isEmpty } from '../../utils/helpers'
-import {
-  DataRequestParams,
-  isDataRequestParams
-} from '../../types/dataRequestParams'
-import {
-  ContinueDataTransferParams,
-  isContinueDataTransferParams
-} from '../../types/continueDataTransferParams'
+import { isDataRequestParams } from '../../types/dataRequestParams'
+import { isContinueDataTransferParams } from '../../types/continueDataTransferParams'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import {
   appendZendeskIdToLogger,
@@ -28,10 +22,10 @@ export const handler = async (event: SQSEvent, context: Context) => {
   appendZendeskIdToLogger(eventData.zendeskId)
 
   if (isDataRequestParams(eventData)) {
-    await initiateDataTransfer(eventData as DataRequestParams)
+    await initiateDataTransfer(eventData)
     logger.info('Data transfer process initiated')
   } else if (isContinueDataTransferParams(eventData)) {
-    const params = eventData as ContinueDataTransferParams
+    const params = eventData
     await checkDataTransferStatus(params.zendeskId)
   } else {
     throw new Error('Event data was not of the correct type')

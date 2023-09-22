@@ -6,7 +6,7 @@ export const makeHttpsRequest = async (
 ) => {
   return new Promise((resolve, reject) => {
     const req = https.request(options, (response) => {
-      if (!response || !response.statusCode)
+      if (!response?.statusCode)
         return reject(
           new Error(
             `Error making HTTPS request. Response or statusCode undefined. Host:'${options.host}', path:'${options.path}'.`

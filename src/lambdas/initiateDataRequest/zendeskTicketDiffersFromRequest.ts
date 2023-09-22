@@ -95,15 +95,15 @@ const ticketAndRequestDetailsDiffer = (
   const ticketDataPaths = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_DATA_PATHS')
-  ) as string[]
+  )
   const ticketEventIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_EVENT_IDS')
-  ) as string[]
+  )
   const ticketJourneyIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_JOURNEY_IDS')
-  ) as string[]
+  )
   const ticketPiiTypes =
     (getZendeskCustomFieldValue(
       ticketDetails,
@@ -112,11 +112,11 @@ const ticketAndRequestDetailsDiffer = (
   const ticketSessionIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_SESSION_IDS')
-  ) as string[]
+  )
   const ticketUserIds = getZendeskCustomSpaceSeparatedStringAsArray(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_USER_IDS')
-  ) as string[]
+  )
   const ticketRecipientEmail = getZendeskCustomFieldValue(
     ticketDetails,
     getEnvAsNumber('ZENDESK_FIELD_ID_RECIPIENT_EMAIL')

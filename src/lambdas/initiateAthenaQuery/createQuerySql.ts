@@ -77,16 +77,13 @@ const filterPathArray = (pathArray: string[]): string[] => {
 }
 
 const formatIdTypeStatement = (identifierType: IdentifierTypes): string => {
-  switch (identifierType) {
-    case 'event_id': {
-      return 'event_id,'
-    }
-    default: {
-      const identifierTypeEventPath = identifierTypeEventPathMap(identifierType)
-      const idSelectStatement = formatDataPath(identifierTypeEventPath)
+  if (identifierType === 'event_id') {
+    return 'event_id,'
+  } else {
+    const identifierTypeEventPath = identifierTypeEventPathMap(identifierType)
+    const idSelectStatement = formatDataPath(identifierTypeEventPath)
 
-      return `event_id, ${idSelectStatement},`
-    }
+    return `event_id, ${idSelectStatement},`
   }
 }
 
