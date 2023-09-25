@@ -201,22 +201,44 @@ To remove an email from the list:
 yarn validRecipientsManager --env production --removeEmail <userEmail>
 ```
 
-## Sending manual query results to recipient
+## Scripts for Raw Audit Data requests
 
-When running a manual query, the athena query output ends up in in the `manual-query/` folder. To send the results of the manual query and close the zendesk ticket, you can reuse the SAL- Notify mechanism.
+### Starting the data copy to the Analysis bucket process
 
-To run this script, you need to be logged in to the relevant `audit` account on the command line (e.g. with `aws sso login --profile=audit-{environment}`) and you need to have set two environment variables:
+In order to run manual Athena queries against the audit data, it first needs to be decrypted, any Glacier tier data needs to be restored, and it needs to be copied into the Analysis bucket where Athena can be run against it.
 
-```sh
-export ANALYSIS_BUCKET_NAME=analysis-bucket-name-in-relevant-env
-export QUERY_COMPLETED_QUEUE_URL=queue-url-for-query-completed-queue-in-relevant-env
+There is a script available to do this via `yarn manualAuditDataRequest:initiateCopyAndDecrypt`.
+
+To run this script you must be authenticated against the relevant Audit account e.g. `aws sso login --profile=audit-{environment}`
+
+Then run the script with the following arguments:
+
+```bash
+yarn manualAuditDataRequest:initiateCopyAndDecrypt --dates YYYY-MM-DD YYYY-MM-DD ... --zendeskId 123456
 ```
 
-You can now run the CLI tool:
+`--dates`: A list of the dates to copy data to the Analysis bucket (range not supported)
+`--zendeskId`: The ID of the Zendesk ticket the request for Raw Audit Data came from
 
-```sh
-yarn sendManualQueryResults --athenaQueryId <athenaQueryId> --zendeskId <zendeskId> --recepientName <recepientName> --recepientEmail <recepientEmail>
+### Sending manual query results to recipient
+
+When running a manual query, the athena query output ends up in in the `manual-audit-data-queries/` folder. To send the results of the manual query and close the zendesk ticket, you can reuse the SAL > Notify mechanism.
+
+There is a script available to do this via `yarn manualAuditDataRequest:sendResults`.
+
+To run this script you must be authenticated against the relevant Audit account e.g. `aws sso login --profile=audit-{environment}`
+
+Then run the script with the following arguments:
+
+```bash
+yarn manualAuditDataRequest:initiateCopyAndDecrypt --environment <environment> --athenaQueryId <athenaQueryId> --zendeskId <zendeskId> --recepientName <recepientName> --recepientEmail <recepientEmail>
 ```
+
+`--environment`: Needed to identify the Athena output bucket
+`--athenaQueryId`: The ID of the Athena Query, also the name of the file in the Athena output bucket
+`--zendeskId`: The ID of the Zendesk ticket the request for Raw Audit Data came from
+`--recipientName`: The name of the requester of the Raw Audit Data in the Zendesk Ticket
+`--recipientEmail`: The email address of the requester of the Raw Audit Data in the Zendesk Ticket
 
 This will send the recipient an email with a secure download link to retrieve the data.
 

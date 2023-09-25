@@ -1,4 +1,4 @@
-export interface sendManualQueryPayload {
+export interface SendManualQueryPayload {
   athenaQueryId: string
   recipientEmail: string
   recipientName: string
@@ -7,8 +7,8 @@ export interface sendManualQueryPayload {
 
 export const validateSendManualQueryPayload = (
   sqsPayload: unknown
-): sqsPayload is sendManualQueryPayload => {
-  const test = sqsPayload as sendManualQueryPayload
+): sqsPayload is SendManualQueryPayload => {
+  const test = sqsPayload as SendManualQueryPayload
   return (
     typeof test?.zendeskTicketId === 'string' &&
     typeof test?.recipientEmail === 'string' &&

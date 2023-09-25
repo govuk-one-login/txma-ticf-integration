@@ -1,10 +1,10 @@
 import { sendSqsMessage } from '../../../src/sharedServices/queue/sendSqsMessage'
-import { sendManualQueryPayload } from './sendManualQueryPayload'
-import { getEnv } from '../../../src/utils/helpers'
+import { SendManualQueryPayload } from '../../types/sendManualQueryPayload'
 
 export const sendSQSMessageToCompletedQueue = async (
-  manualQueryCompleteSqsPayload: sendManualQueryPayload
+  environment: string,
+  manualQueryCompleteSqsPayload: SendManualQueryPayload
 ): Promise<void> => {
-  const queueUrl = getEnv('QUERY_COMPLETED_QUEUE_URL')
+  const queueUrl = `txma-data-analysis-${environment}-query-completed-queue`
   await sendSqsMessage(manualQueryCompleteSqsPayload, queueUrl)
 }
