@@ -20,10 +20,10 @@ export const isSignatureInvalid = async (
     secrets.zendeskWebhookSecretKey
   )
   const localSignature = hmac.update(headerTimestamp + body).digest('base64')
-  return !(
+  return (
     Buffer.compare(
       Buffer.from(headerSignature),
       Buffer.from(localSignature)
-    ) === 0
+    ) !== 0
   )
 }
