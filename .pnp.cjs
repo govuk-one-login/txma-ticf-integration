@@ -54,7 +54,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk-client-mock", "npm:3.0.0"],\
             ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.0.0"],\
             ["aws-testing-library", "npm:4.0.6"],\
-            ["axios", "npm:1.5.0"],\
+            ["axios", "npm:1.5.1"],\
             ["commander", "npm:11.0.0"],\
             ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.19.2"],\
@@ -4864,10 +4864,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:1.5.0", {\
-          "packageLocation": "./.yarn/cache/axios-npm-1.5.0-35a845e191-e7405a5dbb.zip/node_modules/axios/",\
+        ["npm:1.5.1", {\
+          "packageLocation": "./.yarn/cache/axios-npm-1.5.1-6bc68e7d25-4444f06601.zip/node_modules/axios/",\
           "packageDependencies": [\
-            ["axios", "npm:1.5.0"],\
+            ["axios", "npm:1.5.1"],\
             ["follow-redirects", "virtual:dbe3a48aea1dd5649e16abaf23d4ae05582d2149e16141955113766a0f84f681baf358c77ddccfc82eb23e4ccc66c6c912df62a9c01f2a83f1842bf86cc297b1#npm:1.15.2"],\
             ["form-data", "npm:4.0.0"],\
             ["proxy-from-env", "npm:1.1.0"]\
@@ -5652,7 +5652,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk-client-mock", "npm:3.0.0"],\
             ["aws-sdk-client-mock-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.0.0"],\
             ["aws-testing-library", "npm:4.0.6"],\
-            ["axios", "npm:1.5.0"],\
+            ["axios", "npm:1.5.1"],\
             ["commander", "npm:11.0.0"],\
             ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.19.2"],\
