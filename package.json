@@ -32,7 +32,7 @@
     "@aws-crypto/decrypt-node": "4.0.0",
     "@aws-crypto/kms-keyring-node": "4.0.0",
     "@aws-crypto/material-management": "4.0.0",
-    "@aws-lambda-powertools/logger": "1.12.1",
+    "@aws-lambda-powertools/logger": "1.14.0",
     "@aws-sdk/client-athena": "3.398.0",
     "@aws-sdk/client-dynamodb": "3.398.0",
     "@aws-sdk/client-s3": "3.400.0",

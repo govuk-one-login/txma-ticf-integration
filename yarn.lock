@@ -195,20 +195,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-lambda-powertools/commons@npm:^1.12.1":
-  version: 1.12.1
-  resolution: "@aws-lambda-powertools/commons@npm:1.12.1"
-  checksum: 1d6032bb268ba7ad5ba1278d48375619f775031b942ccd5c9a25f03a62185cd559658b21538f525fd5536c2d2fa8cc66d3635fce962e643b06dce8adae8b8bce
+"@aws-lambda-powertools/commons@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "@aws-lambda-powertools/commons@npm:1.14.0"
+  checksum: 7025ff5d7d9f5bfc08b210fd6c837d7f00bb718811dcac1c0cf6c99bb391c192d22f0530de33d23945b8006b23e85f7a6bbe2b7ec866a7faf29bd4d232a21b1e
   languageName: node
   linkType: hard
 
-"@aws-lambda-powertools/logger@npm:1.12.1":
-  version: 1.12.1
-  resolution: "@aws-lambda-powertools/logger@npm:1.12.1"
+"@aws-lambda-powertools/logger@npm:1.14.0":
+  version: 1.14.0
+  resolution: "@aws-lambda-powertools/logger@npm:1.14.0"
   dependencies:
-    "@aws-lambda-powertools/commons": ^1.12.1
+    "@aws-lambda-powertools/commons": ^1.14.0
     lodash.merge: ^4.6.2
-  checksum: 87fa705ee63bbc745d5d85c938411e87433148c10b218f8c4469fa341c5023553b9f5b9c7c990b451552526658f47e75a677a6e7b5c421274489880b2a51ad9c
+  peerDependencies:
+    "@middy/core": ">=3.x"
+  peerDependenciesMeta:
+    "@middy/core":
+      optional: true
+  checksum: acb59fd46c99483feb94b18dd01fd44f1c7a984906ec666a791ecadd58ab56d9765316b1a16907870f5aee391da5aba8d81854ba2a330bc4336d05e722beceb5
   languageName: node
   linkType: hard
 
@@ -4588,7 +4593,7 @@ __metadata:
     "@aws-crypto/decrypt-node": 4.0.0
     "@aws-crypto/kms-keyring-node": 4.0.0
     "@aws-crypto/material-management": 4.0.0
-    "@aws-lambda-powertools/logger": 1.12.1
+    "@aws-lambda-powertools/logger": 1.14.0
     "@aws-sdk/client-athena": 3.398.0
     "@aws-sdk/client-cloudformation": 3.398.0
     "@aws-sdk/client-cloudwatch-logs": 3.398.0
