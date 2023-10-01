@@ -47,7 +47,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/util-endpoints", "npm:3.398.0"],\
             ["@types/aws-lambda", "npm:8.10.119"],\
             ["@types/jest", "npm:29.5.4"],\
-            ["@types/jest-when", "npm:3.5.2"],\
+            ["@types/jest-when", "npm:3.5.3"],\
             ["@types/node", "npm:18.17.13"],\
             ["@typescript-eslint/eslint-plugin", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:6.5.0"],\
             ["@typescript-eslint/parser", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:6.5.0"],\
@@ -4145,10 +4145,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/jest-when", [\
-        ["npm:3.5.2", {\
-          "packageLocation": "./.yarn/cache/@types-jest-when-npm-3.5.2-8b6f3f4c13-106230dd71.zip/node_modules/@types/jest-when/",\
+        ["npm:3.5.3", {\
+          "packageLocation": "./.yarn/cache/@types-jest-when-npm-3.5.3-0e9eb05086-5dc2661ad5.zip/node_modules/@types/jest-when/",\
           "packageDependencies": [\
-            ["@types/jest-when", "npm:3.5.2"],\
+            ["@types/jest-when", "npm:3.5.3"],\
             ["@types/jest", "npm:29.5.4"]\
           ],\
           "linkType": "HARD"\
@@ -5645,7 +5645,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/util-endpoints", "npm:3.398.0"],\
             ["@types/aws-lambda", "npm:8.10.119"],\
             ["@types/jest", "npm:29.5.4"],\
-            ["@types/jest-when", "npm:3.5.2"],\
+            ["@types/jest-when", "npm:3.5.3"],\
             ["@types/node", "npm:18.17.13"],\
             ["@typescript-eslint/eslint-plugin", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:6.5.0"],\
             ["@typescript-eslint/parser", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:6.5.0"],\
