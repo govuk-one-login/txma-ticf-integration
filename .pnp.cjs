@@ -67,7 +67,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-junit", "npm:16.0.0"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.6.0"],\
             ["lint-staged", "npm:13.3.0"],\
-            ["node-html-parser", "npm:6.1.6"],\
+            ["node-html-parser", "npm:6.1.10"],\
             ["notifications-node-client", "npm:7.0.3"],\
             ["prettier", "npm:2.8.8"],\
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:29.1.1"],\
@@ -5665,7 +5665,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-junit", "npm:16.0.0"],\
             ["jest-when", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:3.6.0"],\
             ["lint-staged", "npm:13.3.0"],\
-            ["node-html-parser", "npm:6.1.6"],\
+            ["node-html-parser", "npm:6.1.10"],\
             ["notifications-node-client", "npm:7.0.3"],\
             ["prettier", "npm:2.8.8"],\
             ["ts-jest", "virtual:b1f285b48211bff63d6523636094299bd60361c54bf35946fb4a9c6099306910535b789f612ae76944f0e8a7e671432b4e628f9f7fc106f7870e5b4c3c67d712#npm:29.1.1"],\
@@ -8585,10 +8585,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["node-html-parser", [\
-        ["npm:6.1.6", {\
-          "packageLocation": "./.yarn/cache/node-html-parser-npm-6.1.6-6cf32611bb-594dd7daf9.zip/node_modules/node-html-parser/",\
+        ["npm:6.1.10", {\
+          "packageLocation": "./.yarn/cache/node-html-parser-npm-6.1.10-155152e1bc-927f6a38b3.zip/node_modules/node-html-parser/",\
           "packageDependencies": [\
-            ["node-html-parser", "npm:6.1.6"],\
+            ["node-html-parser", "npm:6.1.10"],\
             ["css-select", "npm:5.1.0"],\
             ["he", "npm:1.2.0"]\
           ],\
