@@ -3449,10 +3449,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:18.17.13":
+"@types/node@npm:*":
   version: 18.17.13
   resolution: "@types/node@npm:18.17.13"
   checksum: d70f263b7591f3993ddc348b809c867f9e4cc5151c7108ffdc89f32777da829e14a471932357da099afbd8db03f62bfc8119cd2d56f06b826bb28bb879feaf9f
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:18.18.1":
+  version: 18.18.1
+  resolution: "@types/node@npm:18.18.1"
+  checksum: 079085afc8615b91727900628410a2077f7fff51c5c3e20c4ab2d9caae4010b035aac13dae1221155e9d6ca46084aebf68121642140527b4009eee17b716d339
   languageName: node
   linkType: hard
 
@@ -4605,7 +4612,7 @@ __metadata:
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.4
     "@types/jest-when": 3.5.2
-    "@types/node": 18.17.13
+    "@types/node": 18.18.1
     "@typescript-eslint/eslint-plugin": 6.5.0
     "@typescript-eslint/parser": 6.5.0
     aws-sdk-client-mock: 3.0.0
