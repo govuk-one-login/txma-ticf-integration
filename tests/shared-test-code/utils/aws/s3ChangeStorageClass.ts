@@ -1,21 +1,22 @@
-import {
-  CopyObjectCommand,
-  CopyObjectCommandOutput,
-  StorageClass
-} from '@aws-sdk/client-s3'
-import { s3Client } from './s3Client'
+import { StorageClass } from '@aws-sdk/client-s3'
+import { getEnv } from '../helpers'
+import { invokeLambdaFunction } from './invokeLambdaFunction'
 
-export const s3ChangeStorageClass = (
+export const s3ChangeStorageClass = async (
   bucket: string,
   key: string,
   storageClass: StorageClass
-): Promise<CopyObjectCommandOutput> => {
-  return s3Client.send(
-    new CopyObjectCommand({
+) => {
+  try {
+    await invokeLambdaFunction(getEnv('COPY_S3_FILE_FUNCTION_NAME'), {
       CopySource: `${bucket}/${key}`,
       Bucket: bucket,
       StorageClass: storageClass,
       Key: key
     })
-  )
+  } catch (error) {
+    throw Error(
+      `Error while calling Copy S3 lambda to update storage class for file '${key}' in bucket ${bucket}: \n${error}`
+    )
+  }
 }
