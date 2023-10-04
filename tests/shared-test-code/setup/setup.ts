@@ -58,6 +58,12 @@ module.exports = async () => {
     ),
     S3_READ_FILE_FUNCTION_NAME: formatTestStackSsmParam(
       'ReadS3FileToStringFunctionName'
+    ),
+    CHECK_S3_FILE_EXISTS_FUNCTION_NAME: formatTestStackSsmParam(
+      'CheckS3FileExistsFunctionName'
+    ),
+    COPY_S3_FILE_FUNCTION_NAME: formatTestStackSsmParam(
+      'CopyS3FileFunctionName'
     )
   }
 

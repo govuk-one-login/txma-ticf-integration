@@ -11,6 +11,9 @@ export const invokeLambdaFunction = async (
     Payload: jsonToUint8Array(payload)
   }
   const result = await client.send(new InvokeCommand(input))
+  if (result.FunctionError) {
+    throw Error(`Lambda invoke gave error '${result.FunctionError}'`)
+  }
   return uint8ArrayToJson(result.Payload)
 }
 
