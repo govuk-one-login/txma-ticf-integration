@@ -1450,6 +1450,22 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/ReadS3FileToStringFunctionName}}'
 
+  IntegrationTestsCopyS3FileFunctionNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/CopyS3FileFunctionName
+      Type: String
+      Value: '{{resolve:ssm:/tests/CopyS3FileFunctionName}}'
+
+  IntegrationTestsCheckS3FileExistsFunctionNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/CheckS3FileExistsFunctionName
+      Type: String
+      Value: '{{resolve:ssm:/tests/CheckS3FileExistsFunctionName}}'
+
   IntegrationTestsSqsOperationsFunctionNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
