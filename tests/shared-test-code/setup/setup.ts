@@ -62,8 +62,8 @@ module.exports = async () => {
     CHECK_S3_FILE_EXISTS_FUNCTION_NAME: formatTestStackSsmParam(
       'CheckS3FileExistsFunctionName'
     ),
-    COPY_S3_FILE_FUNCTION_NAME: formatTestStackSsmParam(
-      'CopyS3FileFunctionName'
+    S3_OPERATIONS_FUNCTION_NAME: formatTestStackSsmParam(
+      'S3OperationsFunctionName'
     )
   }
 

@@ -18,7 +18,10 @@ export const copyAuditDataFromTestDataBucket = async (
     ...(cleanup && { TaggingDirective: 'REPLACE' })
   } as CopyObjectCommandInput
   try {
-    await invokeLambdaFunction(getEnv('COPY_S3_FILE_FUNCTION_NAME'), input)
+    await invokeLambdaFunction(getEnv('S3_OPERATIONS_FUNCTION_NAME'), {
+      commandType: 'CopyObjectCommand',
+      commandInput: input
+    })
   } catch (error) {
     throw new Error(
       `Failed to copy from ${input.CopySource} to bucket ${targetBucket}\n${error}`

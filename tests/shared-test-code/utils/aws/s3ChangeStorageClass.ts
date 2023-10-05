@@ -8,11 +8,14 @@ export const s3ChangeStorageClass = async (
   storageClass: StorageClass
 ) => {
   try {
-    await invokeLambdaFunction(getEnv('COPY_S3_FILE_FUNCTION_NAME'), {
-      CopySource: `${bucket}/${key}`,
-      Bucket: bucket,
-      StorageClass: storageClass,
-      Key: key
+    await invokeLambdaFunction(getEnv('S3_OPERATIONS_FUNCTION_NAME'), {
+      commandType: 'CopyObjectCommand',
+      commandInput: {
+        CopySource: `${bucket}/${key}`,
+        Bucket: bucket,
+        StorageClass: storageClass,
+        Key: key
+      }
     })
   } catch (error) {
     throw Error(

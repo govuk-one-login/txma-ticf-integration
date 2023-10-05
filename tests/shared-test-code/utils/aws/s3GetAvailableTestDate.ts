@@ -1,6 +1,5 @@
-import { ListObjectsCommand } from '@aws-sdk/client-s3'
 import { getEnv } from '../helpers'
-import { s3Client } from './s3Client'
+import { invokeLambdaFunction } from './invokeLambdaFunction'
 
 export const getAvailableTestDate = async () => {
   return findAvailableS3Locations(generateRandomDateAndPrefix())
@@ -24,8 +23,13 @@ const findAvailableS3Locations = async (
         Bucket: bucket,
         Prefix: checkDate.prefix
       }
-      const command = new ListObjectsCommand(input)
-      const response = await s3Client.send(command)
+      const response = await invokeLambdaFunction(
+        getEnv('S3_OPERATIONS_FUNCTION_NAME'),
+        {
+          commandType: 'ListObjectsCommand',
+          commandInput: input
+        }
+      )
 
       return !response.Contents || response.Contents.length === 0 ? true : false
     })

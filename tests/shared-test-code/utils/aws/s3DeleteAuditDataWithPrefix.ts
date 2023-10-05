@@ -1,9 +1,9 @@
 import {
-  DeleteObjectsCommand,
   DeleteObjectsCommandInput,
-  ListObjectsV2Command
+  ListObjectsV2CommandOutput
 } from '@aws-sdk/client-s3'
-import { s3Client } from './s3Client'
+import { getEnv } from '../helpers'
+import { invokeLambdaFunction } from './invokeLambdaFunction'
 
 export const deleteAuditDataWithPrefix = async (
   bucket: string,
@@ -13,12 +13,18 @@ export const deleteAuditDataWithPrefix = async (
     Bucket: bucket,
     Prefix: prefix
   }
-  const listObjectsCommand = new ListObjectsV2Command(listObjectsInput)
 
   let objects
 
   try {
-    const listObjectsResponse = await s3Client.send(listObjectsCommand)
+    const listObjectsResponse = (await invokeLambdaFunction(
+      getEnv('S3_OPERATIONS_FUNCTION_NAME'),
+      {
+        commandType: 'ListObjectsV2Command',
+        commandInput: listObjectsInput
+      }
+    )) as ListObjectsV2CommandOutput
+
     objects = listObjectsResponse.Contents
 
     if (!objects || objects?.length === 0) return
@@ -37,10 +43,11 @@ export const deleteAuditDataWithPrefix = async (
     deleteObjectsInput.Delete?.Objects?.push({ Key })
   })
 
-  const deleteObjectsCommand = new DeleteObjectsCommand(deleteObjectsInput)
-
   try {
-    return await s3Client.send(deleteObjectsCommand)
+    await invokeLambdaFunction(getEnv('S3_OPERATIONS_FUNCTION_NAME'), {
+      commandType: 'DeleteObjectsCommand',
+      commandInput: deleteObjectsInput
+    })
   } catch (error) {
     throw new Error(`Failed to delete data in bucket ${bucket}\n${error}`)
   }
