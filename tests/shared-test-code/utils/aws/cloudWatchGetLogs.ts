@@ -65,6 +65,9 @@ const findMatchingLogEvents = async (
   logStreams: LogStream[],
   filterPatterns: string[]
 ) => {
+  if (logStreams.length < 1) {
+    return []
+  }
   return filterLogEvents({
     logGroupName: logGroupName,
     logStreamNames: logStreams.map(
@@ -111,13 +114,6 @@ export const waitForEventWithPatterns = async (
   while (attempts < maxAttempts) {
     attempts++
     const logStreams = await getLogStreams(logGroupName)
-    if (logStreams.length < 1) {
-      console.log(
-        `No log streams available yet for ${logGroupName}. Waiting 5 seconds...`
-      )
-      await pause(5000)
-      continue
-    }
     const logEvents = await findMatchingLogEvents(
       logGroupName,
       logStreams,
