@@ -1,6 +1,6 @@
-import { CopyObjectCommand } from '@aws-sdk/client-s3'
+import { CopyObjectCommandInput } from '@aws-sdk/client-s3'
 import { getEnv } from '../helpers'
-import { s3Client } from './s3Client'
+import { invokeLambdaFunction } from './invokeLambdaFunction'
 
 export const copyAuditDataFromTestDataBucket = async (
   targetBucket: string,
@@ -16,11 +16,12 @@ export const copyAuditDataFromTestDataBucket = async (
     StorageClass: storageClass,
     ...(cleanup && { Tagging: 'autoTest=true' }),
     ...(cleanup && { TaggingDirective: 'REPLACE' })
-  }
-  const command = new CopyObjectCommand(input)
-
+  } as CopyObjectCommandInput
   try {
-    return await s3Client.send(command)
+    await invokeLambdaFunction(getEnv('S3_OPERATIONS_FUNCTION_NAME'), {
+      commandType: 'CopyObjectCommand',
+      commandInput: input
+    })
   } catch (error) {
     throw new Error(
       `Failed to copy from ${input.CopySource} to bucket ${targetBucket}\n${error}`

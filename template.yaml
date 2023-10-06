@@ -1258,109 +1258,6 @@ Resources:
   # Integration Test Resources
   ############################
 
-  AnalysisBucketTestPolicy:
-    Condition: TestRoleResources
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref AnalysisBucket
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: Test role S3 access
-            Effect: 'Allow'
-            Action:
-              - s3:DeleteObject*
-              - s3:GetObject*
-              - s3:ListBucket
-              - s3:PutObject*
-            Resource:
-              - !GetAtt AnalysisBucket.Arn
-              - !Sub ${AnalysisBucket.Arn}/*
-            Principal:
-              AWS:
-                - !Ref TestRoleArn
-            Condition:
-              Bool:
-                'aws:SecureTransport': 'true'
-
-  AuditBucketTestPolicy:
-    Condition: TestRoleResources
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: '{{resolve:ssm:MessageBatchBucketTXMA2Name}}'
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: Test role S3 access
-            Effect: 'Allow'
-            Action:
-              - s3:DeleteObject*
-              - s3:GetObject*
-              - s3:ListBucket
-              - s3:PutObject*
-            Resource:
-              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
-              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
-            Principal:
-              AWS:
-                - !Ref TestRoleArn
-            Condition:
-              Bool:
-                'aws:SecureTransport': 'true'
-
-  TemporaryAuditBucketTestPolicy:
-    Condition: TestRoleResources
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Sub 'audit-${Environment}-temporary-message-batch'
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: Test role S3 access
-            Effect: 'Allow'
-            Action:
-              - s3:DeleteObject*
-              - s3:GetObject*
-              - s3:ListBucket
-              - s3:PutObject*
-            Resource:
-              - !Sub 'arn:aws:s3:::audit-${Environment}-temporary-message-batch'
-              - !Sub 'arn:aws:s3:::audit-${Environment}-temporary-message-batch/*'
-            Principal:
-              AWS:
-                - !Ref TestRoleArn
-            Condition:
-              Bool:
-                'aws:SecureTransport': 'true'
-
-  PermanentAuditBucketTestPolicy:
-    Condition: TestRoleResources
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Sub 'audit-${Environment}-permanent-message-batch'
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: Test role allow S3 read
-            Effect: 'Allow'
-            Action:
-              - s3:GetObject*
-              # Adding the ListBucket permission ensures that when a file doesn't exist, we get a 404 instead of a 403
-              - s3:ListBucket
-              # We change storage tier in the tests, so we need PutObject
-              - s3:PutObject
-              # At one point we add tags to an existing file, so we need the PutObjectTagging permission
-              - s3:PutObjectTagging
-            Resource:
-              - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch'
-              - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
-            Principal:
-              AWS:
-                - !Ref TestRoleArn
-            Condition:
-              Bool:
-                'aws:SecureTransport': 'true'
-
   DynamoOperationsLambdaPolicy:
     Condition: TestRoleResources
     Type: AWS::Lambda::Permission
@@ -1375,6 +1272,22 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt IntegrationTestsReadS3FileToStringFunctionNameParameter.Value
+      Principal: !Ref TestRoleArn
+
+  S3OperationsLambdaPolicy:
+    Condition: TestRoleResources
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt IntegrationTestsS3OperationsFunctionNameParameter.Value
+      Principal: !Ref TestRoleArn
+
+  CheckS3FileExistsLambdaPolicy:
+    Condition: TestRoleResources
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt IntegrationTestsCheckS3FileExistsFunctionNameParameter.Value
       Principal: !Ref TestRoleArn
 
   InitiateAthenaQueryQueuePolicy:
@@ -1450,6 +1363,22 @@ Resources:
       Type: String
       Value: '{{resolve:ssm:/tests/ReadS3FileToStringFunctionName}}'
 
+  IntegrationTestsCheckS3FileExistsFunctionNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/CheckS3FileExistsFunctionName
+      Type: String
+      Value: '{{resolve:ssm:/tests/CheckS3FileExistsFunctionName}}'
+
+  IntegrationTestsS3OperationsFunctionNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/S3OperationsFunctionName
+      Type: String
+      Value: '{{resolve:ssm:/tests/S3OperationsFunctionName}}'
+
   IntegrationTestsSqsOperationsFunctionNameParameter:
     Condition: TestEnvironment
     Type: AWS::SSM::Parameter
@@ -1503,29 +1432,6 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt IntegrationTestsSqsOperationsFunctionNameParameter.Value
       Principal: !Ref TestRoleArn
-
-  TestDataBucketTestPolicy:
-    Condition: TestRoleResources
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !GetAtt IntegrationTestDataBucketNameParameter.Value
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: Test role S3 access
-            Effect: 'Allow'
-            Action:
-              - s3:GetObject*
-              - s3:ListBucket
-            Resource:
-              - !GetAtt IntegrationTestDataBucketArnParameter.Value
-              - !Sub ${IntegrationTestDataBucketArnParameter.Value}/*
-            Principal:
-              AWS:
-                - !Ref TestRoleArn
-            Condition:
-              Bool:
-                'aws:SecureTransport': 'true'
 
 Outputs:
   AnalysisBucketName:
