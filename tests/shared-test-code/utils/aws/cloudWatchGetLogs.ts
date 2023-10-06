@@ -65,6 +65,9 @@ const findMatchingLogEvents = async (
   logStreams: LogStream[],
   filterPatterns: string[]
 ) => {
+  if (logStreams.length < 1) {
+    return []
+  }
   return filterLogEvents({
     logGroupName: logGroupName,
     logStreamNames: logStreams.map(
