@@ -117,12 +117,12 @@ yarn test:e2e:dev
 2. Run the following to set up the secrets under `tests/{STACK_NAME}`
 
    ```bash
-   gds aws di-txma-audit-dev yarn setupDevStackSecrets
+   yarn setupDevStackSecrets
    ```
 
 3. Then run the test themselves
    ```bash
-   gds aws di-txma-audit-dev yarn test:integration
+   yarn test:integration
    ```
 
 ### Test Reports
