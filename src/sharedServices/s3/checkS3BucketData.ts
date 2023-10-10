@@ -30,11 +30,20 @@ export const checkS3BucketData = async (
   )
 
   const standardTierLocationsToCopy = objectsToCopy
-    .filter((o) => o.StorageClass === 'STANDARD')
+    .filter(
+      (o) =>
+        o.StorageClass === 'STANDARD' ||
+        //
+        o.RestoreStatus?.IsRestoreInProgress === false
+    )
     .map((o) => o.Key as string)
 
   const glacierTierLocationsToCopy = objectsToCopy
-    .filter((o) => o.StorageClass === 'GLACIER')
+    .filter(
+      (o) =>
+        o.StorageClass === 'GLACIER' &&
+        (!o.RestoreStatus || o.RestoreStatus.IsRestoreInProgress)
+    )
     .map((o) => o.Key as string)
 
   logger.info(
@@ -59,7 +68,8 @@ const retrieveS3ObjectsForPrefixes = async (
       async (prefix) =>
         await listS3Files({
           Bucket: bucketName,
-          Prefix: prefix
+          Prefix: prefix,
+          OptionalObjectAttributes: ['RestoreStatus']
         })
     )
   ).then((objects: _Object[][]) => objects.flat())
