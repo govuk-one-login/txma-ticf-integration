@@ -16,11 +16,6 @@ export const convertDaterangeToDateArray = (daterangeArray: string[]) => {
     // const startDateObj = new Date(dates[0])
     const endDateObj = new Date(dates[1])
 
-    // if (startDateObj.valueOf() <= endDateObj.valueOf()) {
-    //   console.error(`start date greater than end date for: ${daterange}`)
-    //   throw new Error('Invalid Date Range')
-    // }
-
     const dateArray: Date[] = []
     dateArray.push(new Date(dates[0]))
 
