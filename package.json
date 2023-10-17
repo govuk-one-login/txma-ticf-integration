@@ -1,9 +1,9 @@
 {
-  "name": "di-txma-ticf-integration",
+  "name": "txma-ticf-integration",
   "description": "System to automate the retrieval of audit data via Zendesk integration",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alphagov/di-txma-ticf-integration"
+    "url": "https://github.com/govuk-one-login/txma-ticf-integration"
   },
   "author": "GDS",
   "license": "MIT",
@@ -57,7 +57,6 @@
     "@typescript-eslint/parser": "6.7.3",
     "aws-sdk-client-mock": "3.0.0",
     "aws-sdk-client-mock-jest": "3.0.0",
-    "aws-testing-library": "4.0.6",
     "axios": "1.5.1",
     "commander": "11.0.0",
     "csv-string": "4.1.1",

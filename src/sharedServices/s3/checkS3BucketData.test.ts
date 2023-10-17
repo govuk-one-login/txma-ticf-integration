@@ -53,7 +53,11 @@ describe('check objects in analysis bucket', () => {
     objects: _Object[]
   ) => {
     when(listS3Files)
-      .calledWith({ Prefix: prefix, Bucket: bucketName })
+      .calledWith({
+        Prefix: prefix,
+        Bucket: bucketName,
+        OptionalObjectAttributes: ['RestoreStatus']
+      })
       .mockResolvedValue(objects)
   }
 
@@ -78,13 +82,64 @@ describe('check objects in analysis bucket', () => {
     })
   }
 
+  const givenGlacierRestoredDataInBucketForPrefixes = (
+    prefixes: string[],
+    bucketName: string
+  ) => {
+    prefixes.forEach((prefix) => {
+      givenDataInBucketForPrefix(
+        prefix,
+        bucketName,
+        [
+          `${prefix}/example-object-1`,
+          `${prefix}/example-object-2`,
+          `${prefix}/example-object-3`
+        ].map((key) => ({
+          Key: key,
+          StorageClass: 'GLACIER',
+          RestoreStatus: {
+            IsRestoreInProgress: false,
+            RestoreExpiryDate: new Date()
+          }
+        }))
+      )
+    })
+  }
+
+  const givenGlacierRestoreInProgressForPrefixes = (
+    prefixes: string[],
+    bucketName: string
+  ) => {
+    prefixes.forEach((prefix) => {
+      givenDataInBucketForPrefix(
+        prefix,
+        bucketName,
+        [
+          `${prefix}/example-object-1`,
+          `${prefix}/example-object-2`,
+          `${prefix}/example-object-3`
+        ].map((key) => ({
+          Key: key,
+          StorageClass: 'GLACIER',
+          RestoreStatus: {
+            IsRestoreInProgress: true
+          }
+        }))
+      )
+    })
+  }
+
   const givenNoDataInBucketForPrefixes = (
     prefixes: string[],
     bucketName: string
   ) => {
     prefixes.forEach((prefix) => {
       when(listS3Files)
-        .calledWith({ Prefix: prefix, Bucket: bucketName })
+        .calledWith({
+          Prefix: prefix,
+          Bucket: bucketName,
+          OptionalObjectAttributes: ['RestoreStatus']
+        })
         .mockResolvedValue([])
     })
   }
@@ -352,6 +407,67 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(3, 6)
+  })
+
+  test('no data in analysis bucket, some audit data is currently being restored from Glacier tier', async () => {
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+    givenGlacierRestoreInProgressForPrefixes(
+      [prefixes[0], prefixes[2]],
+      testAuditSourceDataBucket
+    )
+    givenDataInBucketForPrefixes(
+      [prefixes[1]],
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/23/example-object-1',
+        'firehose/2022/10/10/23/example-object-2',
+        'firehose/2022/10/10/23/example-object-3'
+      ],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3'
+      ]
+    })
+    assertNumberOfFilesLogged(3, 6)
+  })
+
+  test('no data in analysis bucket, some audit data has been restored from Glacier tier', async () => {
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+    givenGlacierRestoredDataInBucketForPrefixes(
+      [prefixes[0], prefixes[2]],
+      testAuditSourceDataBucket
+    )
+    givenDataInBucketForPrefixes(
+      [prefixes[1]],
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2',
+        'firehose/2022/10/10/21/example-object-3',
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3',
+        'firehose/2022/10/10/23/example-object-1',
+        'firehose/2022/10/10/23/example-object-2',
+        'firehose/2022/10/10/23/example-object-3'
+      ]
+    })
+    assertNumberOfFilesLogged(9, 0)
   })
 
   test('partial data in analysis bucket', async () => {
