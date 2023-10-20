@@ -2061,6 +2061,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@commander-js/extra-typings@npm:11.1.0":
+  version: 11.1.0
+  resolution: "@commander-js/extra-typings@npm:11.1.0"
+  peerDependencies:
+    commander: 11.1.x
+  checksum: b325200b477f0631b008f64a79cb8cc42286c97fe6ec1203579be40e7fa999c78910c7952de35b5004a7958e24f0cbbbd132ae011f4c18c2880651a127fe0a74
+  languageName: node
+  linkType: hard
+
 "@cspotcode/source-map-support@npm:^0.8.0":
   version: 0.8.1
   resolution: "@cspotcode/source-map-support@npm:0.8.1"
@@ -4356,6 +4365,13 @@ __metadata:
   version: 11.0.0
   resolution: "commander@npm:11.0.0"
   checksum: 6621954e1e1d078b4991c1f5bbd9439ad37aa7768d6ab4842de1dbd4d222c8a27e1b8e62108b3a92988614af45031d5bb2a2aaa92951f4d0c934d1a1ac564bb4
+  languageName: node
+  linkType: hard
+
+"commander@npm:11.1.0":
+  version: 11.1.0
+  resolution: "commander@npm:11.1.0"
+  checksum: fd1a8557c6b5b622c89ecdfde703242ab7db3b628ea5d1755784c79b8e7cb0d74d65b4a262289b533359cd58e1bfc0bf50245dfbcd2954682a6f367c828b79ef
   languageName: node
   linkType: hard
 
@@ -7822,6 +7838,7 @@ __metadata:
     "@aws-sdk/client-ssm": 3.398.0
     "@aws-sdk/client-sts": 3.398.0
     "@aws-sdk/util-endpoints": 3.398.0
+    "@commander-js/extra-typings": 11.1.0
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.5
     "@types/jest-when": 3.5.3
@@ -7831,7 +7848,7 @@ __metadata:
     aws-sdk-client-mock: 3.0.0
     aws-sdk-client-mock-jest: 3.0.0
     axios: 1.5.1
-    commander: 11.0.0
+    commander: 11.1.0
     csv-string: 4.1.1
     esbuild: 0.19.4
     eslint: 8.50.0

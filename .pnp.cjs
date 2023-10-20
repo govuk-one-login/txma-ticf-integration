@@ -45,6 +45,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-ssm", "npm:3.398.0"],\
             ["@aws-sdk/client-sts", "npm:3.398.0"],\
             ["@aws-sdk/util-endpoints", "npm:3.398.0"],\
+            ["@commander-js/extra-typings", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:11.1.0"],\
             ["@types/aws-lambda", "npm:8.10.119"],\
             ["@types/jest", "npm:29.5.5"],\
             ["@types/jest-when", "npm:3.5.3"],\
@@ -54,7 +55,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk-client-mock", "npm:3.0.0"],\
             ["aws-sdk-client-mock-jest", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:3.0.0"],\
             ["axios", "npm:1.5.1"],\
-            ["commander", "npm:11.0.0"],\
+            ["commander", "npm:11.1.0"],\
             ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.19.4"],\
             ["eslint", "npm:8.50.0"],\
@@ -2587,6 +2588,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@bcoe-v8-coverage-npm-0.2.3-9e27b3c57e-850f930553.zip/node_modules/@bcoe/v8-coverage/",\
           "packageDependencies": [\
             ["@bcoe/v8-coverage", "npm:0.2.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@commander-js/extra-typings", [\
+        ["npm:11.1.0", {\
+          "packageLocation": "./.yarn/cache/@commander-js-extra-typings-npm-11.1.0-2efe59761d-b325200b47.zip/node_modules/@commander-js/extra-typings/",\
+          "packageDependencies": [\
+            ["@commander-js/extra-typings", "npm:11.1.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:11.1.0", {\
+          "packageLocation": "./.yarn/__virtual__/@commander-js-extra-typings-virtual-1f076896ed/0/cache/@commander-js-extra-typings-npm-11.1.0-2efe59761d-b325200b47.zip/node_modules/@commander-js/extra-typings/",\
+          "packageDependencies": [\
+            ["@commander-js/extra-typings", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:11.1.0"],\
+            ["@types/commander", null],\
+            ["commander", "npm:11.1.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/commander",\
+            "commander"\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5348,6 +5371,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/commander-npm-11.0.0-7def992f0c-6621954e1e.zip/node_modules/commander/",\
           "packageDependencies": [\
             ["commander", "npm:11.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:11.1.0", {\
+          "packageLocation": "./.yarn/cache/commander-npm-11.1.0-56e979613c-fd1a8557c6.zip/node_modules/commander/",\
+          "packageDependencies": [\
+            ["commander", "npm:11.1.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -9328,6 +9358,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@aws-sdk/client-ssm", "npm:3.398.0"],\
             ["@aws-sdk/client-sts", "npm:3.398.0"],\
             ["@aws-sdk/util-endpoints", "npm:3.398.0"],\
+            ["@commander-js/extra-typings", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:11.1.0"],\
             ["@types/aws-lambda", "npm:8.10.119"],\
             ["@types/jest", "npm:29.5.5"],\
             ["@types/jest-when", "npm:3.5.3"],\
@@ -9337,7 +9368,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk-client-mock", "npm:3.0.0"],\
             ["aws-sdk-client-mock-jest", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:3.0.0"],\
             ["axios", "npm:1.5.1"],\
-            ["commander", "npm:11.0.0"],\
+            ["commander", "npm:11.1.0"],\
             ["csv-string", "npm:4.1.1"],\
             ["esbuild", "npm:0.19.4"],\
             ["eslint", "npm:8.50.0"],\
