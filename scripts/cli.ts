@@ -1,4 +1,4 @@
-import { Option, program } from '@commander-js/extra-typings'
+import { program } from '@commander-js/extra-typings'
 import { sendAuditDataAction } from './manualAuditDataRequests/sendResults/sendAuditDataAction'
 import { AWS_REGION } from './utils/constants'
 
@@ -11,21 +11,31 @@ program
 program
   .command('send-audit-data')
   .description('Uses SAL to send output of athena query to users via email')
-  .addOption(
-    new Option(
-      '-e, --environment <env>',
-      'The environment to run the script in'
-    )
-      .choices(['dev', 'build', 'staging', 'integration', 'production'])
-      .makeOptionMandatory()
-  )
-  .requiredOption(
+  // .addOption(
+  //   new Option(
+  //     '-e, --environment <env>',
+  //     'The environment to run the script in'
+  //   )
+  //     .choices(['dev', 'build', 'staging', 'integration', 'production'])
+  //     .makeOptionMandatory()
+  // )
+  .argument(
     '--athenaQueryId <id>',
     'The athenaQuery Id of the query that was ran against the audit data'
   )
-  .requiredOption('--zendeskId <id>', 'The Zendesk ticket id for the request')
-  .requiredOption('--recipientName <name>', 'The recipient name')
-  .requiredOption('--recipientEmail <email>', 'The recipient email')
+  .argument('--zendeskId <id>', 'The Zendesk ticket id for the request')
+  // .requiredOption(
+  //   '--recipientName <name>',
+  //   'The recipient name as it appears on zendesk'
+  // )
+  // .requiredOption(
+  //   '--recipientEmail <email>',
+  //   'The recipient email as it appears on zendesk'
+  // )
+  .action((a, b, c, d) => {
+    console.log({ a, b, c, d })
+    // sendAuditDataAction({ ...options }).then(() => {})
+  })
   .action((options) => {
     sendAuditDataAction({ ...options }).then(() => {})
   })
