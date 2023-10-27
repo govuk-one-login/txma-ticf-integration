@@ -9,7 +9,10 @@
     "jest/globals": true,
     "node": true
   },
-  "rules": { "no-console": "error" },
+  "rules": {
+    "no-console": "error",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_*" }]
+  },
   "overrides": [
     {
       "files": ["scripts/**/*", "tests/**"],
