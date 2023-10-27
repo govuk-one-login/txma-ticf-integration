@@ -1,5 +1,4 @@
 import { program } from '@commander-js/extra-typings'
-import { sendAuditDataAction } from './manualAuditDataRequests/sendResults/sendAuditDataAction'
 import { AWS_REGION } from './utils/constants'
 
 process.env.AWS_REGION = AWS_REGION
@@ -35,8 +34,5 @@ program
   .action((a, b, c, d) => {
     console.log({ a, b, c, d })
     // sendAuditDataAction({ ...options }).then(() => {})
-  })
-  .action((options) => {
-    sendAuditDataAction({ ...options }).then(() => {})
   })
 program.parse(process.argv)
