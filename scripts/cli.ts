@@ -3,9 +3,10 @@ import { sendAuditDataAction } from './manualAuditDataRequests/sendResults/sendA
 import { AWS_REGION } from './utils/constants'
 
 process.env.AWS_REGION = AWS_REGION
+
 program
   .name('ticf-integration-cli')
-  .description('cli tool for txma ticfontegration')
+  .description('cli tool for txma ticf integration')
 
 program
   .command('send-audit-data')
