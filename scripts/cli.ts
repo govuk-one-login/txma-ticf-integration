@@ -1,4 +1,5 @@
-import { program } from '@commander-js/extra-typings'
+import { Argument, program } from '@commander-js/extra-typings'
+import { sendAuditDataAction } from './manualAuditDataRequests/sendResults/sendAuditDataAction'
 import { AWS_REGION } from './utils/constants'
 
 process.env.AWS_REGION = AWS_REGION
@@ -10,29 +11,28 @@ program
 program
   .command('send-audit-data')
   .description('Uses SAL to send output of athena query to users via email')
-  // .addOption(
-  //   new Option(
-  //     '-e, --environment <env>',
-  //     'The environment to run the script in'
-  //   )
-  //     .choices(['dev', 'build', 'staging', 'integration', 'production'])
-  //     .makeOptionMandatory()
-  // )
+  .addArgument(
+    new Argument(
+      'environment',
+      'the AWS environment to run the script in'
+    ).choices(['dev', 'build', 'staging', 'integration', 'production'])
+  )
   .argument(
-    'athenaQueryId <id>',
+    'athenaQueryId',
     'The athenaQuery Id of the query that was ran against the audit data'
   )
-  .argument('zendeskId <id>', 'The Zendesk ticket id for the request')
-  // .requiredOption(
-  //   '--recipientName <name>',
-  //   'The recipient name as it appears on zendesk'
-  // )
-  // .requiredOption(
-  //   '--recipientEmail <email>',
-  //   'The recipient email as it appears on zendesk'
-  // )
-  .action((athenaQueryId, zendeskId) => {
-    console.log({ athenaQueryId, zendeskId })
-    // sendAuditDataAction({ ...options }).then(() => {})
-  })
+  .argument('zendeskId', 'The Zendesk ticket id for the request')
+  .argument('recipientName', 'The recipient name as it appears on zendesk')
+  .argument('recipientEmail', 'The recipient email as it appears on zendesk')
+  .action(
+    (environment, athenaQueryId, zendeskId, recipientName, recipientEmail) => {
+      sendAuditDataAction({
+        athenaQueryId: athenaQueryId,
+        environment: environment,
+        recipientEmail: recipientEmail,
+        recipientName: recipientName,
+        zendeskId: zendeskId
+      }).then(() => {})
+    }
+  )
 program.parse(process.argv)
