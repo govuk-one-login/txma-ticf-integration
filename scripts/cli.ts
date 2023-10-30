@@ -19,10 +19,10 @@ program
   //     .makeOptionMandatory()
   // )
   .argument(
-    '--athenaQueryId <id>',
+    'athenaQueryId <id>',
     'The athenaQuery Id of the query that was ran against the audit data'
   )
-  .argument('--zendeskId <id>', 'The Zendesk ticket id for the request')
+  .argument('zendeskId <id>', 'The Zendesk ticket id for the request')
   // .requiredOption(
   //   '--recipientName <name>',
   //   'The recipient name as it appears on zendesk'
