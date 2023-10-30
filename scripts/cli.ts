@@ -10,16 +10,18 @@ program
 
 program
   .command('send-audit-data')
-  .description('Uses SAL to send output of athena query to users via email')
+  .description(
+    'Uses SAL to send the output of a raw audit request to users via email'
+  )
   .addArgument(
     new Argument(
       'environment',
-      'the AWS environment to run the script in'
+      'the AWS environment to run the tool in'
     ).choices(['dev', 'build', 'staging', 'integration', 'production'])
   )
   .argument(
     'athenaQueryId',
-    'The athenaQuery Id of the query that was ran against the audit data'
+    'The athena query Id of the query that was ran against the audit data'
   )
   .argument('zendeskId', 'The Zendesk ticket id for the request')
   .argument('recipientName', 'The recipient name as it appears on zendesk')
