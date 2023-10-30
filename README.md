@@ -1,10 +1,29 @@
 # TICF Zendesk integration with TxMA
 
+- [TICF Zendesk integration with TxMA](#ticf-zendesk-integration-with-txma)
+- [Pre-requisites](#pre-requisites)
+  - [Important](#important)
+- [Getting started](#getting-started)
+- [Testing](#testing)
+  - [Setup](#setup)
+  - [Running the Integration Tests](#running-the-integration-tests)
+  - [Running feature tests against a feature branch in the Dev environment](#running-feature-tests-against-a-feature-branch-in-the-dev-environment)
+  - [Test Reports](#test-reports)
+  - [Creating and approving a Zendesk ticket](#creating-and-approving-a-zendesk-ticket)
+  - [Running Zendesk webhook locally](#running-zendesk-webhook-locally)
+- [Code standards](#code-standards)
+- [Scripts](#scripts)
+  - [Valid email recipients management](#valid-email-recipients-management)
+  - [Scripts for Raw Audit Data requests](#scripts-for-raw-audit-data-requests)
+    - [Starting the data copy to the Analysis bucket process](#starting-the-data-copy-to-the-analysis-bucket-process)
+    - [Sending manual query results to recipient](#sending-manual-query-results-to-recipient)
+  - [Licence](#licence)
+
 This repository allows for Zendesk integration with Transaction Monitoring and Auditing (TxMA) which is part of the Digital Identity (DI) system. Events from Zendesk will be able to trigger an automated process to begin the extraction of Audit data from S3.
 
 Threat Intelligence and Counter Fraud (TICF) analysts will be able to request audit data that is stored in S3 via Zendesk tickets. This will trigger an automated process to copy the data to another S3 bucket where Athena queries can be run. The requester is then notified when the query has finished and their results are available via a pre-signed URL in another S3 bucket. The integration with Zendesk also means that tickets can be updated throughout the automated process.
 
-## Pre-requisites
+# Pre-requisites
 
 To run this project you will need the following:
 
@@ -14,12 +33,12 @@ To run this project you will need the following:
 - [Yarn](https://yarnpkg.com/getting-started/install) version 3 - The package manager for the project
 - [Checkov](https://www.checkov.io/) - Scans cloud infrastructure configurations to find misconfigurations before they're deployed. Added as a Husky pre-commit hook.
 
-### Important
+## Important
 
 - **Node version 18** is required since the runtimes for Lambda functions are fixed.
 - Remove any old versions of Yarn that you may have installed globally if installing via `corepack enable`, or else the global version will override the version coming from Node.
 
-## Getting started
+# Getting started
 
 The project is using [Yarn Zero Installs](https://yarnpkg.com/features/zero-installs). So as long as Yarn itself is installed, everything should be ready to go out of the box. As long as you are running Node v16.10+, the easiest way to install Yarn is to enable corepack.
 
@@ -37,9 +56,9 @@ Zero installs works because the dependencies are committed via the `.yarn` folde
 
 In order to ensure that dependencies cannot be altered by anything other than Yarn itself, we run `yarn install --check-cache` in the pipeline. This avoids the possibility of malicous users altering any dependency code.
 
-## Testing
+# Testing
 
-### Setup
+## Setup
 
 The tests can be run against any of the following environments:
 
@@ -65,7 +84,7 @@ Additionally, the tests can be run by getting all of their values from a local f
 
 If you are unsure of any values ask the tech lead/dev team.
 
-### Running the Integration Tests
+## Running the Integration Tests
 
 To run tests against the environment you will need to be authenticated against the environment you wish to run the tests.
 
@@ -125,11 +144,11 @@ yarn test:e2e:dev
    yarn test:integration
    ```
 
-### Test Reports
+## Test Reports
 
 Running the tests creates a results file in JUnit format at `tests/reports/results`.
 
-### Creating and approving a Zendesk ticket
+## Creating and approving a Zendesk ticket
 
 Obviously, you can use the Zendesk UI to do this, but it can be a bit clunky to do this manually, especially if you need to repeat the process a few times.
 There is therefore a script built-in to our `package.json` that you can run, as follows
@@ -158,7 +177,7 @@ and the utility will create and approve a Zendesk ticket for you.
 2. `sam local start-api 2>&1 | tr "\r" "\n"` - This will start the api, formatting the log output so we can read multi-line logs (without this we don't see anything beyond the first line)
 3. `curl -X post http://localhost:3000/zendesk-webhook` - This will confirm the request hitting the endpoint
 
-## Code standards
+# Code standards
 
 This repository is set up to use [Prettier](https://prettier.io/) for formatting, and [ESLint](https://eslint.org/) to look for problems in any Typescript and Javascript code.
 
@@ -176,6 +195,17 @@ To run the linting:
 ```
 yarn lint
 ```
+
+# Scripts
+
+All scripts can now be ran using `yarn cli` in the terminal. Use `yarn cli --help` to see what scripts are available and how to use them. You can also run `yarn cli <command> --help` to view detailed help per command
+
+`script/cli.ts` is the entrypoint to the cli, each command listed by `yarn cli --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
+
+> [!NOTE]  
+> Not all scripts have been migrated over. The following scripts can be used
+>
+> - Sending results of raw audit data
 
 ## Valid email recipients management
 
