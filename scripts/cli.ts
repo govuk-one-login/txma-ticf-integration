@@ -31,8 +31,8 @@ program
   //   '--recipientEmail <email>',
   //   'The recipient email as it appears on zendesk'
   // )
-  .action((a, b, c, d) => {
-    console.log({ a, b, c, d })
+  .action((athenaQueryId, zendeskId) => {
+    console.log({ athenaQueryId, zendeskId })
     // sendAuditDataAction({ ...options }).then(() => {})
   })
 program.parse(process.argv)
