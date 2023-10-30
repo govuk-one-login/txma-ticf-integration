@@ -6,7 +6,7 @@ process.env.AWS_REGION = AWS_REGION
 
 program
   .name('ticf-integration-cli')
-  .description('cli tool for txma ticf integration')
+  .description('cli tool for all helper scripts in txma ticf integration')
 
 program
   .command('send-audit-data')
