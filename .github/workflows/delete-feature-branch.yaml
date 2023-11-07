@@ -12,6 +12,7 @@ jobs:
   delete-feature:
     name: Delete feature branch
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       id-token: write
       contents: read

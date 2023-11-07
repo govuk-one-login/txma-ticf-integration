@@ -12,6 +12,7 @@ jobs:
       id-token: write
       contents: read
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -64,10 +65,12 @@ jobs:
             infrastructure/
             samconfig.toml
             template.yaml
+          retention-days: 7
 
   check-yarn-cache:
     name: Check Yarn cache
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -89,6 +92,7 @@ jobs:
       id-token: write
       contents: read
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v3
@@ -127,6 +131,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: [validate-build, check-yarn-cache]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       id-token: write
       contents: read
