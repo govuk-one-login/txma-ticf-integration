@@ -3,6 +3,7 @@ import { isDateRange, isDateString } from './dateUtils'
 const dateTestCases = [
   { date: '2020-01-01', expected: true },
   { date: '2020-01-011', expected: false },
+  { date: '2020-01-af', expected: false },
   { date: '2020-01-1', expected: false },
   { date: '2020-1-01', expected: false },
   { date: '2020-1-1', expected: false },
@@ -19,6 +20,7 @@ const dateTestCases = [
 
 const daterangeTestCases = [
   { date: '2020/01/01-2020/01/09', expected: true },
+  { date: '2020/01/01-2020/01/af', expected: false },
   { date: '2020/01/01-2020/01/099', expected: false },
   { date: '2020/01/01-2020/019/09', expected: false },
   { date: '2020/01/01-20209/01/09', expected: false },
