@@ -1,12 +1,15 @@
 import { Argument, program } from '@commander-js/extra-typings'
+import { initiateCopyAndDecryptAction } from './manualAuditDataRequests/initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
 import { sendAuditDataAction } from './manualAuditDataRequests/sendResults/sendAuditDataAction'
+import { isStringArray } from './utils/cliUtils'
 import { AWS_REGION } from './utils/constants'
+import { testDateArgs, testDateRangeArgs } from './utils/dateUtils'
 
 process.env.AWS_REGION = AWS_REGION
 
 program
   .name('ticf-integration-cli')
-  .description('cli tool for all helper scripts in txma ticf integration')
+  .description('cli tool for txma ticf integration')
 
 program
   .command('send-audit-data')
@@ -37,4 +40,37 @@ program
       }).then(() => {})
     }
   )
+
+program
+  .command('retrieve-audit-data')
+  .description(
+    'Hooks into SAL to retrieve audit data from glaicer and perform double decryption of audit data'
+  )
+  .argument(
+    'zendeskId <id>',
+    'The Zendesk ticket id for the request. The script assumes the zendesk id is not real.'
+  )
+  .option(
+    '--dates [dates...]',
+    'An array of dates of audit files to copy for analysis in the format "YYYY-MM-DD"',
+    testDateArgs
+  )
+  .option(
+    '--daterange [daterange...]',
+    'An array of date ranges from earliest to latest of audit files to copy for analysis in the format "YYYY/MM/DD-YYYY/MM/DD"',
+    testDateRangeArgs
+  )
+  .action((zendeskId, options) => {
+    if (isStringArray(options.daterange) || isStringArray(options.dates)) {
+      initiateCopyAndDecryptAction({
+        zendeskId: zendeskId,
+        daterange: options.daterange as string[],
+        dates: options.dates as string[]
+      }).then(() => {})
+    } else {
+      console.error('missing date options. Use "--help" flag for details')
+      process.exit(1)
+    }
+  })
+
 program.parse(process.argv)
