@@ -6,10 +6,13 @@ export const testVariadicArgs = (
   testerFunction: (_valueToTest: string) => boolean
 ) => {
   if (!testerFunction(currentValue)) {
-    throw new InvalidArgumentError('Daterange does not match supported format')
+    throw new InvalidArgumentError(
+      'Value provided does not match supported format'
+    )
   }
 
   if (!Array.isArray(previousValue)) {
+    // this branch only runs when the cli passes the first element, therefore, previousValue will always be undefined
     return [currentValue]
   } else {
     previousValue.push(currentValue)
