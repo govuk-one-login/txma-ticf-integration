@@ -1,5 +1,5 @@
-import { sendSqsMessage } from '../../../src/sharedServices/queue/sendSqsMessage'
-import { SendManualQueryPayload } from '../../types/sendManualQueryPayload'
+import { sendSqsMessage } from '../../src/sharedServices/queue/sendSqsMessage'
+import { SendManualQueryPayload } from '../types/sendManualQueryPayload'
 
 export const sendSQSMessageToCompletedQueue = async (
   environment: string,
