@@ -1,17 +1,5 @@
 import { InvalidArgumentError } from '@commander-js/extra-typings'
-import { isStringArray, testVariadicArgs } from './cliUtils'
-
-describe('testing CLI utils', () => {
-  const table = [
-    { array: [], value: true },
-    { array: ['one'], value: true },
-    { array: ['one', 'two'], value: true }
-  ]
-
-  it.each(table)('testing is string array %p', ({ array, value }) => {
-    expect(isStringArray(array)).toBe(value)
-  })
-})
+import { testVariadicArgs } from './cliUtils'
 
 const sampleTesterFunctionIsString = (str: string) => {
   return typeof str === 'string'

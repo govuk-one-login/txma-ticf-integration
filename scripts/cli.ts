@@ -1,7 +1,7 @@
 import { Argument, Command } from '@commander-js/extra-typings'
 import { initiateCopyAndDecryptAction } from './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
 import { sendAuditDataAction } from './sendQueryResults/sendAuditDataAction'
-import { isStringArray } from './utils/cliUtils'
+import { isStringArray } from './utils/lib.ts'
 import { AWS_REGION } from './utils/constants'
 import { testDateArgs, testDateRangeArgs } from './utils/dateUtils'
 
