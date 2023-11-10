@@ -1,6 +1,6 @@
 import { Argument, Command } from '@commander-js/extra-typings'
 import { initiateCopyAndDecryptAction } from './manualAuditDataRequests/initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
-import { sendAuditDataAction } from './manualAuditDataRequests/sendResults/sendAuditDataAction'
+import { sendAuditDataAction } from './sendQueryResults/sendAuditDataAction'
 import { isStringArray } from './utils/cliUtils'
 import { AWS_REGION } from './utils/constants'
 import { testDateArgs, testDateRangeArgs } from './utils/dateUtils'
@@ -14,7 +14,7 @@ program
   .description('cli tool for txma ticf integration')
 
 program
-  .command('send-audit-data')
+  .command('send-query-results')
   .description(
     'Uses SAL to send the output of a raw audit request to users via email'
   )
@@ -46,7 +46,7 @@ program
 program
   .command('retrieve-audit-data')
   .description(
-    'Hooks into SAL to retrieve audit data from glaicer and perform double decryption of audit data'
+    'Hooks into SAL to retrieve audit data from glaicer and perform double decryption of audit data so it can be queried by athena'
   )
   .argument(
     'zendeskId <id>',
