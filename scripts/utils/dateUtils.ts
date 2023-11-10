@@ -28,7 +28,6 @@ export const testDateRangeArgs = (
 export const convertDaterangeToDateArray = (daterangeArray: string[]) => {
   const dateRangeArray = daterangeArray.map((daterange) => {
     const dates = daterange.split('-')
-    // const startDateObj = new Date(dates[0])
     const endDateObj = new Date(dates[1])
 
     const dateArray: Date[] = []
@@ -51,7 +50,7 @@ export const convertDaterangeToDateArray = (daterangeArray: string[]) => {
   return Array.from(new Set(datesAsString))
 }
 
-const addDay = (date: Date) => {
+export const addDay = (date: Date) => {
   const newDate = new Date(date.valueOf())
   newDate.setDate(newDate.getDate() + 1)
   return newDate
