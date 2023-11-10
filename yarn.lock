@@ -4420,7 +4420,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^8.2.2":
+"concurrently@npm:8.2.2":
   version: 8.2.2
   resolution: "concurrently@npm:8.2.2"
   dependencies:
@@ -8078,7 +8078,7 @@ __metadata:
     aws-sdk-client-mock-jest: 3.0.0
     axios: 1.5.1
     commander: 11.1.0
-    concurrently: ^8.2.2
+    concurrently: 8.2.2
     csv-string: 4.1.1
     esbuild: 0.19.5
     eslint: 8.51.0
