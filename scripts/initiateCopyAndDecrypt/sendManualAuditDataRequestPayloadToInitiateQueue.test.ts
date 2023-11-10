@@ -1,14 +1,14 @@
 import { when } from 'jest-when'
-import { sendSqsMessage } from '../../../src/sharedServices/queue/sendSqsMessage'
-import { getAwsAccountNumber } from '../../sharedServices/aws/sts/getAwsAccountNumber'
-import { ManualAuditDataRequestPayload } from '../../types/manualAuditDataRequestPayload'
+import { sendSqsMessage } from '../../src/sharedServices/queue/sendSqsMessage'
+import { getAwsAccountNumber } from '../sharedServices/aws/sts/getAwsAccountNumber'
+import { ManualAuditDataRequestPayload } from '../types/manualAuditDataRequestPayload'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './sendManualAuditDataRequestPayloadToInitiateQueue'
 
-jest.mock('../../../src/sharedServices/queue/sendSqsMessage', () => ({
+jest.mock('../../src/sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessage: jest.fn()
 }))
 
-jest.mock('../../sharedServices/aws/sts/getAwsAccountNumber', () => ({
+jest.mock('../sharedServices/aws/sts/getAwsAccountNumber', () => ({
   getAwsAccountNumber: jest.fn()
 }))
 

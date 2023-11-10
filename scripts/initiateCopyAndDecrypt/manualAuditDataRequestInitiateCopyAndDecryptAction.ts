@@ -1,4 +1,4 @@
-import { convertDaterangeToDateArray } from '../../utils/dateUtils'
+import { convertDaterangeToDateArray } from '../utils/dateUtils'
 import { generateInitiateCopyAndDecryptPayload } from './generateInitiateCopyAndDecryptPayload'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './sendManualAuditDataRequestPayloadToInitiateQueue'
 

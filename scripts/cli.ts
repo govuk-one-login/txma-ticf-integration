@@ -1,5 +1,5 @@
 import { Argument, Command } from '@commander-js/extra-typings'
-import { initiateCopyAndDecryptAction } from './manualAuditDataRequests/initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
+import { initiateCopyAndDecryptAction } from './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
 import { sendAuditDataAction } from './sendQueryResults/sendAuditDataAction'
 import { isStringArray } from './utils/cliUtils'
 import { AWS_REGION } from './utils/constants'
