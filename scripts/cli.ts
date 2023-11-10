@@ -1,4 +1,4 @@
-import { Argument, program } from '@commander-js/extra-typings'
+import { Argument, Command } from '@commander-js/extra-typings'
 import { initiateCopyAndDecryptAction } from './manualAuditDataRequests/initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
 import { sendAuditDataAction } from './manualAuditDataRequests/sendResults/sendAuditDataAction'
 import { isStringArray } from './utils/cliUtils'
@@ -6,6 +6,8 @@ import { AWS_REGION } from './utils/constants'
 import { testDateArgs, testDateRangeArgs } from './utils/dateUtils'
 
 process.env.AWS_REGION = AWS_REGION
+
+const program = new Command()
 
 program
   .name('ticf-integration-cli')
