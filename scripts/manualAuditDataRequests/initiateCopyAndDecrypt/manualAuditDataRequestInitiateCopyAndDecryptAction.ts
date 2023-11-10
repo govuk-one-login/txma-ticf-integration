@@ -12,7 +12,6 @@ export const initiateCopyAndDecryptAction = async (options: Options) => {
   const parsedDates: string[] = []
   parsedDates.push(...convertDaterangeToDateArray(options.daterange ?? []))
   parsedDates.push(...(options.dates ?? []))
-  parsedDates.sort()
   const payload = generateInitiateCopyAndDecryptPayload(
     parsedDates,
     options.zendeskId
