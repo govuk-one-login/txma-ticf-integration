@@ -11,7 +11,7 @@ const program = new Command()
 
 program
   .name('ticf-integration-cli')
-  .description('cli tool for txma ticf integration')
+  .description('cli tool for any scripts for txma ticf integration')
 
 program
   .command('send-query-results')

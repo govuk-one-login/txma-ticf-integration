@@ -200,12 +200,13 @@ yarn lint
 
 All scripts can now be ran using `yarn cli` in the terminal. Use `yarn cli --help` to see what scripts are available and how to use them. You can also run `yarn cli <command> --help` to view detailed help per command
 
-`script/cli.ts` is the entrypoint to the cli, each command listed by `yarn cli --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
+`script/cli.ts` is the entrypoint to the cli, each command listed by `yarn cli --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance in `--help` on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
 
 > [!NOTE]  
 > Not all scripts have been migrated over. The following scripts can be used
 >
 > - Sending results of raw audit data
+> - retireving raw audit data from glacier and/or double encryption
 
 ## Valid email recipients management
 
