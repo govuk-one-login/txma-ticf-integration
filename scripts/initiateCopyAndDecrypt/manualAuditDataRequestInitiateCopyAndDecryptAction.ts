@@ -2,13 +2,15 @@ import { convertDaterangeToDateArray } from '../utils/dateUtils'
 import { generateInitiateCopyAndDecryptPayload } from './generateInitiateCopyAndDecryptPayload'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './sendManualAuditDataRequestPayloadToInitiateQueue'
 
-type Options = {
+export type initiateCopyAndDecrypActionTypes = {
   zendeskId: string
   dates?: string[]
   daterange?: string[]
 }
 
-export const initiateCopyAndDecryptAction = async (options: Options) => {
+export const initiateCopyAndDecryptAction = async (
+  options: initiateCopyAndDecrypActionTypes
+) => {
   const parsedDates: string[] = []
   parsedDates.push(...convertDaterangeToDateArray(options.daterange ?? []))
   parsedDates.push(...(options.dates ?? []))
