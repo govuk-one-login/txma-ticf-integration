@@ -21,7 +21,6 @@
     "setupDevStackSecrets": "ts-node scripts/setupDevStackSecrets.ts",
     "test": "jest -c jest.config.ts",
     "test:cov": "jest -c jest.config.ts --coverage",
-    "test:cov:watch": "concurrently \"python3 -m http.server --directory \"coverage/lcov-report\"\" \"yarn test --coverage --watchAll\"",
     "test:e2e": "jest -c tests/e2e-tests/jest.e2e.config.ts --expand",
     "test:e2e:dev": "jest --setupFiles '<rootDir>/.env' -c tests/e2e-tests/jest.e2e.config.ts --expand",
     "test:integration": "jest -c tests/integration-tests/jest.integration.config.ts --expand",
