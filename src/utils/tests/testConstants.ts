@@ -85,3 +85,5 @@ export const TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID =
 export const TEST_SQS_MESSAGE_ID = 'myTestSQSMessageID'
 export const EMAIL_TO_SLACK_SNS_TOPIC_ARN =
   'arn:aws:sns:eu-west-2:123456789012:email-to-slack-topic'
+
+export const cliBaseCommand = ['path_to_node', 'scripts/cli.ts']

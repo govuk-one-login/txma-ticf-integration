@@ -1,10 +1,10 @@
 import { when } from 'jest-when'
+import { cliBaseCommand } from '../src/utils/tests/testConstants'
 import { parseCliCallerForTesting } from './cli'
 import * as initiateCopyAndDecryptActionFile from './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
 import { initiateCopyAndDecryptAction } from './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
 
-const argvBase = ['path_to_node', 'scripts/cli.ts']
-export const retrieveAuditDataCommandBase = argvBase
+export const retrieveAuditDataCommandBase = cliBaseCommand
   .slice()
   .concat(['retrieve-audit-data'])
 

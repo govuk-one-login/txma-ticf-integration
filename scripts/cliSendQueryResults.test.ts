@@ -1,4 +1,5 @@
 import { when } from 'jest-when'
+import { cliBaseCommand } from '../src/utils/tests/testConstants'
 import { parseCliCallerForTesting } from './cli'
 import * as sendAuditDataActionFile from './sendQueryResults/sendAuditDataAction'
 import { sendAuditDataAction } from './sendQueryResults/sendAuditDataAction'
@@ -9,11 +10,9 @@ type unhappyPathTestCaseType = {
   expectedErrorMessage?: string
 }
 
-const argvBase = ['path_to_node', 'scripts/cli.ts']
-const queryResultsCommandBase = argvBase.slice().concat(['send-query-results'])
-export const retrieveAuditDataCommandBase = argvBase
+const queryResultsCommandBase = cliBaseCommand
   .slice()
-  .concat(['retrieve-audit-data'])
+  .concat(['send-query-results'])
 
 jest.mock('./sendQueryResults/sendAuditDataAction', () => ({
   sendAuditDataAction: jest.fn()
