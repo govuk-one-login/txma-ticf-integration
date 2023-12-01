@@ -25,7 +25,7 @@ export const testDateRangeArgs = (
   return testVariadicArgs(currentValue, previousValue, isDateRange)
 }
 
-export const convertDaterangeToDateArray = (daterangeArray: string[]) => {
+export const convertDateRangeToDateArray = (daterangeArray: string[]) => {
   const dateRangeArray = daterangeArray.map((daterange) => {
     const dates = daterange.split('-')
     const endDateObj = new Date(dates[1])
