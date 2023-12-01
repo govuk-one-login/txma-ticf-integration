@@ -1,4 +1,4 @@
-import { isStringArray } from './lib.ts'
+import { isStringArray } from './lib'
 
 describe('testing lib functions', () => {
   const table = [
