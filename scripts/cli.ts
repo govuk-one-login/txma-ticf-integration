@@ -93,6 +93,8 @@ export const parseCliCallerForTesting = (cli: string[]) => {
   program.parse(cli)
 }
 
+// this if statement check if this file is executed as a script (yarn cli) vs being imported by another
+// if run as script, we can then begin parsing the command line arguments
 if (require.main === module) {
   const program = buildCLI(new Command())
   program.parse(process.argv)
