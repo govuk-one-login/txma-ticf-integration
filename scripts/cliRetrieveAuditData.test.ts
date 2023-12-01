@@ -17,7 +17,7 @@ describe('testing command: retrieve-audit-data', () => {
 
   type happyPath = {
     cliParams: string[]
-    parsedCliParams: initiateCopyAndDecryptActionFile.initiateCopyAndDecrypActionTypes
+    parsedCliParams: initiateCopyAndDecryptActionFile.initiateCopyAndDecryptActionTypes
   }
 
   const table: happyPath[] = [

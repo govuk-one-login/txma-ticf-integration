@@ -53,7 +53,7 @@ export const buildCLI = (program: typeof _typeHelper) => {
   program
     .command('retrieve-audit-data')
     .description(
-      'Hooks into SAL to retrieve audit data from glaicer and perform double decryption of audit data so it can be queried by athena'
+      'Hooks into SAL to retrieve audit data from glacier and perform double decryption of audit data so it can be queried by athena'
     )
     .argument(
       'zendeskId <id>',
