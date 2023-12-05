@@ -14,8 +14,9 @@ export const initiateCopyAndDecryptAction = async (
   const parsedDates: string[] = []
   parsedDates.push(...convertDateRangeToDateArray(options.daterange ?? []))
   parsedDates.push(...(options.dates ?? []))
+  const parsedDatesDeduplicated = Array.from(new Set(parsedDates))
   const payload = generateInitiateCopyAndDecryptPayload(
-    parsedDates,
+    parsedDatesDeduplicated,
     options.zendeskId
   )
   await sendManualAuditDataRequestPayloadToInitiateQueue(payload)
