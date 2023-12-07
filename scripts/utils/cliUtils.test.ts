@@ -7,12 +7,11 @@ const sampleTesterFunctionIsString = (str: string) => {
 
 describe('test variadic args', () => {
   it('tester function is called, it returns false. test error', async () => {
+    const invalidNumberAsString = 123 as unknown as string
+    const validString = '123'
+    const invalidFunction = sampleTesterFunctionIsString
     try {
-      testVariadicArgs(
-        123 as unknown as string,
-        '123',
-        sampleTesterFunctionIsString
-      )
+      testVariadicArgs(invalidNumberAsString, validString, invalidFunction)
     } catch (error) {
       expect(error).toBeInstanceOf(InvalidArgumentError)
       expect((error as Error).message).toBe(
