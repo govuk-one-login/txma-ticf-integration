@@ -10,16 +10,16 @@ type options = {
 }
 
 export const sendAuditDataAction = async (options: options) => {
-  copyManualRequestData(options.environment, options.athenaQueryId)
-    .then(() =>
-      console.log(
-        'Successfully copied data to automated queries folder, within Athena output bucket'
-      )
+  try {
+    await copyManualRequestData(options.environment, options.athenaQueryId)
+    console.log(
+      'Successfully copied data to automated queries folder, within Athena output bucket'
     )
-    .catch((error: unknown) => {
-      console.error('Failed to copy data within output bucket', error)
-      process.exit(1)
-    })
+  } catch (error: unknown) {
+    const errMsg = 'Failed to copy data within output bucket'
+    console.error(errMsg, error)
+    throw new Error(errMsg)
+  }
 
   const sqsMessage = {
     athenaQueryId: options.athenaQueryId,
@@ -28,10 +28,12 @@ export const sendAuditDataAction = async (options: options) => {
     recipientEmail: options.recipientEmail
   }
 
-  sendSQSMessageToCompletedQueue(options.environment, sqsMessage)
-    .then(() => console.log('Sent SQS payload to query completed queue'))
-    .catch((error: unknown) => {
-      console.error('Failed to send payload to query completed queue', error)
-      process.exit(1)
-    })
+  try {
+    await sendSQSMessageToCompletedQueue(options.environment, sqsMessage)
+    console.log('Sent SQS payload to query completed queue')
+  } catch (error: unknown) {
+    const errorMsg = 'Failed to send payload to query completed queue'
+    console.error(errorMsg, error)
+    throw new Error(errorMsg)
+  }
 }
