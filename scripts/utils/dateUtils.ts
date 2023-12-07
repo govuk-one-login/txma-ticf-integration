@@ -1,9 +1,8 @@
 import { testVariadicArgs } from './cliUtils'
+import { DATE_RANGE_REGEX, DATE_REGEX } from './constants'
 
 export const isDateString = (date: string): boolean => {
-  const dateFormatRegex = /^\d{4}-\d{2}-\d{2}$/
-
-  return dateFormatRegex.test(date)
+  return DATE_REGEX.test(date)
 }
 
 export const testDateArgs = (
@@ -14,8 +13,7 @@ export const testDateArgs = (
 }
 
 export const isDateRange = (daterange: string) => {
-  const daterangeRegex = /^\d{4}\/\d{2}\/\d{2}-\d{4}\/\d{2}\/\d{2}$/
-  return daterangeRegex.test(daterange)
+  return DATE_RANGE_REGEX.test(daterange)
 }
 
 export const testDateRangeArgs = (
