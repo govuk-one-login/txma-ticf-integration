@@ -1,7 +1,7 @@
 import * as cliUtils from './cliUtils'
 import {
   addDay,
-  convertDateRangeToDateArray,
+  convertDateRangeToIndividualDateArray,
   isDateRange,
   isDateString,
   testDateArgs,
@@ -93,7 +93,7 @@ describe('testing date utility code', () => {
     )
   })
 
-  it('testing convertDateRangeToDateArray', async () => {
+  it('testing convertDateRangeToIndividualDateArray', async () => {
     const daterange = '2023/01/01-2023/02/01'
     const expected = [
       '2023-01-01',
@@ -129,7 +129,9 @@ describe('testing date utility code', () => {
       '2023-01-31',
       '2023-02-01'
     ]
-    const generatedDateArray = convertDateRangeToDateArray([daterange])
+    const generatedDateArray = convertDateRangeToIndividualDateArray([
+      daterange
+    ])
     expect(generatedDateArray).toEqual(expect.arrayContaining(expected))
   })
 

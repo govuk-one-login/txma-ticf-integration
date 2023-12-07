@@ -1,4 +1,4 @@
-import { convertDateRangeToDateArray } from '../utils/dateUtils'
+import { convertDateRangeToIndividualDateArray } from '../utils/dateUtils'
 import { generateInitiateCopyAndDecryptPayload } from './generateInitiateCopyAndDecryptPayload'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './sendManualAuditDataRequestPayloadToInitiateQueue'
 
@@ -12,7 +12,9 @@ export const initiateCopyAndDecryptAction = async (
   options: initiateCopyAndDecryptActionTypes
 ) => {
   const parsedDates: string[] = []
-  parsedDates.push(...convertDateRangeToDateArray(options.daterange ?? []))
+  parsedDates.push(
+    ...convertDateRangeToIndividualDateArray(options.daterange ?? [])
+  )
   parsedDates.push(...(options.dates ?? []))
   const parsedDatesDeduplicated = Array.from(new Set(parsedDates))
   const payload = generateInitiateCopyAndDecryptPayload(
