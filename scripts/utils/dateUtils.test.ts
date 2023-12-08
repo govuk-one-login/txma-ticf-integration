@@ -17,6 +17,8 @@ const dateTestCases = [
   { date: '2020-1-1', expected: false },
   { date: '22-1-1', expected: false },
   { date: '', expected: false },
+  { date: '-', expected: false },
+  { date: '--', expected: false },
   { date: '2020/01/01', expected: false },
   { date: '2020/01/1', expected: false },
   { date: '2020/1/01', expected: false },
