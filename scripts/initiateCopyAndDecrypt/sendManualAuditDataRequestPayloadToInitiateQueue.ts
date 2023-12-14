@@ -1,6 +1,6 @@
-import { sendSqsMessage } from '../../../src/sharedServices/queue/sendSqsMessage'
-import { getAwsAccountNumber } from '../../sharedServices/aws/sts/getAwsAccountNumber'
-import { ManualAuditDataRequestPayload } from '../../types/manualAuditDataRequestPayload'
+import { sendSqsMessage } from '../../src/sharedServices/queue/sendSqsMessage'
+import { getAwsAccountNumber } from '../sharedServices/aws/sts/getAwsAccountNumber'
+import { ManualAuditDataRequestPayload } from '../types/manualAuditDataRequestPayload'
 
 export const sendManualAuditDataRequestPayloadToInitiateQueue = async (
   payload: ManualAuditDataRequestPayload

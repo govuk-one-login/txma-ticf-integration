@@ -14,9 +14,6 @@
 - [Code standards](#code-standards)
 - [Scripts](#scripts)
   - [Valid email recipients management](#valid-email-recipients-management)
-  - [Scripts for Raw Audit Data requests](#scripts-for-raw-audit-data-requests)
-    - [Starting the data copy to the Analysis bucket process](#starting-the-data-copy-to-the-analysis-bucket-process)
-    - [Sending manual query results to recipient](#sending-manual-query-results-to-recipient)
   - [Licence](#licence)
 
 This repository allows for Zendesk integration with Transaction Monitoring and Auditing (TxMA) which is part of the Digital Identity (DI) system. Events from Zendesk will be able to trigger an automated process to begin the extraction of Audit data from S3.
@@ -200,12 +197,13 @@ yarn lint
 
 All scripts can now be ran using `yarn cli` in the terminal. Use `yarn cli --help` to see what scripts are available and how to use them. You can also run `yarn cli <command> --help` to view detailed help per command
 
-`script/cli.ts` is the entrypoint to the cli, each command listed by `yarn cli --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
+`script/cli.ts` is the entrypoint to the cli, each command listed by `yarn cli --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance in `--help` on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
 
 > [!NOTE]  
 > Not all scripts have been migrated over. The following scripts can be used
 >
 > - Sending results of raw audit data
+> - retrieving raw audit data from glacier and/or double encryption
 
 ## Valid email recipients management
 
@@ -230,47 +228,6 @@ To remove an email from the list:
 ```
 yarn validRecipientsManager --env production --removeEmail <userEmail>
 ```
-
-## Scripts for Raw Audit Data requests
-
-### Starting the data copy to the Analysis bucket process
-
-In order to run manual Athena queries against the audit data, it first needs to be decrypted, any Glacier tier data needs to be restored, and it needs to be copied into the Analysis bucket where Athena can be run against it.
-
-There is a script available to do this via `yarn manualAuditDataRequest:initiateCopyAndDecrypt`.
-
-To run this script you must be authenticated against the relevant Audit account e.g. `aws sso login --profile=audit-{environment}`
-
-Then run the script with the following arguments:
-
-```bash
-yarn manualAuditDataRequest:initiateCopyAndDecrypt --dates YYYY-MM-DD YYYY-MM-DD ... --zendeskId 123456
-```
-
-`--dates`: A list of the dates to copy data to the Analysis bucket (range not supported)
-`--zendeskId`: The ID of the Zendesk ticket the request for Raw Audit Data came from
-
-### Sending manual query results to recipient
-
-When running a manual query, the athena query output ends up in in the `manual-audit-data-queries/` folder. To send the results of the manual query and close the zendesk ticket, you can reuse the SAL > Notify mechanism.
-
-There is a script available to do this via `yarn manualAuditDataRequest:sendResults`.
-
-To run this script you must be authenticated against the relevant Audit account e.g. `aws sso login --profile=audit-{environment}`
-
-Then run the script with the following arguments:
-
-```bash
-yarn manualAuditDataRequest:initiateCopyAndDecrypt --environment <environment> --athenaQueryId <athenaQueryId> --zendeskId <zendeskId> --recepientName <recepientName> --recepientEmail <recepientEmail>
-```
-
-`--environment`: Needed to identify the Athena output bucket
-`--athenaQueryId`: The ID of the Athena Query, also the name of the file in the Athena output bucket
-`--zendeskId`: The ID of the Zendesk ticket the request for Raw Audit Data came from
-`--recipientName`: The name of the requester of the Raw Audit Data in the Zendesk Ticket
-`--recipientEmail`: The email address of the requester of the Raw Audit Data in the Zendesk Ticket
-
-This will send the recipient an email with a secure download link to retrieve the data.
 
 ## Licence
 

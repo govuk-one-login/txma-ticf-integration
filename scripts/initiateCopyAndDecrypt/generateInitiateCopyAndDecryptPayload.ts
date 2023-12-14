@@ -1,4 +1,4 @@
-import { ManualAuditDataRequestPayload } from '../../types/manualAuditDataRequestPayload'
+import { ManualAuditDataRequestPayload } from '../types/manualAuditDataRequestPayload'
 
 export const generateInitiateCopyAndDecryptPayload = (
   dates: string[],

@@ -1,10 +1,10 @@
-import { copyS3Object } from '../../../src/sharedServices/s3/copyS3Object'
+import { copyS3Object } from '../../src/sharedServices/s3/copyS3Object'
 import { getBucketFileName } from './getBucketFileName'
 import { copyManualRequestData } from './copyManualRequestData'
 
 const TEST_ATHENA_QUERY_ID = '46e34211-f930-4e15-a9fb-802f2ae77052'
 
-jest.mock('../../../src/sharedServices/s3/copyS3Object', () => ({
+jest.mock('../../src/sharedServices/s3/copyS3Object', () => ({
   copyS3Object: jest.fn()
 }))
 
