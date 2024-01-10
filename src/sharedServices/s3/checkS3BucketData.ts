@@ -46,9 +46,34 @@ export const checkS3BucketData = async (
     )
     .map((o) => o.Key as string)
 
+  const glacierRestoresInProgress = objectsToCopy
+    .filter((o) => !o.RestoreStatus || o.RestoreStatus.IsRestoreInProgress)
+    .map((o) => o.Key as string)
+
+  logger.debug(
+    'glacierTierLocationsToCopy in source bucket: ' +
+      getAuditDataSourceBucketName()
+  )
+  logger.debug(
+    JSON.stringify(glacierTierLocationsToCopy, null, 4 /* enable colors */)
+  )
+
+  logger.debug(
+    `Number of file restores in progress ${glacierRestoresInProgress.length}`
+  )
   logger.info(
     `Number of standard tier files to copy was ${standardTierLocationsToCopy?.length}, glacier tier files to copy was ${glacierTierLocationsToCopy?.length}`
   )
+  logger.debug('files related to this request', {
+    // files_in_analysis: existingAnalysisBucketObjects.map((object) => {
+    //   return object.Key
+    // }),
+    // files_in_source_bucket: requestedAuditBucketObjects.map((object) => {
+    //   return object.Key
+    // }),
+    files_in_source_but_not_in_analysis: standardTierLocationsToCopy
+  })
+
   return Promise.resolve({
     standardTierLocationsToCopy,
     glacierTierLocationsToCopy,
@@ -58,7 +83,7 @@ export const checkS3BucketData = async (
   })
 }
 
-const retrieveS3ObjectsForPrefixes = async (
+export const retrieveS3ObjectsForPrefixes = async (
   dataRequestParams: DataRequestParams,
   prefixes: string[],
   bucketName: string
