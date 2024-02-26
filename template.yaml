@@ -215,19 +215,19 @@ Resources:
           AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
           VALID_EMAIL_RECIPIENTS_BUCKET: '{{resolve:ssm:ValidEmailRecipientsBucketName}}'
-          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
-          ZENDESK_FIELD_ID_DATA_PATHS: '{{resolve:ssm:ZendeskFieldIdDataPaths}}'
-          ZENDESK_FIELD_ID_DATE_FROM: '{{resolve:ssm:ZendeskFieldIdDateFrom}}'
-          ZENDESK_FIELD_ID_DATE_TO: '{{resolve:ssm:ZendeskFieldIdDateTo}}'
-          ZENDESK_FIELD_ID_DATES: '{{resolve:ssm:ZendeskFieldIdDates}}'
-          ZENDESK_FIELD_ID_EVENT_IDS: '{{resolve:ssm:ZendeskFieldIdEventIds}}'
-          ZENDESK_FIELD_ID_IDENTIFIER_TYPE: '{{resolve:ssm:ZendeskFieldIdIdentifierType}}'
-          ZENDESK_FIELD_ID_JOURNEY_IDS: '{{resolve:ssm:ZendeskFieldIdJourneyIds}}'
-          ZENDESK_FIELD_ID_PII_TYPES: '{{resolve:ssm:ZendeskFieldIdPiiTypes}}'
-          ZENDESK_FIELD_ID_RECIPIENT_EMAIL: '{{resolve:ssm:ZendeskFieldIdRecipientEmail}}'
-          ZENDESK_FIELD_ID_RECIPIENT_NAME: '{{resolve:ssm:ZendeskFieldIdRecipientName}}'
-          ZENDESK_FIELD_ID_SESSION_IDS: '{{resolve:ssm:ZendeskFieldIdSessionIds}}'
-          ZENDESK_FIELD_ID_USER_IDS: '{{resolve:ssm:ZendeskFieldIdUserIds}}'
+          ZENDESK_API_SECRETS_ARN: !ImportValue ZendeskSecretSetArn
+          ZENDESK_FIELD_ID_DATA_PATHS: !ImportValue ZendeskFieldIdDataPaths
+          ZENDESK_FIELD_ID_DATE_FROM: !ImportValue ZendeskFieldIdDateFrom
+          ZENDESK_FIELD_ID_DATE_TO: !ImportValue ZendeskFieldIdDateTo
+          ZENDESK_FIELD_ID_DATES: !ImportValue ZendeskFieldIdDates
+          ZENDESK_FIELD_ID_EVENT_IDS: !ImportValue ZendeskFieldIdEventIds
+          ZENDESK_FIELD_ID_IDENTIFIER_TYPE: !ImportValue ZendeskFieldIdIdentifierType
+          ZENDESK_FIELD_ID_JOURNEY_IDS: !ImportValue ZendeskFieldIdJourneyIds
+          ZENDESK_FIELD_ID_PII_TYPES: !ImportValue ZendeskFieldIdPiiTypes
+          ZENDESK_FIELD_ID_RECIPIENT_EMAIL: !ImportValue ZendeskFieldIdRecipientEmail
+          ZENDESK_FIELD_ID_RECIPIENT_NAME: !ImportValue ZendeskFieldIdRecipientName
+          ZENDESK_FIELD_ID_SESSION_IDS: !ImportValue ZendeskFieldIdSessionIds
+          ZENDESK_FIELD_ID_USER_IDS: !ImportValue ZendeskFieldIdUserIds
       Events:
         Api:
           Type: Api
@@ -332,7 +332,7 @@ Resources:
           INITIATE_DATA_REQUEST_QUEUE_URL: !Ref InitiateDataRequestQueue
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           TERMINATED_JOB_QUEUE_URL: !Ref TerminatedJobQueue
-          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          ZENDESK_API_SECRETS_ARN: !ImportValue ZendeskSecretSetArn
           DATABASE_TTL_HOURS: '{{resolve:ssm:DatabaseTtlHours}}'
           DECRYPTION_LAMBDA_ARN: !GetAtt DecryptAndCopyFunction.Arn
           FEATURE_DECRYPT_DATA: '{{resolve:ssm:FeatureDecryptData}}'
@@ -470,7 +470,7 @@ Resources:
           ANALYSIS_BUCKET_ARN: !GetAtt AnalysisBucket.Arn
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           INITIATE_ATHENA_QUERY_QUEUE_URL: !Ref InitiateAthenaQueryQueue
-          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          ZENDESK_API_SECRETS_ARN: !ImportValue ZendeskSecretSetArn
       FunctionName: !Sub ${AWS::StackName}-data-ready-for-query
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt DataReadyForQueryFunctionRole.Arn
@@ -656,7 +656,7 @@ Resources:
           ATHENA_TABLE_NAME: !Ref AuditAnalysisTable
           ATHENA_WORKGROUP_NAME: '{{resolve:ssm:TicfAutomatedDataQueriesWorkgroupName}}'
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
-          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          ZENDESK_API_SECRETS_ARN: !ImportValue ZendeskSecretSetArn
           EMAIL_TO_SLACK_SNS_TOPIC_ARN: '{{resolve:ssm:EmailToSlackSNSTopicArn}}'
       Events:
         InitiateAthenaQueryEvent:
@@ -746,7 +746,7 @@ Resources:
             Effect: Allow
             Action:
               - secretsmanager:GetSecretValue
-            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+            Resource: !ImportValue ZendeskSecretSetArn
           - Sid: DecryptKmsKeys
             Effect: Allow
             Action:
@@ -812,7 +812,7 @@ Resources:
           QUERY_REQUEST_DYNAMODB_TABLE_NAME: '{{resolve:ssm:QueryRequestTableName}}'
           QUERY_RESULTS_BUCKET_NAME: !Sub txma-qr-infra-${Environment}-query-results-bucket
           QUERY_COMPLETED_QUEUE_URL: '{{resolve:ssm:QueryCompletedQueueUrl}}'
-          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          ZENDESK_API_SECRETS_ARN: !ImportValue ZendeskSecretSetArn
           AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL: '{{resolve:ssm:AuditDataRequestEventsQueueUrl}}'
       FunctionName: !Sub ${AWS::StackName}-send-query-results-notification
       MemorySize: 256
@@ -884,7 +884,7 @@ Resources:
             Effect: Allow
             Action:
               - secretsmanager:GetSecretValue
-            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+            Resource: !ImportValue ZendeskSecretSetArn
           - Sid: QueryRequestTableReadWrite
             Effect: Allow
             Action:
@@ -936,7 +936,7 @@ Resources:
       Role: !GetAtt CloseZendeskTicketFunctionRole.Arn
       Environment:
         Variables:
-          ZENDESK_API_SECRETS_ARN: '{{resolve:ssm:ZendeskSecretSetArn}}'
+          ZENDESK_API_SECRETS_ARN: !ImportValue ZendeskSecretSetArn
       FunctionName: !Sub ${AWS::StackName}-close-zendesk-ticket
       MemorySize: 512
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
@@ -986,7 +986,7 @@ Resources:
             Action:
               - secretsmanager:GetSecretValue
             Resource:
-              - '{{resolve:ssm:ZendeskSecretSetArn}}'
+              - !ImportValue ZendeskSecretSetArn
           - Sid: AllowCloseZendeskTicketQueueRead
             Effect: Allow
             Action:
@@ -1129,7 +1129,7 @@ Resources:
             Effect: Allow
             Action:
               - secretsmanager:GetSecretValue
-            Resource: '{{resolve:ssm:ZendeskSecretSetArn}}'
+            Resource: !ImportValue ZendeskSecretSetArn
           - Sid: DecryptSecrets
             Effect: Allow
             Action:
