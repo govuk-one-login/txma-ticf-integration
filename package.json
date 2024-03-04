@@ -41,7 +41,7 @@
     "@aws-sdk/client-sns": "3.398.0",
     "@aws-sdk/client-sqs": "3.398.0",
     "@aws-sdk/util-endpoints": "3.398.0",
-    "notifications-node-client": "7.0.3"
+    "notifications-node-client": "7.0.6"
   },
   "devDependencies": {
     "@aws-sdk/client-cloudformation": "3.398.0",

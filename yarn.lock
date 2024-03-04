@@ -3973,7 +3973,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.6.7":
+"axios@npm:1.6.7, axios@npm:^1.6.1":
   version: 1.6.7
   resolution: "axios@npm:1.6.7"
   dependencies:
@@ -3981,15 +3981,6 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: 87d4d429927d09942771f3b3a6c13580c183e31d7be0ee12f09be6d5655304996bb033d85e54be81606f4e89684df43be7bf52d14becb73a12727bf33298a082
-  languageName: node
-  linkType: hard
-
-"axios@npm:^0.25.0":
-  version: 0.25.0
-  resolution: "axios@npm:0.25.0"
-  dependencies:
-    follow-redirects: ^1.14.7
-  checksum: 2a8a3787c05f2a0c9c3878f49782357e2a9f38945b93018fb0c4fd788171c43dceefbb577988628e09fea53952744d1ecebde234b561f1e703aa43e0a598a3ad
   languageName: node
   linkType: hard
 
@@ -5202,7 +5193,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.7, follow-redirects@npm:^1.15.4":
+"follow-redirects@npm:^1.15.4":
   version: 1.15.5
   resolution: "follow-redirects@npm:1.15.5"
   peerDependenciesMeta:
@@ -6992,13 +6983,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"notifications-node-client@npm:7.0.3":
-  version: 7.0.3
-  resolution: "notifications-node-client@npm:7.0.3"
+"notifications-node-client@npm:7.0.6":
+  version: 7.0.6
+  resolution: "notifications-node-client@npm:7.0.6"
   dependencies:
-    axios: ^0.25.0
+    axios: ^1.6.1
     jsonwebtoken: ^9.0.0
-  checksum: 5e3ab2bd02c8ca72b9b77fde2c3be67690dad4b00564506846fc80a375aa8919ed3a04d0475509d15de275f3c9af5209ad0ebd0b146cae78440f0c441d1824e4
+  checksum: 91025e05a0d4c34459b15e7bb8a256222a59ce39ed0d74d6245ed749a6d03ad52d511413a931295064b0f4db27a7c670054ac60dfd823432cf8bcd7beb7bba21
   languageName: node
   linkType: hard
 
@@ -8006,7 +7997,7 @@ __metadata:
     jest-when: 3.6.0
     lint-staged: 13.3.0
     node-html-parser: 6.1.10
-    notifications-node-client: 7.0.3
+    notifications-node-client: 7.0.6
     prettier: 2.8.8
     ts-jest: 29.1.1
     ts-node: 10.9.1
