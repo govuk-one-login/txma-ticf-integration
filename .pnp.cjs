@@ -68,7 +68,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-when", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:3.6.0"],\
             ["lint-staged", "npm:13.3.0"],\
             ["node-html-parser", "npm:6.1.10"],\
-            ["notifications-node-client", "npm:7.0.3"],\
+            ["notifications-node-client", "npm:7.0.6"],\
             ["prettier", "npm:2.8.8"],\
             ["ts-jest", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:29.1.1"],\
             ["ts-node", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:10.9.1"],\
@@ -4881,14 +4881,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["axios", [\
-        ["npm:0.25.0", {\
-          "packageLocation": "./.yarn/cache/axios-npm-0.25.0-a1c287d287-2a8a3787c0.zip/node_modules/axios/",\
-          "packageDependencies": [\
-            ["axios", "npm:0.25.0"],\
-            ["follow-redirects", "virtual:d7b9974d1bba76881cc57a280a16dd4914416a6fc4923c2efbb6328057412974da1e719cef1530b7a62b97d85d828f7e1d49b5f6de3b5b0854d49902ec87827c#npm:1.15.5"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:1.6.7", {\
           "packageLocation": "./.yarn/cache/axios-npm-1.6.7-d7b9974d1b-87d4d42992.zip/node_modules/axios/",\
           "packageDependencies": [\
@@ -8354,11 +8346,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["notifications-node-client", [\
-        ["npm:7.0.3", {\
-          "packageLocation": "./.yarn/cache/notifications-node-client-npm-7.0.3-b20ee09601-5e3ab2bd02.zip/node_modules/notifications-node-client/",\
+        ["npm:7.0.6", {\
+          "packageLocation": "./.yarn/cache/notifications-node-client-npm-7.0.6-47f74c20a5-91025e05a0.zip/node_modules/notifications-node-client/",\
           "packageDependencies": [\
-            ["notifications-node-client", "npm:7.0.3"],\
-            ["axios", "npm:0.25.0"],\
+            ["notifications-node-client", "npm:7.0.6"],\
+            ["axios", "npm:1.6.7"],\
             ["jsonwebtoken", "npm:9.0.2"]\
           ],\
           "linkType": "HARD"\
@@ -9527,7 +9519,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-when", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:3.6.0"],\
             ["lint-staged", "npm:13.3.0"],\
             ["node-html-parser", "npm:6.1.10"],\
-            ["notifications-node-client", "npm:7.0.3"],\
+            ["notifications-node-client", "npm:7.0.6"],\
             ["prettier", "npm:2.8.8"],\
             ["ts-jest", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:29.1.1"],\
             ["ts-node", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:10.9.1"],\
