@@ -29,7 +29,7 @@ export const validateZendeskRequest = async (
     appendZendeskIdToLogger(data.zendeskId)
   }
   const isEmailValid = (email: string) =>
-    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(email ?? '')
+    /^\w+([.-]?\w+)+@\w+([.-]?\w+)+.gov.uk$/.test(email ?? '')
 
   const piiTypes = data.piiTypes.replace(/,/g, '')
   const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
@@ -213,7 +213,7 @@ const getTodayUtc = (): number => {
 
 const dataPathFormatCorrect = (dataPath: string): boolean => {
   return (
-    /(\w+(\[\d+\])*\.)+\w+(\[\d+\])*[^,]/.test(dataPath) ||
+    /\w+(\[\d+\])*\.\b\w+(\[\d+\])*\b/.test(dataPath) ||
     (/(\w+(\[\d+\])*)[^,.]/.test(dataPath) && !dataPath.includes('.'))
   )
 }
