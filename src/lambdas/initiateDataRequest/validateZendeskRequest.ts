@@ -127,13 +127,13 @@ const getTodayUtc = (): number => {
 
 const dataPathFormatCorrect = (dataPath: string): boolean => {
   return (
-    /\w+(\[\d+\])*\.\b\w+(\[\d+\])*[^,]/.test(dataPath) ||
+    /(\w+(\[\d+\])*\.)+\w+(\[\d+\])*[^,]/.test(dataPath) ||
     (/(\w+(\[\d+\])*)[^,.]/.test(dataPath) && !dataPath.includes('.'))
   )
 }
 
 const isEmailValid = (email: string) =>
-  /^\w+([.-]?\w+)+@\w+([.-]?\w+)+.gov.uk$/.test(email ?? '')
+  /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(email ?? '')
 
 const validateAllDataPaths = (dataPathsList: string[]) => {
   return dataPathsList.length
