@@ -28,6 +28,8 @@ export const validateZendeskRequest = async (
   if (data.zendeskId) {
     appendZendeskIdToLogger(data.zendeskId)
   }
+  const isEmailValid = (email: string) =>
+    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(email ?? '')
 
   const piiTypes = data.piiTypes.replace(/,/g, '')
   const piiTypesValidated = !piiTypes.length || /[^,(?! )]+/gm.test(piiTypes)
@@ -36,125 +38,19 @@ export const validateZendeskRequest = async (
     data.piiTypes
   ).map(removeZendeskPiiTypePrefixFromPiiType)
 
-  const piiTypesAllValid = validateAllSanitisedPiiTypes(sanitisedPiiTypesList)
+  const piiTypesAllValid = sanitisedPiiTypesList?.length
+    ? sanitisedPiiTypesList.every((type) => validPiiTypes.includes(type))
+    : true
+
   const dataPathsList = mapSpaceSeparatedStringToList(data.dataPaths)
-  const dataPathsAllValid = validateAllDataPaths(dataPathsList)
+  const dataPathsAllValid = dataPathsList.length
+    ? dataPathsList.every((dataPath) => dataPathFormatCorrect(dataPath))
+    : true
 
   const sanitisedIdentifierType: IdentifierTypes = sanitiseIdentifierType(
     data.identifierType
   )
-  const fieldValidation = await validateFields(
-    data,
-    sanitisedIdentifierType,
-    piiTypesAllValid,
-    piiTypesValidated,
-    dataPathsAllValid
-  )
-
-  let isValid = true
-  const validationMessages: string[] = []
-  fieldValidation.forEach((v) => {
-    if (!v.isValid) {
-      validationMessages.push(v.message)
-    }
-    isValid = isValid && v.isValid
-  })
-  return {
-    validationMessage: validationMessages.length
-      ? validationMessages.join(', ')
-      : undefined,
-    dataRequestParams: {
-      dates:
-        data.dateFrom && data.dateFrom.length > 0
-          ? [data.dateFrom]
-          : mapSpaceSeparatedStringToList(data.dates),
-      zendeskId: data.zendeskId,
-      sessionIds: mapSpaceSeparatedStringToList(data.sessionIds),
-      journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
-      eventIds: mapSpaceSeparatedStringToList(data.eventIds),
-      userIds: mapSpaceSeparatedStringToList(data.userIds),
-      piiTypes: sanitisedPiiTypesList,
-      dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
-      identifierType: sanitisedIdentifierType,
-      recipientEmail: data.recipientEmail,
-      recipientName: data.recipientName,
-      requesterEmail: data.requesterEmail,
-      requesterName: data.requesterName
-    },
-    isValid
-  }
-}
-
-const sanitiseIdentifierType = (rawIdentifierType: string): IdentifierTypes => {
-  return (rawIdentifierType ?? '').replace(
-    'pii_identifier_',
-    ''
-  ) as IdentifierTypes
-}
-
-const dateFormatCorrect = (dateString: string) => {
-  return /^\d{4}-\d{2}-\d{2}$/.test(dateString)
-}
-
-const dateListValid = (dateListString: string): boolean => {
-  return (
-    !!dateListString &&
-    dateListString
-      .split(' ')
-      .map((date) => dateFormatCorrect(date))
-      .reduce((a, b) => a && b)
-  )
-}
-
-const dateListAllInPast = (dateListString: string): boolean => {
-  return (
-    !!dateListString &&
-    dateListString
-      .split(' ')
-      .map((date) => dateIsOnOrBeforeToday(date))
-      .reduce((a, b) => a && b)
-  )
-}
-
-const dateIsOnOrBeforeToday = (dateString: string) => {
-  return getEpochDate(dateString) <= getTodayUtc()
-}
-
-const getTodayUtc = (): number => {
-  const today = new Date()
-  return Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
-}
-
-const dataPathFormatCorrect = (dataPath: string): boolean => {
-  return (
-    /(\w+(\[\d+\])*\.)+\w+(\[\d+\])*[^,]/.test(dataPath) ||
-    (/(\w+(\[\d+\])*)[^,.]/.test(dataPath) && !dataPath.includes('.'))
-  )
-}
-
-const isEmailValid = (email: string) =>
-  /^\w+([.-]?\w+)*@\w+([.-]?\w+)*\.gov.uk$/.test(email ?? '')
-
-const validateAllDataPaths = (dataPathsList: string[]) => {
-  return dataPathsList.length
-    ? dataPathsList.every((dataPath) => dataPathFormatCorrect(dataPath))
-    : true
-}
-
-const validateAllSanitisedPiiTypes = (sanitisedPiiTypesList: string[]) => {
-  return sanitisedPiiTypesList?.length
-    ? sanitisedPiiTypesList.every((type) => validPiiTypes.includes(type))
-    : true
-}
-
-const validateFields = async (
-  data: Record<string, string>,
-  sanitisedIdentifierType: IdentifierTypes,
-  piiTypesAllValid: boolean,
-  piiTypesValidated: boolean,
-  dataPathsAllValid: boolean
-) => {
-  return [
+  const fieldValidation = [
     {
       message: 'Recipient email format invalid',
       isValid: isEmailValid(data.recipientEmail)
@@ -240,4 +136,84 @@ const validateFields = async (
       isValid: dataPathsAllValid
     }
   ]
+
+  let isValid = true
+  const validationMessages: string[] = []
+  fieldValidation.forEach((v) => {
+    if (!v.isValid) {
+      validationMessages.push(v.message)
+    }
+    isValid = isValid && v.isValid
+  })
+  return {
+    validationMessage: validationMessages.length
+      ? validationMessages.join(', ')
+      : undefined,
+    dataRequestParams: {
+      dates:
+        data.dateFrom && data.dateFrom.length > 0
+          ? [data.dateFrom]
+          : mapSpaceSeparatedStringToList(data.dates),
+      zendeskId: data.zendeskId,
+      sessionIds: mapSpaceSeparatedStringToList(data.sessionIds),
+      journeyIds: mapSpaceSeparatedStringToList(data.journeyIds),
+      eventIds: mapSpaceSeparatedStringToList(data.eventIds),
+      userIds: mapSpaceSeparatedStringToList(data.userIds),
+      piiTypes: sanitisedPiiTypesList,
+      dataPaths: mapSpaceSeparatedStringToList(data.dataPaths),
+      identifierType: sanitisedIdentifierType,
+      recipientEmail: data.recipientEmail,
+      recipientName: data.recipientName,
+      requesterEmail: data.requesterEmail,
+      requesterName: data.requesterName
+    },
+    isValid
+  }
+}
+
+const sanitiseIdentifierType = (rawIdentifierType: string): IdentifierTypes => {
+  return (rawIdentifierType ?? '').replace(
+    'pii_identifier_',
+    ''
+  ) as IdentifierTypes
+}
+
+const dateFormatCorrect = (dateString: string) => {
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateString)
+}
+
+const dateListValid = (dateListString: string): boolean => {
+  return (
+    !!dateListString &&
+    dateListString
+      .split(' ')
+      .map((date) => dateFormatCorrect(date))
+      .reduce((a, b) => a && b)
+  )
+}
+
+const dateListAllInPast = (dateListString: string): boolean => {
+  return (
+    !!dateListString &&
+    dateListString
+      .split(' ')
+      .map((date) => dateIsOnOrBeforeToday(date))
+      .reduce((a, b) => a && b)
+  )
+}
+
+const dateIsOnOrBeforeToday = (dateString: string) => {
+  return getEpochDate(dateString) <= getTodayUtc()
+}
+
+const getTodayUtc = (): number => {
+  const today = new Date()
+  return Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+}
+
+const dataPathFormatCorrect = (dataPath: string): boolean => {
+  return (
+    /(\w+(\[\d+\])*\.)+\w+(\[\d+\])*[^,]/.test(dataPath) ||
+    (/(\w+(\[\d+\])*)[^,.]/.test(dataPath) && !dataPath.includes('.'))
+  )
 }

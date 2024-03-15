@@ -43,8 +43,8 @@ const getZendeskCustomFieldValue = (
 
 const matchArrayParams = (ticketParam: string[], requestParam: string[]) => {
   return (
-    [...ticketParam].sort((a, b) => a.localeCompare(b)).toString() ===
-    [...requestParam].sort((a, b) => a.localeCompare(b)).toString()
+    ticketParam.sort((a, b) => a.localeCompare(b)).toString() ===
+    requestParam.sort((a, b) => a.localeCompare(b)).toString()
   )
 }
 
