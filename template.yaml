@@ -566,6 +566,7 @@ Resources:
       CodeUri: dist/decryptAndCopy/
       Handler: handler.handler
       MemorySize: 1536
+      ReservedConcurrentExecutions: 50
       Environment:
         Variables:
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
