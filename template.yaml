@@ -116,6 +116,7 @@ Globals:
         DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: 'true'
     PermissionsBoundary:
       !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
+    # concurrency is set low so that audit firehose has enough concurrency to run during peak loads and write the audit data to s3. we are happy to slow down ticf integration
     ReservedConcurrentExecutions: 10
     Runtime: nodejs18.x
     Timeout: 30
@@ -566,7 +567,7 @@ Resources:
       CodeUri: dist/decryptAndCopy/
       Handler: handler.handler
       MemorySize: 1536
-      ReservedConcurrentExecutions: 50
+      # should be less than 10% of global account concurrency so audit firehose has enough concurrency to run during peak loads
       Environment:
         Variables:
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
