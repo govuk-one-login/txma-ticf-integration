@@ -568,6 +568,7 @@ Resources:
       Handler: handler.handler
       MemorySize: 1536
       # should be less than 10% of global account concurrency so audit firehose has enough concurrency to run during peak loads
+      ReservedConcurrentExecutions: 50
       Environment:
         Variables:
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
