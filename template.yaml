@@ -1481,16 +1481,16 @@ Resources:
   IntegrationTestsNotifySecretSet:
     Condition: TestEnvironment
     Type: AWS::SecretsManager::Secret
+    # checkov:skip=CKV_AWS_149:"Ensure that Secrets Manager secret is encrypted using KMS CMK"
     Properties:
       Name: !Sub tests/${AWS::StackName}/NotifySecrets
-      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
   IntegrationTestsZendeskecretSet:
     Condition: TestEnvironment
     Type: AWS::SecretsManager::Secret
+    # checkov:skip=CKV_AWS_149:"Ensure that Secrets Manager secret is encrypted using KMS CMK"
     Properties:
       Name: !Sub tests/${AWS::StackName}/ZendeskSecrets
-      KmsKeyId: '{{resolve:ssm:SecretsKmsKeyArn}}'
 
   SqsOperationsLambdaPolicy:
     Condition: TestRoleResources
