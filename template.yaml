@@ -1484,6 +1484,7 @@ Resources:
     # checkov:skip=CKV_AWS_149:"Ensure that Secrets Manager secret is encrypted using KMS CMK"
     Properties:
       Name: !Sub tests/${AWS::StackName}/NotifySecrets
+      KmsKeyId: 'alias/aws/secretsmanager'
 
   IntegrationTestsZendeskecretSet:
     Condition: TestEnvironment
@@ -1491,7 +1492,7 @@ Resources:
     # checkov:skip=CKV_AWS_149:"Ensure that Secrets Manager secret is encrypted using KMS CMK"
     Properties:
       Name: !Sub tests/${AWS::StackName}/ZendeskSecrets
-      Description: 'Test zendesk secrets used in e2e tests'
+      KmsKeyId: 'alias/aws/secretsmanager'
 
   SqsOperationsLambdaPolicy:
     Condition: TestRoleResources
