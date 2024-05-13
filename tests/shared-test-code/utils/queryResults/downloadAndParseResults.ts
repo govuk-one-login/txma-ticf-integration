@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { isAxiosError } from 'axios'
 import parse from 'node-html-parser'
 import * as CSV from 'csv-string'
 
@@ -32,7 +32,13 @@ const getSecureDownloadPageHTML = async (
     })
     return response.data
   } catch (error) {
-    console.error(error)
+    if (isAxiosError(error)) {
+      console.error(error.response?.status)
+      console.error(error.response?.statusText)
+      console.error(error.response?.data)
+    } else {
+      console.error(error)
+    }
     throw 'Could not load secure download page'
   }
 }

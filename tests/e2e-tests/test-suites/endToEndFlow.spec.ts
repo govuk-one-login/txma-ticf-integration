@@ -43,7 +43,7 @@ const endToEndFlowRequestDataWithSessionId = generateZendeskTicketData({
 const endToEndFlowRequestDataWithJourneyId = generateZendeskTicketData({
   identifier: 'journey_id',
   journeyIds: testData.journeyId,
-  piiTypes: [`${zendeskConstants.piiTypesPrefix}drivers_license`]
+  piiTypes: [`${zendeskConstants.piiTypesPrefix}drivers_licence`]
 })
 
 const endToEndFlowRequestDataNoMatch = generateZendeskTicketData({
@@ -138,7 +138,7 @@ describe('Query results generated', () => {
   })
 
   it('Query matching data with journey id', async () => {
-    const expectedDriversLicense = [
+    const expectedDriverslicence = [
       {
         expirydate: '2024-06-19',
         issuenumber: '96',
@@ -155,7 +155,7 @@ describe('Query results generated', () => {
     const rows = await downloadResultsFileAndParseData(downloadUrl)
 
     expect(rows.length).toEqual(1)
-    expect.arrayContaining(expectedDriversLicense)
+    expect.arrayContaining(expectedDriverslicence)
   })
 
   it('Query matching data with session id', async () => {
