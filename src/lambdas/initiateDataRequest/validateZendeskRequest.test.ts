@@ -410,14 +410,14 @@ describe('validateZendeskRequest', () => {
   it.each([
     'passport_number',
     'passport_expiry_date',
-    'drivers_license',
+    'drivers_licence',
     'name',
     'dob',
     'addresses',
     `${ZENDESK_PII_TYPE_PREFIX}passport_number`,
     `${ZENDESK_PII_TYPE_PREFIX}passport_number`,
     `${ZENDESK_PII_TYPE_PREFIX}passport_expiry_date`,
-    `${ZENDESK_PII_TYPE_PREFIX}drivers_license`,
+    `${ZENDESK_PII_TYPE_PREFIX}drivers_licence`,
     `${ZENDESK_PII_TYPE_PREFIX}name`,
     `${ZENDESK_PII_TYPE_PREFIX}dob`,
     `${ZENDESK_PII_TYPE_PREFIX}addresses`

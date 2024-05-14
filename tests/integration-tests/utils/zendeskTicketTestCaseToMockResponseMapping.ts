@@ -18,7 +18,7 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: testData.eventId,
-    piiTypes: addPrefixToZendeskPiiType('drivers_license'),
+    piiTypes: addPrefixToZendeskPiiType('drivers_licence'),
     dataPaths: testData.dataPaths
   },
   // validGlacierRequestData
@@ -32,7 +32,7 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: testData.eventId,
-    piiTypes: addPrefixToZendeskPiiType('drivers_license'),
+    piiTypes: addPrefixToZendeskPiiType('drivers_licence'),
     dataPaths: ''
   },
   // validStandardAndGlacierTiersRequestData
@@ -46,7 +46,7 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: testData.eventId,
-    piiTypes: addPrefixToZendeskPiiType('drivers_license'),
+    piiTypes: addPrefixToZendeskPiiType('drivers_licence'),
     dataPaths: ''
   },
   // validRequestNoData
@@ -60,7 +60,7 @@ export const zendeskTicketTestCaseToMockResponseMapping: {
     journeyIds: '',
     userIds: '',
     eventIds: testData.eventId,
-    piiTypes: addPrefixToZendeskPiiType('drivers_license'),
+    piiTypes: addPrefixToZendeskPiiType('drivers_licence'),
     dataPaths: ''
   }
 }

@@ -71,7 +71,7 @@ describe('sendAuditMessage', () => {
       requested_journeyIds: '',
       requested_userIds: '',
       requested_eventIds: '637783 3256',
-      piiTypes: 'drivers_license',
+      piiTypes: 'drivers_licence',
       dataPaths: ''
     })
     const testAuditDataRequestEvent = (isLegacyDateFromToRequest = false) => ({
@@ -97,7 +97,7 @@ describe('sendAuditMessage', () => {
           requested_journeyIds: '',
           requested_userIds: '',
           requested_eventIds: '637783 3256',
-          piiTypes: 'drivers_license',
+          piiTypes: 'drivers_licence',
           dataPaths: ''
         }
       }

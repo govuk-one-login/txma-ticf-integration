@@ -55,7 +55,7 @@ describe('create Query SQL', () => {
       'passport_expiry_date',
       `json_extract(restricted, '$.passport[0].expirydate')`
     ],
-    ['drivers_license', `json_extract(restricted, '$.drivingpermit')`],
+    ['drivers_licence', `json_extract(restricted, '$.drivingpermit')`],
     ['dob', `json_extract(restricted, '$.birthdate[0].value')`],
     ['name', `json_extract(restricted, '$.name')`],
     ['addresses', `json_extract(restricted, '$.address')`]

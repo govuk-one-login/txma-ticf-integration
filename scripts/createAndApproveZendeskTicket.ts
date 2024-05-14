@@ -23,7 +23,7 @@ const generateTicketData = (): ZendeskRequestData => ({
       },
       {
         id: zendeskConstants.fieldIds.piiTypes,
-        value: ['drivers_license']
+        value: ['drivers_licence']
       },
       {
         id: zendeskConstants.fieldIds.customDataPath,
