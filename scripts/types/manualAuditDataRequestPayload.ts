@@ -1,3 +1,5 @@
+import { IdentifierTypes } from '../../src/types/dataRequestParams'
+
 export interface ManualAuditDataRequestPayload {
   zendeskId: string
   dates: string[]
@@ -5,7 +7,7 @@ export interface ManualAuditDataRequestPayload {
   requesterName: string
   recipientEmail: string
   recipientName: string
-  identifierType: string
+  identifierType: IdentifierTypes
   sessionIds: string[]
   journeyIds: string[]
   eventIds: string[]

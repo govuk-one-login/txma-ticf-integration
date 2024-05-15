@@ -11,7 +11,16 @@ export const approveZendeskTicket = async (ticketId: string) => {
       expect.arrayContaining(['approved'])
     )
   } catch (error) {
-    console.log(error)
+    console.log(`approving zendesk ticket failed. id: '${ticketId}'`)
+    if (axios.isAxiosError(error)) {
+      const data = {
+        response: error.response,
+        to_json: error.toJSON()
+      }
+      console.log(data)
+    } else {
+      console.log(error)
+    }
     throw 'Error approving Zendesk ticket'
   }
 }
@@ -26,7 +35,7 @@ export const makeApproveZendeskTicketRequest = (
       Authorization: authoriseAs(getEnv('ZENDESK_AGENT_EMAIL')),
       'Content-Type': 'application/json'
     },
-    data: ticketApprovalData
+    data: JSON.stringify(ticketApprovalData)
   })
 }
 

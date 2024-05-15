@@ -125,7 +125,7 @@ const getTodayUtc = (): number => {
   return Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
 }
 
-const dataPathFormatCorrect = (dataPath: string): boolean => {
+export const dataPathFormatCorrect = (dataPath: string): boolean => {
   return (
     /(\w+(\[\d+\])*\.)+\w+(\[\d+\])*[^,]/.test(dataPath) ||
     (/(\w+(\[\d+\])*)[^,.]/.test(dataPath) && !dataPath.includes('.'))

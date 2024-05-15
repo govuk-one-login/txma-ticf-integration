@@ -11,6 +11,13 @@ export type initiateCopyAndDecryptActionTypes = {
 export const initiateCopyAndDecryptAction = async (
   options: initiateCopyAndDecryptActionTypes
 ) => {
+  const payload = generateCopyAndDecryptPayload(options)
+  await sendManualAuditDataRequestPayloadToInitiateQueue(payload)
+}
+
+export const generateCopyAndDecryptPayload = (
+  options: initiateCopyAndDecryptActionTypes
+) => {
   const parsedDates: string[] = []
   parsedDates.push(
     ...convertDateRangeToIndividualDateArray(options.daterange ?? [])
@@ -21,5 +28,5 @@ export const initiateCopyAndDecryptAction = async (
     parsedDatesDeduplicated,
     options.zendeskId
   )
-  await sendManualAuditDataRequestPayloadToInitiateQueue(payload)
+  return payload
 }

@@ -46,6 +46,9 @@ export const checkS3BucketData = async (
     )
     .map((o) => o.Key as string)
 
+  logger.info('glacierTierLocationsToCopy', {
+    glacierTierLocationsToCopy: glacierTierLocationsToCopy
+  })
   logger.info(
     `Number of standard tier files to copy was ${standardTierLocationsToCopy?.length}, glacier tier files to copy was ${glacierTierLocationsToCopy?.length}`
   )

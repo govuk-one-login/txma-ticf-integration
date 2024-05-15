@@ -54,7 +54,7 @@ const createBulkGlacierRestoreJob = async (
       }
     },
     Report: {
-      Enabled: false
+      Enabled: true
     },
     Manifest: {
       Spec: {

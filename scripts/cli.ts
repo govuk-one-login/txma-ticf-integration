@@ -4,6 +4,7 @@ import { sendAuditDataAction } from './sendQueryResults/sendAuditDataAction'
 import { isStringArray } from './utils/lib'
 import { AWS_REGION } from './utils/constants'
 import { testDateArgs, testDateRangeArgs } from './utils/dateUtils'
+import { inspectDataRetrieval } from './inspectDataRetrieval/inspectDataRetrieval'
 
 process.env.AWS_REGION = AWS_REGION
 
@@ -82,6 +83,37 @@ export const buildCLI = (program: typeof _typeHelper) => {
       }
     })
 
+  program
+    .command('inspect-data-retrieval')
+    .description(
+      'allows you to insepct the data retrieval process by passing in a set of date and seeing what files are available to query in athena and what is missing.'
+    )
+    .argument(
+      'zendeskId <id>',
+      'The Zendesk ticket id for the request. The script assumes the zendesk id is not real.'
+    )
+    .option(
+      '--dates [dates...]',
+      'An array of dates of audit files to copy for analysis in the format "YYYY-MM-DD"',
+      testDateArgs
+    )
+    .option(
+      '--daterange [daterange...]',
+      'An array of date ranges from earliest to latest of audit files to copy for analysis in the format "YYYY/MM/DD-YYYY/MM/DD"',
+      testDateRangeArgs
+    )
+    .action((zendeskId, options) => {
+      if (isStringArray(options.daterange) || isStringArray(options.dates)) {
+        inspectDataRetrieval({
+          zendeskId: zendeskId,
+          daterange: options.daterange as string[],
+          dates: options.dates as string[]
+        }).then(() => {})
+      } else {
+        console.error('missing date options. Use "--help" flag for details')
+        process.exit(1)
+      }
+    })
   return program
 }
 
