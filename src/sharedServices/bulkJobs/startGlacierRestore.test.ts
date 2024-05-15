@@ -55,7 +55,7 @@ describe('startGlacierRestore', () => {
         }
       },
       Report: {
-        Enabled: false
+        Enabled: true
       },
       Manifest: {
         Spec: {
