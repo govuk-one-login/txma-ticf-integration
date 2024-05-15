@@ -27,9 +27,9 @@ export const testDataRequest = {
 
 export const testDataRequestWithAllValuesSet = {
   zendeskId: ZENDESK_TICKET_ID,
-  recipientEmail: 'myuser@test.gov.uk',
+  recipientEmail: 'myuser@example.com',
   recipientName: 'my name',
-  requesterEmail: 'myuser@test.gov.uk',
+  requesterEmail: 'myuser@example.com',
   requesterName: 'my name',
   dates: [TEST_DATE_1, TEST_DATE_2],
   dataPaths: ['path_to_data1', 'path_to_data2'],
@@ -43,9 +43,9 @@ export const testDataRequestWithAllValuesSet = {
 
 export const testDataRequestWithEmptyValuesForIds = {
   zendeskId: ZENDESK_TICKET_ID,
-  recipientEmail: 'myuser@test.gov.uk',
+  recipientEmail: 'myuser@example.com',
   recipientName: 'my name',
-  requesterEmail: 'myuser@test.gov.uk',
+  requesterEmail: 'myuser@example.com',
   requesterName: 'my name',
   dates: [TEST_DATE_1, TEST_DATE_2],
   identifierType: 'event_id',
@@ -59,9 +59,9 @@ export const testDataRequestWithEmptyValuesForIds = {
 
 export const noIdTestDataRequest = {
   zendeskId: ZENDESK_TICKET_ID,
-  recipientEmail: 'myuser@test.gov.uk',
+  recipientEmail: 'myuser@example.com',
   recipientName: 'my name',
-  requesterEmail: 'myuser@test.gov.uk',
+  requesterEmail: 'myuser@example.com',
   requesterName: 'my name',
   dates: [TEST_DATE_1, TEST_DATE_2],
   identifierType: 'event_id',
@@ -75,9 +75,9 @@ export const noIdTestDataRequest = {
 
 export const dataPathsTestDataRequest = {
   zendeskId: ZENDESK_TICKET_ID,
-  recipientEmail: 'myuser@test.gov.uk',
+  recipientEmail: 'myuser@example.com',
   recipientName: 'my name',
-  requesterEmail: 'myuser@test.gov.uk',
+  requesterEmail: 'myuser@example.com',
   requesterName: 'my name',
   dates: [TEST_DATE_1],
   identifierType: 'event_id',
@@ -91,9 +91,9 @@ export const dataPathsTestDataRequest = {
 
 export const testDataRequestWithNoDataPathsOrPiiTypes = {
   zendeskId: ZENDESK_TICKET_ID,
-  recipientEmail: 'myuser@test.gov.uk',
+  recipientEmail: 'myuser@example.com',
   recipientName: 'my name',
-  requesterEmail: 'myuser@test.gov.uk',
+  requesterEmail: 'myuser@example.com',
   requesterName: 'my name',
   dates: [TEST_DATE_1],
   dataPaths: [],

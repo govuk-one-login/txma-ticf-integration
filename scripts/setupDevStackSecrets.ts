@@ -42,7 +42,7 @@ const copyZendeskSecretsToStackSecret = async (
       SecretId: `tests/${getStackName()}/ZendeskSecrets`,
       SecretString: JSON.stringify({
         ZENDESK_API_KEY: 'someValue',
-        ZENDESK_RECIPIENT_EMAIL: 'somerecipient@somedomain.gov.uk',
+        ZENDESK_RECIPIENT_EMAIL: 'somerecipient@example.com',
         ZENDESK_HOSTNAME: 'mockserver.transaction.build.account.gov.uk',
         ZENDESK_WEBHOOK_SECRET_KEY: zendeskWebhookSecretKey
       })

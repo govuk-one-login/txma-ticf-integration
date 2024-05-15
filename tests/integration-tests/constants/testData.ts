@@ -21,8 +21,8 @@ export const testData: TestDataConstants = {
   mockServerValues: {
     zendeskEndUserName: 'Txma-team2-ticf-analyst-dev',
     recipientName: 'Test User',
-    recipientEmail: 'fake-ticf-recipient@test.gov.uk',
-    requesterEmail: 'fake-ticf-analyst@test.gov.uk',
+    recipientEmail: 'fake-ticf-recipient@example.com',
+    requesterEmail: 'fake-ticf-analyst@example.com',
     requesterName: 'Txma-team2-ticf-analyst-dev'
   }
 }

@@ -2,7 +2,7 @@ import { ZENDESK_TICKET_ID } from '../testConstants'
 
 export const exampleEventBody = JSON.stringify({
   zendeskId: ZENDESK_TICKET_ID,
-  resultsEmail: 'test@email.com',
+  resultsEmail: 'test@example.com',
   dateFrom: '2022-08-17',
   dateTo: '2022-08-17',
   identifierType: 'session_id',

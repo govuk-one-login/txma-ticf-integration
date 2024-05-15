@@ -16,7 +16,7 @@ describe('Invalid requests should not start a data copy', () => {
       const defaultWebhookRequestData =
         getWebhookRequestDataForTestCaseNumberAndDate(1, '2022-01-01')
       defaultWebhookRequestData.recipientEmail =
-        'txma-team2-bogus-ticf-analyst-dev@test.gov.uk'
+        'txma-team2-bogus-ticf-analyst-dev@example.com'
       ticketId = defaultWebhookRequestData.zendeskId
       await sendWebhookRequest(defaultWebhookRequestData)
     })

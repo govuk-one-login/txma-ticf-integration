@@ -5,9 +5,9 @@ const config: JestConfigWithTsJest = {
   globals: {
     AWS_REGION: 'eu-west-2',
     STACK_NAME: 'txma-ticf-integration',
-    ZENDESK_ADMIN_EMAIL: 'txma-team2-ticf-admin-dev@test.gov.uk',
-    ZENDESK_AGENT_EMAIL: 'txma-team2-ticf-approver-dev@test.gov.uk',
-    ZENDESK_END_USER_EMAIL: 'txma-team2-ticf-analyst-dev@test.gov.uk',
+    ZENDESK_ADMIN_EMAIL: 'txma-team2-ticf-admin-dev@example.com',
+    ZENDESK_AGENT_EMAIL: 'txma-team2-ticf-approver-dev@example.com',
+    ZENDESK_END_USER_EMAIL: 'txma-team2-ticf-analyst-dev@example.com',
     ZENDESK_END_USER_NAME: 'Txma-team2-ticf-analyst-dev'
   },
   preset: 'ts-jest',

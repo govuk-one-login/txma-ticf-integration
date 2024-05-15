@@ -38,9 +38,9 @@ describe('dynamoDBGet', () => {
     const mockItem: Record<string, AttributeValue> = {
       requestInfo: {
         M: {
-          recipientEmail: { S: 'test@test.gov.uk' },
+          recipientEmail: { S: 'test@example.com' },
           recipientName: { S: 'test' },
-          requesterEmail: { S: 'test@test.gov.uk' },
+          requesterEmail: { S: 'test@example.com' },
           requesterName: { S: 'test' },
           identifierType: { S: 'eventId' },
           ...(!parameters?.isLegacyRecordWithDateFromTo && {
@@ -86,9 +86,9 @@ describe('dynamoDBGet', () => {
 
       const result = await getDatabaseEntryByZendeskId('12')
       expect(result.requestInfo).toEqual({
-        recipientEmail: 'test@test.gov.uk',
+        recipientEmail: 'test@example.com',
         recipientName: 'test',
-        requesterEmail: 'test@test.gov.uk',
+        requesterEmail: 'test@example.com',
         requesterName: 'test',
         dates: [TEST_DATE_1, TEST_DATE_2],
         identifierType: 'eventId',
@@ -109,9 +109,9 @@ describe('dynamoDBGet', () => {
 
       const result = await getDatabaseEntryByZendeskId('12')
       expect(result.requestInfo).toEqual({
-        recipientEmail: 'test@test.gov.uk',
+        recipientEmail: 'test@example.com',
         recipientName: 'test',
-        requesterEmail: 'test@test.gov.uk',
+        requesterEmail: 'test@example.com',
         requesterName: 'test',
         dates: [TEST_DATE_1],
         identifierType: 'eventId',
@@ -196,9 +196,9 @@ describe('dynamoDBGet', () => {
 
       expect(dynamoMock).toHaveReceivedCommandWith(QueryCommand, testParams)
       expect(result.requestInfo).toEqual({
-        recipientEmail: 'test@test.gov.uk',
+        recipientEmail: 'test@example.com',
         recipientName: 'test',
-        requesterEmail: 'test@test.gov.uk',
+        requesterEmail: 'test@example.com',
         requesterName: 'test',
         dates: [TEST_DATE_1, TEST_DATE_2],
         identifierType: 'eventId',

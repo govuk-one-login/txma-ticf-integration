@@ -10,9 +10,9 @@ describe('generateInitiateCopyAndDecryptPayload', () => {
     expect(payload).toEqual({
       zendeskId: 'MR123456789',
       dates: ['2020-01-01'],
-      requesterEmail: 'manualquery@test.gov.uk',
+      requesterEmail: 'manualquery@example.com',
       requesterName: 'txma',
-      recipientEmail: 'manualquery@test.gov.uk',
+      recipientEmail: 'manualquery@example.com',
       recipientName: '',
       identifierType: 'event_id',
       sessionIds: [],

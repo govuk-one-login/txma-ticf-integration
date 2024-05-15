@@ -7,7 +7,7 @@ jest.mock('../../src/sharedServices/queue/sendSqsMessage', () => ({
 
 const TEST_ATHENA_QUERY_ID = '46e34211-f930-4e15-a9fb-802f2ae77052'
 const TEST_RECIPIENT_NAME = 'A Recipient'
-const TEST_RCIPIENT_EMAIL = 'email1@test.gov.uk'
+const TEST_RCIPIENT_EMAIL = 'email1@example.com'
 const TEST_ZENDESK_TICKET_ID = '49312752'
 
 describe('sendSQSMessageToCompletedQueue function tests', () => {
