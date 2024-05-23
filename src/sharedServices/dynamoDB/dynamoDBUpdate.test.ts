@@ -54,8 +54,8 @@ describe('dynamoDbUpdate', () => {
               zendeskId: { S: '12' },
               eventIds: { L: [{ S: '234gh24' }, { S: '98h98bc' }] },
               piiTypes: { L: [{ S: 'passport_number' }] },
-              recipientEmail: { S: 'test@test.gov.uk' },
-              requesterEmail: { S: 'test@test.gov.uk' },
+              recipientEmail: { S: 'test@example.com' },
+              requesterEmail: { S: 'test@example.com' },
               requesterName: { S: 'test' }
             }
           },

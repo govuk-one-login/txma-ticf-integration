@@ -246,7 +246,7 @@ describe('match zendesk ticket details', () => {
 
     mockGetZendeskUser.mockImplementation(() =>
       Promise.resolve({
-        email: 'myuser@test.gov.uk',
+        email: 'myuser@example.com',
         name: 'my name'
       })
     )
@@ -323,7 +323,7 @@ describe('match zendesk ticket details', () => {
 
     mockGetZendeskUser.mockImplementation(() =>
       Promise.resolve({
-        email: 'myuser@test.gov.uk',
+        email: 'myuser@example.com',
         name: 'my name'
       })
     )
@@ -354,7 +354,7 @@ describe('match zendesk ticket details', () => {
     )
     mockGetZendeskUser.mockImplementation(() =>
       Promise.resolve({
-        email: 'myuser@test.gov.uk',
+        email: 'myuser@example.com',
         name: 'my name'
       })
     )
@@ -384,9 +384,9 @@ describe('match zendesk ticket details', () => {
 
   test.each([
     ['zendeskId', '123456789'],
-    ['recipientEmail', 'notmyemail@example.gov.uk'],
+    ['recipientEmail', 'notmyemail@example.com'],
     ['recipientName', 'not my name'],
-    ['requesterEmail', 'notmyemail@example.gov.uk'],
+    ['requesterEmail', 'notmyemail@example.com'],
     ['dataPaths', ['123456789']],
     ['eventIds', ['123456789']],
     ['journeyIds', ['123456789']],

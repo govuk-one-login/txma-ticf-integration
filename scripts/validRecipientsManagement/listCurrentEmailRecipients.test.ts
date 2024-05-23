@@ -14,9 +14,9 @@ describe('listCurrentEmailRecipients', () => {
   it('should read from the correct bucket and file name, and return the data as a list', async () => {
     const testEnvironment = 'myEnvironment'
     const testBucketName = 'emailRecipientsBucketName'
-    const recipient1 = 'email1@test.gov.uk'
-    const recipient2 = 'email2@test.gov.uk'
-    const recipient3 = 'email3@test.gov.uk'
+    const recipient1 = 'email1@example.com'
+    const recipient2 = 'email2@example.com'
+    const recipient3 = 'email3@example.com'
 
     when(getValidRecipientBucketName).mockReturnValue(testBucketName)
     when(readS3DataToString).mockResolvedValue(

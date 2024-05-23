@@ -9,7 +9,7 @@ import { sendSQSMessageToCompletedQueue } from './sendSQSMessageToCompletedQueue
 const payload = {
   environment: 'dev',
   athenaQueryId: 'athenaId123',
-  recipientEmail: 'email@email.com',
+  recipientEmail: 'email@example.com',
   recipientName: 'Name name',
   zendeskId: 'zendeskId123'
 }

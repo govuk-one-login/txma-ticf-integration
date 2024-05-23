@@ -11,10 +11,10 @@ jest.mock('./writeRecipientListToBucket', () => ({
 }))
 
 describe('removeEmailRecipient', () => {
-  const testExistingEmail = 'myEmail1@test.gov.uk'
-  const testExistingEmail2 = 'myEmail2@test.gov.uk'
+  const testExistingEmail = 'myEmail1@example.com'
+  const testExistingEmail2 = 'myEmail2@example.com'
   const testEnvironment = 'myEnvironment'
-  const testEmailToRemove = 'myEmailToRemove@test.gov.uk'
+  const testEmailToRemove = 'myEmailToRemove@example.com'
   const currentRecipients = [
     testExistingEmail,
     testExistingEmail2,
@@ -42,7 +42,7 @@ describe('removeEmailRecipient', () => {
   it('should not try to remove the email if it does not exist in the current list', async () => {
     when(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
 
-    await removeEmailRecipient('someOtherEmail@test.gov.uk', testEnvironment)
+    await removeEmailRecipient('someOtherEmail@example.com', testEnvironment)
 
     expect(listCurrentEmailRecipients).toHaveBeenCalledWith(testEnvironment)
 

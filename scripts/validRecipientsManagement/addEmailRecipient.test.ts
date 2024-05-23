@@ -11,10 +11,10 @@ jest.mock('./writeRecipientListToBucket', () => ({
 }))
 
 describe('addEmailRecipient', () => {
-  const testExistingEmail = 'myEmail1@test.gov.uk'
-  const testNewEmail = 'myEmail3@test.gov.uk'
+  const testExistingEmail = 'myEmail1@example.com'
+  const testNewEmail = 'myEmail3@example.com'
   const testEnvironment = 'myEnvironment'
-  const currentRecipients = [testExistingEmail, 'myEmail2@test.gov.uk']
+  const currentRecipients = [testExistingEmail, 'myEmail2@example.com']
   beforeEach(() => {
     jest.resetAllMocks()
   })

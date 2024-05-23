@@ -15,9 +15,9 @@ describe('writeRecipientListToBucket', () => {
   it('should write the data to the correct bucket and file name', async () => {
     const testEnvironment = 'myEnvironment'
     const testBucketName = 'emailRecipientsBucketName'
-    const recipient1 = 'email1@test.gov.uk'
-    const recipient2 = 'email2@test.gov.uk'
-    const recipient3 = 'email3@test.gov.uk'
+    const recipient1 = 'email1@example.com'
+    const recipient2 = 'email2@example.com'
+    const recipient3 = 'email3@example.com'
 
     when(getValidRecipientBucketName).mockReturnValue(testBucketName)
 
