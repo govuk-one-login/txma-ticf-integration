@@ -132,6 +132,7 @@ Globals:
               !Ref Environment,
               dynatraceSecretArn
             ]
+    AutoPublishAlias: live
   Api:
     OpenApiVersion: 3.0.1
 

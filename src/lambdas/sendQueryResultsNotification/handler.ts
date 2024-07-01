@@ -20,11 +20,12 @@ export const handler = async (
   const athenaQueryId = queryDetails.queryExecutionId
 
   const requestData = await getQueryByAthenaQueryId(athenaQueryId)
+  const zendeskTicketId = requestData.requestInfo.zendeskId
+
+  appendZendeskIdToLogger(zendeskTicketId)
   logger.info('Retrieved request data from database by athenaQueryId', {
     athenaQueryId
   })
-  const zendeskTicketId = requestData.requestInfo.zendeskId
-  appendZendeskIdToLogger(zendeskTicketId)
 
   try {
     await confirmQueryState(queryDetails, zendeskTicketId)

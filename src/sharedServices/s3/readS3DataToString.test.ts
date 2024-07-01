@@ -17,8 +17,7 @@ const getObjectCommandInput: GetObjectCommandInput = {
   Bucket: TEST_VALID_EMAIL_RECIPIENTS_BUCKET,
   Key: TEST_VALID_EMAIL_RECIPIENTS_BUCKET_KEY
 }
-const testRecipientEmailList =
-  'recipient1@somedomain.gov.uk\nrecipient2@somedomain.gov.uk'
+const testRecipientEmailList = 'recipient1@example.com\nrecipient2@example.com'
 
 const createDataStream = () => {
   const dataStream = new Readable()

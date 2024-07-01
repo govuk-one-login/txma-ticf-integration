@@ -13,8 +13,8 @@ jest.mock('./isEmailInValidRecipientList', () => ({
 }))
 
 describe('validateZendeskRequest', () => {
-  const testValidResultsEmail = 'myname@somedomain.gov.uk'
-  const testNotInValidRecipientListEmail = 'someothername@somedomain.gov.uk'
+  const testValidResultsEmail = 'myname@example.gov.uk'
+  const testNotInValidRecipientListEmail = 'someothername@example.gov.uk'
   const testResultsName = 'my resultsname'
   const testZendeskId = '123'
   interface RequestBody {
@@ -190,9 +190,9 @@ describe('validateZendeskRequest', () => {
     }) => {
       const testRequest = {
         zendeskId: '123',
-        recipientEmail: 'myname@somedomain.gov.uk',
+        recipientEmail: 'myname@example.gov.uk',
         recipientName: 'my resultsname',
-        requesterEmail: 'myname@somedomain.gov.uk',
+        requesterEmail: 'myname@example.gov.uk',
         requesterName: 'my resultsname',
         dateFrom: '2021-08-01',
         dateTo: '2021-08-01',
@@ -645,7 +645,7 @@ describe('validateZendeskRequest', () => {
 
   it('should return an invalid response if recipientEmail is not for a .gov.uk domain', async () => {
     const requestBody = buildValidRequestBody()
-    requestBody.recipientEmail = 'someperson@test.com'
+    requestBody.recipientEmail = 'someperson@example.com'
     const validationResult = await validateZendeskRequest(
       JSON.stringify(requestBody)
     )
@@ -669,7 +669,7 @@ describe('validateZendeskRequest', () => {
 
   it('should return an invalid response if requesterEmail is not for a .gov.uk domain', async () => {
     const requestBody = buildValidRequestBody()
-    requestBody.requesterEmail = 'someperson@test.com'
+    requestBody.requesterEmail = 'someperson@example.com'
     const validationResult = await validateZendeskRequest(
       JSON.stringify(requestBody)
     )

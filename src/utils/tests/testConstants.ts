@@ -5,7 +5,7 @@ export const ZENDESK_TICKET_ID_AS_NUMBER = 123
 export const ALL_ZENDESK_SECRETS: ZendeskApiSecrets = {
   zendeskApiKey: 'myZendeskApiKey',
   zendeskApiUserId: 'myZendeskApiUserId',
-  zendeskApiUserEmail: 'my_zendesk@api-user.email.com',
+  zendeskApiUserEmail: 'my_zendesk@example.com',
   zendeskHostName: 'example-host.zendesk.com',
   zendeskWebhookSecretKey: 'testSecretKey123'
 }
@@ -36,9 +36,9 @@ export const TEST_BATCH_JOB_MANIFEST_BUCKET_ARN = 'myManifestBucketArn'
 export const TEST_BATCH_JOB_MANIFEST_BUCKET_NAME = 'myManifestBucketName'
 export const TEST_BATCH_JOB_ROLE_ARN = 'myBatchJobRoleArn'
 export const TEST_QUERY_DATABASE_TABLE_NAME = 'test_query_table'
-export const TEST_RECIPIENT_EMAIL = 'myuser@test.gov.uk'
+export const TEST_RECIPIENT_EMAIL = 'myuser@example.com'
 export const TEST_RECIPIENT_NAME = 'my name'
-export const TEST_REQUESTER_EMAIL = 'myrequestuser@test.gov.uk'
+export const TEST_REQUESTER_EMAIL = 'myrequestuser@example.com'
 export const TEST_REQUESTER_NAME = 'my requester name'
 
 export const TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT = 484

@@ -6,9 +6,9 @@ export const generateInitiateCopyAndDecryptPayload = (
 ): ManualAuditDataRequestPayload => ({
   zendeskId: `MR${zendeskId}`,
   dates,
-  requesterEmail: 'manualquery@test.gov.uk',
+  requesterEmail: 'manualquery@example.com',
   requesterName: 'txma',
-  recipientEmail: 'manualquery@test.gov.uk',
+  recipientEmail: 'manualquery@example.com',
   recipientName: '',
   identifierType: 'event_id',
   sessionIds: [],

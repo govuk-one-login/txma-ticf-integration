@@ -42,7 +42,7 @@ describe('testing command: send-query-results', () => {
             'athenaId123',
             'zendeskId123',
             'Jon Doe',
-            'john.doe@email.com'
+            'john.doe@example.com'
           ]),
         testDescription: `testing command valid command with envrionment: ${env}`
       }
@@ -57,7 +57,7 @@ describe('testing command: send-query-results', () => {
       expect(sendAuditDataActionFile.sendAuditDataAction).toHaveBeenCalledWith({
         athenaQueryId: 'athenaId123',
         environment: arg[3],
-        recipientEmail: 'john.doe@email.com',
+        recipientEmail: 'john.doe@example.com',
         recipientName: 'Jon Doe',
         zendeskId: 'zendeskId123'
       })
@@ -75,7 +75,7 @@ describe('testing command: send-query-results', () => {
             'athenaId123',
             'zendeskId123',
             'Jon Doe',
-            'john.doe@email.com'
+            'john.doe@example.com'
           ]),
         testDescription: `testing command is invalid with environment ${env}`
       }
