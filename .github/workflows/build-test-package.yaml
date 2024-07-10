@@ -136,6 +136,8 @@ jobs:
       id-token: write
       contents: read
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
@@ -152,7 +154,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
       - name: Package SAM app and upload to S3
-        uses: alphagov/di-devplatform-upload-action@v3
+        uses: govuk-one-login/devplatform-upload-action@v3.8.1
         with:
           artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
