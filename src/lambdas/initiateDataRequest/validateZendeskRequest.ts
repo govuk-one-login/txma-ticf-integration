@@ -102,11 +102,14 @@ const dateListValid = (dateListString: string): boolean => {
     dateListString
       .split(' ')
       .map((date) => dateFormatCorrect(date))
-      .reduce((a, b) => {
-        if (a && b) {
-          return a && b
-        } else return false
-      })
+      .reduce(
+        (a, b) => {
+          if (a && b) {
+            return a && b
+          } else return false
+        },
+        dateListString.trim().length > 0 ? true : false
+      )
   )
 }
 
@@ -116,11 +119,14 @@ const dateListAllInPast = (dateListString: string): boolean => {
     dateListString
       .split(' ')
       .map((date) => dateIsOnOrBeforeToday(date))
-      .reduce((a, b) => {
-        if (a && b) {
-          return a && b
-        } else return false
-      })
+      .reduce(
+        (a, b) => {
+          if (a && b) {
+            return a && b
+          } else return false
+        },
+        dateListString.trim().length > 0 ? true : false
+      )
   )
 }
 
