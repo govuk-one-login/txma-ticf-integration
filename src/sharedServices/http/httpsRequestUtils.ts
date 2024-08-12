@@ -33,7 +33,7 @@ export const makeHttpsRequest = async (
           reject(
             new Error(
               `Error parsing JSON response: ${
-                error instanceof Error ? error.message : String(error)
+                error instanceof Error ? error.message : JSON.stringify(error)
               }`
             )
           )
@@ -45,7 +45,7 @@ export const makeHttpsRequest = async (
         reject(
           new Error(
             `Request error: ${
-              error instanceof Error ? error.message : String(error)
+              error instanceof Error ? error.message : JSON.stringify(error)
             }`
           )
         )
