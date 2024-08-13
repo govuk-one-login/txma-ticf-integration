@@ -30,13 +30,25 @@ export const makeHttpsRequest = async (
         try {
           chunks = chunks.length > 0 ? JSON.parse(chunks) : {}
         } catch (error) {
-          reject(error)
+          reject(
+            new Error(
+              `Error parsing JSON response: ${
+                error instanceof Error ? error.message : JSON.stringify(error)
+              }`
+            )
+          )
         }
         resolve(chunks)
       })
 
       response.on('error', (error) => {
-        reject(error)
+        reject(
+          new Error(
+            `Request error: ${
+              error instanceof Error ? error.message : JSON.stringify(error)
+            }`
+          )
+        )
       })
     })
 
