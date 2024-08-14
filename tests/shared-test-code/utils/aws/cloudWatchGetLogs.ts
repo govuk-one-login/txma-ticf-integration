@@ -4,7 +4,8 @@ import {
   LogStream,
   FilterLogEventsCommand,
   FilteredLogEvent,
-  FilterLogEventsCommandInput
+  FilterLogEventsCommandInput,
+  OrderBy
 } from '@aws-sdk/client-cloudwatch-logs'
 import { pause } from '../helpers'
 
@@ -49,7 +50,7 @@ export const getCloudWatchLogEventsGroupByMessagePattern = async (
 const getLogStreams = async (logGroupName: string) => {
   const input = {
     logGroupName: logGroupName,
-    orderBy: 'LastEventTime',
+    orderBy: OrderBy.LastEventTime,
     descending: true,
     limit: 15
   }
