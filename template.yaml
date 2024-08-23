@@ -1029,6 +1029,199 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt AthenaEBRule.Arn
 
+  ###################################
+  # Monitoring and Alerting Resources
+  ###################################
+
+  InitiateDataRequestLambdaFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterPattern: '{ $.level = "ERROR" }'
+      LogGroupName: !Ref InitiateDataRequestLogs
+      MetricTransformations:
+        - MetricValue: '1'
+          MetricNamespace: TxMA/TICFIntegration/Logs
+          MetricName: 'InitiateDataRequestLambdaMetric'
+
+  ProcessDataRequestLambdaFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterPattern: '{ $.level = "ERROR" }'
+      LogGroupName: !Ref ProcessDataRequestLogs
+      MetricTransformations:
+        - MetricValue: '1'
+          MetricNamespace: TxMA/TICFIntegration/Logs
+          MetricName: 'ProcessDataRequestLambdaMetric'
+
+  DataReadyForQueryLambdaFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterPattern: '{ $.level = "ERROR" }'
+      LogGroupName: !Ref DataReadyForQueryLogs
+      MetricTransformations:
+        - MetricValue: '1'
+          MetricNamespace: TxMA/TICFIntegration/Logs
+          MetricName: 'DataReadyForQueryLambdaMetric'
+
+  DecryptAndCopyLambdaFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterPattern: '{ $.level = "ERROR" }'
+      LogGroupName: !Ref DecryptAndCopyLogs
+      MetricTransformations:
+        - MetricValue: '1'
+          MetricNamespace: TxMA/TICFIntegration/Logs
+          MetricName: 'DecryptAndCopyLambdaMetric'
+
+  InitiateAthenaQueryLambdaFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterPattern: '{ $.level = "ERROR" }'
+      LogGroupName: !Ref InitiateAthenaQueryLogs
+      MetricTransformations:
+        - MetricValue: '1'
+          MetricNamespace: TxMA/TICFIntegration/Logs
+          MetricName: 'InitiateAthenaQueryLambdaMetric'
+
+  SendQueryResultsNotificationLambdaFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterPattern: '{ $.level = "ERROR" }'
+      LogGroupName: !Ref SendQueryResultsNotificationLogs
+      MetricTransformations:
+        - MetricValue: '1'
+          MetricNamespace: TxMA/TICFIntegration/Logs
+          MetricName: 'SendQueryResultsNotificationLambdaMetric'
+
+  CloseZendeskTicketLambdaFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterPattern: '{ $.level = "ERROR" }'
+      LogGroupName: !Ref CloseZendeskTicketLogs
+      MetricTransformations:
+        - MetricValue: '1'
+          MetricNamespace: TxMA/TICFIntegration/Logs
+          MetricName: 'CloseZendeskTicketLambdaMetric'
+
+  InitiateDataRequestLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !ImportValue txma-alarms-slack-alerts-BuildNotificationTopicArn
+      AlarmDescription: 'An alarm that is triggered by any error within the InitiateDataRequestFunction lambda.'
+      AlarmName: !Sub ${AWS::StackName}-initiate-data-request-lambda-alarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 1
+      MetricName: InitiateDataRequestLambdaMetric
+      Namespace: TxMA/TICFIntegration/Logs
+      Period: 3600
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching
+
+  ProcessDataRequestLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !ImportValue txma-alarms-slack-alerts-BuildNotificationTopicArn
+      AlarmDescription: 'An alarm that is triggered by any error within the ProcessDataRequestFunction lambda.'
+      AlarmName: !Sub ${AWS::StackName}-process-data-request-lambda-alarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 1
+      MetricName: ProcessDataRequestLambdaMetric
+      Namespace: TxMA/TICFIntegration/Logs
+      Period: 3600
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching
+
+  DataReadyForQueryLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !ImportValue txma-alarms-slack-alerts-BuildNotificationTopicArn
+      AlarmDescription: 'An alarm that is triggered by any error within the DataReadyForQueryFunction lambda.'
+      AlarmName: !Sub ${AWS::StackName}-data-ready-for-query-lambda-alarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 1
+      MetricName: DataReadyForQueryLambdaMetric
+      Namespace: TxMA/TICFIntegration/Logs
+      Period: 3600
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching
+
+  DecryptAndCopyLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !ImportValue txma-alarms-slack-alerts-BuildNotificationTopicArn
+      AlarmDescription: 'An alarm that is triggered by any error within the DecryptAndCopyFunction lambda.'
+      AlarmName: !Sub ${AWS::StackName}-decrypt-and-copy-lambda-alarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 1
+      MetricName: DecryptAndCopyLambdaMetric
+      Namespace: TxMA/TICFIntegration/Logs
+      Period: 3600
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching
+
+  InitiateAthenaQueryLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !ImportValue txma-alarms-slack-alerts-BuildNotificationTopicArn
+      AlarmDescription: 'An alarm that is triggered by any error within the InitiateAthenaQueryFunction lambda.'
+      AlarmName: !Sub ${AWS::StackName}-initiate-athena-query-lambda-alarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 1
+      MetricName: InitiateAthenaQueryLambdaMetric
+      Namespace: TxMA/TICFIntegration/Logs
+      Period: 3600
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching
+
+  SendQueryResultsNotificationLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !ImportValue txma-alarms-slack-alerts-BuildNotificationTopicArn
+      AlarmDescription: 'An alarm that is triggered by any error within the SendQueryResultsNotificationFunction lambda.'
+      AlarmName: !Sub ${AWS::StackName}-send-query-results-notification-lambda-alarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 1
+      MetricName: SendQueryResultsNotificationLambdaMetric
+      Namespace: TxMA/TICFIntegration/Logs
+      Period: 3600
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching
+
+  CloseZendeskTicketLambdaAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !ImportValue txma-alarms-slack-alerts-BuildNotificationTopicArn
+      AlarmDescription: 'An alarm that is triggered by any error within the CloseZendeskTicketFunction lambda.'
+      AlarmName: !Sub ${AWS::StackName}-close-zendesk-ticket-lambda-alarm
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 1
+      EvaluationPeriods: 1
+      MetricName: CloseZendeskTicketLambdaMetric
+      Namespace: TxMA/TICFIntegration/Logs
+      Period: 3600
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching
+
   ##################
   # Athena Resources
   ##################
