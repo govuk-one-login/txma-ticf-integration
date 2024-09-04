@@ -49,6 +49,9 @@ Conditions:
     !And [Condition: TestEnvironment, !Not [!Equals [!Ref TestRoleArn, none]]]
   UseCodeSigning: !Not [!Equals [!Ref CodeSigningConfigArn, none]]
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundary, none]]
+  UseCanaryDeploy: !Or
+    - !Equals [!Ref Environment, production]
+    - !Equals [!Ref Environment, integration]
 
 Mappings:
   EnvironmentConfiguration:
@@ -206,6 +209,37 @@ Resources:
   # Lambda Resources
   ##################
 
+  LambdaDeployRole:
+    Type: AWS::IAM::Role
+    # checkov:skip=CKV_AWS_111: "Ensure IAM policies does not allow write access without constraints
+    # The network interface permissions can only be applied at the '*' resource level
+    Properties:
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codedeploy.eu-west-2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
+
+  TICFIntegrationDeploymentStrategy:
+    Condition: UseCanaryDeploy
+    Type: AWS::CodeDeploy::DeploymentConfig
+    Properties:
+      ComputePlatform: Lambda
+      TrafficRoutingConfig:
+        Type: TimeBasedLinear
+        TimeBasedLinear:
+          LinearInterval: 1
+          LinearPercentage: 20
+
   InitiateDataRequestFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     Type: AWS::Serverless::Function
@@ -246,6 +280,16 @@ Resources:
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
+      DeploymentPreference:
+        Type: !If
+          - UseCanaryDeploy
+          - !Ref TICFIntegrationDeploymentStrategy
+          - AllAtOnce
+        Role: !GetAtt LambdaDeployRole.Arn
+        Alarms: !If
+          - UseCanaryDeploy
+          - - !Ref InitiateDataRequestLambdaAlarm
+          - - !Ref 'AWS::NoValue'
 
   InitiateDataRequestFunctionRole:
     Type: AWS::IAM::Role
@@ -353,6 +397,16 @@ Resources:
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
+      DeploymentPreference:
+        Type: !If
+          - UseCanaryDeploy
+          - !Ref TICFIntegrationDeploymentStrategy
+          - AllAtOnce
+        Role: !GetAtt LambdaDeployRole.Arn
+        Alarms: !If
+          - UseCanaryDeploy
+          - - !Ref ProcessDataRequestLambdaAlarm
+          - - !Ref 'AWS::NoValue'
 
   ProcessDataRequestFunctionRole:
     Type: AWS::IAM::Role
@@ -481,6 +535,16 @@ Resources:
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
+      DeploymentPreference:
+        Type: !If
+          - UseCanaryDeploy
+          - !Ref TICFIntegrationDeploymentStrategy
+          - AllAtOnce
+        Role: !GetAtt LambdaDeployRole.Arn
+        Alarms: !If
+          - UseCanaryDeploy
+          - - !Ref DataReadyForQueryLambdaAlarm
+          - - !Ref 'AWS::NoValue'
 
   DataReadyForQueryFunctionRole:
     Type: AWS::IAM::Role
@@ -582,6 +646,16 @@ Resources:
           - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdA
           - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdB
           - Fn::ImportValue: !Sub ${VpcStackName}-PrivateSubnetIdC
+      DeploymentPreference:
+        Type: !If
+          - UseCanaryDeploy
+          - !Ref TICFIntegrationDeploymentStrategy
+          - AllAtOnce
+        Role: !GetAtt LambdaDeployRole.Arn
+        Alarms: !If
+          - UseCanaryDeploy
+          - - !Ref DecryptAndCopyLambdaAlarm
+          - - !Ref 'AWS::NoValue'
 
   DecryptAndCopyFunctionRole:
     Type: AWS::IAM::Role
@@ -676,6 +750,16 @@ Resources:
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
+      DeploymentPreference:
+        Type: !If
+          - UseCanaryDeploy
+          - !Ref TICFIntegrationDeploymentStrategy
+          - AllAtOnce
+        Role: !GetAtt LambdaDeployRole.Arn
+        Alarms: !If
+          - UseCanaryDeploy
+          - - !Ref InitiateAthenaQueryLambdaAlarm
+          - - !Ref 'AWS::NoValue'
 
   InitiateAthenaQueryFunctionRole:
     Type: AWS::IAM::Role
@@ -827,6 +911,16 @@ Resources:
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
+      DeploymentPreference:
+        Type: !If
+          - UseCanaryDeploy
+          - !Ref TICFIntegrationDeploymentStrategy
+          - AllAtOnce
+        Role: !GetAtt LambdaDeployRole.Arn
+        Alarms: !If
+          - UseCanaryDeploy
+          - - !Ref SendQueryResultsNotificationLambdaAlarm
+          - - !Ref 'AWS::NoValue'
 
   SendQueryResultsNotificationFunctionRole:
     Type: AWS::IAM::Role
@@ -955,6 +1049,16 @@ Resources:
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
           - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
+      DeploymentPreference:
+        Type: !If
+          - UseCanaryDeploy
+          - !Ref TICFIntegrationDeploymentStrategy
+          - AllAtOnce
+        Role: !GetAtt LambdaDeployRole.Arn
+        Alarms: !If
+          - UseCanaryDeploy
+          - - !Ref CloseZendeskTicketLambdaAlarm
+          - - !Ref 'AWS::NoValue'
 
   CloseZendeskTicketFunctionRole:
     Type: AWS::IAM::Role
