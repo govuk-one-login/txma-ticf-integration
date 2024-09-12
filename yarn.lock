@@ -3943,6 +3943,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-sema@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "async-sema@npm:3.1.1"
+  checksum: 07b8c51f6cab107417ecdd8126b7a9fe5a75151b7f69fdd420dcc8ee08f9e37c473a217247e894b56e999b088b32e902dbe41637e4e9b594d3f8dfcdddfadc5e
+  languageName: node
+  linkType: hard
+
 "asynckit@npm:^0.4.0":
   version: 0.4.0
   resolution: "asynckit@npm:0.4.0"
@@ -7981,6 +7988,7 @@ __metadata:
     "@types/node": 18.18.6
     "@typescript-eslint/eslint-plugin": 6.8.0
     "@typescript-eslint/parser": 6.8.0
+    async-sema: ^3.1.1
     aws-sdk-client-mock: 3.0.0
     aws-sdk-client-mock-jest: 3.0.0
     axios: 1.6.7

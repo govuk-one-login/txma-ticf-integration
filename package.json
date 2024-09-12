@@ -56,6 +56,7 @@
     "@types/node": "18.18.6",
     "@typescript-eslint/eslint-plugin": "6.8.0",
     "@typescript-eslint/parser": "6.8.0",
+    "async-sema": "^3.1.1",
     "aws-sdk-client-mock": "3.0.0",
     "aws-sdk-client-mock-jest": "3.0.0",
     "axios": "1.6.7",

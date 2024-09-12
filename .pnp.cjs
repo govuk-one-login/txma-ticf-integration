@@ -52,6 +52,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.18.6"],\
             ["@typescript-eslint/eslint-plugin", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:6.8.0"],\
             ["@typescript-eslint/parser", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:6.8.0"],\
+            ["async-sema", "npm:3.1.1"],\
             ["aws-sdk-client-mock", "npm:3.0.0"],\
             ["aws-sdk-client-mock-jest", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:3.0.0"],\
             ["axios", "npm:1.6.7"],\
@@ -4835,6 +4836,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["async-sema", [\
+        ["npm:3.1.1", {\
+          "packageLocation": "./.yarn/cache/async-sema-npm-3.1.1-a5453a4d6a-07b8c51f6c.zip/node_modules/async-sema/",\
+          "packageDependencies": [\
+            ["async-sema", "npm:3.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["asynckit", [\
         ["npm:0.4.0", {\
           "packageLocation": "./.yarn/cache/asynckit-npm-0.4.0-c718858525-7b78c451df.zip/node_modules/asynckit/",\
@@ -9503,6 +9513,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.18.6"],\
             ["@typescript-eslint/eslint-plugin", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:6.8.0"],\
             ["@typescript-eslint/parser", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:6.8.0"],\
+            ["async-sema", "npm:3.1.1"],\
             ["aws-sdk-client-mock", "npm:3.0.0"],\
             ["aws-sdk-client-mock-jest", "virtual:3dc6501567eb28fa392e73255d18690f81675961827a0deb1d0abf8d3c341bb208b1f065a93332f47b12cb17b122c283242ed829f5e265a2b51128b8958a95b7#npm:3.0.0"],\
             ["axios", "npm:1.6.7"],\
