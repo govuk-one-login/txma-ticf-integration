@@ -6,7 +6,6 @@ import {
   testManualAthenaQueryEvent
 } from '../../utils/tests/events/initiateAthenaQueryEvent'
 import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
-import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
 import { logger } from '../../sharedServices/logger'
 import { initiateQuery } from './initiateQuery'
 import { when } from 'jest-when'
@@ -26,14 +25,10 @@ jest.mock('../../sharedServices/dynamoDB/dynamoDBUpdate', () => ({
 jest.mock('./startQueryExecution', () => ({
   startQueryExecution: jest.fn()
 }))
-jest.mock('../../sharedServices/sns/publishToSNS', () => ({
-  publishToSNS: jest.fn()
-}))
 jest.mock('./initiateQuery', () => ({
   initiateQuery: jest.fn()
 }))
 
-const mockPublishToSNS = publishToSNS as jest.Mock
 const mockInitiateQuery = initiateQuery as jest.Mock
 
 describe('tests related to running manual queries', () => {
@@ -43,13 +38,7 @@ describe('tests related to running manual queries', () => {
   })
 
   it('checks that the lambda exits early and does not run an athena query as it is a manual query', async () => {
-    const testZendeskId = testManualAthenaQueryEvent.Records[0].body
-    mockPublishToSNS.mockResolvedValue('messageID')
     await handler(testManualAthenaQueryEvent, mockLambdaContext)
-    expect(mockPublishToSNS).toHaveBeenCalledWith(
-      'arn:aws:sns:eu-west-2:123456789012:email-to-slack-topic',
-      `Retrieved data for zendeskID: ${testZendeskId}`
-    )
     expect(logger.info).toHaveBeenCalledWith(
       'Manual query detected, no need to run athena query'
     )

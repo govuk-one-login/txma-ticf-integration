@@ -4,8 +4,6 @@ import {
   initialiseLogger,
   logger
 } from '../../sharedServices/logger'
-import { publishToSNS } from '../../sharedServices/sns/publishToSNS'
-import { getEnv } from '../../utils/helpers'
 import { initiateQuery } from './initiateQuery'
 
 export const handler = async (
@@ -19,10 +17,6 @@ export const handler = async (
 
   if (zendeskId.startsWith('MR')) {
     logger.info('Manual query detected, no need to run athena query')
-    await publishToSNS(
-      getEnv('EMAIL_TO_SLACK_SNS_TOPIC_ARN'),
-      `Retrieved data for zendeskID: ${zendeskId}`
-    )
   } else {
     logger.info('Automated query detected, running athena query')
     await initiateQuery(zendeskId)
