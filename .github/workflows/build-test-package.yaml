@@ -57,7 +57,7 @@ jobs:
       - name: Build Lambda functions
         run: yarn build
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sam-build
           path: |
