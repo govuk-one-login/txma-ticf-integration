@@ -39,13 +39,13 @@ To run this project you will need the following:
 
 The project is using [Yarn Zero Installs](https://yarnpkg.com/features/zero-installs). So as long as Yarn itself is installed, everything should be ready to go out of the box. As long as you are running Node v16.10+, the easiest way to install Yarn is to enable corepack.
 
-```
+```shell
 corepack enable
 ```
 
 Then the only other thing that needs to be enabled is the Husky hooks.
 
-```
+```shell
 yarn husky install
 ```
 
@@ -87,43 +87,43 @@ To run tests against the environment you will need to be authenticated against t
 
 To run the integraton pack which pulls variables from AWS and assumes external services are stubbed you should assume a build account role and run the following:
 
-```
+```shell
 yarn test:integration
 ```
 
 To run the end to end pack which pulls variables from AWS and interacts with real external services you should assume a staging account role and run the following:
 
-```
+```shell
 yarn test:e2e
 ```
 
 To run an individual test (suite or test case):
 
-```
+```shell
 yarn test:integration -t '<description_of_the_testcase_or_suite>'
 ```
 
 To run an individual test file:
 
-```
+```shell
 yarn test:integration /path/to/file.spec.ts
 ```
 
 To override certain variables run:
 
-```
+```shell
 STACK_NAME=<ANOTHER_STACK> ZENDESK_WEBHOOK_SECRET_KEY=<ANOTHER_SECRET> yarn test:integration
 ```
 
 If you wish to run the tests with locally defined variables instead of pulling them from AWS, create a `test/integration-tests/.env` or `test/e2e-tests/.env` file and run:
 
-```
+```shell
 yarn test:integration:dev
 ```
 
 or
 
-```
+```shell
 yarn test:e2e:dev
 ```
 
