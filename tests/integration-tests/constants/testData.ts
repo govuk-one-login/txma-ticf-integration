@@ -8,7 +8,7 @@ export const testData: TestDataConstants = {
   athenaTestBuildingName: `"PERIGARTH"`,
   athenaTestBuildingName2: `"PERIGARTH2"`,
   athenaTestName: `[{"nameparts":[{"type":"GivenName","value":"MICHELLE"},{"type":"FamilyName","value":"KABIR"}]}]`,
-  athenaTestName2: `[{"nameparts":[{"type":"GivenName","value":"MICHELLE2"},{"type":"FamilyName","value":"KABIR2"}]}]`,
+  athenaTestName2: `[{"nameParts":[{"type":"GivenName","value":"MICHELLE2"},{"type":"FamilyName","value":"KABIR2"}]}]`,
   athenaTestFileName: 'athena-query-test-data.gz',
   athenaTest2FileName: 'athena-query-test-data-2.gz',
   athenaTestPrefix: '2022/04/01',
