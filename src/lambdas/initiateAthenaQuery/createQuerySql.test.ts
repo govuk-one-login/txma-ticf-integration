@@ -36,7 +36,7 @@ describe('create Query SQL', () => {
       const idExtension = id.charAt(0)
       expect(createQuerySql(dataPathsTestDataRequest)).toEqual({
         sqlGenerated: true,
-        sql: `SELECT datetime, ${idSelectStatement} json_extract(restricted, '$.user.firstname') as user_firstname, json_extract(restricted, '$.user.lastname') as user_lastname FROM test_database.test_table WHERE ${idWhereStatement} IN (?, ?) AND datetime IN (?)`,
+        sql: `SELECT datetime, ${idSelectStatement} json_extract(restricted, '$.user.firstName') as user_firstName, json_extract(restricted, '$.user.lastName') as user_lastName FROM test_database.test_table WHERE ${idWhereStatement} IN (?, ?) AND datetime IN (?)`,
         queryParameters: [
           `'123${idExtension}'`,
           `'456${idExtension}'`,
@@ -49,14 +49,14 @@ describe('create Query SQL', () => {
   it.each([
     [
       'passport_number',
-      `json_extract(restricted, '$.passport[0].documentnumber')`
+      `json_extract(restricted, '$.passport[0].documentNumber')`
     ],
     [
       'passport_expiry_date',
-      `json_extract(restricted, '$.passport[0].expirydate')`
+      `json_extract(restricted, '$.passport[0].expiryDate')`
     ],
-    ['drivers_licence', `json_extract(restricted, '$.drivingpermit')`],
-    ['dob', `json_extract(restricted, '$.birthdate[0].value')`],
+    ['drivers_licence', `json_extract(restricted, '$.drivingPermit')`],
+    ['dob', `json_extract(restricted, '$.birthDate[0].value')`],
     ['name', `json_extract(restricted, '$.name')`],
     ['addresses', `json_extract(restricted, '$.address')`]
   ])(
@@ -93,7 +93,7 @@ describe('create Query SQL', () => {
     testDataRequestWithNoDataPathsOrPiiTypes.piiTypes = ['passport_number']
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: true,
-      sql: `SELECT datetime, event_id, json_extract(restricted, '$.user[0].firstname') as user0_firstname, json_extract(restricted, '$.user[1].firstname') as user1_firstname, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
+      sql: `SELECT datetime, event_id, json_extract(restricted, '$.user[0].firstName') as user0_firstName, json_extract(restricted, '$.user[1].firstName') as user1_firstName, json_extract(restricted, '$.passport[0].documentNumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?)`,
       queryParameters: [`'123'`, `'456'`, `'${TEST_ATHENA_FORMATTED_DATE_1}'`]
     })
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = []
@@ -103,7 +103,7 @@ describe('create Query SQL', () => {
   test('returns a formatted SQL query handling multiple dates', () => {
     expect(createQuerySql(testDataRequestWithAllValuesSet)).toEqual({
       sqlGenerated: true,
-      sql: `SELECT datetime, event_id, path_to_data1, path_to_data2, json_extract(restricted, '$.passport[0].documentnumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?,?)`,
+      sql: `SELECT datetime, event_id, path_to_data1, path_to_data2, json_extract(restricted, '$.passport[0].documentNumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?,?)`,
       queryParameters: [
         `'123'`,
         `'456'`,
