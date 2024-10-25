@@ -102,10 +102,10 @@ const formatSelectStatement = (
 }
 
 const formatDataPath = (dataPath: string): string => {
-  const splitDataPath = dataPath.toLowerCase().split('.')
+  const splitDataPath = dataPath.split('.')
 
   if (splitDataPath.length == 1) {
-    return dataPath.toLowerCase()
+    return dataPath
   }
 
   const dataColumn = splitDataPath.shift()
@@ -116,7 +116,7 @@ const formatDataPath = (dataPath: string): string => {
 }
 
 const formatPiiType = (piiType: string): string => {
-  const piiTypePath = piiTypeDataPathMap(piiType).toLowerCase()
+  const piiTypePath = piiTypeDataPathMap(piiType)
   const splitPiiTypePath = piiTypePath.split('.')
   const dataColumn = splitPiiTypePath.shift()
   const dataTarget = splitPiiTypePath.join('.')
@@ -156,7 +156,7 @@ const formatIdWhereStatement = (identifierType: IdentifierTypes) => {
     return 'event_id'
   }
   const identifierTypeEventPath = identifierTypeEventPathMap(identifierType)
-  const splitDataPath = identifierTypeEventPath.toLowerCase().split('.')
+  const splitDataPath = identifierTypeEventPath.split('.')
   const dataColumn = splitDataPath.shift()
   const dataTarget = splitDataPath.join('.')
 
