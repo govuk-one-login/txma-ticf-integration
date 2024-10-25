@@ -1375,7 +1375,8 @@ Resources:
               {
                 'ignore.malformed.json': true,
                 'serialiazation.format': 1,
-                'field.delim': ''
+                'field.delim': '',
+                'case.insensitive': false
               }
             SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
           StoredAsSubDirectories: false
