@@ -95,7 +95,9 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having only data paths', async () => {
-      console.log(`ticketId: ${randomTicketId}`)
+      console.log(
+        `Test: Successful Athena processing - requests having only data paths. ticketId: ${randomTicketId}`
+      )
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -137,7 +139,9 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
-      console.log(`ticketId: ${randomTicketId}`)
+      console.log(
+        `Test: Successful Athena processing - requests having only PII type. ticketId: ${randomTicketId}`
+      )
 
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -178,7 +182,9 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
-      console.log(`ticketId: ${randomTicketId}`)
+      console.log(
+        `Test:Successful Athena processing - requests having both data paths and PII types. ticketId: ${randomTicketId}`
+      )
 
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -223,7 +229,9 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having multiples dates', async () => {
-      console.log(`ticketId: ${randomTicketId}`)
+      console.log(
+        `Test: Successful Athena processing - requests having multiples dates. ticketId: ${randomTicketId}`
+      )
 
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
@@ -295,7 +303,9 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
-      console.log(`ticketId: ${randomTicketId}`)
+      console.log(
+        `Test: Lambda should error if ticket details are not in Dynamodb. ticketId: ${randomTicketId}`
+      )
 
       await addMessageToQueue(
         randomTicketId,
