@@ -2,7 +2,7 @@ export const testData: TestDataConstants = {
   athenaTestEventId1: '99cbfa88-5277-422f-af25-be0864adb7db',
   athenaTestEventId2: 'e9919603-77ab-4cd2-8f3a-b3fda80fa39c',
   athenaTestAddresses: `[{"addressCountry":"GB","uprn":"9051041658","buildingName":"PERIGARTH","streetName":"PITSTRUAN TERRACE","postalCode":"AB10 6QW","addressLocality":"ABERDEEN","validFrom":"2014-01-01"},{"addressCountry":"GB","buildingName":"PERIGARTH","streetName":"PITSTRUAN TERRACE","postalCode":"AB10 6QW","addressLocality":"ABERDEEN"}]`,
-  athenaTestAddresses2: `[{"uprn":"9051041659","buildingName":"PERIGARTH2","streetName":"PITSTRUAN TERRACE 2","addressLocality":"ABERDEEN2","postalCode":"AB20 6QW","addressCountry":"GB","validFrom":"2014-01-02"},{"buildingName":"PERIGARTH2","streetName":"PITSTRUAN TERRACE2","addressLocality":"ABERDEEN2","postalCode":"AB20 6QW","addressCountry":"GB"}]`,
+  athenaTestAddresses2: `[{"addressCountry":"GB","uprn":"9051041659","buildingName":"PERIGARTH2","streetName":"PITSTRUAN TERRACE 2","postalCode":"AB20 6QW","addressLocality":"ABERDEEN2","validFrom":"2014-01-02"},{"addressCountry":"GB","buildingName":"PERIGARTH2","streetName":"PITSTRUAN TERRACE2","postalCode":"AB20 6QW","addressLocality":"ABERDEEN2"}]`,
   athenaTestBirthDate: `"1981-07-28"`,
   athenaTestBirthDate2: `"1981-07-29"`,
   athenaTestBuildingName: `"PERIGARTH"`,
