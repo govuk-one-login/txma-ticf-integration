@@ -84,11 +84,11 @@ describe('Query results generated', () => {
 
     expect(rows.length).toEqual(1)
     expect(rows[0].event_id).toEqual(testData.eventId)
-    expect(rows[0].name0_nameparts0_value).toEqual(expectedFirstName)
-    expect(rows[0].name0_nameparts1_value).toEqual(expectedLastName)
-    expect(rows[0].birthdate0_value).toEqual(expectedBirthDate)
-    expect(rows[0].address0_validfrom).toEqual(expectedAddressValidFromDate)
-    expect(rows[0].address1_postalcode).toEqual(expectedPostalCode)
+    expect(rows[0].name0_nameParts0_value).toEqual(expectedFirstName)
+    expect(rows[0].name0_nameParts1_value).toEqual(expectedLastName)
+    expect(rows[0].birthDate0_value).toEqual(expectedBirthDate)
+    expect(rows[0].address0_validFrom).toEqual(expectedAddressValidFromDate)
+    expect(rows[0].address1_postalCode).toEqual(expectedPostalCode)
   })
 
   it('Query matching data with two dates', async () => {
@@ -108,18 +108,18 @@ describe('Query results generated', () => {
     }
 
     expect(event1Data.event_id).toEqual(testData.eventId)
-    expect(event1Data.name0_nameparts0_value).toEqual(`"MICHELLE"`)
-    expect(event1Data.name0_nameparts1_value).toEqual(`"KABIR"`)
-    expect(event1Data.birthdate0_value).toEqual(`"1981-07-28"`)
-    expect(event1Data.address0_validfrom).toEqual(`"2014-01-01"`)
-    expect(event1Data.address1_postalcode).toEqual(`"EH2 5BJ"`)
+    expect(event1Data.name0_nameParts0_value).toEqual(`"MICHELLE"`)
+    expect(event1Data.name0_nameParts1_value).toEqual(`"KABIR"`)
+    expect(event1Data.birthDate0_value).toEqual(`"1981-07-28"`)
+    expect(event1Data.address0_validFrom).toEqual(`"2014-01-01"`)
+    expect(event1Data.address1_postalCode).toEqual(`"EH2 5BJ"`)
 
     expect(event2Data.event_id).toEqual(testData.eventId2)
-    expect(event2Data.name0_nameparts0_value).toEqual(`"MICHELLE2"`)
-    expect(event2Data.name0_nameparts1_value).toEqual(`"KABIR2"`)
-    expect(event2Data.birthdate0_value).toEqual(`"1981-07-29"`)
-    expect(event2Data.address0_validfrom).toEqual(`"2015-01-01"`)
-    expect(event2Data.address1_postalcode).toEqual(`"EH3 6BJ"`)
+    expect(event2Data.name0_nameParts0_value).toEqual(`"MICHELLE2"`)
+    expect(event2Data.name0_nameParts1_value).toEqual(`"KABIR2"`)
+    expect(event2Data.birthDate0_value).toEqual(`"1981-07-29"`)
+    expect(event2Data.address0_validFrom).toEqual(`"2015-01-01"`)
+    expect(event2Data.address1_postalCode).toEqual(`"EH3 6BJ"`)
   })
 
   it('Query matching data with user id', async () => {
