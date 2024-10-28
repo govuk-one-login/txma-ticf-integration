@@ -132,8 +132,8 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
-      expect(csvRows[0].address0_buildingname).toEqual(
+      expect(csvRows[0].birthDate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(csvRows[0].address0_buildingName).toEqual(
         testData.athenaTestBuildingName
       )
     })
@@ -220,8 +220,8 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
-      expect(csvRows[0].address0_buildingname).toEqual(
+      expect(csvRows[0].birthDate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(csvRows[0].address0_buildingName).toEqual(
         testData.athenaTestBuildingName
       )
       expect(csvRows[0].name).toEqual(testData.athenaTestName)
@@ -279,15 +279,15 @@ describe('Athena Query SQL generation and execution', () => {
           'Could not find data for one or more of the test events'
         )
       }
-      expect(event1Data.birthdate0_value).toEqual(testData.athenaTestBirthDate)
-      expect(event1Data.address0_buildingname).toEqual(
+      expect(event1Data.birthDate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(event1Data.address0_buildingName).toEqual(
         testData.athenaTestBuildingName
       )
       expect(event1Data.name).toEqual(testData.athenaTestName)
       expect(event1Data.addresses).toEqual(testData.athenaTestAddresses)
 
-      expect(event2Data.birthdate0_value).toEqual(testData.athenaTestBirthDate2)
-      expect(event2Data.address0_buildingname).toEqual(
+      expect(event2Data.birthDate0_value).toEqual(testData.athenaTestBirthDate2)
+      expect(event2Data.address0_buildingName).toEqual(
         testData.athenaTestBuildingName2
       )
       expect(event2Data.name).toEqual(testData.athenaTestName2)
