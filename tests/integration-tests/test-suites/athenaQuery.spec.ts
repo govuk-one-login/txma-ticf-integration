@@ -95,6 +95,9 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having only data paths', async () => {
+      console.log(
+        `Test: Successful Athena processing - requests having only data paths. ticketId: ${randomTicketId}`
+      )
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -129,13 +132,17 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
-      expect(csvRows[0].address0_buildingname).toEqual(
+      expect(csvRows[0].birthDate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(csvRows[0].address0_buildingName).toEqual(
         testData.athenaTestBuildingName
       )
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
+      console.log(
+        `Test: Successful Athena processing - requests having only PII type. ticketId: ${randomTicketId}`
+      )
+
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -175,6 +182,10 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
+      console.log(
+        `Test:Successful Athena processing - requests having both data paths and PII types. ticketId: ${randomTicketId}`
+      )
+
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -209,8 +220,8 @@ describe('Athena Query SQL generation and execution', () => {
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
       expect(csvRows.length).toEqual(1)
-      expect(csvRows[0].birthdate0_value).toEqual(testData.athenaTestBirthDate)
-      expect(csvRows[0].address0_buildingname).toEqual(
+      expect(csvRows[0].birthDate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(csvRows[0].address0_buildingName).toEqual(
         testData.athenaTestBuildingName
       )
       expect(csvRows[0].name).toEqual(testData.athenaTestName)
@@ -218,6 +229,10 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having multiples dates', async () => {
+      console.log(
+        `Test: Successful Athena processing - requests having multiples dates. ticketId: ${randomTicketId}`
+      )
+
       await populateDynamoDBWithTicketDetails(
         getEnv('AUDIT_REQUEST_DYNAMODB_TABLE'),
         randomTicketId,
@@ -264,15 +279,15 @@ describe('Athena Query SQL generation and execution', () => {
           'Could not find data for one or more of the test events'
         )
       }
-      expect(event1Data.birthdate0_value).toEqual(testData.athenaTestBirthDate)
-      expect(event1Data.address0_buildingname).toEqual(
+      expect(event1Data.birthDate0_value).toEqual(testData.athenaTestBirthDate)
+      expect(event1Data.address0_buildingName).toEqual(
         testData.athenaTestBuildingName
       )
       expect(event1Data.name).toEqual(testData.athenaTestName)
       expect(event1Data.addresses).toEqual(testData.athenaTestAddresses)
 
-      expect(event2Data.birthdate0_value).toEqual(testData.athenaTestBirthDate2)
-      expect(event2Data.address0_buildingname).toEqual(
+      expect(event2Data.birthDate0_value).toEqual(testData.athenaTestBirthDate2)
+      expect(event2Data.address0_buildingName).toEqual(
         testData.athenaTestBuildingName2
       )
       expect(event2Data.name).toEqual(testData.athenaTestName2)
@@ -288,6 +303,10 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
+      console.log(
+        `Test: Lambda should error if ticket details are not in Dynamodb. ticketId: ${randomTicketId}`
+      )
+
       await addMessageToQueue(
         randomTicketId,
         getEnv('INITIATE_ATHENA_QUERY_QUEUE_URL')
