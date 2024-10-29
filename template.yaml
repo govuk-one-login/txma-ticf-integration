@@ -1354,6 +1354,10 @@ Resources:
               Type: bigint
             - Name: timestamp_formatted
               Type: string
+            - Name: event_timestamp_ms
+              Type: bigint
+            - Name: event_timestamp_ms_formatted
+              Type: string
             - Name: event_name
               Type: string
             - Name: component_id
