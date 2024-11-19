@@ -52,6 +52,14 @@ Conditions:
   UseCanaryDeploy: !Or
     - !Equals [!Ref Environment, production]
     - !Equals [!Ref Environment, integration]
+  # temporary condition to progressively remove WebACL related resources as FMS migration progresses
+  NotFMSMigratedEnvironment:
+    !Or [
+      !Equals [!Ref Environment, build],
+      !Equals [!Ref Environment, staging],
+      !Equals [!Ref Environment, integration],
+      !Equals [!Ref Environment, production]
+    ]
 
 Mappings:
   EnvironmentConfiguration:
@@ -201,6 +209,7 @@ Resources:
 
   ZendeskWebhookApiWafAssociation:
     Type: AWS::WAFv2::WebACLAssociation
+    Condition: NotFMSMigratedEnvironment
     Properties:
       ResourceArn: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}::/restapis/${ZendeskWebhookApi}/stages/${ZendeskWebhookApi.Stage}
       WebACLArn: '{{resolve:ssm:ZendeskWebhookApiWafAclArn}}'
