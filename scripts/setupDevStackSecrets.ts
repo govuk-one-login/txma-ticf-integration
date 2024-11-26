@@ -3,7 +3,7 @@ import {
   GetSecretValueCommand,
   PutSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
-import { getEnv } from '../src/utils/helpers'
+import { secretsManagerClient } from '../src/utils/awsSdkClients'
 
 const setupDevStackSecrets = async () => {
   const stackName = getStackName()
@@ -11,11 +11,8 @@ const setupDevStackSecrets = async () => {
     throw new Error('STACK_NAME environment variable not set. Cannot continue')
   }
   console.log(`Setting up test secrets for stack '${stackName}'`)
-  const client = new SecretsManagerClient({
-    region: getEnv('AWS_REGION')
-  })
-  await copyZendeskSecretsToStackSecret(client)
-  await setNotifySecrets(client)
+  await copyZendeskSecretsToStackSecret()
+  await setNotifySecrets(secretsManagerClient)
 }
 
 const setNotifySecrets = async (client: SecretsManagerClient) => {
@@ -27,17 +24,15 @@ const setNotifySecrets = async (client: SecretsManagerClient) => {
   )
 }
 
-const copyZendeskSecretsToStackSecret = async (
-  client: SecretsManagerClient
-) => {
-  const zendeskSecrets = await client.send(
+const copyZendeskSecretsToStackSecret = async () => {
+  const zendeskSecrets = await secretsManagerClient.send(
     new GetSecretValueCommand({ SecretId: 'ZendeskSecrets' })
   )
   const zendeskWebhookSecretKey = JSON.parse(
     zendeskSecrets.SecretString as string
   ).ZENDESK_WEBHOOK_SECRET_KEY
 
-  await client.send(
+  await secretsManagerClient.send(
     new PutSecretValueCommand({
       SecretId: `tests/${getStackName()}/ZendeskSecrets`,
       SecretString: JSON.stringify({
