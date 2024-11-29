@@ -6,7 +6,7 @@ import {
 import { isDataRequestParams } from '../../types/dataRequestParams'
 import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { getEnv } from '../../utils/helpers'
-import { ddbClient } from './dynamoDBClient'
+import { ddbClient } from '../../utils/awsSdkClients'
 
 export const getDatabaseEntryByZendeskId = async (
   zendeskId: string

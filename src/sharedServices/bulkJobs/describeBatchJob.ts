@@ -1,16 +1,11 @@
-import {
-  DescribeJobCommand,
-  JobDescriptor,
-  S3ControlClient
-} from '@aws-sdk/client-s3-control'
+import { DescribeJobCommand, JobDescriptor } from '@aws-sdk/client-s3-control'
+import { s3ControlClient } from '../../utils/awsSdkClients'
 import { getEnv } from '../../utils/helpers'
 
 export const describeBatchJob = async (
   jobId: string
 ): Promise<JobDescriptor> => {
-  const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
-
-  const response = await client.send(
+  const response = await s3ControlClient.send(
     new DescribeJobCommand({
       AccountId: getEnv('AWS_ACCOUNT_ID'),
       JobId: jobId

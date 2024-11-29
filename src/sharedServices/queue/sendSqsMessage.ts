@@ -1,9 +1,5 @@
-import {
-  SQSClient,
-  SendMessageRequest,
-  SendMessageCommand
-} from '@aws-sdk/client-sqs'
-import { getEnv } from '../../utils/helpers'
+import { SendMessageRequest, SendMessageCommand } from '@aws-sdk/client-sqs'
+import { sqsClient } from '../../utils/awsSdkClients'
 
 export const sendSqsMessage = async (
   messageBody: object,
@@ -22,7 +18,6 @@ export const sendSqsMessageWithStringBody = async (
   queueUrl: string,
   delaySendInSeconds?: number
 ): Promise<string | undefined> => {
-  const client = new SQSClient({ region: getEnv('AWS_REGION') })
   const message: SendMessageRequest = {
     QueueUrl: queueUrl,
     MessageBody: messageBody
@@ -30,6 +25,6 @@ export const sendSqsMessageWithStringBody = async (
   if (delaySendInSeconds) {
     message.DelaySeconds = delaySendInSeconds
   }
-  const result = await client.send(new SendMessageCommand(message))
+  const result = await sqsClient.send(new SendMessageCommand(message))
   return result.MessageId
 }

@@ -1,5 +1,4 @@
 import {
-  S3ControlClient,
   CreateJobCommand,
   CreateJobCommandInput,
   JobReportScope
@@ -10,6 +9,7 @@ import { getEnv } from '../../utils/helpers'
 import { logger } from '../logger'
 import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
+import { s3ControlClient } from '../../utils/awsSdkClients'
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
 
@@ -50,7 +50,6 @@ const createS3TransferBatchJob = async (
   zendeskTicketId: string,
   decryptData: boolean
 ) => {
-  const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     ConfirmationRequired: false,
     AccountId: getEnv('AWS_ACCOUNT_ID'),
@@ -100,6 +99,6 @@ const createS3TransferBatchJob = async (
       }
     }
   } as CreateJobCommandInput
-  const result = await client.send(new CreateJobCommand(input))
+  const result = await s3ControlClient.send(new CreateJobCommand(input))
   return result.JobId
 }

@@ -1,5 +1,4 @@
 import {
-  AthenaClient,
   StartQueryExecutionCommand,
   StartQueryExecutionCommandInput
 } from '@aws-sdk/client-athena'
@@ -7,19 +6,16 @@ import { logger } from '../../sharedServices/logger'
 import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutionResult'
 import { getEnv } from '../../utils/helpers'
+import { athenaClient } from '../../utils/awsSdkClients'
 
 export const startQueryExecution = async (
   queryParams: CreateQuerySqlResult
 ): Promise<StartQueryExecutionResult> => {
-  const client = new AthenaClient({
-    region: getEnv('AWS_REGION')
-  })
-
   const input = generateQueryExecutionCommandInput(queryParams)
   const command = new StartQueryExecutionCommand(input)
 
   try {
-    const response = await client.send(command)
+    const response = await athenaClient.send(command)
 
     if (!response.QueryExecutionId) {
       const error = new Error('Athena query execution id not found in response')

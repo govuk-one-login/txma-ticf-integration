@@ -1,5 +1,4 @@
 import {
-  S3ControlClient,
   CreateJobCommand,
   CreateJobCommandInput
 } from '@aws-sdk/client-s3-control'
@@ -7,6 +6,7 @@ import { getEnv } from '../../utils/helpers'
 import { logger } from '../logger'
 import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
+import { s3ControlClient } from '../../utils/awsSdkClients'
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
 
@@ -40,7 +40,6 @@ const createBulkGlacierRestoreJob = async (
   manifestFileEtag: string,
   zendeskTicketId: string
 ): Promise<string | undefined> => {
-  const client = new S3ControlClient({ region: getEnv('AWS_REGION') })
   const input = {
     ConfirmationRequired: false,
     ClientRequestToken: `restore-${zendeskTicketId}`,
@@ -69,6 +68,6 @@ const createBulkGlacierRestoreJob = async (
       }
     }
   } as CreateJobCommandInput
-  const result = await client.send(new CreateJobCommand(input))
+  const result = await s3ControlClient.send(new CreateJobCommand(input))
   return result.JobId
 }
