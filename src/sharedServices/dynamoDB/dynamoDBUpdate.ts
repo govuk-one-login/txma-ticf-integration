@@ -1,4 +1,4 @@
-import { ddbClient } from './dynamoDBClient'
+import { ddbClient } from '../../utils/awsSdkClients'
 import {
   UpdateItemCommand,
   UpdateItemCommandInput
