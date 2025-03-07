@@ -142,4 +142,28 @@ describe('testing date utility code', () => {
     const nextDay = new Date('2023-01-02')
     expect(addDay(startingDate).valueOf()).toBe(nextDay.valueOf())
   })
+
+  it('date range validation', () => {
+    expect(
+      convertDateRangeToIndividualDateArray(['2024/01/01-2024/01/05'])
+    ).toEqual(
+      expect.arrayContaining([
+        '2024-01-01',
+        '2024-01-02',
+        '2024-01-03',
+        '2024-01-04',
+        '2024-01-05'
+      ])
+    )
+
+    expect(() =>
+      convertDateRangeToIndividualDateArray(['2024/01/01-2022/01/05'])
+    ).toThrow('Start date of range must be before end date')
+    expect(() =>
+      convertDateRangeToIndividualDateArray(['2024/01/06-2024/01/05'])
+    ).toThrow('Start date of range must be before end date')
+    expect(() =>
+      convertDateRangeToIndividualDateArray(['2024/01/05-2024/01/05'])
+    ).toThrow('Start date of range must be before end date')
+  })
 })
