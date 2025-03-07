@@ -28,10 +28,15 @@ export const convertDateRangeToIndividualDateArray = (
 ) => {
   const dateRangeArray = daterangeArray.map((daterange) => {
     const dates = daterange.split('-')
+    const startDateObj = new Date(dates[0])
     const endDateObj = new Date(dates[1])
 
+    if (startDateObj >= endDateObj) {
+      throw new Error('Start date of range must be before end date')
+    }
+
     const dateArray: Date[] = []
-    dateArray.push(new Date(dates[0]))
+    dateArray.push(startDateObj)
 
     while (dateArray[dateArray.length - 1].valueOf() < endDateObj.valueOf()) {
       const dateIncreasedByOne = addDay(dateArray[dateArray.length - 1])
