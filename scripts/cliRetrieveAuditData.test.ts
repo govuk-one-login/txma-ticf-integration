@@ -15,7 +15,7 @@ describe('testing command: retrieve-audit-data', () => {
     jest.spyOn(initiateCopyAndDecryptActionFile, 'initiateCopyAndDecryptAction')
   })
 
-  type happyPath = {
+  interface happyPath {
     cliParams: string[]
     parsedCliParams: initiateCopyAndDecryptActionFile.initiateCopyAndDecryptActionTypes
   }

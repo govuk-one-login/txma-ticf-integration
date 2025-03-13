@@ -4,6 +4,7 @@ import {
   GetItemCommand,
   GetItemOutput,
   QueryCommand,
+  QueryCommandOutput,
   QueryOutput
 } from '@aws-sdk/client-dynamodb'
 import { mockClient } from 'aws-sdk-client-mock'
@@ -153,7 +154,9 @@ describe('dynamoDBGet', () => {
     })
 
     test('Does not find request query in database - undefined response', async () => {
-      dynamoMock.on(GetItemCommand).resolves(undefined)
+      dynamoMock
+        .on(GetItemCommand)
+        .resolves(undefined as unknown as QueryCommandOutput)
 
       await expect(getDatabaseEntryByZendeskId('12')).rejects.toThrow(
         `Cannot find database entry for zendesk ticket '12'`
@@ -223,7 +226,9 @@ describe('dynamoDBGet', () => {
     })
 
     it('Does not find request query in database - undefined response', async () => {
-      dynamoMock.on(QueryCommand).resolves(undefined)
+      dynamoMock
+        .on(QueryCommand)
+        .resolves(undefined as unknown as QueryCommandOutput)
 
       expect(getQueryByAthenaQueryId(TEST_ATHENA_QUERY_ID)).rejects.toThrow(
         `No data returned from db for athenaQueryId: ${TEST_ATHENA_QUERY_ID}`

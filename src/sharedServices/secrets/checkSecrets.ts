@@ -1,6 +1,6 @@
 export const checkSecretsSet = (
   secretName: string,
-  secrets: { [key: string]: string },
+  secrets: Record<string, string>,
   secretKeys: string[]
 ) => {
   secretKeys.forEach((k) => checkSecretSet(secretName, secrets, k))
@@ -8,7 +8,7 @@ export const checkSecretsSet = (
 
 const checkSecretSet = (
   secretName: string,
-  secrets: { [key: string]: string },
+  secrets: Record<string, string>,
   secretKey: string
 ) => {
   if (!secrets[secretKey]) {

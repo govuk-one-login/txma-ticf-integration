@@ -14,7 +14,7 @@ export const testData: TestDataConstants = {
   userId: 'urn:uuid:03d3c6d3-6d7c-41df-bf45-c94401c96a2e'
 }
 
-type TestDataConstants = {
+interface TestDataConstants {
   readonly dataPath: string
   readonly date: string
   readonly date2: string

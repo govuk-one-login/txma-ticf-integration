@@ -57,7 +57,7 @@ const generateRandomDateAndPrefix = (): MatchedDateAndPrefix => {
   }
 }
 
-type MatchedDateAndPrefix = {
+interface MatchedDateAndPrefix {
   date: string
   prefix: string
 }

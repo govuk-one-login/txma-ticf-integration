@@ -4,9 +4,10 @@ import { zendeskConstants } from '../../shared-test-code/constants/zendeskParame
 const addPrefixToZendeskPiiType = (piiType: string) =>
   `${zendeskConstants.piiTypesPrefix}${piiType}`
 
-export const zendeskTicketTestCaseToMockResponseMapping: {
-  [key: number]: ZendeskTicketTestData
-} = {
+export const zendeskTicketTestCaseToMockResponseMapping: Record<
+  number,
+  ZendeskTicketTestData
+> = {
   // dataCopyRequestData.validRequestData
   1: {
     requesterEmail: testData.mockServerValues.requesterEmail,

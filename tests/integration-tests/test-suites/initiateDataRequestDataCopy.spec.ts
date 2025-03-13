@@ -123,9 +123,8 @@ describe('Data should be copied to analysis bucket', () => {
         result: isGlacierRestoreStartedMessageInLogs,
         events: processDataRequestEvents
       }).toEqual({ result: true, events: processDataRequestEvents })
-      const auditFileRestoringStatusFound = await waitForAuditFileRestore(
-        testDataFileKey
-      )
+      const auditFileRestoringStatusFound =
+        await waitForAuditFileRestore(testDataFileKey)
       expect(auditFileRestoringStatusFound).toEqual(true)
     })
   })

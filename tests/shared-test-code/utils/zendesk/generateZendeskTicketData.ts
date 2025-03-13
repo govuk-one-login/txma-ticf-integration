@@ -86,7 +86,7 @@ export const setCustomFieldValueForRequest = (
   }
 }
 
-type CustomFieldIds = {
+interface CustomFieldIds {
   customDataPath: number
   eventIds: number
   identifier: number
@@ -101,7 +101,7 @@ type CustomFieldIds = {
   userIds: number
 }
 
-type CustomFieldValues = {
+interface CustomFieldValues {
   customDataPath?: string | null
   eventIds?: string | null
   identifier?: string | null

@@ -2,7 +2,6 @@ import type { JestConfigWithTsJest } from 'ts-jest'
 
 const config: JestConfigWithTsJest = {
   coveragePathIgnorePatterns: [
-    '/.yarn/',
     '/dist/',
     '/src/utils/tests/mocks/mockLambdaContext.ts'
   ],
