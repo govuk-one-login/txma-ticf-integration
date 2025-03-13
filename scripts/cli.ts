@@ -7,6 +7,7 @@ import { testDateArgs, testDateRangeArgs } from './utils/dateUtils'
 
 process.env.AWS_REGION = AWS_REGION
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _typeHelper = new Command()
 
 export const buildCLI = (program: typeof _typeHelper) => {
@@ -46,6 +47,7 @@ export const buildCLI = (program: typeof _typeHelper) => {
           recipientEmail: recipientEmail,
           recipientName: recipientName,
           zendeskId: zendeskId
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
         }).then(() => {})
       }
     )
@@ -75,6 +77,7 @@ export const buildCLI = (program: typeof _typeHelper) => {
           zendeskId: zendeskId,
           daterange: options.daterange as string[],
           dates: options.dates as string[]
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
         }).then(() => {})
       } else {
         console.error('missing date options. Use "--help" flag for details')
