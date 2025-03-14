@@ -9,6 +9,8 @@ export default [
   { files: ['**/*.{js,ts}'] },
   { languageOptions: { globals: globals.node, parser: tsEslintParser } },
   pluginJs.configs.recommended,
+  // ...tsEslint.configs.strictTypeChecked,
+  // ...tsEslint.configs.stylisticTypeChecked,
   ...tsEslint.configs.recommended,
   ...tsEslint.configs.stylistic,
   {
