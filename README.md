@@ -31,7 +31,7 @@ To run this project you will need the following:
 
 ## Important
 
-- **Node version 22** is required
+- **Node version 22 or higher** is required
 
 - **Package manager is now NPM**
 
