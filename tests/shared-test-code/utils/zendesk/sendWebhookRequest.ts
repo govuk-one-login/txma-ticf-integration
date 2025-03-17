@@ -5,9 +5,7 @@ import { generateSignatureHeaders } from './generateSignatureHeaders'
 
 export const sendWebhookRequest = async (
   webhookRequestData: ZendeskWebhookRequest,
-  customHeaders?: {
-    [key: string]: string
-  }
+  customHeaders?: Record<string, string>
 ) => {
   return await axios({
     url: `${getEnv('ZENDESK_WEBHOOK_API_BASE_URL')}/zendesk-webhook`,

@@ -2,7 +2,7 @@ import { convertDateRangeToIndividualDateArray } from '../utils/dateUtils'
 import { generateInitiateCopyAndDecryptPayload } from './generateInitiateCopyAndDecryptPayload'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './sendManualAuditDataRequestPayloadToInitiateQueue'
 
-export type initiateCopyAndDecryptActionTypes = {
+export interface initiateCopyAndDecryptActionTypes {
   zendeskId: string
   dates?: string[]
   daterange?: string[]

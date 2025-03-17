@@ -17,13 +17,13 @@ export const zendeskConstants: ZendeskConstants = {
   piiTypesPrefix: 'pii_requested_'
 }
 
-type ZendeskConstants = {
+interface ZendeskConstants {
   readonly fieldIds: ZendeskFieldIds
   readonly piiFormId: number
   readonly piiTypesPrefix: string
 }
 
-type ZendeskFieldIds = {
+interface ZendeskFieldIds {
   readonly customDataPath: number
   readonly eventIds: number
   readonly identifier: number

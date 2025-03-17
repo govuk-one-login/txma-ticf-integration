@@ -1,19 +1,19 @@
-export type ZendeskRequestData = {
+export interface ZendeskRequestData {
   request: ZendeskRequest
 }
 
-type ZendeskRequest = {
+interface ZendeskRequest {
   subject: string
   ticket_form_id: number
   custom_fields: CustomField[]
   comment: ZendeskComment
 }
 
-export type CustomField = {
+export interface CustomField {
   id: number
   value: string | string[] | null
 }
 
-type ZendeskComment = {
+interface ZendeskComment {
   body: string
 }

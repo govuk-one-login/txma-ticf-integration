@@ -4,11 +4,7 @@ import * as CSV from 'csv-string'
 
 export async function downloadResultsFileAndParseData(
   secureDownloadPageUrl: string
-): Promise<
-  {
-    [k: string]: string
-  }[]
-> {
+): Promise<Record<string, string>[]> {
   const secureDownloadPageHTML = await getSecureDownloadPageHTML(
     secureDownloadPageUrl
   )

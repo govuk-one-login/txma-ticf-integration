@@ -25,33 +25,21 @@ Threat Intelligence and Counter Fraud (TICF) analysts will be able to request au
 To run this project you will need the following:
 
 - [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) - Used to build and deploy the application
-- [Node.js](https://nodejs.org/en/) version 18 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
+- [Node.js](https://nodejs.org/en/) version 22 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
 - [Docker](https://docs.docker.com/get-docker/) - Required to run SAM locally
-- [Yarn](https://yarnpkg.com/getting-started/install) version 3 - The package manager for the project
 - [Checkov](https://www.checkov.io/) - Scans cloud infrastructure configurations to find misconfigurations before they're deployed. Added as a Husky pre-commit hook.
 
 ## Important
 
-- **Node version 18** is required since the runtimes for Lambda functions are fixed.
-- Remove any old versions of Yarn that you may have installed globally if installing via `corepack enable`, or else the global version will override the version coming from Node.
+- **Node version 22 or higher** is required
+
+- **Package manager is now NPM**
 
 # Getting started
 
-The project is using [Yarn Zero Installs](https://yarnpkg.com/features/zero-installs). So as long as Yarn itself is installed, everything should be ready to go out of the box. As long as you are running Node v16.10+, the easiest way to install Yarn is to enable corepack.
-
 ```shell
-corepack enable
+npm install husky
 ```
-
-Then the only other thing that needs to be enabled is the Husky hooks.
-
-```shell
-yarn husky install
-```
-
-Zero installs works because the dependencies are committed via the `.yarn` folder. These are all compressed, so the folder size is much smaller than `node_modules` would be.
-
-In order to ensure that dependencies cannot be altered by anything other than Yarn itself, we run `yarn install --check-cache` in the pipeline. This avoids the possibility of malicous users altering any dependency code.
 
 # Testing
 
@@ -88,43 +76,43 @@ To run tests against the environment you will need to be authenticated against t
 To run the integraton pack which pulls variables from AWS and assumes external services are stubbed you should assume a build account role and run the following:
 
 ```shell
-yarn test:integration
+npm run test:integration
 ```
 
 To run the end to end pack which pulls variables from AWS and interacts with real external services you should assume a staging account role and run the following:
 
 ```shell
-yarn test:e2e
+npm run test:e2e
 ```
 
 To run an individual test (suite or test case):
 
 ```shell
-yarn test:integration -t '<description_of_the_testcase_or_suite>'
+npm run test:integration -t '<description_of_the_testcase_or_suite>'
 ```
 
 To run an individual test file:
 
 ```shell
-yarn test:integration /path/to/file.spec.ts
+npm run test:integration /path/to/file.spec.ts
 ```
 
 To override certain variables run:
 
 ```shell
-STACK_NAME=<ANOTHER_STACK> ZENDESK_WEBHOOK_SECRET_KEY=<ANOTHER_SECRET> yarn test:integration
+STACK_NAME=<ANOTHER_STACK> ZENDESK_WEBHOOK_SECRET_KEY=<ANOTHER_SECRET> npm run test:integration
 ```
 
 If you wish to run the tests with locally defined variables instead of pulling them from AWS, create a `test/integration-tests/.env` or `test/e2e-tests/.env` file and run:
 
 ```shell
-yarn test:integration:dev
+npm run test:integration:dev
 ```
 
 or
 
 ```shell
-yarn test:e2e:dev
+npm run test:e2e:dev
 ```
 
 ## Running feature tests against a feature branch in the Dev environment
@@ -133,12 +121,12 @@ yarn test:e2e:dev
 2. Run the following to set up the secrets under `tests/{STACK_NAME}`
 
    ```bash
-   yarn setupDevStackSecrets
+   npm run setupDevStackSecrets
    ```
 
 3. Then run the test themselves
    ```bash
-   yarn test:integration
+   npm run test:integration
    ```
 
 ## Test Reports
@@ -163,14 +151,14 @@ export ZENDESK_ADMIN_EMAIL='(value in Team Test Confluence)'
 You then run
 
 ```
-yarn createTestTicket <recipient email address> <data date, e.g. 2022-09-01> "<Subject line for ticket>" "<space-separated event ids e.g. c9e2bf44-b95e-4f9a-81c4-cf02d42c1552>" "<space-separated data paths, e.g. restricted.address>"
+npm run createTestTicket <recipient email address> <data date, e.g. 2022-09-01> "<Subject line for ticket>" "<space-separated event ids e.g. c9e2bf44-b95e-4f9a-81c4-cf02d42c1552>" "<space-separated data paths, e.g. restricted.address>"
 ```
 
 and the utility will create and approve a Zendesk ticket for you.
 
 ## Running Zendesk webhook locally
 
-1. `yarn build` - This will make a build of the code which the SAM template refers to
+1. `npm run build` - This will make a build of the code which the SAM template refers to
 2. `sam local start-api 2>&1 | tr "\r" "\n"` - This will start the api, formatting the log output so we can read multi-line logs (without this we don't see anything beyond the first line)
 3. `curl -X post http://localhost:3000/zendesk-webhook` - This will confirm the request hitting the endpoint
 
@@ -190,14 +178,14 @@ Additionally, its code formatting rules are disabled as these are handled by Pre
 To run the linting:
 
 ```
-yarn lint
+npm run lint
 ```
 
 # Scripts
 
-All scripts can now be ran using `yarn cli` in the terminal. Use `yarn cli --help` to see what scripts are available and how to use them. You can also run `yarn cli <command> --help` to view detailed help per command
+All scripts can now be ran using `npm run cli` in the terminal. Use `npm run cli --help` to see what scripts are available and how to use them. You can also run `npm run  cli <command> --help` to view detailed help per command
 
-`script/cli.ts` is the entrypoint to the cli, each command listed by `yarn cli --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance in `--help` on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
+`script/cli.ts` is the entrypoint to the cli, each command listed by `npm run  cli --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance in `--help` on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
 
 > [!NOTE]  
 > Not all scripts have been migrated over. The following scripts can be used
@@ -207,26 +195,26 @@ All scripts can now be ran using `yarn cli` in the terminal. Use `yarn cli --hel
 
 ## Valid email recipients management
 
-The Scaled Audit Log system includes a step that checks if the email address of the user requesting data is in a preset list, which we manage via a file in an S3 bucket. To manage the contents of this file, we have a yarn script.
+The Scaled Audit Log system includes a step that checks if the email address of the user requesting data is in a preset list, which we manage via a file in an S3 bucket. To manage the contents of this file, we have a npm script.
 
 To run this script, you need to be logged in to the relevant `audit` account on the command line (e.g. with `aws sso login --profile=audit-{environment}`).
 
 To show the current list:
 
 ```
-yarn validRecipientsManager --env <environment name> --showCurrent
+npm run validRecipientsManager --env <environment name> --showCurrent
 ```
 
 To add a new email to the list:
 
 ```
-yarn validRecipientsManager --env <environment name> --addEmail <userEmail>
+ynpm run validRecipientsManager --env <environment name> --addEmail <userEmail>
 ```
 
 To remove an email from the list:
 
 ```
-yarn validRecipientsManager --env production --removeEmail <userEmail>
+npm run validRecipientsManager --env production --removeEmail <userEmail>
 ```
 
 ## Licence

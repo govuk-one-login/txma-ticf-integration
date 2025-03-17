@@ -114,9 +114,7 @@ describe('initiate data request handler', () => {
 
   const requestBody = 'myBody'
   const parsedEventBody = tryParseJSON(requestBody)
-  const callHandlerWithBody = async (customBody?: {
-    [key: string]: string
-  }) => {
+  const callHandlerWithBody = async (customBody?: Record<string, string>) => {
     const response = await handler(
       {
         ...defaultApiRequest,

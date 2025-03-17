@@ -1,7 +1,7 @@
 import { copyManualRequestData } from './copyManualRequestData'
 import { sendSQSMessageToCompletedQueue } from './sendSQSMessageToCompletedQueue'
 
-type options = {
+interface options {
   environment: string
   athenaQueryId: string
   zendeskId: string

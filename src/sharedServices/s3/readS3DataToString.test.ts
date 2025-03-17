@@ -10,6 +10,7 @@ import {
 } from '../../utils/tests/testConstants'
 import { readS3DataToString } from './readS3DataToString'
 import 'aws-sdk-client-mock-jest'
+import { StreamingBlobPayloadOutputTypes } from '@smithy/types'
 import { Readable } from 'stream'
 
 const s3Mock = mockClient(S3Client)
@@ -26,7 +27,9 @@ const createDataStream = () => {
   return dataStream
 }
 const givenRecipientEmailListAvailable = () => {
-  s3Mock.on(GetObjectCommand).resolves({ Body: createDataStream() })
+  s3Mock
+    .on(GetObjectCommand)
+    .resolves({ Body: createDataStream() as StreamingBlobPayloadOutputTypes })
 }
 
 describe('readS3DataToString', () => {

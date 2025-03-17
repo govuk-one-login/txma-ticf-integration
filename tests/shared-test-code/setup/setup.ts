@@ -96,9 +96,9 @@ module.exports = async () => {
   setEnvVarsFromJestGlobals(globals)
 }
 
-const setEnvVarsFromSecretsManager = async (secretMappings: {
-  [key: string]: string[]
-}) => {
+const setEnvVarsFromSecretsManager = async (
+  secretMappings: Record<string, string[]>
+) => {
   for (const [secretSet, secrets] of Object.entries(secretMappings)) {
     const secretValues = await retrieveSecretValue(secretSet, region)
     checkSecretsSet(secretSet, secretValues, secrets)
@@ -112,7 +112,7 @@ const setEnvVarsFromSecretsManager = async (secretMappings: {
   }
 }
 
-const setEnvVarsFromSsm = async (ssmMappings: { [key: string]: string }) => {
+const setEnvVarsFromSsm = async (ssmMappings: Record<string, string>) => {
   for (const [k, v] of Object.entries(ssmMappings)) {
     process.env[k] = process.env[k]
       ? process.env[k]
@@ -122,9 +122,7 @@ const setEnvVarsFromSsm = async (ssmMappings: { [key: string]: string }) => {
 
 const setEnvVarsFromStackOutputs = async (
   stack: string,
-  stackOutputMappings: {
-    [key: string]: string
-  }
+  stackOutputMappings: Record<string, string>
 ) => {
   const stackOutputs = await retrieveStackOutputs(stack, region)
 

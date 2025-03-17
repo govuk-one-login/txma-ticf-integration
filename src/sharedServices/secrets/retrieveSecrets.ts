@@ -6,7 +6,7 @@ import { secretsManagerClient } from '../../utils/awsSdkClients'
 
 export const retrieveSecrets = async (
   secretId: string
-): Promise<{ [key: string]: string }> => {
+): Promise<Record<string, string>> => {
   const command: GetSecretValueCommandInput = {
     SecretId: secretId
   }

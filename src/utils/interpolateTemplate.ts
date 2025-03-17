@@ -1,14 +1,10 @@
 interface MessagesInterface {
   name: string
   message: string
-  replacements?: {
-    [key: string]: string
-  }
+  replacements?: Record<string, string>
 }
 
-interface AdditionsInterface {
-  [key: string]: string
-}
+type AdditionsInterface = Record<string, string>
 
 export const interpolateTemplate = (
   key: string,

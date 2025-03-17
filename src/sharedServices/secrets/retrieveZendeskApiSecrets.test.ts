@@ -9,7 +9,7 @@ jest.mock('./retrieveSecrets', () => ({
 }))
 
 const mockRetrieveSecrets = retrieveSecrets as jest.Mock<
-  Promise<{ [key: string]: string }>
+  Promise<Record<string, string>>
 >
 
 const TEST_ZENDESK_API_KEY = 'myZendeskApiKey'
@@ -19,7 +19,7 @@ const TEST_ZENDESK_HOSTNAME = 'example-host.zendesk.com'
 const TEST_ZENDESK_WEBHOOK_SECRET_KEY = 'testSecretKey123'
 
 describe('retrieveZendeskApiSecrets', () => {
-  const givenSecretKeysSet = (secrets: { [key: string]: string }) => {
+  const givenSecretKeysSet = (secrets: Record<string, string>) => {
     mockRetrieveSecrets.mockResolvedValue(secrets)
   }
   const allSecretKeys = {
@@ -57,7 +57,7 @@ describe('retrieveZendeskApiSecrets', () => {
 
   keyList.forEach((keyToOmit) => {
     it(`should throw an error when the secret key ${keyToOmit} is not set`, async () => {
-      const secretCollection: { [key: string]: string } = { ...allSecretKeys }
+      const secretCollection: Record<string, string> = { ...allSecretKeys }
 
       delete secretCollection[keyToOmit]
       givenSecretKeysSet(secretCollection)

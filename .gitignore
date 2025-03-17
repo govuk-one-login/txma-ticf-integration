@@ -12,14 +12,5 @@ tests/reports/
 # NPM
 node_modules/
 
-# Yarn
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
 # IntelliJ
 .idea/*

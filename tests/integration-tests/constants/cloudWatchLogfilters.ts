@@ -26,7 +26,7 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   zendeskId: 'zendeskId'
 }
 
-type CloudwatchLogFiltersConstants = {
+interface CloudwatchLogFiltersConstants {
   readonly athenaEventReceived: string
   readonly athenaInvokeError: string
   readonly athenaQueryInitiated: string

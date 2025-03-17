@@ -4,7 +4,7 @@ import { parseCliCallerForTesting } from './cli'
 import * as sendAuditDataActionFile from './sendQueryResults/sendAuditDataAction'
 import { sendAuditDataAction } from './sendQueryResults/sendAuditDataAction'
 
-type unhappyPathTestCaseType = {
+interface unhappyPathTestCaseType {
   arg: string[]
   testDescription: string
   expectedErrorMessage?: string

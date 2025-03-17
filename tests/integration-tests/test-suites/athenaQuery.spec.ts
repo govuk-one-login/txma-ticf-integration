@@ -55,11 +55,7 @@ const maxRandomTicketId = 1000000000000
 
 const waitForAthenaQueryOutputFile = async (
   athenaQueryId: string
-): Promise<
-  {
-    [k: string]: string
-  }[]
-> => {
+): Promise<Record<string, string>[]> => {
   const csvData = await s3WaitForFileContents(
     getEnv('ATHENA_OUTPUT_BUCKET_NAME'),
     `ticf-automated-audit-data-queries/${athenaQueryId}.csv`

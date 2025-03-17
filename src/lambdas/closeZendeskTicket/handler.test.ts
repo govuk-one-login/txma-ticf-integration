@@ -68,7 +68,7 @@ describe('initiate closeZendeskTicket handler', () => {
       const eventBodyParams = {
         zendeskId: ZENDESK_TICKET_ID,
         commentCopyText: TEST_COMMENT_COPY
-      } as { [key: string]: string }
+      } as Record<string, string>
       delete eventBodyParams[missingPropertyName]
 
       await expect(
@@ -88,7 +88,7 @@ describe('initiate closeZendeskTicket handler', () => {
       const eventBodyParams = {
         zendeskId: ZENDESK_TICKET_ID,
         commentCopyText: TEST_COMMENT_COPY
-      } as { [key: string]: string }
+      } as Record<string, string>
       eventBodyParams[emptyStringPropertyName] = ''
 
       await expect(

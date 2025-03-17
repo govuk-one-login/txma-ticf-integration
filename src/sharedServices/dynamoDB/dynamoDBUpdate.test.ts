@@ -89,7 +89,9 @@ describe('dynamoDbUpdate', () => {
     })
 
     test('Does not find request query in database - undefined response', async () => {
-      dynamoMock.on(UpdateItemCommand).resolves(undefined)
+      dynamoMock
+        .on(UpdateItemCommand)
+        .resolves(undefined as unknown as UpdateItemOutput)
 
       await expect(
         updateQueryByZendeskId('12', 'athenaQueryId', 'testAthenaId')

@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:

@@ -27,7 +27,7 @@ export const testData: TestDataConstants = {
   }
 }
 
-type TestDataConstants = {
+interface TestDataConstants {
   readonly athenaTestEventId1: string
   readonly athenaTestEventId2: string
   readonly athenaTestAddresses: string
@@ -49,7 +49,7 @@ type TestDataConstants = {
   readonly mockServerValues: MockServerValues
 }
 
-type MockServerValues = {
+interface MockServerValues {
   readonly zendeskEndUserName: string
   readonly recipientName: string
   readonly recipientEmail: string

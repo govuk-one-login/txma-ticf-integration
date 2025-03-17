@@ -77,7 +77,7 @@ describe('validateZendeskRequest', () => {
       piiTypes: spaceSeparatedPiiTypes,
       dataPaths: spaceSeparatedDataPaths
     }
-    const identifierTypeToObjectKeyMapping: { [key: string]: string } = {
+    const identifierTypeToObjectKeyMapping: Record<string, string> = {
       event_id: 'eventIds',
       journey_id: 'journeyIds',
       session_id: 'sessionIds',
@@ -205,7 +205,7 @@ describe('validateZendeskRequest', () => {
         identifierType: parameters.rawIdentifierType
       }
 
-      const identifierTypeToObjectKeyMapping: { [key: string]: string } = {
+      const identifierTypeToObjectKeyMapping: Record<string, string> = {
         pii_identifier_event_id: 'eventIds',
         pii_identifier_journey_id: 'journeyIds',
         pii_identifier_session_id: 'sessionIds',
