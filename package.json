@@ -25,7 +25,7 @@
     "test:integration": "jest -c tests/integration-tests/jest.integration.config.ts --expand",
     "test:integration:dev": "jest --setupFiles '<rootDir>/.env' -c tests/integration-tests/jest.integration.config.ts --expand",
     "validRecipientsManager": "ts-node scripts/validRecipientsManager.ts",
-    "cli": "ts-node scripts/cli.ts"
+    "cli": "node -r ts-node/register scripts/cli.ts"
   },
   "dependencies": {
     "@aws-crypto/decrypt-node": "4.2.0",
