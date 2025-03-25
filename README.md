@@ -183,9 +183,14 @@ npm run lint
 
 # Scripts
 
-All scripts can now be ran using `npm run cli` in the terminal. Use `npm run cli --help` to see what scripts are available and how to use them. You can also run `npm run  cli <command> --help` to view detailed help per command
+All scripts can now be ran using `npm run cli` in the terminal. Here are some example CLI args you can use
 
-`script/cli.ts` is the entrypoint to the cli, each command listed by `npm run  cli --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance in `--help` on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
+- `npm run cli -- --help` to see what scripts are available and how to use them.
+- `npm run cli <command> -- --help` to see the help per command.
+
+> Anything after `--` allows you to pass in command line arguments directly to the cli tool
+
+`script/cli.ts` is the entrypoint to the cli, each command listed by `npm run cli -- --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance in `--help` on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
 
 > [!NOTE]  
 > Not all scripts have been migrated over. The following scripts can be used

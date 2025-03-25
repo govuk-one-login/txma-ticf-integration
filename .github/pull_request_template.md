@@ -1,4 +1,4 @@
-- **Ticket Number**: #[Your Ticket Number] :ticket:
+- **Ticket Number**: https://govukverify.atlassian.net/browse/DPT-
 - **Documentation Link(s)**: [:books: Does this relate to an ADR/RFC/Spike ticket?]
 
 ## :bulb: Description
