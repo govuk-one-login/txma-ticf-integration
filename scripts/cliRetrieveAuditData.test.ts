@@ -1,5 +1,5 @@
 import { when } from 'jest-when'
-import { cliBaseCommand } from '../src/utils/tests/testConstants'
+import { cliBaseCommand } from '../common/utils/tests/testConstants'
 import { parseCliCallerForTesting } from './cli'
 import * as initiateCopyAndDecryptActionFile from './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
 import { initiateCopyAndDecryptAction } from './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'

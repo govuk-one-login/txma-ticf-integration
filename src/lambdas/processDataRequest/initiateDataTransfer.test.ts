@@ -1,16 +1,16 @@
-import { S3BucketDataLocationResult } from '../../types/s3BucketDataLocationResult'
-import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
+import { S3BucketDataLocationResult } from '../../../common/types/s3BucketDataLocationResult'
+import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
 import { initiateDataTransfer } from './initiateDataTransfer'
-import { startGlacierRestore } from '../../sharedServices/bulkJobs/startGlacierRestore'
-import { testDataRequest } from '../../utils/tests/testDataRequest'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
-import { addNewDataRequestRecord } from '../../sharedServices/dynamoDB/dynamoDBPut'
-import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
-import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
-import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
+import { startGlacierRestore } from '../../../common/sharedServices/bulkJobs/startGlacierRestore'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
+import { addNewDataRequestRecord } from '../../../common/sharedServices/dynamoDB/dynamoDBPut'
+import { startTransferToAnalysisBucket } from '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket'
+import { sendContinuePollingDataTransferMessage } from '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage'
+import { sendInitiateAthenaQueryMessage } from '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage'
 
-jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({
+jest.mock('../../../common/sharedServices/s3/checkS3BucketData', () => ({
   checkS3BucketData: jest.fn()
 }))
 
@@ -18,26 +18,29 @@ const mockCheckS3BucketData = checkS3BucketData as jest.Mock<
   Promise<S3BucketDataLocationResult>
 >
 
-jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 
 const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock
 
-jest.mock('../../sharedServices/bulkJobs/startGlacierRestore', () => ({
-  startGlacierRestore: jest.fn()
-}))
+jest.mock(
+  '../../../common/sharedServices/bulkJobs/startGlacierRestore',
+  () => ({
+    startGlacierRestore: jest.fn()
+  })
+)
 
 const mockStartGlacierRestore = startGlacierRestore as jest.Mock
 
-jest.mock('../../sharedServices/dynamoDB/dynamoDBPut', () => ({
+jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBPut', () => ({
   addNewDataRequestRecord: jest.fn()
 }))
 
 const mockAddNewDataRequestRecord = addNewDataRequestRecord as jest.Mock
 
 jest.mock(
-  '../../sharedServices/bulkJobs/startTransferToAnalysisBucket',
+  '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket',
   () => ({
     startTransferToAnalysisBucket: jest.fn()
   })
@@ -47,15 +50,18 @@ const mockStartTransferToAnalysisBucket =
   startTransferToAnalysisBucket as jest.Mock
 
 jest.mock(
-  '../../sharedServices/queue/sendContinuePollingDataTransferMessage',
+  '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage',
   () => ({
     sendContinuePollingDataTransferMessage: jest.fn()
   })
 )
 
-jest.mock('../../sharedServices/queue/sendInitiateAthenaQueryMessage', () => ({
-  sendInitiateAthenaQueryMessage: jest.fn()
-}))
+jest.mock(
+  '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage',
+  () => ({
+    sendInitiateAthenaQueryMessage: jest.fn()
+  })
+)
 
 const mockSendContinuePollingDataTransferMessage =
   sendContinuePollingDataTransferMessage as jest.Mock

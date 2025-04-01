@@ -1,26 +1,29 @@
-import { getS3BatchJobTags } from '../../sharedServices/bulkJobs/getS3BatchJobTags'
+import { getS3BatchJobTags } from '../../../common/sharedServices/bulkJobs/getS3BatchJobTags'
 import { jobWasSuccessful } from './jobWasSuccessful'
-import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
-import { batchJobStatusChangeEvent } from '../../utils/tests/events/batchJobStatusChangeEvent'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+import { sendInitiateAthenaQueryMessage } from '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage'
+import { batchJobStatusChangeEvent } from '../../../common/utils/tests/events/batchJobStatusChangeEvent'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 import { handler } from './handler'
 import { when } from 'jest-when'
 import {
   TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID,
   ZENDESK_TICKET_ID
-} from '../../utils/tests/testConstants'
-import { logger } from '../../sharedServices/logger'
+} from '../../../common/utils/tests/testConstants'
+import { logger } from '../../../common/sharedServices/logger'
 
-jest.mock('../../sharedServices/bulkJobs/getS3BatchJobTags', () => ({
+jest.mock('../../../common/sharedServices/bulkJobs/getS3BatchJobTags', () => ({
   getS3BatchJobTags: jest.fn()
 }))
 
-jest.mock('../../sharedServices/queue/sendInitiateAthenaQueryMessage', () => ({
-  sendInitiateAthenaQueryMessage: jest.fn()
-}))
+jest.mock(
+  '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage',
+  () => ({
+    sendInitiateAthenaQueryMessage: jest.fn()
+  })
+)
 
-jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 

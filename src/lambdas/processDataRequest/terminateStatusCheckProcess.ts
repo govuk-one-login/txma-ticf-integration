@@ -1,5 +1,5 @@
-import { sendSqsMessageWithStringBody } from '../../sharedServices/queue/sendSqsMessage'
-import { getEnv } from '../../utils/helpers'
+import { sendSqsMessageWithStringBody } from '../../../common/sharedServices/queue/sendSqsMessage'
+import { getEnv } from '../../../common/utils/helpers'
 
 export const terminateStatusCheckProcess = async (
   zendeskId: string

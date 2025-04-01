@@ -1,5 +1,5 @@
 import { sendSQSMessageToCompletedQueue } from './sendSQSMessageToCompletedQueue'
-import { sendSqsMessage } from '../../src/sharedServices/queue/sendSqsMessage'
+import { sendSqsMessage } from '../../common/sharedServices/queue/sendSqsMessage'
 import { GetQueueUrlCommand, SQSClient } from '@aws-sdk/client-sqs'
 import { mockClient } from 'aws-sdk-client-mock'
 

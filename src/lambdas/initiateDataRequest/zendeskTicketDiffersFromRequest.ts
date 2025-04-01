@@ -1,16 +1,16 @@
-import { loggingCopy } from '../../constants/loggingCopy'
-import { logger } from '../../sharedServices/logger'
-import { getZendeskTicket } from '../../sharedServices/zendesk/getZendeskTicket'
-import { getZendeskUser } from '../../sharedServices/zendesk/getZendeskUser'
-import { DataRequestParams } from '../../types/dataRequestParams'
-import { ZendeskTicket } from '../../types/zendeskTicketResult'
-import { ZendeskUser } from '../../types/zendeskUserResult'
+import { loggingCopy } from '../../../common/constants/loggingCopy'
+import { logger } from '../../../common/sharedServices/logger'
+import { getZendeskTicket } from '../../../common/sharedServices/zendesk/getZendeskTicket'
+import { getZendeskUser } from '../../../common/sharedServices/zendesk/getZendeskUser'
+import { DataRequestParams } from '../../../common/types/dataRequestParams'
+import { ZendeskTicket } from '../../../common/types/zendeskTicketResult'
+import { ZendeskUser } from '../../../common/types/zendeskUserResult'
 import {
   getEnvAsNumber,
   mapSpaceSeparatedStringToList,
   removeZendeskPiiTypePrefixFromPiiType
-} from '../../utils/helpers'
-import { interpolateTemplate } from '../../utils/interpolateTemplate'
+} from '../../../common/utils/helpers'
+import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
 
 export const zendeskTicketDiffersFromRequest = async (
   requestParams: DataRequestParams

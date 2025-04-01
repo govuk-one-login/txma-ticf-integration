@@ -1,8 +1,8 @@
 import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
-import { readS3DataToString } from '../../sharedServices/s3/readS3DataToString'
+import { readS3DataToString } from '../../../common/sharedServices/s3/readS3DataToString'
 import { when } from 'jest-when'
-import { TEST_VALID_EMAIL_RECIPIENTS_BUCKET } from '../../utils/tests/testConstants'
-jest.mock('../../sharedServices/s3/readS3DataToString', () => ({
+import { TEST_VALID_EMAIL_RECIPIENTS_BUCKET } from '../../../common/utils/tests/testConstants'
+jest.mock('../../../common/sharedServices/s3/readS3DataToString', () => ({
   readS3DataToString: jest.fn()
 }))
 

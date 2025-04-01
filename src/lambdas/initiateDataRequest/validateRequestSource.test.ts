@@ -2,14 +2,17 @@
 import { isSignatureInvalid } from './validateRequestSource'
 // Dependencies
 import * as crypto from 'crypto'
-import { exampleEventBody } from '../../utils/tests/events/exampleEventBody'
-import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
-import { ALL_ZENDESK_SECRETS } from '../../utils/tests/testConstants'
+import { exampleEventBody } from '../../../common/utils/tests/events/exampleEventBody'
+import { givenAllSecretsAvailable } from '../../../common/utils/tests/mocks/retrieveSecretKeys'
+import { ALL_ZENDESK_SECRETS } from '../../../common/utils/tests/testConstants'
 import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 
-jest.mock('../../sharedServices/secrets/retrieveZendeskApiSecrets', () => ({
-  retrieveZendeskApiSecrets: jest.fn()
-}))
+jest.mock(
+  '../../../common/sharedServices/secrets/retrieveZendeskApiSecrets',
+  () => ({
+    retrieveZendeskApiSecrets: jest.fn()
+  })
+)
 
 const generateTestHeaders = (): APIGatewayProxyEventHeaders => {
   const timestamp = '2022-09-05T09:52:10Z'

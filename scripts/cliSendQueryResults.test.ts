@@ -1,5 +1,5 @@
 import { when } from 'jest-when'
-import { cliBaseCommand } from '../src/utils/tests/testConstants'
+import { cliBaseCommand } from '../common/utils/tests/testConstants'
 import { parseCliCallerForTesting } from './cli'
 import * as sendAuditDataActionFile from './sendQueryResults/sendAuditDataAction'
 import { sendAuditDataAction } from './sendQueryResults/sendAuditDataAction'

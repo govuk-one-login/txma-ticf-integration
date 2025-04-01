@@ -1,14 +1,14 @@
 import {
   ZENDESK_TICKET_ID,
   TEST_COMMENT_COPY
-} from '../../utils/tests/testConstants'
+} from '../../../common/utils/tests/testConstants'
 import { handler } from './handler'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { constructSqsEvent } from '../../utils/tests/events/sqsEvent'
-import { logger } from '../../sharedServices/logger'
-import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { constructSqsEvent } from '../../../common/utils/tests/events/sqsEvent'
+import { logger } from '../../../common/sharedServices/logger'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 
-jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock

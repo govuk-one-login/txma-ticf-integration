@@ -1,4 +1,4 @@
-import { copyS3Object } from '../../src/sharedServices/s3/copyS3Object'
+import { copyS3Object } from '../../common/sharedServices/s3/copyS3Object'
 import { getBucketFileName } from './getBucketFileName'
 import { copyManualRequestData } from './copyManualRequestData'
 

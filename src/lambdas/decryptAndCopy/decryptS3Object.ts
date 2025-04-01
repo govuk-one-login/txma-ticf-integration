@@ -1,7 +1,7 @@
 import { KmsKeyringNode } from '@aws-crypto/kms-keyring-node'
 import { buildDecrypt } from '@aws-crypto/decrypt-node'
 import { Readable } from 'stream'
-import { getEnv } from '../../utils/helpers'
+import { getEnv } from '../../../common/utils/helpers'
 
 export const decryptS3Object = async (data: Readable): Promise<Buffer> => {
   const keyring = new KmsKeyringNode({

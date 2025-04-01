@@ -42,6 +42,7 @@ WORKDIR /test-app
 
 COPY package.json package-lock.json tsconfig.json ./
 COPY tests ./tests
+COPY common ./common
 
 RUN corepack enable
 RUN npm install

@@ -1,5 +1,5 @@
-import { VALID_EMAIL_RECIPIENTS_FILE_NAME } from '../../src/constants/configurationConstants'
-import { putS3Object } from '../../src/sharedServices/s3/putS3Object'
+import { VALID_EMAIL_RECIPIENTS_FILE_NAME } from '../../common/constants/configurationConstants'
+import { putS3Object } from '../../common/sharedServices/s3/putS3Object'
 import { getValidRecipientBucketName } from './getValidRecipientBucketName'
 
 export const writeRecipientListToBucket = async (

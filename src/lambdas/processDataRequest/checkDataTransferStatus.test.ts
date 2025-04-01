@@ -1,29 +1,29 @@
-import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
-import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
-import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
+import { sendContinuePollingDataTransferMessage } from '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage'
+import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
+import { startTransferToAnalysisBucket } from '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import { when } from 'jest-when'
 import {
   TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT,
   ZENDESK_TICKET_ID
-} from '../../utils/tests/testConstants'
-import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
-import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+} from '../../../common/utils/tests/testConstants'
+import { DataRequestDatabaseEntry } from '../../../common/types/dataRequestDatabaseEntry'
+import { getDatabaseEntryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { logger } from '../../sharedServices/logger'
-import { testDataRequest } from '../../utils/tests/testDataRequest'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { logger } from '../../../common/sharedServices/logger'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
 
-jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
+jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
   getDatabaseEntryByZendeskId: jest.fn()
 }))
 
-jest.mock('../../sharedServices/s3/checkS3BucketData', () => ({
+jest.mock('../../../common/sharedServices/s3/checkS3BucketData', () => ({
   checkS3BucketData: jest.fn()
 }))
 
-jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 
@@ -32,14 +32,14 @@ jest.mock('./terminateStatusCheckProcess', () => ({
 }))
 
 jest.mock(
-  '../../sharedServices/bulkJobs/startTransferToAnalysisBucket',
+  '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket',
   () => ({
     startTransferToAnalysisBucket: jest.fn()
   })
 )
 
 jest.mock(
-  '../../sharedServices/queue/sendContinuePollingDataTransferMessage',
+  '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage',
   () => ({
     sendContinuePollingDataTransferMessage: jest.fn()
   })

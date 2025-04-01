@@ -5,8 +5,8 @@ import {
   TEST_GENERATOR_KEY_ID,
   TEST_S3_OBJECT_DATA_BUFFER,
   TEST_S3_OBJECT_DATA_STRING
-} from '../../utils/tests/testConstants'
-import { createDataStream } from '../../utils/tests/testHelpers'
+} from '../../../common/utils/tests/testConstants'
+import { createDataStream } from '../../../common/utils/tests/testHelpers'
 import { decryptS3Object } from './decryptS3Object'
 
 jest.mock('@aws-crypto/decrypt-node', () => ({

@@ -1,13 +1,13 @@
 import { Context, EventBridgeEvent } from 'aws-lambda'
-import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { getQueryByAthenaQueryId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
 import {
   appendZendeskIdToLogger,
   initialiseLogger,
   logger
-} from '../../sharedServices/logger'
-import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
+} from '../../../common/sharedServices/logger'
+import { sendQueryOutputGeneratedAuditMessage } from '../../../common/sharedServices/queue/sendAuditMessage'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { AthenaEBEventDetails } from '../../../common/types/athenaEBEventDetails'
 import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 
 export const handler = async (

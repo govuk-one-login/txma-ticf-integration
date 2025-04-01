@@ -1,6 +1,6 @@
-import { logger } from '../../sharedServices/logger'
-import { sendSqsMessage } from '../../sharedServices/queue/sendSqsMessage'
-import { getEnv } from '../../utils/helpers'
+import { logger } from '../../../common/sharedServices/logger'
+import { sendSqsMessage } from '../../../common/sharedServices/queue/sendSqsMessage'
+import { getEnv } from '../../../common/utils/helpers'
 export const sendQueryCompleteQueueMessage = async (parameters: {
   athenaQueryId: string
   recipientEmail: string

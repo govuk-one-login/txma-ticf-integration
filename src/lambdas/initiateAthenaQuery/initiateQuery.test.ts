@@ -1,26 +1,26 @@
 import { initiateQuery } from './initiateQuery'
 import { startQueryExecution } from './startQueryExecution'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { getDatabaseEntryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
 import { createQuerySql } from './createQuerySql'
-import { updateQueryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBUpdate'
+import { updateQueryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBUpdate'
 import {
   dataPathsTestDataRequest,
   noIdTestDataRequest,
   testDataRequest
-} from '../../utils/tests/testDataRequest'
-import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
+} from '../../../common/utils/tests/testDataRequest'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
 
-jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
-jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
+jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
   getDatabaseEntryByZendeskId: jest.fn()
 }))
 jest.mock('./createQuerySql', () => ({
   createQuerySql: jest.fn()
 }))
-jest.mock('../../sharedServices/dynamoDB/dynamoDBUpdate', () => ({
+jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
   updateQueryByZendeskId: jest.fn()
 }))
 jest.mock('./startQueryExecution', () => ({

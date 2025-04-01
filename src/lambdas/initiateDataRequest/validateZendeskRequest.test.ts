@@ -1,12 +1,12 @@
 import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { validateZendeskRequest } from './validateZendeskRequest'
-import { IdentifierTypes } from '../../types/dataRequestParams'
+import { IdentifierTypes } from '../../../common/types/dataRequestParams'
 import { when } from 'jest-when'
 import {
   TEST_DATE_1,
   TEST_DATE_2,
   ZENDESK_PII_TYPE_PREFIX
-} from '../../utils/tests/testConstants'
+} from '../../../common/utils/tests/testConstants'
 
 jest.mock('./isEmailInValidRecipientList', () => ({
   isEmailInValidRecipientList: jest.fn()

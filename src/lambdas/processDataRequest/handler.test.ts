@@ -1,10 +1,10 @@
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { handler } from './handler'
-import { constructSqsEvent } from '../../utils/tests/events/sqsEvent'
-import { testDataRequest } from '../../utils/tests/testDataRequest'
-import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
+import { constructSqsEvent } from '../../../common/utils/tests/events/sqsEvent'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
-import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 jest.mock('./initiateDataTransfer', () => ({
   initiateDataTransfer: jest.fn()
 }))

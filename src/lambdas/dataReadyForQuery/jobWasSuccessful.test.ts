@@ -1,9 +1,9 @@
 import { jobWasSuccessful } from './jobWasSuccessful'
-import { describeBatchJob } from '../../sharedServices/bulkJobs/describeBatchJob'
+import { describeBatchJob } from '../../../common/sharedServices/bulkJobs/describeBatchJob'
 import { when } from 'jest-when'
-import { TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID } from '../../utils/tests/testConstants'
+import { TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID } from '../../../common/utils/tests/testConstants'
 
-jest.mock('../../sharedServices/bulkJobs/describeBatchJob', () => ({
+jest.mock('../../../common/sharedServices/bulkJobs/describeBatchJob', () => ({
   describeBatchJob: jest.fn()
 }))
 

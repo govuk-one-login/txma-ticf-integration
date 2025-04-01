@@ -1,12 +1,12 @@
-import { startTransferToAnalysisBucket } from '../../sharedServices/bulkJobs/startTransferToAnalysisBucket'
-import { getDatabaseEntryByZendeskId } from '../../sharedServices/dynamoDB/dynamoDBGet'
-import { sendContinuePollingDataTransferMessage } from '../../sharedServices/queue/sendContinuePollingDataTransferMessage'
-import { checkS3BucketData } from '../../sharedServices/s3/checkS3BucketData'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { MAX_GLACIER_RETRIES } from '../../constants/configurationConstants'
+import { startTransferToAnalysisBucket } from '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket'
+import { getDatabaseEntryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
+import { sendContinuePollingDataTransferMessage } from '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage'
+import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { MAX_GLACIER_RETRIES } from '../../../common/constants/configurationConstants'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
-import { logger } from '../../sharedServices/logger'
+import { logger } from '../../../common/sharedServices/logger'
 
 export const checkDataTransferStatus = async (zendeskId: string) => {
   const dbEntry = await getDatabaseEntryByZendeskId(zendeskId)
