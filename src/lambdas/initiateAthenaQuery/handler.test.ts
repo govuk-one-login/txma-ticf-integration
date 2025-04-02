@@ -4,22 +4,22 @@ import {
   testAthenaQueryEventNoRecords,
   testAthenaQueryEventSmallZendeskId,
   testManualAthenaQueryEvent
-} from '../../utils/tests/events/initiateAthenaQueryEvent'
-import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
-import { logger } from '../../sharedServices/logger'
+} from '../../../common/utils/tests/events/initiateAthenaQueryEvent'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
+import { logger } from '../../../common/sharedServices/logger'
 import { initiateQuery } from './initiateQuery'
 import { when } from 'jest-when'
 
-jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
-jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
+jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
   getDatabaseEntryByZendeskId: jest.fn()
 }))
 jest.mock('./createQuerySql', () => ({
   createQuerySql: jest.fn()
 }))
-jest.mock('../../sharedServices/dynamoDB/dynamoDBUpdate', () => ({
+jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
   updateQueryByZendeskId: jest.fn()
 }))
 jest.mock('./startQueryExecution', () => ({

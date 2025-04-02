@@ -1,13 +1,13 @@
 import {
   IDENTIFIER_TYPES_EVENT_PATH_MAP,
   PII_TYPES_DATA_PATHS_MAP
-} from '../../constants/athenaSqlMapConstants'
-import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
+} from '../../../common/constants/athenaSqlMapConstants'
+import { CreateQuerySqlResult } from '../../../common/types/athena/createQuerySqlResult'
 import {
   DataRequestParams,
   IdentifierTypes
-} from '../../types/dataRequestParams'
-import { getEnv } from '../../utils/helpers'
+} from '../../../common/types/dataRequestParams'
+import { getEnv } from '../../../common/utils/helpers'
 
 export const createQuerySql = (
   requestData: DataRequestParams

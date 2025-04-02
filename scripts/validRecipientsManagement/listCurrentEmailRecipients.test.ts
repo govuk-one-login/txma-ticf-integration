@@ -1,5 +1,5 @@
 import { listCurrentEmailRecipients } from './listCurrentEmailRecipients'
-import { readS3DataToString } from '../../src/sharedServices/s3/readS3DataToString'
+import { readS3DataToString } from '../../common/sharedServices/s3/readS3DataToString'
 import { getValidRecipientBucketName } from './getValidRecipientBucketName'
 import { when } from 'jest-when'
 jest.mock('../../src/sharedServices/s3/readS3DataToString', () => ({

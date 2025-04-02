@@ -3,7 +3,7 @@ import {
   appendZendeskIdToLogger,
   initialiseLogger,
   logger
-} from '../../sharedServices/logger'
+} from '../../../common/sharedServices/logger'
 import { initiateQuery } from './initiateQuery'
 
 export const handler = async (

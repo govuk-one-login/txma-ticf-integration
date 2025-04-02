@@ -2,11 +2,11 @@ import {
   StartQueryExecutionCommand,
   StartQueryExecutionCommandInput
 } from '@aws-sdk/client-athena'
-import { logger } from '../../sharedServices/logger'
-import { CreateQuerySqlResult } from '../../types/athena/createQuerySqlResult'
-import { StartQueryExecutionResult } from '../../types/athena/startQueryExecutionResult'
-import { getEnv } from '../../utils/helpers'
-import { athenaClient } from '../../utils/awsSdkClients'
+import { logger } from '../../../common/sharedServices/logger'
+import { CreateQuerySqlResult } from '../../../common/types/athena/createQuerySqlResult'
+import { StartQueryExecutionResult } from '../../../common/types/athena/startQueryExecutionResult'
+import { getEnv } from '../../../common/utils/helpers'
+import { athenaClient } from '../../../common/utils/awsSdkClients'
 
 export const startQueryExecution = async (
   queryParams: CreateQuerySqlResult

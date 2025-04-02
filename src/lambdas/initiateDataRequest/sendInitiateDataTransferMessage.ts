@@ -1,6 +1,6 @@
-import { sendSqsMessage } from '../../sharedServices/queue/sendSqsMessage'
-import { DataRequestParams } from '../../types/dataRequestParams'
-import { getEnv } from '../../utils/helpers'
+import { sendSqsMessage } from '../../../common/sharedServices/queue/sendSqsMessage'
+import { DataRequestParams } from '../../../common/types/dataRequestParams'
+import { getEnv } from '../../../common/utils/helpers'
 
 export const sendInitiateDataTransferMessage = (
   dataRequestParams: DataRequestParams

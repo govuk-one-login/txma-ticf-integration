@@ -1,6 +1,6 @@
-import { sendSqsMessage } from '../../src/sharedServices/queue/sendSqsMessage'
+import { sendSqsMessage } from '../../common/sharedServices/queue/sendSqsMessage'
 import { SendManualQueryPayload } from '../types/sendManualQueryPayload'
-import { getEnv } from '../../src/utils/helpers'
+import { getEnv } from '../../common/utils/helpers'
 import { GetQueueUrlCommand, SQSClient } from '@aws-sdk/client-sqs'
 
 export const sendSQSMessageToCompletedQueue = async (

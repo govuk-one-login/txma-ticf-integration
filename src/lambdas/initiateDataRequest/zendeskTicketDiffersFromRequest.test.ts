@@ -1,13 +1,16 @@
-import { getZendeskTicket } from '../../sharedServices/zendesk/getZendeskTicket'
-import { getZendeskUser } from '../../sharedServices/zendesk/getZendeskUser'
-import { DataRequestParams } from '../../types/dataRequestParams'
+import { getZendeskTicket } from '../../../common/sharedServices/zendesk/getZendeskTicket'
+import { getZendeskUser } from '../../../common/sharedServices/zendesk/getZendeskUser'
+import { DataRequestParams } from '../../../common/types/dataRequestParams'
 import {
   testDataRequest,
   testDataRequestWithAllValuesSet,
   testDataRequestWithEmptyValuesForIds
-} from '../../utils/tests/testDataRequest'
-import { CustomField, ZendeskTicket } from '../../types/zendeskTicketResult'
-import { ZendeskUser } from '../../types/zendeskUserResult'
+} from '../../../common/utils/tests/testDataRequest'
+import {
+  CustomField,
+  ZendeskTicket
+} from '../../../common/types/zendeskTicketResult'
+import { ZendeskUser } from '../../../common/types/zendeskUserResult'
 import {
   TEST_DATE_1,
   TEST_DATE_2,
@@ -28,15 +31,15 @@ import {
   TEST_ZENDESK_FIELD_ID_USER_IDS,
   ZENDESK_PII_TYPE_PREFIX,
   ZENDESK_TICKET_ID_AS_NUMBER
-} from '../../utils/tests/testConstants'
+} from '../../../common/utils/tests/testConstants'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
-import { logger } from '../../sharedServices/logger'
+import { logger } from '../../../common/sharedServices/logger'
 
-jest.mock('../../sharedServices/zendesk/getZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/getZendeskTicket', () => ({
   getZendeskTicket: jest.fn()
 }))
 
-jest.mock('../../sharedServices/zendesk/getZendeskUser', () => ({
+jest.mock('../../../common/sharedServices/zendesk/getZendeskUser', () => ({
   getZendeskUser: jest.fn()
 }))
 

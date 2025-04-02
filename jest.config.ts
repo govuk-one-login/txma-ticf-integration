@@ -6,9 +6,9 @@ const config: JestConfigWithTsJest = {
     '/src/utils/tests/mocks/mockLambdaContext.ts'
   ],
   preset: 'ts-jest',
-  setupFiles: ['<rootDir>/src/utils/tests/setup/testEnvVars.ts'],
+  setupFiles: ['<rootDir>/common/utils/tests/setup/testEnvVars.ts'],
   setupFilesAfterEnv: ['jest-extended/all'],
-  testMatch: ['<rootDir>/src/**/*.test.ts', '<rootDir>/scripts/**/*.test.ts'],
+  testMatch: ['<rootDir>/src/**/*.test.ts', '<rootDir>/common/**/*.test.ts'],
   verbose: true
 }
 

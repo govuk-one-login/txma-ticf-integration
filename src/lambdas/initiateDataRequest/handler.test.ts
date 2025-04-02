@@ -1,24 +1,24 @@
 import { handler } from './handler'
-import { defaultApiRequest } from '../../utils/tests/events/defaultApiRequest'
+import { defaultApiRequest } from '../../../common/utils/tests/events/defaultApiRequest'
 import { validateZendeskRequest } from './validateZendeskRequest'
 import {
   updateZendeskTicket,
   updateZendeskTicketById
-} from '../../sharedServices/zendesk/updateZendeskTicket'
-import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
-import { DataRequestParams } from '../../types/dataRequestParams'
-import { testDataRequest } from '../../utils/tests/testDataRequest'
+} from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { ValidatedDataRequestParamsResult } from '../../../common/types/validatedDataRequestParamsResult'
+import { DataRequestParams } from '../../../common/types/dataRequestParams'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
 import { isSignatureInvalid } from './validateRequestSource'
 import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 import {
   sendAuditDataRequestMessage,
   sendIllegalRequestAuditMessage
-} from '../../sharedServices/queue/sendAuditMessage'
-import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
-import { tryParseJSON } from '../../utils/helpers'
-import { logger } from '../../sharedServices/logger'
-import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+} from '../../../common/sharedServices/queue/sendAuditMessage'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
+import { tryParseJSON } from '../../../common/utils/helpers'
+import { logger } from '../../../common/sharedServices/logger'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 import { APIGatewayProxyResult } from 'aws-lambda'
 
 const mockValidateZendeskRequest = validateZendeskRequest as jest.Mock<
@@ -41,7 +41,7 @@ jest.mock('./validateZendeskRequest', () => ({
   validateZendeskRequest: jest.fn()
 }))
 
-jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicket: jest.fn(),
   updateZendeskTicketById: jest.fn()
 }))
@@ -58,7 +58,7 @@ jest.mock('./sendInitiateDataTransferMessage', () => ({
   sendInitiateDataTransferMessage: jest.fn()
 }))
 
-jest.mock('../../sharedServices/queue/sendAuditMessage', () => ({
+jest.mock('../../../common/sharedServices/queue/sendAuditMessage', () => ({
   sendAuditDataRequestMessage: jest.fn(),
   sendIllegalRequestAuditMessage: jest.fn()
 }))

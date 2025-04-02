@@ -1,5 +1,5 @@
-import { VALID_EMAIL_RECIPIENTS_FILE_NAME } from '../../src/constants/configurationConstants'
-import { readS3DataToString } from '../../src/sharedServices/s3/readS3DataToString'
+import { VALID_EMAIL_RECIPIENTS_FILE_NAME } from '../../common/constants/configurationConstants'
+import { readS3DataToString } from '../../common/sharedServices/s3/readS3DataToString'
 import { getValidRecipientBucketName } from './getValidRecipientBucketName'
 
 export const listCurrentEmailRecipients = async (

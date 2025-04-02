@@ -5,27 +5,27 @@ import {
   TEST_S3_OBJECT_DATA_BUFFER,
   TEST_S3_OBJECT_DATA_STRING,
   TEST_S3_OBJECT_KEY
-} from '../../utils/tests/testConstants'
-import { createDataStream } from '../../utils/tests/testHelpers'
-import { getS3ObjectAsStream } from '../../sharedServices/s3/getS3ObjectAsStream'
+} from '../../../common/utils/tests/testConstants'
+import { createDataStream } from '../../../common/utils/tests/testHelpers'
+import { getS3ObjectAsStream } from '../../../common/sharedServices/s3/getS3ObjectAsStream'
 import { decryptS3Object } from './decryptS3Object'
-import { putS3Object } from '../../sharedServices/s3/putS3Object'
+import { putS3Object } from '../../../common/sharedServices/s3/putS3Object'
 import {
   testS3BatchEvent,
   emptyTestS3BatchEvent
-} from '../../utils/tests/events/s3BatchEvent'
+} from '../../../common/utils/tests/events/s3BatchEvent'
 import { handler } from './handler'
-import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 import { when } from 'jest-when'
-import { logger } from '../../sharedServices/logger'
+import { logger } from '../../../common/sharedServices/logger'
 
-jest.mock('../../sharedServices/s3/getS3ObjectAsStream', () => ({
+jest.mock('../../../common/sharedServices/s3/getS3ObjectAsStream', () => ({
   getS3ObjectAsStream: jest.fn()
 }))
 jest.mock('./decryptS3Object', () => ({
   decryptS3Object: jest.fn()
 }))
-jest.mock('../../sharedServices/s3/putS3Object', () => ({
+jest.mock('../../../common/sharedServices/s3/putS3Object', () => ({
   putS3Object: jest.fn()
 }))
 

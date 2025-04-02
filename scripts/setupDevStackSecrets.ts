@@ -3,7 +3,7 @@ import {
   GetSecretValueCommand,
   PutSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
-import { secretsManagerClient } from '../src/utils/awsSdkClients'
+import { secretsManagerClient } from '../common/utils/awsSdkClients'
 
 const setupDevStackSecrets = async () => {
   const stackName = getStackName()

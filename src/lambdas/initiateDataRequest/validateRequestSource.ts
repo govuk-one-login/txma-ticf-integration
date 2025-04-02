@@ -1,7 +1,7 @@
 import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 import * as crypto from 'crypto'
-import { retrieveZendeskApiSecrets } from '../../sharedServices/secrets/retrieveZendeskApiSecrets'
-import { logger } from '../../sharedServices/logger'
+import { retrieveZendeskApiSecrets } from '../../../common/sharedServices/secrets/retrieveZendeskApiSecrets'
+import { logger } from '../../../common/sharedServices/logger'
 export const isSignatureInvalid = async (
   headers: APIGatewayProxyEventHeaders | undefined,
   body: string | null

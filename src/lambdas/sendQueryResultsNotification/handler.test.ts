@@ -1,26 +1,26 @@
 import { EventBridgeEvent } from 'aws-lambda'
 import { when } from 'jest-when'
-import { getQueryByAthenaQueryId } from '../../sharedServices/dynamoDB/dynamoDBGet'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { AthenaEBEventDetails } from '../../types/athenaEBEventDetails'
+import { getQueryByAthenaQueryId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { AthenaEBEventDetails } from '../../../common/types/athenaEBEventDetails'
 import {
   TEST_ATHENA_QUERY_ID,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
   ZENDESK_TICKET_ID
-} from '../../utils/tests/testConstants'
+} from '../../../common/utils/tests/testConstants'
 import { handler } from './handler'
-import { testDataRequest } from '../../utils/tests/testDataRequest'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
 import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
-import { sendQueryOutputGeneratedAuditMessage } from '../../sharedServices/queue/sendAuditMessage'
-import { logger } from '../../sharedServices/logger'
-import { mockLambdaContext } from '../../utils/tests/mocks/mockLambdaContext'
+import { sendQueryOutputGeneratedAuditMessage } from '../../../common/sharedServices/queue/sendAuditMessage'
+import { logger } from '../../../common/sharedServices/logger'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 
-jest.mock('../../sharedServices/dynamoDB/dynamoDBGet', () => ({
+jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: jest.fn()
 }))
 
-jest.mock('../../sharedServices/zendesk/updateZendeskTicket', () => ({
+jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: jest.fn()
 }))
 
@@ -28,7 +28,7 @@ jest.mock('./sendQueryCompleteQueueMessage', () => ({
   sendQueryCompleteQueueMessage: jest.fn()
 }))
 
-jest.mock('../../sharedServices/queue/sendAuditMessage', () => ({
+jest.mock('../../../common/sharedServices/queue/sendAuditMessage', () => ({
   sendQueryOutputGeneratedAuditMessage: jest.fn()
 }))
 

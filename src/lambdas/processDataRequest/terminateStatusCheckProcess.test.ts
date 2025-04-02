@@ -1,11 +1,11 @@
-import { sendSqsMessageWithStringBody } from '../../sharedServices/queue/sendSqsMessage'
+import { sendSqsMessageWithStringBody } from '../../../common/sharedServices/queue/sendSqsMessage'
 import {
   MOCK_TERMINATED_JOB_QUEUE_URL,
   ZENDESK_TICKET_ID
-} from '../../utils/tests/testConstants'
+} from '../../../common/utils/tests/testConstants'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
 
-jest.mock('../../sharedServices/queue/sendSqsMessage', () => ({
+jest.mock('../../../common/sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessageWithStringBody: jest.fn()
 }))
 

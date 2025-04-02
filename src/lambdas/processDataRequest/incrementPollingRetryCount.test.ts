@@ -1,8 +1,8 @@
-import { incrementObjectFieldByOne } from '../../sharedServices/dynamoDB/dynamoDBUpdate'
-import { ZENDESK_TICKET_ID } from '../../utils/tests/testConstants'
+import { incrementObjectFieldByOne } from '../../../common/sharedServices/dynamoDB/dynamoDBUpdate'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 
-jest.mock('../../sharedServices/dynamoDB/dynamoDBUpdate', () => ({
+jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
   incrementObjectFieldByOne: jest.fn()
 }))
 

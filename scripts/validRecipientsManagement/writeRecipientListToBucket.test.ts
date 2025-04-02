@@ -1,7 +1,7 @@
 import { getValidRecipientBucketName } from './getValidRecipientBucketName'
 import { when } from 'jest-when'
 import { writeRecipientListToBucket } from './writeRecipientListToBucket'
-import { putS3Object } from '../../src/sharedServices/s3/putS3Object'
+import { putS3Object } from '../../common/sharedServices/s3/putS3Object'
 
 jest.mock('./getValidRecipientBucketName', () => ({
   getValidRecipientBucketName: jest.fn()

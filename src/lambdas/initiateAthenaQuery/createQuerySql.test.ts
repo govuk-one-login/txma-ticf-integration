@@ -4,12 +4,12 @@ import {
   dataPathsTestDataRequest,
   testDataRequestWithNoDataPathsOrPiiTypes,
   testDataRequestWithAllValuesSet
-} from '../../utils/tests/testDataRequest'
-import { IdentifierTypes } from '../../types/dataRequestParams'
+} from '../../../common/utils/tests/testDataRequest'
+import { IdentifierTypes } from '../../../common/types/dataRequestParams'
 import {
   TEST_ATHENA_FORMATTED_DATE_1,
   TEST_ATHENA_FORMATTED_DATE_2
-} from '../../utils/tests/testConstants'
+} from '../../../common/utils/tests/testConstants'
 
 describe('create Query SQL', () => {
   it.each([

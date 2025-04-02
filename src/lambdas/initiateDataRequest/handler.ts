@@ -6,26 +6,26 @@ import {
 import {
   updateZendeskTicket,
   updateZendeskTicketById
-} from '../../sharedServices/zendesk/updateZendeskTicket'
+} from '../../../common/sharedServices/zendesk/updateZendeskTicket'
 import { isSignatureInvalid } from './validateRequestSource'
 import { validateZendeskRequest } from './validateZendeskRequest'
-import { ValidatedDataRequestParamsResult } from '../../types/validatedDataRequestParamsResult'
+import { ValidatedDataRequestParamsResult } from '../../../common/types/validatedDataRequestParamsResult'
 import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
-import { DataRequestParams } from '../../types/dataRequestParams'
+import { DataRequestParams } from '../../../common/types/dataRequestParams'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
-import { zendeskCopy } from '../../constants/zendeskCopy'
-import { loggingCopy } from '../../constants/loggingCopy'
-import { interpolateTemplate } from '../../utils/interpolateTemplate'
+import { zendeskCopy } from '../../../common/constants/zendeskCopy'
+import { loggingCopy } from '../../../common/constants/loggingCopy'
+import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
 import {
   sendAuditDataRequestMessage,
   sendIllegalRequestAuditMessage
-} from '../../sharedServices/queue/sendAuditMessage'
-import { tryParseJSON } from '../../utils/helpers'
+} from '../../../common/sharedServices/queue/sendAuditMessage'
+import { tryParseJSON } from '../../../common/utils/helpers'
 import {
   appendZendeskIdToLogger,
   initialiseLogger,
   logger
-} from '../../sharedServices/logger'
+} from '../../../common/sharedServices/logger'
 
 export const handler = async (
   event: APIGatewayProxyEvent,

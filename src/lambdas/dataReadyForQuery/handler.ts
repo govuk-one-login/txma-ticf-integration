@@ -1,15 +1,15 @@
 import { S3Tag } from '@aws-sdk/client-s3-control'
 import { Context, EventBridgeEvent } from 'aws-lambda'
-import { batchJobConstants } from '../../constants/batchJobConstants'
-import { getS3BatchJobTags } from '../../sharedServices/bulkJobs/getS3BatchJobTags'
+import { batchJobConstants } from '../../../common/constants/batchJobConstants'
+import { getS3BatchJobTags } from '../../../common/sharedServices/bulkJobs/getS3BatchJobTags'
 import {
   appendZendeskIdToLogger,
   initialiseLogger,
   logger
-} from '../../sharedServices/logger'
-import { sendInitiateAthenaQueryMessage } from '../../sharedServices/queue/sendInitiateAthenaQueryMessage'
-import { updateZendeskTicketById } from '../../sharedServices/zendesk/updateZendeskTicket'
-import { BatchJobStatusChangeEventDetail } from '../../types/batchJobStatusChangeEventDetail'
+} from '../../../common/sharedServices/logger'
+import { sendInitiateAthenaQueryMessage } from '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { BatchJobStatusChangeEventDetail } from '../../../common/types/batchJobStatusChangeEventDetail'
 import { jobWasSuccessful } from './jobWasSuccessful'
 
 export const handler = async (

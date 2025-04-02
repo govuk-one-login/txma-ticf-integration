@@ -1,4 +1,4 @@
-import { sendSqsMessage } from '../../src/sharedServices/queue/sendSqsMessage'
+import { sendSqsMessage } from '../../common/sharedServices/queue/sendSqsMessage'
 import { getAwsAccountNumber } from '../sharedServices/aws/sts/getAwsAccountNumber'
 import { ManualAuditDataRequestPayload } from '../types/manualAuditDataRequestPayload'
 

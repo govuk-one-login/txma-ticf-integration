@@ -1,4 +1,4 @@
-import { describeBatchJob } from '../../sharedServices/bulkJobs/describeBatchJob'
+import { describeBatchJob } from '../../../common/sharedServices/bulkJobs/describeBatchJob'
 
 export const jobWasSuccessful = async (
   jobId: string,

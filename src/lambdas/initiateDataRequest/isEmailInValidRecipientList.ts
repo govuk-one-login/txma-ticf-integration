@@ -1,6 +1,6 @@
-import { VALID_EMAIL_RECIPIENTS_FILE_NAME } from '../../constants/configurationConstants'
-import { readS3DataToString } from '../../sharedServices/s3/readS3DataToString'
-import { getEnv } from '../../utils/helpers'
+import { VALID_EMAIL_RECIPIENTS_FILE_NAME } from '../../../common/constants/configurationConstants'
+import { readS3DataToString } from '../../../common/sharedServices/s3/readS3DataToString'
+import { getEnv } from '../../../common/utils/helpers'
 export const isEmailInValidRecipientList = async (
   recipientEmail: string
 ): Promise<boolean> => {
