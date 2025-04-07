@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - tests/**
+      - common/**
+
   workflow_dispatch:
     branches:
       - main
