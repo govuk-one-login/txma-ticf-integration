@@ -25,7 +25,8 @@
     "test:integration": "jest -c tests/integration-tests/jest.integration.config.ts --expand",
     "test:integration:dev": "jest --setupFiles '<rootDir>/.env' -c tests/integration-tests/jest.integration.config.ts --expand",
     "validRecipientsManager": "ts-node scripts/validRecipientsManager.ts",
-    "cli": "node -r ts-node/register scripts/cli.ts"
+    "cli": "node -r ts-node/register scripts/cli.ts",
+    "tsFile": "ts-node"
   },
   "dependencies": {
     "@aws-crypto/decrypt-node": "4.2.0",
@@ -57,6 +58,7 @@
     "@types/node": "22.13.10",
     "@typescript-eslint/eslint-plugin": "8.26.1",
     "@typescript-eslint/parser": "8.26.1",
+    "async-sema": "^3.1.1",
     "aws-sdk-client-mock": "^4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
     "axios": "1.8.3",
