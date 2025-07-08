@@ -58,7 +58,7 @@ describe('jobWasSuccessful', () => {
         TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID,
         'Complete'
       )
-      expect(describeBatchJob).toBeCalledWith(
+      expect(describeBatchJob).toHaveBeenCalledWith(
         TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID
       )
       expect(result).toEqual(expected)

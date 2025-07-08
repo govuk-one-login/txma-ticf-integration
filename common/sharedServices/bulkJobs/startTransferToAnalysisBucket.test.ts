@@ -49,7 +49,7 @@ describe('startTransferToAnalysisBucket', () => {
 
       await startTransferToAnalysisBucket(fileList, ZENDESK_TICKET_ID)
 
-      expect(writeJobManifestFileToJobBucket).toBeCalledWith(
+      expect(writeJobManifestFileToJobBucket).toHaveBeenCalledWith(
         testAuditSourceDataBucket,
         fileList,
         `${TEST_ANALYSIS_BUCKET}-copy-job-for-ticket-id-${ZENDESK_TICKET_ID}.csv`
