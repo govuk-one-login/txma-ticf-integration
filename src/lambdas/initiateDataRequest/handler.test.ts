@@ -300,7 +300,7 @@ describe('initiate data request handler', () => {
     expect(zendeskTicketDiffersFromRequest).toHaveBeenCalledWith(
       testDataRequest
     )
-    expect(mockUpdateZendeskTicketById).toBeCalledWith(
+    expect(mockUpdateZendeskTicketById).toHaveBeenCalledWith(
       testDataRequest.zendeskId,
       'Your ticket has been closed because a request was received for this ticket with details that do not match its current state.',
       newTicketStatus

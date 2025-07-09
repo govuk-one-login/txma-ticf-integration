@@ -70,7 +70,7 @@ describe('dynamoDbUpdate', () => {
 
       await expect(
         updateQueryByZendeskId('12', 'athenaQueryId', 'testAthenaId')
-      ).resolves.not.toThrowError()
+      ).resolves.not.toThrow()
       expect(dynamoMock).toHaveReceivedCommandWith(UpdateItemCommand, {
         TableName: TEST_QUERY_DATABASE_TABLE_NAME,
         Key: { zendeskId: { S: '12' } },
