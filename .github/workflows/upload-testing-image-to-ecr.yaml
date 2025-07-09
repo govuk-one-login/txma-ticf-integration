@@ -7,7 +7,6 @@ on:
     paths:
       - tests/**
       - common/**
-
   workflow_dispatch:
     branches:
       - main
@@ -27,7 +26,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Assume AWS role
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
@@ -45,6 +44,8 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: latest
         run: |
-          docker build -f tests/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          # add commit hash to image as a label. You can pull the image from ECR and run the following command to see what commit was used to build the container
+          # docker inspect CONTAINER_NAME | jq '.[].Config.Labels'`
+          docker build -f tests/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg GIT_COMMIT=$(git log -1 --format=%h) .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           cosign sign --key awskms:///${CONTAINER_SIGN_KMS_KEY} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
