@@ -127,7 +127,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
-      expect(csvRows.length).toEqual(1)
+      expect(csvRows).toHaveLength(1)
       expect(csvRows[0].birthDate0_value).toEqual(testData.athenaTestBirthDate)
       expect(csvRows[0].address0_buildingName).toEqual(
         testData.athenaTestBuildingName
@@ -172,7 +172,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
-      expect(csvRows.length).toEqual(1)
+      expect(csvRows).toHaveLength(1)
       expect(csvRows[0].name).toEqual(testData.athenaTestName)
       expect(csvRows[0].addresses).toEqual(testData.athenaTestAddresses)
     })
@@ -215,7 +215,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
-      expect(csvRows.length).toEqual(1)
+      expect(csvRows).toHaveLength(1)
       expect(csvRows[0].birthDate0_value).toEqual(testData.athenaTestBirthDate)
       expect(csvRows[0].address0_buildingName).toEqual(
         testData.athenaTestBuildingName
@@ -263,7 +263,7 @@ describe('Athena Query SQL generation and execution', () => {
 
       const csvRows = await waitForAthenaQueryOutputFile(athenaQueryId)
 
-      expect(csvRows.length).toEqual(2)
+      expect(csvRows).toHaveLength(2)
       const event1Data = csvRows.find(
         (row) => row.event_id === testData.athenaTestEventId1
       )

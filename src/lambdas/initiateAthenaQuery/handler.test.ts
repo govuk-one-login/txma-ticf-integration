@@ -58,13 +58,13 @@ describe('tests related to running automated queries', () => {
 
 describe('misc tests', () => {
   it('checks if error is thrown when sqs event has no records', async () => {
-    expect(
+    await expect(
       handler(testAthenaQueryEventNoRecords, mockLambdaContext)
     ).rejects.toThrow('No data in Athena Query event')
   })
 
   it('checks if error is thrown when zendeskID has length < 1', async () => {
-    expect(
+    await expect(
       handler(testAthenaQueryEventSmallZendeskId, mockLambdaContext)
     ).rejects.toThrow('No zendeskId received from SQS')
   })

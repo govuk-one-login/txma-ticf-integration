@@ -1,0 +1,49 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: weekly
+    groups:
+      dev-deps:
+        dependency-type: development
+      prod-deps:
+        dependency-type: production
+    target-branch: main
+    labels:
+      - direct-dependency-update
+      - dependencies
+      - javascript
+    commit-message:
+      prefix: BAU
+
+  - package-ecosystem: 'docker'
+    directory: '/tests'
+    schedule:
+      interval: weekly
+    groups:
+      dev-deps:
+        patterns:
+          - '*'
+    target-branch: main
+    labels:
+      - direct-dependency-update
+      - dependencies
+    commit-message:
+      prefix: BAU
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: weekly
+    groups:
+      actions-deps:
+        patterns:
+          - '*'
+    target-branch: main
+    labels:
+      - direct-dependency-update
+      - dependencies
+      - github_actions
+    commit-message:
+      prefix: BAU

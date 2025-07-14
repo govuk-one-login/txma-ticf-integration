@@ -115,8 +115,10 @@ describe('checkDataTransferStatus', () => {
         numberOfChecks: '2'
       }
     )
-    expect(mockIncrementPollingRetryCount).toBeCalledWith(ZENDESK_TICKET_ID)
-    expect(mockSendContinuePollingDataTransferMessage).toBeCalledWith(
+    expect(mockIncrementPollingRetryCount).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
+    expect(mockSendContinuePollingDataTransferMessage).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
       EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS
     )
@@ -136,11 +138,11 @@ describe('checkDataTransferStatus', () => {
     expect(logger.info).toHaveBeenLastCalledWith(
       'Glacier restore complete. Starting copy job'
     )
-    expect(startTransferToAnalysisBucket).toBeCalledWith(
+    expect(startTransferToAnalysisBucket).toHaveBeenCalledWith(
       filesToCopy,
       ZENDESK_TICKET_ID
     )
-    expect(mockSendContinuePollingDataTransferMessage).not.toBeCalled()
+    expect(mockSendContinuePollingDataTransferMessage).not.toHaveBeenCalled()
     expect(mockIncrementPollingRetryCount).not.toHaveBeenCalled()
   })
 

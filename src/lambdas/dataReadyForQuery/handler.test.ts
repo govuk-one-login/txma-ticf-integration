@@ -66,11 +66,13 @@ describe('dataReadyForQuery', () => {
     givenJobWasSuccessful()
     await handler(batchJobStatusChangeEvent('Complete'), mockLambdaContext)
 
-    expect(getS3BatchJobTags).toBeCalledWith(
+    expect(getS3BatchJobTags).toHaveBeenCalledWith(
       TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID
     )
 
-    expect(sendInitiateAthenaQueryMessage).toBeCalledWith(ZENDESK_TICKET_ID)
+    expect(sendInitiateAthenaQueryMessage).toHaveBeenCalledWith(
+      ZENDESK_TICKET_ID
+    )
   })
 
   it('Closes the Zendesk ticket if the batch job has failed', async () => {
@@ -92,9 +94,9 @@ describe('dataReadyForQuery', () => {
     givenS3BatchJobTagsContainsZendeskId()
     await handler(batchJobStatusChangeEvent('Test'), mockLambdaContext)
 
-    expect(getS3BatchJobTags).not.toBeCalled()
+    expect(getS3BatchJobTags).not.toHaveBeenCalled()
 
-    expect(sendInitiateAthenaQueryMessage).not.toBeCalled()
+    expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
 
   it.each`
@@ -131,9 +133,9 @@ describe('dataReadyForQuery', () => {
 
     await handler(batchJobStatusChangeEvent('Complete'), mockLambdaContext)
 
-    expect(getS3BatchJobTags).toBeCalledWith(
+    expect(getS3BatchJobTags).toHaveBeenCalledWith(
       TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID
     )
-    expect(sendInitiateAthenaQueryMessage).not.toBeCalled()
+    expect(sendInitiateAthenaQueryMessage).not.toHaveBeenCalled()
   })
 })

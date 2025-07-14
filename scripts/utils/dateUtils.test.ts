@@ -83,7 +83,7 @@ describe('testing date utility code', () => {
     )
   })
 
-  it('testing func testDateArgs', async () => {
+  it('testing func testDateArgs with date range', async () => {
     const currentValue = '2023/01/01-2023/02/01'
     const previousValue = '2024/01/01-2024/02/01'
     jest.spyOn(cliUtils, 'testVariadicArgs')
