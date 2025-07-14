@@ -37,7 +37,7 @@ describe('testing the sendAuditData cli action', () => {
     when(copyManualRequestData).mockRejectedValue('error')
     when(sendSQSMessageToCompletedQueue).mockResolvedValue()
 
-    expect(sendAuditDataAction(payload)).rejects.toThrow(
+    await expect(sendAuditDataAction(payload)).rejects.toThrow(
       'Failed to copy data within output bucket'
     )
     expect(copyManualRequestData).toHaveBeenCalledWith(
@@ -50,7 +50,7 @@ describe('testing the sendAuditData cli action', () => {
     when(copyManualRequestData).mockResolvedValue()
     when(sendSQSMessageToCompletedQueue).mockRejectedValue('error')
 
-    expect(sendAuditDataAction(payload)).rejects.toThrow(
+    await expect(sendAuditDataAction(payload)).rejects.toThrow(
       'Failed to send payload to query completed queue'
     )
     expect(copyManualRequestData).toHaveBeenCalledWith(

@@ -82,7 +82,7 @@ describe('Query results generated', () => {
     const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
     const rows = await downloadResultsFileAndParseData(downloadUrl)
 
-    expect(rows.length).toEqual(1)
+    expect(rows).toHaveLength(1)
     expect(rows[0].event_id).toEqual(testData.eventId)
     expect(rows[0].name0_nameParts0_value).toEqual(expectedFirstName)
     expect(rows[0].name0_nameParts1_value).toEqual(expectedLastName)
@@ -98,9 +98,9 @@ describe('Query results generated', () => {
     const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
     const rows = await downloadResultsFileAndParseData(downloadUrl)
 
-    expect(rows.length).toEqual(2)
+    expect(rows).toHaveLength(2)
 
-    expect(rows.length).toEqual(2)
+    expect(rows).toHaveLength(2)
     const event1Data = rows.find((row) => row.event_id === testData.eventId)
     const event2Data = rows.find((row) => row.event_id === testData.eventId2)
     if (!event1Data || !event2Data) {
@@ -132,7 +132,7 @@ describe('Query results generated', () => {
     const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
     const rows = await downloadResultsFileAndParseData(downloadUrl)
 
-    expect(rows.length).toEqual(1)
+    expect(rows).toHaveLength(1)
     expect(rows[0].passport_number).toEqual(expectedPassportNumber)
     expect(rows[0].passport_expiry_date).toEqual(expectedPassportExpiryDate)
   })
@@ -154,7 +154,7 @@ describe('Query results generated', () => {
     const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
     const rows = await downloadResultsFileAndParseData(downloadUrl)
 
-    expect(rows.length).toEqual(1)
+    expect(rows).toHaveLength(1)
     expect.arrayContaining(expectedDriverslicence)
   })
 
@@ -167,7 +167,7 @@ describe('Query results generated', () => {
     const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
     const rows = await downloadResultsFileAndParseData(downloadUrl)
 
-    expect(rows.length).toEqual(1)
+    expect(rows).toHaveLength(1)
     expect(rows[0].name).toBeDefined()
     expect(rows[0].addresses).toBeDefined()
     expect(rows[0].dob).toEqual(expectedBirthDate)
@@ -180,6 +180,6 @@ describe('Query results generated', () => {
     const downloadUrl = await pollNotifyApiForDownloadUrl(zendeskId)
     const rows = await downloadResultsFileAndParseData(downloadUrl)
 
-    expect(rows.length).toEqual(0)
+    expect(rows).toHaveLength(0)
   })
 })

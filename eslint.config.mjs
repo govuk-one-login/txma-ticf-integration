@@ -30,5 +30,21 @@ export default [
       ]
     }
   },
+  {
+    files: ['tests/**/*.ts', 'scripts/**/*.ts', 'src/**/*.test.ts'],
+    plugins: { jest: eslintPluginJest },
+    languageOptions: {
+      globals: eslintPluginJest.environments.globals.globals
+    },
+    rules: {
+      'jest/no-disabled-tests': 'warn',
+      'jest/no-focused-tests': 'error',
+      'jest/no-identical-title': 'error',
+      'jest/prefer-to-have-length': 'warn',
+      'jest/valid-expect': 'error',
+      'jest/no-alias-methods': 'error',
+      'no-console': ['off']
+    }
+  },
   eslintConfigPrettier
 ]
