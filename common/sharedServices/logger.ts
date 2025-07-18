@@ -1,5 +1,5 @@
 import { Logger } from '@aws-lambda-powertools/logger'
-import { LogLevel } from '@aws-lambda-powertools/logger/lib/types'
+import { LogLevel } from '@aws-lambda-powertools/logger/types'
 import { Context } from 'aws-lambda'
 
 const loggerInstance = new Logger({
