@@ -192,28 +192,6 @@ All scripts can now be ran using `npm run cli` in the terminal. Here are some ex
 
 `script/cli.ts` is the entrypoint to the cli, each command listed by `npm run cli -- --help` will be implemented under `scripts/{command}/`. each command should have detailed guidance in `--help` on what the command does and details on the mandatory **arguments** and the **optional** options that can be provided to the CLI.
 
-## GitHub Workflows and Actions
-
-### security updates
-
-When actions rely on other GitHub repositories it's important to pin the commit sha as the version to prevent supply chain attacks.
-To keep these up to date we have a script which will check all the used repositories in the actions, and update them to the latest tags.
-To run this create a personal access token that has read:repo permissions and save it in an environment variable like:
-
-```bash
-export GITHUB_TOKEN=ghp_########
-```
-
-You can run the update script through npm like so:
-
-```bash
-npm run updateGitHubActions
-```
-
-It takes a little time to download all the repository data so give it a minute or so.
-
-Once it has run check the changes and commit as usual.
-
 > [!NOTE]  
 > Not all scripts have been migrated over. The following scripts can be used
 >
