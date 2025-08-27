@@ -1,10 +1,9 @@
-import { Logger } from '@aws-lambda-powertools/logger'
-import { LogLevel } from '@aws-lambda-powertools/logger/lib/types'
+import { Logger, LogLevel } from '@aws-lambda-powertools/logger'
 import { Context } from 'aws-lambda'
 
 const loggerInstance = new Logger({
   serviceName: process.env.AWS_LAMBDA_FUNCTION_NAME,
-  logLevel: (process.env.LOG_LEVEL as LogLevel) || 'DEBUG',
+  logLevel: (process.env.LOG_LEVEL as any) || LogLevel.DEBUG,
   environment: process.env.ENVIRONMENT
 })
 
