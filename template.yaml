@@ -189,7 +189,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref ZendeskWebhookAccessLogGroup
-      FilterPattern: ''
+      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   ##################
@@ -342,7 +342,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref InitiateDataRequestLogs
-      FilterPattern: ''
+      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   ProcessDataRequestFunction:
@@ -495,7 +495,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref ProcessDataRequestLogs
-      FilterPattern: ''
+      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   DataReadyForQueryFunction:
@@ -609,7 +609,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref DataReadyForQueryLogs
-      FilterPattern: ''
+      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   DecryptAndCopyFunction:
@@ -857,7 +857,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref InitiateAthenaQueryLogs
-      FilterPattern: ''
+      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   SendQueryResultsNotificationFunction:
@@ -993,7 +993,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref SendQueryResultsNotificationLogs
-      FilterPattern: ''
+      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   CloseZendeskTicketFunction:
@@ -1093,7 +1093,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref CloseZendeskTicketLogs
-      FilterPattern: ''
+      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   PermissionForAthenaEventToInvokeLambda:
