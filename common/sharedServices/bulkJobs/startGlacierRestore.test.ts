@@ -27,6 +27,11 @@ const testEtag = 'myTestEtag'
 const testSourceDataBucket = 'someSourceDataBucket'
 
 describe('startGlacierRestore', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    s3ControlClientMock.reset()
+  })
+
   it('should write the manifest and start the glacier restore if a file list is supplied', async () => {
     s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
     when(getAuditDataSourceBucketName).mockReturnValue(testSourceDataBucket)
@@ -68,5 +73,25 @@ describe('startGlacierRestore', () => {
         }
       }
     })
+  })
+
+  it('should return early and not start restore when filesToRestore is empty', async () => {
+    await startGlacierRestore([], ZENDESK_TICKET_ID)
+
+    expect(getAuditDataSourceBucketName).not.toHaveBeenCalled()
+    expect(writeJobManifestFileToJobBucket).not.toHaveBeenCalled()
+    expect(s3ControlClientMock).not.toHaveReceivedCommand(CreateJobCommand)
+  })
+
+  it('should handle null filesToRestore gracefully', async () => {
+    s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
+    when(getAuditDataSourceBucketName).mockReturnValue(testSourceDataBucket)
+    when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
+
+    await startGlacierRestore(null as unknown as string[], ZENDESK_TICKET_ID)
+
+    expect(getAuditDataSourceBucketName).toHaveBeenCalled()
+    expect(writeJobManifestFileToJobBucket).toHaveBeenCalled()
+    expect(s3ControlClientMock).toHaveReceivedCommand(CreateJobCommand)
   })
 })

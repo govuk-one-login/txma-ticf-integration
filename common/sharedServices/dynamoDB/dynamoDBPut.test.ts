@@ -5,7 +5,10 @@ import {
 } from '@aws-sdk/client-dynamodb'
 import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import { addNewDataRequestRecord } from './dynamoDBPut'
-import { testDataRequest } from '../../utils/tests/testDataRequest'
+import {
+  testDataRequest,
+  testDataRequestWithAllValuesSet
+} from '../../utils/tests/testDataRequest'
 import {
   TEST_CURRENT_EPOCH_SECONDS,
   TEST_DATABASE_TTL_HOURS,
@@ -94,6 +97,41 @@ describe('dynamoDbPut', () => {
         Item: {
           ...recordItem
         }
+      })
+    })
+
+    it('should write a new data request record with all fields populated', async () => {
+      const fullRecordItem = {
+        zendeskId: { S: ZENDESK_TICKET_ID },
+        ttl: {
+          N: (
+            TEST_CURRENT_EPOCH_SECONDS +
+            TEST_DATABASE_TTL_HOURS * 60 * 60
+          ).toString()
+        },
+        requestInfo: {
+          M: {
+            zendeskId: { S: ZENDESK_TICKET_ID },
+            recipientEmail: { S: 'myuser@example.com' },
+            recipientName: { S: 'my name' },
+            requesterEmail: { S: 'myuser@example.com' },
+            requesterName: { S: 'my name' },
+            dates: { L: [{ S: TEST_DATE_1 }, { S: TEST_DATE_2 }] },
+            eventIds: { L: [{ S: '123' }, { S: '456' }] },
+            piiTypes: { L: [{ S: 'passport_number' }] },
+            dataPaths: { L: [{ S: 'path_to_data1' }, { S: 'path_to_data2' }] },
+            sessionIds: { L: [{ S: '123' }, { S: '456' }] },
+            userIds: { L: [{ S: '123' }, { S: '456' }] },
+            journeyIds: { L: [{ S: '123' }, { S: '456' }] },
+            identifierType: { S: 'event_id' }
+          }
+        }
+      }
+
+      await addNewDataRequestRecord(testDataRequestWithAllValuesSet, false)
+      expect(dynamoMock).toHaveReceivedCommandWith(PutItemCommand, {
+        TableName: TEST_QUERY_DATABASE_TABLE_NAME,
+        Item: fullRecordItem
       })
     })
   })

@@ -129,12 +129,73 @@ describe('sendAuditMessage', () => {
         Error(errorMessage)
       )
     })
+
+    it('logs success message when message is sent successfully', async () => {
+      givenSendSQSMessageReturnsMessageId()
+
+      await sendAuditDataRequestMessage(testAuditQueryRequestDetails())
+
+      expect(logger.info).toHaveBeenCalledWith(
+        'sent audit data request message',
+        { messageId: TEST_SQS_MESSAGE_ID }
+      )
+    })
+
+    it('handles null/undefined values for request IDs using nulls', async () => {
+      const testDetailsWithNulls = {
+        ...testAuditQueryRequestDetails(),
+        requested_sessionIds: null,
+        requested_journeyIds: undefined,
+        requested_userIds: null,
+        requested_eventIds: undefined
+      } as AuditQueryDataRequestDetails & {
+        requested_sessionIds: null
+        requested_journeyIds: undefined
+        requested_userIds: null
+        requested_eventIds: undefined
+      }
+
+      const expectedEvent = {
+        timestamp: TEST_TIMESTAMP,
+        event_name: 'TXMA_AUDIT_QUERY_DATA_REQUEST',
+        component_id: 'TXMA',
+        restricted: {
+          requesterEmail: TEST_REQUESTER_EMAIL,
+          requesterName: TEST_REQUESTER_NAME,
+          recipientEmail: TEST_RECIPIENT_EMAIL,
+          recipientName: TEST_RECIPIENT_NAME
+        },
+        extensions: {
+          ticket_details: {
+            zendeskId: ZENDESK_TICKET_ID,
+            dateFrom: undefined,
+            dateTo: undefined,
+            dates: `${TEST_DATE_1} ${TEST_DATE_2}`,
+            identifierType: 'event_id',
+            requested_sessionIds: '',
+            requested_journeyIds: '',
+            requested_userIds: '',
+            requested_eventIds: '',
+            piiTypes: 'drivers_licence',
+            dataPaths: ''
+          }
+        }
+      }
+
+      await sendAuditDataRequestMessage(testDetailsWithNulls)
+
+      expect(sendSqsMessage).toHaveBeenCalledWith(
+        expectedEvent,
+        MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL
+      )
+    })
   })
 
   describe('sendIllegalRequestAuditMessage', () => {
     const createTestAuditQueryIllegalRequestDetails = (
       errorType: string,
-      errorDescription: string
+      errorDescription: string,
+      zendeskId?: string
     ) => {
       return {
         timestamp: TEST_TIMESTAMP,
@@ -146,7 +207,7 @@ describe('sendAuditMessage', () => {
             error_description: errorDescription
           },
           ticket_details: {
-            zendeskId: ZENDESK_TICKET_ID
+            zendeskId: zendeskId || ''
           }
         }
       }
@@ -169,8 +230,6 @@ describe('sendAuditMessage', () => {
       'calls the sendSqsMessage function with the correct parameters when errorType is %p',
       async (errorType: ErrorType, errorDescription) => {
         givenSendSQSMessageReturnsMessageId()
-        const testAuditQueryIllegalRequestDetails =
-          createTestAuditQueryIllegalRequestDetails(errorType, errorDescription)
 
         await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID, errorType)
 
@@ -179,7 +238,11 @@ describe('sendAuditMessage', () => {
           { messageId: TEST_SQS_MESSAGE_ID }
         )
         expect(sendSqsMessage).toHaveBeenCalledWith(
-          testAuditQueryIllegalRequestDetails,
+          createTestAuditQueryIllegalRequestDetails(
+            errorType,
+            errorDescription,
+            ZENDESK_TICKET_ID
+          ),
           MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL
         )
       }
@@ -194,6 +257,24 @@ describe('sendAuditMessage', () => {
       expect(logger.error).toHaveBeenCalledWith(
         errorPrefix,
         Error(errorMessage)
+      )
+    })
+
+    it('handles undefined zendeskId by setting empty string', async () => {
+      const exampleErrorType: ErrorType = 'invalid-signature'
+      const errorDescription =
+        'The webhook signature check failed, probably indicating that the request did not come from Zendesk'
+      givenSendSQSMessageReturnsMessageId()
+
+      await sendIllegalRequestAuditMessage(undefined, exampleErrorType)
+
+      expect(sendSqsMessage).toHaveBeenCalledWith(
+        createTestAuditQueryIllegalRequestDetails(
+          exampleErrorType,
+          errorDescription,
+          ''
+        ),
+        MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL
       )
     })
   })
