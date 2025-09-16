@@ -43,6 +43,22 @@ npm install husky
 
 # Testing
 
+## Unit tests
+
+To run the unit tests, use the following command:
+
+```sh
+npm run test
+```
+
+You can also view code coverage reports by running this command:
+
+```sh
+npm run test:cov
+```
+
+And then opening the `coverage/lcov-report/index.html` page in your browser.
+
 ## Setup
 
 The tests can be run against any of the following environments:

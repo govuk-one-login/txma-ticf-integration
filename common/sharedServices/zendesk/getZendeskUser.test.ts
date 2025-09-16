@@ -51,6 +51,23 @@ describe('get zendesk ticket information', () => {
     }
     await expect(error()).rejects.toThrow('There was an error.')
   })
+
+  test('show user call succeeds but returns invalid data format', async () => {
+    const invalidResponse = {
+      user: {
+        email: 123, // should be string
+        name: true // should be string
+      }
+    }
+    mockHttpsRequestUtils.givenSuccessfulApiCall(invalidResponse)
+
+    const error = async () => {
+      await getZendeskUser(userId)
+    }
+    await expect(error()).rejects.toThrow(
+      'The returned data was not a Zendesk user'
+    )
+  })
 })
 
 const expectSuccessfulApiCallToBeMade = () => {

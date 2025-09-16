@@ -236,4 +236,72 @@ describe('dynamoDBGet', () => {
       expect(dynamoMock).toHaveReceivedCommandWith(QueryCommand, testParams)
     })
   })
+
+  describe('parseDatabaseItem edge cases', () => {
+    it('handles checkGlacierStatusCount with no N attribute', async () => {
+      const mockItem: Record<string, AttributeValue> = {
+        requestInfo: {
+          M: {
+            recipientEmail: { S: 'test@example.com' },
+            recipientName: { S: 'test' },
+            requesterEmail: { S: 'test@example.com' },
+            requesterName: { S: 'test' },
+            identifierType: { S: 'eventId' },
+            dates: { L: [{ S: TEST_DATE_1 }] },
+            zendeskId: { S: '12' },
+            eventIds: { L: [] },
+            sessionIds: { L: [] },
+            userIds: { L: [] },
+            journeyIds: { L: [] },
+            piiTypes: { L: [] },
+            dataPaths: { L: [] }
+          }
+        },
+        zendeskId: { S: '12' },
+        checkGlacierStatusCount: { S: 'not-a-number' }
+      }
+
+      dynamoMock
+        .on(GetItemCommand)
+        .resolves({ Item: mockItem } as GetItemOutput)
+
+      const result = await getDatabaseEntryByZendeskId('12')
+      expect(result.checkGlacierStatusCount).toBeUndefined()
+    })
+
+    it('handles all optional ID arrays with values', async () => {
+      const mockItem: Record<string, AttributeValue> = {
+        requestInfo: {
+          M: {
+            recipientEmail: { S: 'test@example.com' },
+            recipientName: { S: 'test' },
+            requesterEmail: { S: 'test@example.com' },
+            requesterName: { S: 'test' },
+            identifierType: { S: 'eventId' },
+            dates: { L: [{ S: TEST_DATE_1 }] },
+            zendeskId: { S: '12' },
+            eventIds: { L: [{ S: 'event1' }] },
+            sessionIds: { L: [{ S: 'session1' }, { S: 'session2' }] },
+            userIds: { L: [{ S: 'user1' }] },
+            journeyIds: { L: [{ S: 'journey1' }] },
+            piiTypes: { L: [{ S: 'pii1' }] },
+            dataPaths: { L: [{ S: 'path1' }] }
+          }
+        },
+        zendeskId: { S: '12' }
+      }
+
+      dynamoMock
+        .on(GetItemCommand)
+        .resolves({ Item: mockItem } as GetItemOutput)
+
+      const result = await getDatabaseEntryByZendeskId('12')
+      expect(result.requestInfo.sessionIds).toEqual(['session1', 'session2'])
+      expect(result.requestInfo.userIds).toEqual(['user1'])
+      expect(result.requestInfo.journeyIds).toEqual(['journey1'])
+      expect(result.requestInfo.eventIds).toEqual(['event1'])
+      expect(result.requestInfo.piiTypes).toEqual(['pii1'])
+      expect(result.requestInfo.dataPaths).toEqual(['path1'])
+    })
+  })
 })

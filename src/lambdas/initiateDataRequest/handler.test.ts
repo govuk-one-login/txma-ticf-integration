@@ -338,4 +338,34 @@ describe('initiate data request handler', () => {
       'non-existent-ticket'
     )
   })
+
+  it('handles event with null body', async () => {
+    givenSignatureIsInvalid()
+
+    const response = await handler(
+      {
+        ...defaultApiRequest,
+        body: null
+      },
+      mockLambdaContext
+    )
+
+    expect(response.statusCode).toEqual(400)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith({})
+  })
+
+  it('handles request with no validationMessage', async () => {
+    const dataRequestParams = undefined
+    givenRequestValidationResult(false, dataRequestParams, undefined)
+    givenSignatureIsValid()
+
+    const handlerCallResult = await callHandlerWithBody()
+
+    expect(handlerCallResult.statusCode).toEqual(400)
+    expect(handlerCallResult.body).toEqual(
+      JSON.stringify({
+        message: 'Ticket parameters invalid'
+      })
+    )
+  })
 })

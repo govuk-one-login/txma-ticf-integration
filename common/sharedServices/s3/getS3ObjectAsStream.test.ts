@@ -28,6 +28,10 @@ const givenDataAvailable = () => {
 }
 
 describe('getS3Object - ', () => {
+  beforeEach(() => {
+    s3Mock.reset()
+  })
+
   it('getS3ObjectAsStream returns a stream read from the file', async () => {
     givenDataAvailable()
     const testDataStream = createDataStream(TEST_S3_OBJECT_DATA_STRING)
@@ -42,5 +46,15 @@ describe('getS3Object - ', () => {
       getObjectCommandInput
     )
     expect(returnedData).toEqual(testDataStream)
+  })
+
+  it('throws error when Body is not a Readable stream', async () => {
+    s3Mock.on(GetObjectCommand).resolves({
+      Body: 'not a stream' as unknown
+    } as GetObjectCommandOutput)
+
+    await expect(
+      getS3ObjectAsStream(TEST_PERMANENT_BUCKET_NAME, TEST_S3_OBJECT_KEY)
+    ).rejects.toThrow('Get S3 Object command did not return stream')
   })
 })

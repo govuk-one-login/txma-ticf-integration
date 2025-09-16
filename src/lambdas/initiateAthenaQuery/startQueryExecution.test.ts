@@ -5,6 +5,7 @@ import {
 } from '@aws-sdk/client-athena'
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-jest'
+import * as awsSdkClients from '../../../common/utils/awsSdkClients'
 
 const athenaMock = mockClient(AthenaClient)
 
@@ -52,9 +53,8 @@ describe('start Query execution', () => {
   })
 
   it('returns an error if the StartQueryExecutionCommand fails', async () => {
-    athenaMock
-      .on(StartQueryExecutionCommand)
-      .rejects('Athena query execution initiation failed')
+    const testError = new Error('Athena query execution initiation failed')
+    athenaMock.on(StartQueryExecutionCommand).rejects(testError)
 
     const result = await startQueryExecution({
       sqlGenerated: true,
@@ -63,7 +63,39 @@ describe('start Query execution', () => {
     })
     expect(result).toEqual({
       queryExecuted: false,
-      error: new Error('Athena query execution initiation failed')
+      error: testError
     })
+  })
+
+  it('returns a generic error if the StartQueryExecutionCommand fails with a non-Error object', async () => {
+    athenaMock.on(StartQueryExecutionCommand).rejects('string error')
+
+    const result = await startQueryExecution({
+      sqlGenerated: true,
+      queryParameters: ['test_parameter'],
+      sql: 'test sql'
+    })
+    expect(result).toEqual({
+      queryExecuted: false,
+      error: new Error('string error')
+    })
+  })
+
+  it('returns a generic "Unknown error" when athenaClient.send throws a non-Error object', async () => {
+    const originalSend = awsSdkClients.athenaClient.send
+    awsSdkClients.athenaClient.send = jest.fn().mockRejectedValue(42)
+
+    const result = await startQueryExecution({
+      sqlGenerated: true,
+      queryParameters: ['test_parameter'],
+      sql: 'test sql'
+    })
+
+    expect(result).toEqual({
+      queryExecuted: false,
+      error: new Error('Unknown error')
+    })
+
+    awsSdkClients.athenaClient.send = originalSend
   })
 })
