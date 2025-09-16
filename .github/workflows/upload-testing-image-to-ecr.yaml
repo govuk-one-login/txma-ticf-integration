@@ -36,7 +36,7 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
         with:
-          cosign-release: v1.9.0
+          cosign-release: v2.4.0
       - name: Build, tag, and push testing image to Amazon ECR
         env:
           CONTAINER_SIGN_KMS_KEY: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
