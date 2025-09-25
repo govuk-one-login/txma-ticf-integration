@@ -28,6 +28,10 @@ Parameters:
     Type: String
     Description: The name of the stack containing the VPC
     Default: none
+  LogSubscriptionFilterPattern:
+    Type: String
+    Description: The default filter used when forwarding CloudWatch logs to external logging apps such as CSLS and Splunk
+    Default: '{ $.errorMessage || ($.level = * && $.level != %TRACE|DEBUG%) }'
 
 Conditions:
   ApiCustomDomain: !Not [!Equals [!Ref Environment, dev]]
@@ -189,7 +193,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref ZendeskWebhookAccessLogGroup
-      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
+      FilterPattern: !Ref LogSubscriptionFilterPattern
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   ##################
@@ -342,7 +346,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref InitiateDataRequestLogs
-      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
+      FilterPattern: !Ref LogSubscriptionFilterPattern
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   ProcessDataRequestFunction:
@@ -495,7 +499,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref ProcessDataRequestLogs
-      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
+      FilterPattern: !Ref LogSubscriptionFilterPattern
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   DataReadyForQueryFunction:
@@ -609,7 +613,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref DataReadyForQueryLogs
-      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
+      FilterPattern: !Ref LogSubscriptionFilterPattern
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   DecryptAndCopyFunction:
@@ -857,7 +861,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref InitiateAthenaQueryLogs
-      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
+      FilterPattern: !Ref LogSubscriptionFilterPattern
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   SendQueryResultsNotificationFunction:
@@ -993,7 +997,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref SendQueryResultsNotificationLogs
-      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
+      FilterPattern: !Ref LogSubscriptionFilterPattern
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   CloseZendeskTicketFunction:
@@ -1093,7 +1097,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref CloseZendeskTicketLogs
-      FilterPattern: '{ $.level = * && $.level != %TRACE|DEBUG% }'
+      FilterPattern: !Ref LogSubscriptionFilterPattern
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   PermissionForAthenaEventToInvokeLambda:
