@@ -11,7 +11,7 @@ updates:
         dependency-type: production
     target-branch: main
     labels:
-      - direct-dependency-update
+      - dependabot
       - dependencies
       - javascript
     commit-message:
@@ -27,7 +27,7 @@ updates:
           - '*'
     target-branch: main
     labels:
-      - direct-dependency-update
+      - dependabot
       - dependencies
     commit-message:
       prefix: BAU
@@ -42,7 +42,7 @@ updates:
           - '*'
     target-branch: main
     labels:
-      - direct-dependency-update
+      - dependabot
       - dependencies
       - github_actions
     commit-message:
