@@ -31,7 +31,7 @@ Parameters:
   LogSubscriptionFilterPattern:
     Type: String
     Description: The default filter used when forwarding CloudWatch logs to external logging apps such as CSLS and Splunk
-    Default: '{ $.errorMessage || ($.level = * && $.level != %TRACE|DEBUG%) }'
+    Default: '{ $.errorMessage = * || ($.level = * && $.level != %TRACE|DEBUG%) }'
 
 Conditions:
   ApiCustomDomain: !Not [!Equals [!Ref Environment, dev]]
