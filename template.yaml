@@ -193,7 +193,7 @@ Resources:
     Condition: CslsEgress
     Properties:
       LogGroupName: !Ref ZendeskWebhookAccessLogGroup
-      FilterPattern: !Ref LogSubscriptionFilterPattern
+      FilterPattern: ''
       DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
 
   ##################
