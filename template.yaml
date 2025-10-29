@@ -42,6 +42,7 @@ Conditions:
       !Equals [!Ref Environment, staging]
     ]
   DevEnvironment: !Equals [!Ref Environment, dev]
+  BuildEnvironment: !Equals [!Ref Environment, build]
   TestEnvironment:
     !Not [
       !Or [
@@ -1459,7 +1460,7 @@ Resources:
         Status: Enabled
 
   GlacierMigrationTempBucket:
-    Condition: DevEnvironment
+    Condition: BuildEnvironment
     Type: AWS::S3::Bucket
     Properties:
       BucketEncryption:
