@@ -1459,6 +1459,7 @@ Resources:
         Status: Enabled
 
   GlacierMigrationTempBucket:
+    Condition: DevEnvironment
     Type: AWS::S3::Bucket
     Properties:
       BucketEncryption:
