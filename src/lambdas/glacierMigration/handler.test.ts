@@ -50,46 +50,83 @@ describe('Glacier Migration Handler', () => {
     })
   })
 
-  it('should create batch job for objects', async () => {
+  it('should create separate batch jobs for different storage classes', async () => {
+    const oldDate = new Date()
+    oldDate.setDate(oldDate.getDate() - 100) // > 90 days old
+    const newDate = new Date()
+    newDate.setDate(newDate.getDate() - 30) // < 90 days old
+
     mockS3Send
       .mockResolvedValueOnce({
         Contents: [
-          { Key: 'file1.json', LastModified: new Date('2021-10-01') },
-          { Key: 'file2.json', LastModified: new Date('2021-12-01') }
+          { Key: 'old-file.json', LastModified: oldDate },
+          { Key: 'new-file.json', LastModified: newDate }
         ]
       })
-      .mockResolvedValueOnce({}) // PutObjectCommand
+      .mockResolvedValueOnce({}) // PutObjectCommand for STANDARD
+      .mockResolvedValueOnce({}) // PutObjectCommand for GLACIER_IR
 
-    mockS3ControlSend.mockResolvedValue({ JobId: 'job-123' })
+    mockS3ControlSend
+      .mockResolvedValueOnce({ JobId: 'standard-job-123' })
+      .mockResolvedValueOnce({ JobId: 'glacier-job-456' })
 
     const result = await handler()
 
     expect(result).toEqual({
       statusCode: 200,
       body: JSON.stringify({
-        message: 'Batch job created',
-        jobId: 'job-123',
-        objectCount: 2
+        message: 'Batch jobs created',
+        jobIds: ['standard-job-123', 'glacier-job-456'],
+        objectCount: 2,
+        standardCount: 1,
+        glacierCount: 1
       })
     })
   })
 
   it('should handle pagination', async () => {
+    const recentDate = new Date()
+    recentDate.setDate(recentDate.getDate() - 30) // Recent files < 90 days
+
     mockS3Send
       .mockResolvedValueOnce({
-        Contents: [{ Key: 'file1.json', LastModified: new Date() }],
+        Contents: [{ Key: 'file1.json', LastModified: recentDate }],
         NextContinuationToken: 'token123'
       })
       .mockResolvedValueOnce({
-        Contents: [{ Key: 'file2.json', LastModified: new Date() }]
+        Contents: [{ Key: 'file2.json', LastModified: recentDate }]
       })
-      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({}) // PutObjectCommand for STANDARD
 
     mockS3ControlSend.mockResolvedValue({ JobId: 'job-456' })
 
     const result = await handler()
 
     expect(result.body).toContain('"objectCount":2')
+    expect(result.body).toContain('"standardCount":2')
+    expect(result.body).toContain('"glacierCount":0')
+  })
+
+  it('should handle only old files', async () => {
+    const oldDate = new Date()
+    oldDate.setDate(oldDate.getDate() - 100) // > 90 days old
+
+    mockS3Send
+      .mockResolvedValueOnce({
+        Contents: [
+          { Key: 'old-file1.json', LastModified: oldDate },
+          { Key: 'old-file2.json', LastModified: oldDate }
+        ]
+      })
+      .mockResolvedValueOnce({}) // PutObjectCommand for GLACIER_IR
+
+    mockS3ControlSend.mockResolvedValue({ JobId: 'glacier-job-789' })
+
+    const result = await handler()
+
+    expect(result.body).toContain('"jobIds":["glacier-job-789"]')
+    expect(result.body).toContain('"standardCount":0')
+    expect(result.body).toContain('"glacierCount":2')
   })
 
   it('should handle errors', async () => {

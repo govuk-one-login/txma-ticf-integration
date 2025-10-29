@@ -4,7 +4,11 @@ import {
   PutObjectCommand,
   _Object
 } from '@aws-sdk/client-s3'
-import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
+import {
+  S3ControlClient,
+  CreateJobCommand,
+  S3StorageClass
+} from '@aws-sdk/client-s3-control'
 import { logger } from '../../../common/sharedServices/logger'
 
 const s3Client = new S3Client({ region: 'eu-west-2' })
@@ -26,60 +30,49 @@ export const handler = async () => {
       return { statusCode: 200, body: 'No objects to migrate' }
     }
 
-    const manifestKey = `glacier-migration-manifest-${Date.now()}.csv`
-    const manifest = objects
-      .map((obj) => {
-        return `${restoredBucket},${obj.Key}`
-      })
-      .join('\n')
-
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: manifestBucket,
-        Key: manifestKey,
-        Body: `Bucket,Key\n${manifest}`
-      })
+    const standardObjects = objects.filter(
+      (obj) => obj.LastModified! > cutoffDate
+    )
+    const glacierObjects = objects.filter(
+      (obj) => obj.LastModified! <= cutoffDate
     )
 
-    const jobId = await s3ControlClient.send(
-      new CreateJobCommand({
-        AccountId: accountId,
-        Operation: {
-          S3PutObjectCopy: {
-            TargetResource: `arn:aws:s3:::${originalBucket}`,
-            CannedAccessControlList: 'private',
-            MetadataDirective: 'COPY'
-          }
-        },
-        Manifest: {
-          Spec: {
-            Format: 'S3BatchOperations_CSV_20180820',
-            Fields: ['Bucket', 'Key']
-          },
-          Location: {
-            ObjectArn: `arn:aws:s3:::${manifestBucket}/${manifestKey}`,
-            ETag: '"*"'
-          }
-        },
-        Priority: 10,
-        RoleArn: batchJobRole,
-        ClientRequestToken: `glacier-migration-${Date.now()}`,
-        Report: {
-          Bucket: manifestBucket,
-          Format: 'Report_CSV_20180820',
-          Enabled: true,
-          Prefix: 'batch-job-reports/',
-          ReportScope: 'AllTasks'
-        }
-      })
-    )
+    const jobIds: string[] = []
+
+    if (standardObjects.length > 0) {
+      const standardJobId = await createBatchJob(
+        standardObjects,
+        'STANDARD' as S3StorageClass,
+        manifestBucket,
+        originalBucket,
+        batchJobRole,
+        accountId,
+        restoredBucket
+      )
+      jobIds.push(standardJobId)
+    }
+
+    if (glacierObjects.length > 0) {
+      const glacierJobId = await createBatchJob(
+        glacierObjects,
+        'GLACIER_IR' as S3StorageClass,
+        manifestBucket,
+        originalBucket,
+        batchJobRole,
+        accountId,
+        restoredBucket
+      )
+      jobIds.push(glacierJobId)
+    }
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Batch job created`,
-        jobId: jobId.JobId,
-        objectCount: objects.length
+        message: `Batch jobs created`,
+        jobIds,
+        objectCount: objects.length,
+        standardCount: standardObjects.length,
+        glacierCount: glacierObjects.length
       })
     }
   } catch (error) {
@@ -111,4 +104,63 @@ async function getAllObjects(bucket: string) {
   } while (continuationToken)
 
   return objects
+}
+
+async function createBatchJob(
+  objects: _Object[],
+  storageClass: S3StorageClass,
+  manifestBucket: string,
+  originalBucket: string,
+  batchJobRole: string,
+  accountId: string,
+  restoredBucket: string
+): Promise<string> {
+  const manifestKey = `glacier-migration-${storageClass.toLowerCase()}-${Date.now()}.csv`
+  const manifest = objects
+    .map((obj) => `${restoredBucket},${obj.Key}`)
+    .join('\n')
+
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: manifestBucket,
+      Key: manifestKey,
+      Body: `Bucket,Key\n${manifest}`
+    })
+  )
+
+  const response = await s3ControlClient.send(
+    new CreateJobCommand({
+      AccountId: accountId,
+      Operation: {
+        S3PutObjectCopy: {
+          TargetResource: `arn:aws:s3:::${originalBucket}`,
+          CannedAccessControlList: 'private',
+          MetadataDirective: 'COPY',
+          StorageClass: storageClass
+        }
+      },
+      Manifest: {
+        Spec: {
+          Format: 'S3BatchOperations_CSV_20180820',
+          Fields: ['Bucket', 'Key']
+        },
+        Location: {
+          ObjectArn: `arn:aws:s3:::${manifestBucket}/${manifestKey}`,
+          ETag: '"*"'
+        }
+      },
+      Priority: 10,
+      RoleArn: batchJobRole,
+      ClientRequestToken: `glacier-migration-${storageClass.toLowerCase()}-${Date.now()}`,
+      Report: {
+        Bucket: manifestBucket,
+        Format: 'Report_CSV_20180820',
+        Enabled: true,
+        Prefix: 'batch-job-reports/',
+        ReportScope: 'AllTasks'
+      }
+    })
+  )
+
+  return response.JobId!
 }
