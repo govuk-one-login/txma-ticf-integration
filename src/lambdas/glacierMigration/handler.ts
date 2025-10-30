@@ -94,7 +94,7 @@ async function getAllObjects(bucket: string) {
       })
     )
 
-    if (response && response.Contents && response.Contents.length > 0) {
+    if (response?.Contents?.length) {
       objects.push(...response.Contents)
     }
 
