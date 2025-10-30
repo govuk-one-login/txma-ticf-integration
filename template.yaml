@@ -1743,14 +1743,6 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-glacier-migration'
       RetentionInDays: 30
 
-  GlacierMigrationCslsSubscriptionFilter:
-    Type: AWS::Logs::SubscriptionFilter
-    Condition: CslsEgress
-    Properties:
-      LogGroupName: !Ref GlacierMigrationLogs
-      FilterPattern: !Ref LogSubscriptionFilterPattern
-      DestinationArn: '{{resolve:ssm:CSLSLogsDestination}}'
-
   ###############################
   # End: Glacier Migration resources #
   ###############################
