@@ -10,9 +10,10 @@ import {
   S3StorageClass
 } from '@aws-sdk/client-s3-control'
 import { logger } from '../../../common/sharedServices/logger'
+import { getEnv } from '../../../common/utils/helpers'
 
-const s3Client = new S3Client({ region: 'eu-west-2' })
-const s3ControlClient = new S3ControlClient({ region: 'eu-west-2' })
+const s3Client = new S3Client({ region: getEnv('AWS_REGION') })
+const s3ControlClient = new S3ControlClient({ region: getEnv('AWS_REGION') })
 
 export const handler = async () => {
   const originalBucket = process.env.ORIGINAL_BUCKET!
@@ -39,31 +40,9 @@ export const handler = async () => {
 
     const jobIds: string[] = []
 
-    if (standardObjects.length > 0) {
-      const standardJobId = await createBatchJob(
-        standardObjects,
-        'STANDARD' as S3StorageClass,
-        manifestBucket,
-        originalBucket,
-        batchJobRole,
-        accountId,
-        restoredBucket
-      )
-      jobIds.push(standardJobId)
-    }
+    await createS3BatchJob(standardObjects, jobIds, 'STANDARD')
 
-    if (glacierObjects.length > 0) {
-      const glacierJobId = await createBatchJob(
-        glacierObjects,
-        'GLACIER_IR' as S3StorageClass,
-        manifestBucket,
-        originalBucket,
-        batchJobRole,
-        accountId,
-        restoredBucket
-      )
-      jobIds.push(glacierJobId)
-    }
+    await createS3BatchJob(glacierObjects, jobIds, 'GLACIER_IR')
 
     return {
       statusCode: 200,
@@ -80,6 +59,25 @@ export const handler = async () => {
     return {
       statusCode: 500,
       body: JSON.stringify(`Error: ${error}`)
+    }
+  }
+
+  async function createS3BatchJob(
+    objects: _Object[],
+    jobIds: string[],
+    storageClass: S3StorageClass
+  ) {
+    if (objects.length > 0) {
+      const jobId = await createBatchJob(
+        objects,
+        storageClass,
+        manifestBucket,
+        originalBucket,
+        batchJobRole,
+        accountId,
+        restoredBucket
+      )
+      jobIds.push(jobId)
     }
   }
 }
