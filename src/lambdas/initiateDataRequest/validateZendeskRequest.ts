@@ -53,12 +53,12 @@ export const validateZendeskRequest = async (
 
   let isValid = true
   const validationMessages: string[] = []
-  fieldValidation.forEach((v) => {
+  for (const v of fieldValidation) {
     if (!v.isValid) {
       validationMessages.push(v.message)
     }
     isValid = isValid && v.isValid
-  })
+  }
   return {
     validationMessage: validationMessages.length
       ? validationMessages.join(', ')

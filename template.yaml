@@ -1458,6 +1458,44 @@ Resources:
       VersioningConfiguration:
         Status: Enabled
 
+  GlacierMigrationTempBucket:
+    Condition: TestEnvironment
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub ${AWS::StackName}-${Environment}-glac-mig-bucket
+      LifecycleConfiguration:
+        Rules:
+          - Id: AnalysisCleanupRule
+            Status: Enabled
+            ExpirationInDays: 14
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+          - !If
+            - TestRoleResources
+            - Id: DeleteAutoTestObjects
+              Status: Enabled
+              ExpirationInDays: 1
+              NoncurrentVersionExpiration:
+                NoncurrentDays: 1
+              TagFilters:
+                - Key: autoTest
+                  Value: 'true'
+            - !Ref AWS::NoValue
+      LoggingConfiguration:
+        DestinationBucketName: '{{resolve:ssm:S3LogsBucketName}}'
+        LogFilePrefix: !Sub ${AWS::StackName}-${Environment}-glac-mig-bucket/
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
   BatchJobsRole:
     Type: AWS::IAM::Role
     Properties:
@@ -1598,6 +1636,115 @@ Resources:
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
       QueueName: !Sub ${AWS::StackName}-initiate-athena-query-dlq
+
+  #################################
+  # Start: Glacier Migration resources #
+  #################################
+
+  GlacierMigrationFunction:
+    #checkov:skip=CKV_AWS_115:Defined in Globals section
+    Condition: TestEnvironment
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/glacierMigration/
+      Handler: handler.handler
+      Environment:
+        Variables:
+          AWS_ACCOUNT_ID: !Ref AWS::AccountId
+          ORIGINAL_BUCKET: !Sub audit-${Environment}-permanent-message-batch
+          RESTORED_BUCKET: !Ref GlacierMigrationTempBucket
+          MANIFEST_BUCKET: '{{resolve:ssm:BatchJobManifestBucketName}}'
+          BATCH_JOB_ROLE: !GetAtt BatchJobsRole.Arn
+      FunctionName: !Sub ${AWS::StackName}-glacier-migration
+      MemorySize: 512
+      Timeout: 900
+      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
+      Role: !GetAtt GlacierMigrationFunctionRole.Arn
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
+          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
+      DeploymentPreference:
+        Type: !If
+          - UseCanaryDeploy
+          - !Ref TICFIntegrationDeploymentStrategy
+          - AllAtOnce
+        Role: !GetAtt LambdaDeployRole.Arn
+
+  GlacierMigrationFunctionRole:
+    Condition: TestEnvironment
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${AWS::StackName}-glacier-migration-role'
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowLambdaToAssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - !Ref GlacierMigrationFunctionPolicy
+
+  GlacierMigrationFunctionPolicy:
+    Condition: TestEnvironment
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-glacier-migration-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: S3ReadFromRestoredBucket
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+            Resource:
+              - !GetAtt GlacierMigrationTempBucket.Arn
+              - !Sub ${GlacierMigrationTempBucket.Arn}/*
+          - Sid: S3WriteToManifestBucket
+            Effect: Allow
+            Action:
+              - s3:PutObject
+            Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
+          - Sid: CreateS3BatchJobs
+            Effect: Allow
+            Action:
+              - s3:CreateJob
+              - s3:PutJobTagging
+            Resource: '*'
+          - Sid: PassBatchJobRole
+            Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: !GetAtt BatchJobsRole.Arn
+          - Sid: UseSqsKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey*
+              - kms:ReEncrypt*
+            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
+
+  GlacierMigrationLogs:
+    Condition: TestEnvironment
+    Type: AWS::Logs::LogGroup
+    Properties:
+      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-glacier-migration'
+      RetentionInDays: 30
+
+  ###############################
+  # End: Glacier Migration resources #
+  ###############################
 
   ############################
   # Integration Test Resources
