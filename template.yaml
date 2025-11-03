@@ -42,7 +42,6 @@ Conditions:
       !Equals [!Ref Environment, staging]
     ]
   DevEnvironment: !Equals [!Ref Environment, dev]
-  BuildEnvironment: !Equals [!Ref Environment, build]
   TestEnvironment:
     !Not [
       !Or [
@@ -1460,7 +1459,7 @@ Resources:
         Status: Enabled
 
   GlacierMigrationTempBucket:
-    Condition: BuildEnvironment
+    Condition: TestEnvironment
     Type: AWS::S3::Bucket
     Properties:
       BucketEncryption:
@@ -1644,7 +1643,7 @@ Resources:
 
   GlacierMigrationFunction:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
-    Condition: BuildEnvironment
+    Condition: TestEnvironment
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/glacierMigration/
@@ -1674,7 +1673,7 @@ Resources:
         Role: !GetAtt LambdaDeployRole.Arn
 
   GlacierMigrationFunctionRole:
-    Condition: BuildEnvironment
+    Condition: TestEnvironment
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub '${AWS::StackName}-glacier-migration-role'
@@ -1696,7 +1695,7 @@ Resources:
         - !Ref GlacierMigrationFunctionPolicy
 
   GlacierMigrationFunctionPolicy:
-    Condition: BuildEnvironment
+    Condition: TestEnvironment
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: !Sub ${AWS::StackName}-glacier-migration-policy
@@ -1736,7 +1735,7 @@ Resources:
             Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
 
   GlacierMigrationLogs:
-    Condition: BuildEnvironment
+    Condition: TestEnvironment
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
