@@ -1589,8 +1589,8 @@ Resources:
               - s3:PutObjectTagging
             Resource:
               - !Sub ${AnalysisBucket.Arn}/*
-              - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket'
-              - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2'
+              - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*'
+              - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2/*'
           - Sid: AllowAuditBucketRead
             Effect: Allow
             Action:
