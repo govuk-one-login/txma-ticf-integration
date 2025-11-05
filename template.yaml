@@ -1587,15 +1587,16 @@ Resources:
               - s3:PutObject
               - s3:PutObjectAcl
               - s3:PutObjectTagging
-            Resource: !Split
-              - ','
-              - !Sub
-                - '${AnalysisBucket}/*${GlacierBuckets}'
-                - AnalysisBucket: !GetAtt AnalysisBucket.Arn
-                  GlacierBuckets: !If
-                    - TestEnvironment
-                    - !Sub ',arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*,arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2/*'
-                    - ''
+            Resource:
+              - !Sub ${AnalysisBucket.Arn}/*
+              - !If
+                - TestEnvironment
+                - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*'
+                - !Ref AWS::NoValue
+              - !If
+                - TestEnvironment
+                - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2/*'
+                - !Ref AWS::NoValue
           - Sid: AllowAuditBucketRead
             Effect: Allow
             Action:
