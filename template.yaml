@@ -1608,6 +1608,16 @@ Resources:
               - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
               - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch/*'
               - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
+          - Sid: AllowAuditBucketWrite
+            Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+              - s3:PutObjectTagging
+            Resource:
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
+              - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch/*'
+              - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
           - Sid: AllowDecryptLambdaExecute
             Effect: Allow
             Action:
