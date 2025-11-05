@@ -1603,11 +1603,18 @@ Resources:
               - s3:GetObject
               - s3:GetObjectAcl
               - s3:GetObjectTagging
-              - s3:ListBucket
             Resource:
               - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}/*'
               - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch/*'
               - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
+          - Sid: AllowAuditBucketList
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource:
+              - '{{resolve:ssm:MessageBatchBucketTXMA2ARN}}'
+              - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch'
+              - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch'
           - Sid: AllowAuditBucketWrite
             Effect: Allow
             Action:
