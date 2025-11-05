@@ -147,6 +147,25 @@ node decrypt-and-decompress.mjs glacier-ir-test.gz test-output.txt arn:aws:kms:e
 
 ## Complete Migration Workflow
 
+### Environment Configuration
+
+Set environment variables before running scripts:
+
+```bash
+export ENVIRONMENT=build  # or dev, staging, production
+export AWS_ACCOUNT_ID=761029721660  # your AWS account ID
+export SOURCE_BUCKET=audit-build-permanent-message-batch  # source bucket name
+export DEST_BUCKET=txma-ticf-integration-build-glac-mig-bucket  # destination bucket name
+```
+
+Or run with inline variables:
+
+```bash
+ENVIRONMENT=staging AWS_ACCOUNT_ID=123456789012 SOURCE_BUCKET=my-source-bucket DEST_BUCKET=my-dest-bucket ./migration-step1.sh
+```
+
+### Migration Steps
+
 1. **Run Step 1**:
 
    ```bash
@@ -174,7 +193,7 @@ node decrypt-and-decompress.mjs glacier-ir-test.gz test-output.txt arn:aws:kms:e
 4. **Get KMS Key ARN**:
 
    ```bash
-   aws ssm get-parameter --name "S3EncryptionGeneratorKmsKeyArn" --region eu-west-2 --profile audit-build
+   aws ssm get-parameter --name "S3EncryptionGeneratorKmsKeyArn" --region eu-west-2 --profile audit-${ENVIRONMENT}
    ```
 
 5. **Verify and test** (decrypt a file):
@@ -187,19 +206,23 @@ node decrypt-and-decompress.mjs glacier-ir-test.gz test-output.txt arn:aws:kms:e
 Check job status using:
 
 ```bash
-aws s3control describe-job --account-id 761029721660 --job-id <job-id>
+aws s3control describe-job --account-id $AWS_ACCOUNT_ID --job-id <job-id>
 ```
 
 List all jobs:
 
 ```bash
-aws s3control list-jobs --account-id 761029721660
+aws s3control list-jobs --account-id $AWS_ACCOUNT_ID
 ```
 
 ## Important Notes
 
 - Each step must complete successfully before proceeding to the next
 - Restore jobs have a 5-day expiration period
-- All scripts require proper AWS credentials for the build account
+- All scripts require proper AWS credentials for the target environment account
 - The migration creates backup copies before changing storage classes
 - Monitor job progress to ensure successful completion before proceeding
+- Set ENVIRONMENT, AWS_ACCOUNT_ID, SOURCE_BUCKET, and DEST_BUCKET variables for different environments
+- Default values: ENVIRONMENT=build, AWS_ACCOUNT_ID=761029721660
+- Default SOURCE_BUCKET: audit-${ENVIRONMENT}-permanent-message-batch
+- Default DEST_BUCKET: txma-ticf-integration-${ENVIRONMENT}-glac-mig-bucket
