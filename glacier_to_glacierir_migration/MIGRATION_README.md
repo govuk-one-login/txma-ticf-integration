@@ -215,6 +215,37 @@ List all jobs:
 aws s3control list-jobs --account-id $AWS_ACCOUNT_ID
 ```
 
+## Scalability Considerations
+
+### Large Scale Migrations (Millions of Objects)
+
+The scripts include pagination logic to handle millions of objects, but be aware of these limitations:
+
+**S3 Batch Operations Limits:**
+
+- Maximum manifest file size: 1GB
+- Maximum objects per job: 1 billion
+- Recommended batch size: 1-10 million objects per job
+
+**For Very Large Migrations:**
+
+1. **Split by prefix**: Filter objects by date/prefix to create smaller batches
+2. **Monitor manifest size**: Script warns if manifest exceeds 1GB
+3. **Use multiple jobs**: Run separate migrations for different object groups
+
+**Example - Split by Date Prefix:**
+
+```bash
+# Process objects with specific prefix
+PREFIX="2023/01/" ./migration-step1.sh
+PREFIX="2023/02/" ./migration-step1.sh
+PREFIX="2024/" ./migration-step1.sh
+
+# Or set as environment variable
+export PREFIX="firehose/2023/"
+./migration-step1.sh
+```
+
 ## Important Notes
 
 - Each step must complete successfully before proceeding to the next
@@ -222,7 +253,10 @@ aws s3control list-jobs --account-id $AWS_ACCOUNT_ID
 - All scripts require proper AWS credentials for the target environment account
 - The migration creates backup copies before changing storage classes
 - Monitor job progress to ensure successful completion before proceeding
-- Set ENVIRONMENT, AWS_ACCOUNT_ID, SOURCE_BUCKET, and DEST_BUCKET variables for different environments
+- Set ENVIRONMENT, AWS_ACCOUNT_ID, SOURCE_BUCKET, DEST_BUCKET, and PREFIX variables for different environments
 - Default values: ENVIRONMENT=build, AWS_ACCOUNT_ID=761029721660
 - Default SOURCE_BUCKET: audit-${ENVIRONMENT}-permanent-message-batch
 - Default DEST_BUCKET: txma-ticf-integration-${ENVIRONMENT}-glac-mig-bucket
+- Optional PREFIX: Filter objects by prefix (empty = all objects)
+- Scripts use pagination to handle millions of objects automatically
+- Large manifests (>1GB) will trigger warnings and may need to be split

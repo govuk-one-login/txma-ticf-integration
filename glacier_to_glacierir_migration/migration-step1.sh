@@ -7,11 +7,17 @@ ENVIRONMENT=${ENVIRONMENT:-build}
 AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-761029721660}
 SOURCE_BUCKET=${SOURCE_BUCKET:-audit-${ENVIRONMENT}-permanent-message-batch}
 DEST_BUCKET=${DEST_BUCKET:-txma-ticf-integration-${ENVIRONMENT}-glac-mig-bucket}
+PREFIX=${PREFIX:-}
 
 echo "Using environment: $ENVIRONMENT"
 echo "Using AWS account: $AWS_ACCOUNT_ID"
 echo "Using source bucket: $SOURCE_BUCKET"
 echo "Using destination bucket: $DEST_BUCKET"
+if [ -n "$PREFIX" ]; then
+    echo "Using prefix filter: $PREFIX"
+else
+    echo "No prefix filter (processing all objects)"
+fi
 
 # Check AWS credentials
 if ! aws sts get-caller-identity >/dev/null 2>&1; then
@@ -22,10 +28,63 @@ fi
 
 # Create manifest with proper CSV format (bucket,key)
 echo "Creating manifest..."
-aws s3api list-objects-v2 \
-  --bucket $SOURCE_BUCKET \
-  --query 'Contents[?StorageClass==`GLACIER`].Key' \
-  --output json | jq -r '.[]' | sed "s/^/${SOURCE_BUCKET},/" > glacier-backup-manifest.csv
+echo "Listing objects with pagination for large buckets..."
+
+# Initialize manifest file
+> glacier-backup-manifest.csv
+
+# Use pagination to handle millions of objects
+NEXT_TOKEN=""
+OBJECT_COUNT=0
+
+while true; do
+    if [ -z "$NEXT_TOKEN" ]; then
+        if [ -n "$PREFIX" ]; then
+            RESPONSE=$(aws s3api list-objects-v2 \
+                --bucket $SOURCE_BUCKET \
+                --prefix "$PREFIX" \
+                --query '{Contents: Contents[?StorageClass==`GLACIER`].Key, NextContinuationToken: NextContinuationToken}' \
+                --output json)
+        else
+            RESPONSE=$(aws s3api list-objects-v2 \
+                --bucket $SOURCE_BUCKET \
+                --query '{Contents: Contents[?StorageClass==`GLACIER`].Key, NextContinuationToken: NextContinuationToken}' \
+                --output json)
+        fi
+    else
+        if [ -n "$PREFIX" ]; then
+            RESPONSE=$(aws s3api list-objects-v2 \
+                --bucket $SOURCE_BUCKET \
+                --prefix "$PREFIX" \
+                --continuation-token "$NEXT_TOKEN" \
+                --query '{Contents: Contents[?StorageClass==`GLACIER`].Key, NextContinuationToken: NextContinuationToken}' \
+                --output json)
+        else
+            RESPONSE=$(aws s3api list-objects-v2 \
+                --bucket $SOURCE_BUCKET \
+                --continuation-token "$NEXT_TOKEN" \
+                --query '{Contents: Contents[?StorageClass==`GLACIER`].Key, NextContinuationToken: NextContinuationToken}' \
+                --output json)
+        fi
+    fi
+    
+    # Extract objects and add to manifest
+    OBJECTS=$(echo "$RESPONSE" | jq -r '.Contents[]? // empty')
+    if [ -n "$OBJECTS" ]; then
+        echo "$OBJECTS" | sed "s/^/${SOURCE_BUCKET},/" >> glacier-backup-manifest.csv
+        BATCH_COUNT=$(echo "$OBJECTS" | wc -l)
+        OBJECT_COUNT=$((OBJECT_COUNT + BATCH_COUNT))
+        echo "Processed $BATCH_COUNT objects (total: $OBJECT_COUNT)"
+    fi
+    
+    # Check for next token
+    NEXT_TOKEN=$(echo "$RESPONSE" | jq -r '.NextContinuationToken // empty')
+    if [ -z "$NEXT_TOKEN" ]; then
+        break
+    fi
+done
+
+echo "Total Glacier objects found: $OBJECT_COUNT"
 
 # Upload manifest to S3
 echo "Uploading manifest to S3..."
@@ -105,6 +164,16 @@ EOF
 
 echo "ETag: $ETAG"
 echo "Manifest line count: $(wc -l < glacier-backup-manifest.csv)"
+
+# Check if manifest is too large for S3 batch operations
+MANIFEST_SIZE=$(wc -c < glacier-backup-manifest.csv)
+MAX_SIZE=$((1024*1024*1024))  # 1GB limit for S3 batch operations manifest
+
+if [ $MANIFEST_SIZE -gt $MAX_SIZE ]; then
+    echo "WARNING: Manifest size ($MANIFEST_SIZE bytes) exceeds S3 batch operations limit (1GB)"
+    echo "Consider splitting the migration into smaller batches"
+    echo "You may need to filter objects by prefix or date range"
+fi
 
 echo "Creating restore job..."
 RESTORE_JOB_ID=$(aws s3control create-job \
