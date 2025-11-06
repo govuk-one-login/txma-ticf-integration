@@ -8,9 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - migration-step1.sh
-          - migration-step2.sh
-          - migration-step3.sh
+          - step1-initiate-restore.sh
+          - step2-create-backup.sh
+          - step3-migrate.sh
       environment:
         description: 'Environment to run against'
         required: true

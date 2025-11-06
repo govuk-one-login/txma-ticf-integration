@@ -12,9 +12,9 @@ show_usage() {
     echo "Usage: $0 <script_name> [options]"
     echo ""
     echo "Scripts:"
-    echo "  migration-step1.sh  - Create manifest and restore job"
-    echo "  migration-step2.sh  - Create backup job"
-    echo "  migration-step3.sh  - Create migration job"
+    echo "  step1-initiate-restore.sh  - Create manifest and restore job"
+    echo "  step2-create-backup.sh     - Create backup job"
+    echo "  step3-migrate.sh           - Create migration job"
     echo ""
     echo "Options:"
     echo "  --environment ENV     Environment (build|staging|integration|production)"
@@ -25,8 +25,8 @@ show_usage() {
     echo "  --help               Show this help"
     echo ""
     echo "Examples:"
-    echo "  $0 migration-step1.sh --environment build"
-    echo "  $0 migration-step2.sh --environment staging --prefix 2024/"
+    echo "  $0 step1-initiate-restore.sh --environment build"
+    echo "  $0 step2-create-backup.sh --environment staging --prefix 2024/"
 }
 
 # Parse arguments
@@ -39,7 +39,7 @@ PREFIX=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        migration-step*.sh)
+        step*.sh)
             SCRIPT_NAME="$1"
             shift
             ;;

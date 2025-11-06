@@ -14,7 +14,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 
 ## Migration Scripts
 
-### migration-step1.sh
+### step1-initiate-restore.sh
 
 **Purpose**: Creates a manifest of all Glacier objects and initiates restore operation.
 
@@ -35,7 +35,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 **Usage**:
 
 ```bash
-./migration-step1.sh
+./step1-initiate-restore.sh
 ```
 
 **Output**:
@@ -44,7 +44,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 - Various JSON config files for batch operations
 - Restore job ID for monitoring
 
-### migration-step2.sh
+### step2-create-backup.sh
 
 **Purpose**: Creates backup copies of restored objects in the migration bucket.
 
@@ -63,14 +63,14 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 **Usage**:
 
 ```bash
-./migration-step2.sh
+./step2-create-backup.sh
 ```
 
 **Output**:
 
 - Backup job ID for monitoring
 
-### migration-step3.sh
+### step3-migrate.sh
 
 **Purpose**: Migrates objects to Glacier Instant Retrieval storage class.
 
@@ -87,7 +87,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 **Usage**:
 
 ```bash
-./migration-step3.sh
+./step3-migrate.sh
 ```
 
 **Output**:
@@ -161,7 +161,7 @@ export DEST_BUCKET=txma-ticf-integration-build-glac-mig-bucket  # destination bu
 Or run with inline variables:
 
 ```bash
-ENVIRONMENT=staging AWS_ACCOUNT_ID=123456789012 SOURCE_BUCKET=my-source-bucket DEST_BUCKET=my-dest-bucket ./migration-step1.sh
+ENVIRONMENT=staging AWS_ACCOUNT_ID=123456789012 SOURCE_BUCKET=my-source-bucket DEST_BUCKET=my-dest-bucket ./step1-initiate-restore.sh
 ```
 
 ### Migration Steps
@@ -169,7 +169,7 @@ ENVIRONMENT=staging AWS_ACCOUNT_ID=123456789012 SOURCE_BUCKET=my-source-bucket D
 1. **Run Step 1**:
 
    ```bash
-   ./migration-step1.sh
+   ./step1-initiate-restore.sh
    ```
 
    Wait for restore job to complete (check status with provided command).
@@ -177,7 +177,7 @@ ENVIRONMENT=staging AWS_ACCOUNT_ID=123456789012 SOURCE_BUCKET=my-source-bucket D
 2. **Run Step 2**:
 
    ```bash
-   ./migration-step2.sh
+   ./step2-create-backup.sh
    ```
 
    Wait for backup job to complete.
@@ -185,7 +185,7 @@ ENVIRONMENT=staging AWS_ACCOUNT_ID=123456789012 SOURCE_BUCKET=my-source-bucket D
 3. **Run Step 3**:
 
    ```bash
-   ./migration-step3.sh
+   ./step3-migrate.sh
    ```
 
    Monitor migration job completion.
@@ -237,13 +237,13 @@ The scripts include pagination logic to handle millions of objects, but be aware
 
 ```bash
 # Process objects with specific prefix
-PREFIX="2023/01/" ./migration-step1.sh
-PREFIX="2023/02/" ./migration-step1.sh
-PREFIX="2024/" ./migration-step1.sh
+PREFIX="2023/01/" ./step1-initiate-restore.sh
+PREFIX="2023/02/" ./step1-initiate-restore.sh
+PREFIX="2024/" ./step1-initiate-restore.sh
 
 # Or set as environment variable
 export PREFIX="firehose/2023/"
-./migration-step1.sh
+./step1-initiate-restore.sh
 ```
 
 ## Important Notes

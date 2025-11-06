@@ -19,7 +19,7 @@ The migration workflow allows you to run `migration-step*.sh` scripts remotely v
 2. Select **Run Migration Scripts** workflow
 3. Click **Run workflow**
 4. Fill in the required parameters:
-   - **Script name**: Choose from migration-step1.sh, migration-step2.sh, or migration-step3.sh
+   - **Script name**: Choose from step1-initiate-restore.sh, step2-create-backup.sh, or step3-migrate.sh
    - **Environment**: build, staging, or production
    - **AWS Account ID**: (optional override)
    - **Source bucket**: (optional override)
@@ -37,7 +37,7 @@ npm run migration:step2 -- --environment staging --prefix 2024/
 npm run migration:step3 -- --environment production
 
 # Using the wrapper script directly
-glacier_to_glacierir_migration/run-migration.sh migration-step1.sh --environment build --prefix 2024/01/
+glacier_to_glacierir_migration/run-migration.sh step1-initiate-restore.sh --environment build --prefix 2024/01/
 ```
 
 ## Parameters
@@ -182,7 +182,7 @@ npm run migration:step3 -- --environment build
 
 ```bash
 # Production migration with custom buckets
-glacier_to_glacierir_migration/run-migration.sh migration-step1.sh \
+glacier_to_glacierir_migration/run-migration.sh step1-initiate-restore.sh \
   --environment production \
   --aws-account-id 123456789012 \
   --source-bucket custom-source-bucket \
