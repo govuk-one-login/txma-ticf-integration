@@ -17,7 +17,7 @@ show_usage() {
     echo "  migration-step3.sh  - Create migration job"
     echo ""
     echo "Options:"
-    echo "  --environment ENV     Environment (build|staging|production)"
+    echo "  --environment ENV     Environment (build|staging|integration|production)"
     echo "  --aws-account-id ID   AWS Account ID"
     echo "  --source-bucket NAME  Source bucket name"
     echo "  --dest-bucket NAME    Destination bucket name"
