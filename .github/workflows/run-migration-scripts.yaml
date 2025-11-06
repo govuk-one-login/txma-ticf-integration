@@ -69,7 +69,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
+          role-to-assume: ${{ inputs.environment == 'build' && secrets.GH_ACTIONS_BUILD_ROLE_ARN || inputs.environment == 'staging' && secrets.GH_ACTIONS_STAGING_ROLE_ARN || inputs.environment == 'integration' && secrets.GH_ACTIONS_INTEGRATION_ROLE_ARN || inputs.environment == 'production' && secrets.GH_ACTIONS_PRODUCTION_ROLE_ARN || secrets.GH_ACTIONS_BUILD_ROLE_ARN }}
 
       - name: Log execution details
         run: |
