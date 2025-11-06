@@ -1,4 +1,6 @@
-export const defaultApiRequest = {
+import { APIGatewayProxyEvent } from 'aws-lambda'
+
+export const defaultApiRequest: APIGatewayProxyEvent = {
   httpMethod: 'get',
   body: '',
   headers: {},
@@ -34,7 +36,9 @@ export const defaultApiRequest = {
       sourceIp: '',
       user: '',
       userAgent: '',
-      userArn: ''
+      userArn: '',
+      vpcId: null,
+      vpceId: null
     },
     path: '/hello',
     protocol: 'HTTP/1.1',
