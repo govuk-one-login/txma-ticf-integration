@@ -30,8 +30,15 @@ fi
 echo "Creating manifest..."
 echo "Listing objects with pagination for large buckets..."
 
-# Initialize manifest file
-> glacier-backup-manifest.csv
+# Initialize variables for multiple manifests
+MANIFEST_COUNT=1
+CURRENT_MANIFEST="glacier-backup-manifest-${MANIFEST_COUNT}.csv"
+MAX_SIZE=$((900*1024*1024))  # 900MB to stay under 1GB limit
+MANIFEST_FILES=()
+
+# Initialize first manifest file
+> "$CURRENT_MANIFEST"
+MANIFEST_FILES+=("$CURRENT_MANIFEST")
 
 # Use pagination to handle millions of objects
 NEXT_TOKEN=""
@@ -71,7 +78,26 @@ while true; do
     # Extract objects and add to manifest
     OBJECTS=$(echo "$RESPONSE" | jq -r '.Contents[]? // empty')
     if [ -n "$OBJECTS" ]; then
-        echo "$OBJECTS" | sed "s/^/${SOURCE_BUCKET},/" >> glacier-backup-manifest.csv
+        BATCH_DATA=$(echo "$OBJECTS" | sed "s/^/${SOURCE_BUCKET},/")
+        
+        # Check if adding this batch would exceed size limit
+        CURRENT_SIZE=$(wc -c < "$CURRENT_MANIFEST")
+        BATCH_SIZE=$(echo "$BATCH_DATA" | wc -c)
+        
+        if [ $((CURRENT_SIZE + BATCH_SIZE)) -gt $MAX_SIZE ] && [ $CURRENT_SIZE -gt 0 ]; then
+            echo "Manifest $CURRENT_MANIFEST reached size limit ($CURRENT_SIZE bytes), creating new manifest"
+            # Verify current manifest has content before creating new one
+            if [ $CURRENT_SIZE -eq 0 ]; then
+                echo "ERROR: Current manifest is empty but size limit reached. Batch too large."
+                exit 1
+            fi
+            MANIFEST_COUNT=$((MANIFEST_COUNT + 1))
+            CURRENT_MANIFEST="glacier-backup-manifest-${MANIFEST_COUNT}.csv"
+            > "$CURRENT_MANIFEST"
+            MANIFEST_FILES+=("$CURRENT_MANIFEST")
+        fi
+        
+        echo "$BATCH_DATA" >> "$CURRENT_MANIFEST"
         BATCH_COUNT=$(echo "$OBJECTS" | wc -l)
         OBJECT_COUNT=$((OBJECT_COUNT + BATCH_COUNT))
         echo "Processed $BATCH_COUNT objects (total: $OBJECT_COUNT)"
@@ -85,25 +111,45 @@ while true; do
 done
 
 echo "Total Glacier objects found: $OBJECT_COUNT"
+echo "Created ${#MANIFEST_FILES[@]} manifest files"
 
-# Upload manifest to S3
-echo "Uploading manifest to S3..."
-if ! aws s3 cp glacier-backup-manifest.csv s3://txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket/; then
-    echo "Error: Failed to upload manifest to S3"
+# Validate total object count matches sum of all manifests
+TOTAL_MANIFEST_LINES=0
+for MANIFEST_FILE in "${MANIFEST_FILES[@]}"; do
+    LINES=$(wc -l < "$MANIFEST_FILE")
+    TOTAL_MANIFEST_LINES=$((TOTAL_MANIFEST_LINES + LINES))
+done
+
+if [ $TOTAL_MANIFEST_LINES -ne $OBJECT_COUNT ]; then
+    echo "ERROR: Object count mismatch! Found $OBJECT_COUNT objects but manifests contain $TOTAL_MANIFEST_LINES lines"
     exit 1
 fi
+echo "Validation passed: All $OBJECT_COUNT objects accounted for in manifests"
 
-# Get the ETag (remove quotes)
-echo "Getting ETag..."
-ETAG=$(aws s3api head-object \
-  --bucket txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket \
-  --key glacier-backup-manifest.csv \
-  --query 'ETag' --output text | tr -d '"')
-
-if [ -z "$ETAG" ]; then
-    echo "Error: Failed to get ETag for uploaded file"
-    exit 1
-fi
+# Upload manifests to S3 and collect ETags
+echo "Uploading manifests to S3..."
+ETAGS=()
+for MANIFEST_FILE in "${MANIFEST_FILES[@]}"; do
+    echo "Uploading $MANIFEST_FILE..."
+    if ! aws s3 cp "$MANIFEST_FILE" s3://txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket/; then
+        echo "Error: Failed to upload $MANIFEST_FILE to S3"
+        exit 1
+    fi
+    
+    # Get the ETag (remove quotes)
+    ETAG=$(aws s3api head-object \
+      --bucket txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket \
+      --key "$MANIFEST_FILE" \
+      --query 'ETag' --output text | tr -d '"')
+    
+    if [ -z "$ETAG" ]; then
+        echo "Error: Failed to get ETag for $MANIFEST_FILE"
+        exit 1
+    fi
+    
+    ETAGS+=("$ETAG")
+    echo "$MANIFEST_FILE uploaded with ETag: $ETAG"
+done
 
 # Create JSON config files
 cat > restore-operation.json << EOF
@@ -133,18 +179,25 @@ cat > migrate-operation.json << EOF
 }
 EOF
 
-cat > manifest-config.json << EOF
+# Create manifest config files for each manifest
+for i in "${!MANIFEST_FILES[@]}"; do
+    MANIFEST_FILE="${MANIFEST_FILES[$i]}"
+    ETAG="${ETAGS[$i]}"
+    CONFIG_FILE="manifest-config-$((i+1)).json"
+    
+    cat > "$CONFIG_FILE" << EOF
 {
   "Spec": {
     "Format": "S3BatchOperations_CSV_20180820",
     "Fields": ["Bucket", "Key"]
   },
   "Location": {
-    "ObjectArn": "arn:aws:s3:::txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket/glacier-backup-manifest.csv",
+    "ObjectArn": "arn:aws:s3:::txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket/$MANIFEST_FILE",
     "ETag": "$ETAG"
   }
 }
 EOF
+done
 
 cat > report-config.json << EOF
 {
@@ -162,31 +215,46 @@ cat > restore-report-config.json << EOF
 }
 EOF
 
-echo "ETag: $ETAG"
-echo "Manifest line count: $(wc -l < glacier-backup-manifest.csv)"
+# Save manifest files list for step 2
+printf '%s\n' "${MANIFEST_FILES[@]}" > manifest-files.txt
+echo "Manifest files list saved to manifest-files.txt"
 
-# Check if manifest is too large for S3 batch operations
-MANIFEST_SIZE=$(wc -c < glacier-backup-manifest.csv)
-MAX_SIZE=$((1024*1024*1024))  # 1GB limit for S3 batch operations manifest
+# Display manifest information
+for i in "${!MANIFEST_FILES[@]}"; do
+    MANIFEST_FILE="${MANIFEST_FILES[$i]}"
+    ETAG="${ETAGS[$i]}"
+    LINE_COUNT=$(wc -l < "$MANIFEST_FILE")
+    SIZE=$(wc -c < "$MANIFEST_FILE")
+    echo "Manifest $((i+1)): $MANIFEST_FILE - $LINE_COUNT lines, $SIZE bytes, ETag: $ETAG"
+done
 
-if [ $MANIFEST_SIZE -gt $MAX_SIZE ]; then
-    echo "WARNING: Manifest size ($MANIFEST_SIZE bytes) exceeds S3 batch operations limit (1GB)"
-    echo "Consider splitting the migration into smaller batches"
-    echo "You may need to filter objects by prefix or date range"
-fi
+# Create restore jobs for each manifest
+echo "Creating restore jobs..."
+RESTORE_JOB_IDS=()
+for i in "${!MANIFEST_FILES[@]}"; do
+    CONFIG_FILE="manifest-config-$((i+1)).json"
+    
+    RESTORE_JOB_ID=$(aws s3control create-job \
+      --account-id $AWS_ACCOUNT_ID \
+      --no-confirmation-required \
+      --client-request-token "restore-$((i+1))-$(date +%s)" \
+      --operation file://restore-operation.json \
+      --manifest file://"$CONFIG_FILE" \
+      --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/txma-ticf-integration-${ENVIRONMENT}-batch-jobs-role \
+      --priority 10 \
+      --report file://restore-report-config.json \
+      --query 'JobId' --output text)
+    
+    RESTORE_JOB_IDS+=("$RESTORE_JOB_ID")
+    echo "Restore job $((i+1)) created with ID: $RESTORE_JOB_ID"
+done
 
-echo "Creating restore job..."
-RESTORE_JOB_ID=$(aws s3control create-job \
-  --account-id $AWS_ACCOUNT_ID \
-  --no-confirmation-required \
-  --client-request-token "restore-$(date +%s)" \
-  --operation file://restore-operation.json \
-  --manifest file://manifest-config.json \
-  --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/txma-ticf-integration-${ENVIRONMENT}-batch-jobs-role \
-  --priority 10 \
-  --report file://restore-report-config.json \
-  --query 'JobId' --output text)
+echo "All restore jobs created. Wait for all to complete before running migration-step2.sh"
+echo "Check status with:"
+for i in "${!RESTORE_JOB_IDS[@]}"; do
+    echo "  aws s3control describe-job --account-id $AWS_ACCOUNT_ID --job-id ${RESTORE_JOB_IDS[$i]}"
+done
 
-echo "Restore job created with ID: $RESTORE_JOB_ID"
-echo "Wait for restore to complete before running migration-step2.sh"
-echo "Check status with: aws s3control describe-job --account-id $AWS_ACCOUNT_ID --job-id $RESTORE_JOB_ID"
+# Save job IDs for step 2
+printf '%s\n' "${RESTORE_JOB_IDS[@]}" > restore-job-ids.txt
+echo "Restore job IDs saved to restore-job-ids.txt"
