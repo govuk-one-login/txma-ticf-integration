@@ -42,6 +42,10 @@ on:
         description: 'Prefix filter for objects (optional)'
         required: false
         type: string
+      state_run_number:
+        description: 'Run number from step1 (required for step2/step3)'
+        required: false
+        type: string
 
 env:
   AWS_REGION: eu-west-2
@@ -86,10 +90,18 @@ jobs:
           echo "  Source Bucket: ${{ inputs.source_bucket }}" | tee -a migration-audit.log
           echo "  Dest Bucket: ${{ inputs.dest_bucket }}" | tee -a migration-audit.log
           echo "  Prefix: ${{ inputs.prefix }}" | tee -a migration-audit.log
+          echo "  State Run Number: ${{ inputs.state_run_number }}" | tee -a migration-audit.log
           echo "=============================================" | tee -a migration-audit.log
 
       - name: Make script executable
         run: chmod +x glacier_to_glacierir_migration/${{ inputs.script_name }}
+
+      - name: Download migration state
+        if: inputs.script_name != 'step1-initiate-restore.sh'
+        uses: actions/download-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: migration-state-${{ inputs.state_run_number }}
+          path: glacier_to_glacierir_migration/
 
       - name: Run migration script
         working-directory: glacier_to_glacierir_migration
@@ -104,6 +116,16 @@ jobs:
           echo "Script output:" | tee -a ../migration-audit.log
           ./${{ inputs.script_name }} 2>&1 | tee -a ../migration-audit.log
           echo "Script completed with exit code: $?" | tee -a ../migration-audit.log
+
+      - name: Upload migration state
+        if: inputs.script_name == 'step1-initiate-restore.sh'
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: migration-state-${{ github.run_number }}
+          path: |
+            glacier_to_glacierir_migration/*.txt
+            glacier_to_glacierir_migration/*.json
+          retention-days: 7
 
       - name: Upload audit log
         if: always()

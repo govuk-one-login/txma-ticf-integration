@@ -250,6 +250,7 @@ for i in "${!MANIFEST_FILES[@]}"; do
 done
 
 echo "All restore jobs created. Wait for all to complete before running step2-create-backup.sh"
+echo "IMPORTANT: Use run number $GITHUB_RUN_NUMBER for state_run_number parameter in subsequent steps"
 echo "Check status with:"
 for i in "${!RESTORE_JOB_IDS[@]}"; do
     echo "  aws s3control describe-job --account-id $AWS_ACCOUNT_ID --job-id ${RESTORE_JOB_IDS[$i]}"

@@ -25,6 +25,7 @@ The migration workflow allows you to run `migration-step*.sh` scripts remotely v
    - **Source bucket**: (optional override)
    - **Destination bucket**: (optional override)
    - **Prefix**: (optional filter for objects)
+   - **State run number**: (required for step2/step3 - use run number from step1)
 
 ### Via Local Execution
 
@@ -42,14 +43,15 @@ glacier_to_glacierir_migration/run-migration.sh step1-initiate-restore.sh --envi
 
 ## Parameters
 
-| Parameter      | Description             | Required | Default        |
-| -------------- | ----------------------- | -------- | -------------- |
-| script_name    | Migration script to run | Yes      | -              |
-| environment    | Target environment      | Yes      | build          |
-| aws_account_id | AWS Account ID          | No       | Script default |
-| source_bucket  | Source S3 bucket        | No       | Script default |
-| dest_bucket    | Destination S3 bucket   | No       | Script default |
-| prefix         | Object prefix filter    | No       | -              |
+| Parameter        | Description             | Required             | Default        |
+| ---------------- | ----------------------- | -------------------- | -------------- |
+| script_name      | Migration script to run | Yes                  | -              |
+| environment      | Target environment      | Yes                  | build          |
+| aws_account_id   | AWS Account ID          | No                   | Script default |
+| source_bucket    | Source S3 bucket        | No                   | Script default |
+| dest_bucket      | Destination S3 bucket   | No                   | Script default |
+| prefix           | Object prefix filter    | No                   | -              |
+| state_run_number | Run number from step1   | No (Yes for step2/3) | -              |
 
 ## Audit Logging
 
