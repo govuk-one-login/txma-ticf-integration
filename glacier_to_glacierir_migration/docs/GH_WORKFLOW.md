@@ -74,7 +74,7 @@ Every execution creates comprehensive audit logs containing:
 
 The workflow requires the following repository secret:
 
-- `GH_ACTIONS_MIGRATION_ROLE_ARN`: IAM role ARN for migration operations
+- `GH_ACTIONS_ROLE_ARN`: IAM role ARN for migration operations (reuses existing role)
 
 ### Permissions
 
