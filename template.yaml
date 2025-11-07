@@ -42,6 +42,7 @@ Conditions:
       !Equals [!Ref Environment, staging]
     ]
   DevEnvironment: !Equals [!Ref Environment, dev]
+  BuildEnvironment: !Equals [!Ref Environment, build]
   TestEnvironment:
     !Not [
       !Or [
@@ -1397,6 +1398,80 @@ Resources:
           Id: AthenaEventTarget
 
   ####################
+  # GitHub Actions IAM Role
+  ####################
+
+  GitHubActionsBuildDeployRole:
+    #checkov:skip=CKV_AWS_62:Role needs S3 batch operations permissions which require wildcard resources
+    #checkov:skip=CKV_AWS_111:S3 batch operations require wildcard resources for job management
+    Condition: BuildEnvironment
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: github-actions-build-deploy-role
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowGitHubActionsToAssumeRole
+            Effect: Allow
+            Principal:
+              Federated: arn:aws:iam::761029721660:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringLike:
+                token.actions.githubusercontent.com:sub:
+                  - repo:govuk-one-login/txma-audit:*
+                  - repo:govuk-one-login/txma-ticf-integration:*
+      Policies:
+        - PolicyName: GitHubActionsMigrationAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: STSAccess
+                Effect: Allow
+                Action:
+                  - sts:GetCallerIdentity
+                Resource: '*'
+              - Sid: S3ListBuckets
+                Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch'
+                  - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket'
+                  - !Sub 'arn:aws:s3:::txma-data-analysis-${Environment}-batch-job-manifest-bucket'
+              - Sid: S3ObjectOperations
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:HeadObject
+                  - s3:RestoreObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
+                  - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*'
+                  - !Sub 'arn:aws:s3:::txma-data-analysis-${Environment}-batch-job-manifest-bucket/*'
+              - Sid: S3BatchOperations
+                Effect: Allow
+                Action:
+                  - s3:CreateJob
+                  - s3:DescribeJob
+                  - s3:ListJobs
+                  - s3:UpdateJobPriority
+                  - s3:UpdateJobStatus
+                  - s3:GetJobTagging
+                  - s3:PutJobTagging
+                Resource: '*'
+              - Sid: IAMPassRole
+                Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: !Sub 'arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}-${Environment}-batch-jobs-role'
+
+  ####################
   # Shared IAM policies
   #####################
   ZendeskSecretsPolicy:
@@ -1995,6 +2070,12 @@ Resources:
       Principal: !Ref TestRoleArn
 
 Outputs:
+  GitHubActionsRoleArn:
+    Condition: BuildEnvironment
+    Description: 'ARN of the GitHub Actions role for GH_ACTIONS_BUILD_ROLE_ARN'
+    Value: !GetAtt GitHubActionsBuildDeployRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-GitHubActionsRoleArn'
   AnalysisBucketName:
     Value: !Ref AnalysisBucket
   InitiateAthenaQueryQueueUrl:
