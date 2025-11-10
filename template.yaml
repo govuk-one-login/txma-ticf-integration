@@ -1407,7 +1407,6 @@ Resources:
     Condition: BuildEnvironment
     Type: AWS::IAM::Role
     Properties:
-      RoleName: github-actions-build-deploy-role
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
@@ -2079,6 +2078,10 @@ Outputs:
       - !Ref AWS::NoValue
     Export:
       Name: !Sub '${AWS::StackName}-GitHubActionsRoleArn'
+  GitHubActionsRoleName:
+    Condition: BuildEnvironment
+    Description: 'Name of the GitHub Actions role'
+    Value: !Ref GitHubActionsBuildDeployRole
   AnalysisBucketName:
     Value: !Ref AnalysisBucket
   InitiateAthenaQueryQueueUrl:
