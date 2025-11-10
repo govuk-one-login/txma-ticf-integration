@@ -50,12 +50,12 @@ while true; do
             RESPONSE=$(aws s3api list-objects-v2 \
                 --bucket $SOURCE_BUCKET \
                 --prefix "$PREFIX" \
-                --query '{Contents: Contents[?StorageClass==`GLACIER`].Key, NextContinuationToken: NextContinuationToken}' \
+                --query '{Contents: Contents[?StorageClass==\`GLACIER\`].Key, NextContinuationToken: NextContinuationToken}' \
                 --output json)
         else
             RESPONSE=$(aws s3api list-objects-v2 \
                 --bucket $SOURCE_BUCKET \
-                --query '{Contents: Contents[?StorageClass==`GLACIER`].Key, NextContinuationToken: NextContinuationToken}' \
+                --query '{Contents: Contents[?StorageClass==\`GLACIER\`].Key, NextContinuationToken: NextContinuationToken}' \
                 --output json)
         fi
     else
@@ -64,13 +64,13 @@ while true; do
                 --bucket $SOURCE_BUCKET \
                 --prefix "$PREFIX" \
                 --continuation-token "$NEXT_TOKEN" \
-                --query '{Contents: Contents[?StorageClass==`GLACIER`].Key, NextContinuationToken: NextContinuationToken}' \
+                --query '{Contents: Contents[?StorageClass==\`GLACIER\`].Key, NextContinuationToken: NextContinuationToken}' \
                 --output json)
         else
             RESPONSE=$(aws s3api list-objects-v2 \
                 --bucket $SOURCE_BUCKET \
                 --continuation-token "$NEXT_TOKEN" \
-                --query '{Contents: Contents[?StorageClass==`GLACIER`].Key, NextContinuationToken: NextContinuationToken}' \
+                --query '{Contents: Contents[?StorageClass==\`GLACIER\`].Key, NextContinuationToken: NextContinuationToken}' \
                 --output json)
         fi
     fi
