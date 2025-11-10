@@ -24,7 +24,11 @@
     "test:integration": "node --experimental-vm-modules node_modules/.bin/jest -c tests/integration-tests/jest.integration.config.ts --expand",
     "test:integration:dev": "node --experimental-vm-modules node_modules/.bin/jest --setupFiles '<rootDir>/.env' -c tests/integration-tests/jest.integration.config.ts --expand",
     "validRecipientsManager": "ts-node scripts/validRecipientsManager.ts",
-    "cli": "node -r ts-node/register scripts/cli.ts"
+    "cli": "node -r ts-node/register scripts/cli.ts",
+    "migration:step1": "glacier_to_glacierir_migration/run-migration.sh step1-initiate-restore.sh",
+    "migration:step2": "glacier_to_glacierir_migration/run-migration.sh step2-create-backup.sh",
+    "migration:step3": "glacier_to_glacierir_migration/run-migration.sh step3-migrate.sh",
+    "migration:help": "glacier_to_glacierir_migration/run-migration.sh --help"
   },
   "dependencies": {
     "@aws-crypto/decrypt-node": "4.2.1",

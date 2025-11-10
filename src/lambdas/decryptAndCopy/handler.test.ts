@@ -38,6 +38,7 @@ describe('DecryptAndCopy', function () {
   beforeEach(() => {
     jest.resetAllMocks()
     jest.spyOn(logger, 'error')
+    process.env.ANALYSIS_BUCKET_NAME = TEST_ANALYSIS_BUCKET
   })
 
   const givenS3DataAvailable = () => {
