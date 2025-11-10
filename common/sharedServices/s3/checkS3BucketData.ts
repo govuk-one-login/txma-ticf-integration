@@ -33,6 +33,7 @@ export const checkS3BucketData = async (
     .filter(
       (o) =>
         o.StorageClass === 'STANDARD' ||
+        o.StorageClass === 'GLACIER_IR' ||
         //
         o.RestoreStatus?.IsRestoreInProgress === false
     )
