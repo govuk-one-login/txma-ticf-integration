@@ -2072,10 +2072,7 @@ Outputs:
   GitHubActionsRoleArn:
     Condition: BuildEnvironment
     Description: 'ARN of the GitHub Actions role for GH_ACTIONS_BUILD_ROLE_ARN'
-    Value: !If
-      - BuildEnvironment
-      - !GetAtt GitHubActionsBuildDeployRole.Arn
-      - !Ref AWS::NoValue
+    Value: !GetAtt GitHubActionsBuildDeployRole.Arn
     Export:
       Name: !Sub '${AWS::StackName}-GitHubActionsRoleArn'
   GitHubActionsRoleName:
