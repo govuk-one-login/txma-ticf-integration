@@ -211,7 +211,11 @@ EOF
 
 cat > restore-report-config.json << EOF
 {
-  "Enabled": false
+  "Enabled": true,
+  "Bucket": "arn:aws:s3:::txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket",
+  "Prefix": "restore-reports",
+  "Format": "Report_CSV_20180820",
+  "ReportScope": "AllTasks"
 }
 EOF
 
