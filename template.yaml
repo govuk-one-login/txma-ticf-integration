@@ -1440,7 +1440,9 @@ Resources:
                   - s3:ListBucket
                 Resource:
                   - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch'
+                  - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch'
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket'
+                  - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2'
                   - !Sub 'arn:aws:s3:::txma-data-analysis-${Environment}-batch-job-manifest-bucket'
               - Sid: S3ObjectOperations
                 Effect: Allow
@@ -1451,7 +1453,9 @@ Resources:
                   - s3:RestoreObject
                 Resource:
                   - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
+                  - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch/*'
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*'
+                  - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2/*'
                   - !Sub 'arn:aws:s3:::txma-data-analysis-${Environment}-batch-job-manifest-bucket/*'
               - Sid: S3BatchOperations
                 Effect: Allow
