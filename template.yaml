@@ -42,7 +42,6 @@ Conditions:
       !Equals [!Ref Environment, staging]
     ]
   DevEnvironment: !Equals [!Ref Environment, dev]
-  BuildEnvironment: !Equals [!Ref Environment, build]
   TestEnvironment:
     !Not [
       !Or [
@@ -1401,10 +1400,10 @@ Resources:
   # GitHub Actions IAM Role
   ####################
 
-  GitHubActionsBuildDeployRole:
+  GHActionsGlacierMigrationDeployRole:
     #checkov:skip=CKV_AWS_62:Role needs S3 batch operations permissions which require wildcard resources
     #checkov:skip=CKV_AWS_111:S3 batch operations require wildcard resources for job management
-    Condition: BuildEnvironment
+    Condition: TestEnvironment
     Type: AWS::IAM::Role
     Properties:
       PermissionsBoundary: !If
@@ -1417,7 +1416,7 @@ Resources:
           - Sid: AllowGitHubActionsToAssumeRole
             Effect: Allow
             Principal:
-              Federated: arn:aws:iam::761029721660:oidc-provider/token.actions.githubusercontent.com
+              Federated: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com'
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
               StringLike:
@@ -2073,16 +2072,16 @@ Resources:
       Principal: !Ref TestRoleArn
 
 Outputs:
-  GitHubActionsRoleArn:
-    Condition: BuildEnvironment
-    Description: 'ARN of the GitHub Actions role for GH_ACTIONS_BUILD_ROLE_ARN'
-    Value: !GetAtt GitHubActionsBuildDeployRole.Arn
+  GAGlacierMigrationRoleArn:
+    Condition: TestEnvironment
+    Description: 'ARN of the GitHub Actions role for GH_ACTIONS_{ENV}_ROLE_ARN'
+    Value: !GetAtt GHActionsGlacierMigrationDeployRole.Arn
     Export:
       Name: !Sub '${AWS::StackName}-GitHubActionsRoleArn'
-  GitHubActionsRoleName:
-    Condition: BuildEnvironment
+  GAGlacierMigrationRoleName:
+    Condition: TestEnvironment
     Description: 'Name of the GitHub Actions role'
-    Value: !Ref GitHubActionsBuildDeployRole
+    Value: !Ref GHActionsGlacierMigrationDeployRole
   AnalysisBucketName:
     Value: !Ref AnalysisBucket
   InitiateAthenaQueryQueueUrl:

@@ -9,6 +9,7 @@ The migration process consists of three sequential steps:
 1. **Step 1**: Create manifest and initiate restore from Glacier
 2. **Step 2**: Create backup copy in migration bucket
 3. **Step 3**: Migrate to Glacier Instant Retrieval storage class
+4. **Step 4**: Verify counts per storage class
 
 Additionally, a utility script is provided for decrypting and decompressing retrieved data.
 
@@ -94,6 +95,33 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 
 - Migration job ID for monitoring
 - Commands to check job status
+
+### step4-verify.sh
+
+**Purpose**: Verify if migration has succeeded.
+
+**What it does**:
+
+- Checks count of `GLACIER_IR` objects
+- Checks count of `GLACIER` objects
+- Checks count of `STANDARD` objects
+
+**Prerequisites**:
+
+- Steps 1, 2 and 3 must be completed successfully
+
+**Usage**:
+
+```bash
+change SOURCE_BUCKET variable value based on which bucket is being verified
+./step4-verify.sh | tee audit-build-permanent-message-batch.log
+./step4-verify.sh | tee audit-build-message-batch.log
+```
+
+**Output**:
+
+- No of GLACIER objects count must be 0
+- Total number of objects must be sum of STANDARD file count and GLACIER_IR file count
 
 ## Utility Scripts
 

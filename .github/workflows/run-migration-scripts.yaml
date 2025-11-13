@@ -46,6 +46,10 @@ on:
         description: 'Run number from step1 (required for step2/step3)'
         required: false
         type: string
+      run_id:
+        description: 'Run ID from step1 (required for step2/step3)'
+        required: false
+        type: string
 
 env:
   AWS_REGION: eu-west-2
@@ -98,10 +102,13 @@ jobs:
 
       - name: Download migration state
         if: inputs.script_name != 'step1-initiate-restore.sh'
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           name: migration-state-${{ inputs.state_run_number }}
           path: glacier_to_glacierir_migration/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.run_id }}
 
       - name: Run migration script
         working-directory: glacier_to_glacierir_migration
