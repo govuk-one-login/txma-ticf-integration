@@ -42,7 +42,6 @@ Conditions:
       !Equals [!Ref Environment, staging]
     ]
   DevEnvironment: !Equals [!Ref Environment, dev]
-  BuildEnvironment: !Equals [!Ref Environment, build]
   TestEnvironment:
     !Not [
       !Or [
