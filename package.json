@@ -19,7 +19,7 @@
     "setupDevStackSecrets": "ts-node scripts/setupDevStackSecrets.ts",
     "test": "jest -c jest.config.ts",
     "test:cov": "jest -c jest.config.ts --coverage",
-    "test:e2e": "jest -c tests/e2e-tests/jest.e2e.config.ts --expand",
+    "test:e2e": "node --experimental-vm-modules node_modules/.bin/jest -c tests/e2e-tests/jest.e2e.config.ts --expand",
     "test:e2e:dev": "jest --setupFiles '<rootDir>/.env' -c tests/e2e-tests/jest.e2e.config.ts --expand",
     "test:integration": "node --experimental-vm-modules node_modules/.bin/jest -c tests/integration-tests/jest.integration.config.ts --expand",
     "test:integration:dev": "node --experimental-vm-modules node_modules/.bin/jest --setupFiles '<rootDir>/.env' -c tests/integration-tests/jest.integration.config.ts --expand",
