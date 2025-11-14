@@ -11,10 +11,10 @@
 cd /test-app || exit 1
 
 if [ "$TEST_ENVIRONMENT" == "build" ]; then
-  npm run test:integration
+  NODE_OPTIONS="--experimental-vm-modules" npm run test:integration
   TESTS_EXIT_CODE=$?
 elif [ "$TEST_ENVIRONMENT" == "staging" ]; then
-  npm run test:e2e
+  NODE_OPTIONS="--experimental-vm-modules" npm run test:e2e
   TESTS_EXIT_CODE=$?
 else
   echo "No Test Environment Set"
