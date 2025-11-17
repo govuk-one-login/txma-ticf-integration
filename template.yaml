@@ -1403,7 +1403,6 @@ Resources:
   GHActionsGlacierMigrationDeployRole:
     #checkov:skip=CKV_AWS_62:Role needs S3 batch operations permissions which require wildcard resources
     #checkov:skip=CKV_AWS_111:S3 batch operations require wildcard resources for job management
-    Condition: TestEnvironment
     Type: AWS::IAM::Role
     Properties:
       PermissionsBoundary: !If
@@ -1536,7 +1535,6 @@ Resources:
         Status: Enabled
 
   GlacierMigrationTempBucket:
-    Condition: TestEnvironment
     Type: AWS::S3::Bucket
     Properties:
       BucketEncryption:
@@ -1574,7 +1572,6 @@ Resources:
         Status: Enabled
 
   GlacierMigrationTempBucket2:
-    Condition: TestEnvironment
     Type: AWS::S3::Bucket
     Properties:
       BucketEncryption:
@@ -1666,14 +1663,8 @@ Resources:
               - s3:PutObjectTagging
             Resource:
               - !Sub ${AnalysisBucket.Arn}/*
-              - !If
-                - TestEnvironment
-                - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*'
-                - !Ref AWS::NoValue
-              - !If
-                - TestEnvironment
-                - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2/*'
-                - !Ref AWS::NoValue
+              - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*'
+              - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2/*'
           - Sid: AllowAuditBucketRead
             Effect: Allow
             Action:
@@ -1780,115 +1771,6 @@ Resources:
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
       QueueName: !Sub ${AWS::StackName}-initiate-athena-query-dlq
-
-  #################################
-  # Start: Glacier Migration resources #
-  #################################
-
-  GlacierMigrationFunction:
-    #checkov:skip=CKV_AWS_115:Defined in Globals section
-    Condition: TestEnvironment
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: dist/glacierMigration/
-      Handler: handler.handler
-      Environment:
-        Variables:
-          AWS_ACCOUNT_ID: !Ref AWS::AccountId
-          ORIGINAL_BUCKET: !Sub audit-${Environment}-permanent-message-batch
-          RESTORED_BUCKET: !Ref GlacierMigrationTempBucket
-          MANIFEST_BUCKET: '{{resolve:ssm:BatchJobManifestBucketName}}'
-          BATCH_JOB_ROLE: !GetAtt BatchJobsRole.Arn
-      FunctionName: !Sub ${AWS::StackName}-glacier-migration
-      MemorySize: 512
-      Timeout: 900
-      KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
-      Role: !GetAtt GlacierMigrationFunctionRole.Arn
-      VpcConfig:
-        SubnetIds:
-          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdA
-          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdB
-          - Fn::ImportValue: !Sub ${VpcStackName}-ProtectedSubnetIdC
-      DeploymentPreference:
-        Type: !If
-          - UseCanaryDeploy
-          - !Ref TICFIntegrationDeploymentStrategy
-          - AllAtOnce
-        Role: !GetAtt LambdaDeployRole.Arn
-
-  GlacierMigrationFunctionRole:
-    Condition: TestEnvironment
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub '${AWS::StackName}-glacier-migration-role'
-      PermissionsBoundary: !If
-        - UsePermissionsBoundary
-        - !Ref PermissionsBoundary
-        - !Ref AWS::NoValue
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: AllowLambdaToAssumeRole
-            Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-        - !Ref GlacierMigrationFunctionPolicy
-
-  GlacierMigrationFunctionPolicy:
-    Condition: TestEnvironment
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      ManagedPolicyName: !Sub ${AWS::StackName}-glacier-migration-policy
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: S3ReadFromRestoredBucket
-            Effect: Allow
-            Action:
-              - s3:GetObject
-              - s3:ListBucket
-            Resource:
-              - !GetAtt GlacierMigrationTempBucket.Arn
-              - !Sub ${GlacierMigrationTempBucket.Arn}/*
-          - Sid: S3WriteToManifestBucket
-            Effect: Allow
-            Action:
-              - s3:PutObject
-            Resource: '{{resolve:ssm:BatchJobManifestBucketArn}}/*'
-          - Sid: CreateS3BatchJobs
-            Effect: Allow
-            Action:
-              - s3:CreateJob
-              - s3:PutJobTagging
-            Resource: '*'
-          - Sid: PassBatchJobRole
-            Effect: Allow
-            Action:
-              - iam:PassRole
-            Resource: !GetAtt BatchJobsRole.Arn
-          - Sid: UseSqsKmsKey
-            Effect: Allow
-            Action:
-              - kms:Decrypt
-              - kms:GenerateDataKey*
-              - kms:ReEncrypt*
-            Resource: '{{resolve:ssm:SqsKmsKeyArn}}'
-
-  GlacierMigrationLogs:
-    Condition: TestEnvironment
-    Type: AWS::Logs::LogGroup
-    Properties:
-      KmsKeyId: '{{resolve:ssm:LogsKmsKeyArn}}'
-      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-glacier-migration'
-      RetentionInDays: 30
-
-  ###############################
-  # End: Glacier Migration resources #
-  ###############################
 
   ############################
   # Integration Test Resources
@@ -2073,13 +1955,11 @@ Resources:
 
 Outputs:
   GAGlacierMigrationRoleArn:
-    Condition: TestEnvironment
     Description: 'ARN of the GitHub Actions role for GH_ACTIONS_{ENV}_ROLE_ARN'
     Value: !GetAtt GHActionsGlacierMigrationDeployRole.Arn
     Export:
       Name: !Sub '${AWS::StackName}-GitHubActionsRoleArn'
   GAGlacierMigrationRoleName:
-    Condition: TestEnvironment
     Description: 'Name of the GitHub Actions role'
     Value: !Ref GHActionsGlacierMigrationDeployRole
   AnalysisBucketName:
