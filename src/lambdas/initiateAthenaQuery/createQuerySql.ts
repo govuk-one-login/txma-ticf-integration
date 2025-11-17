@@ -121,7 +121,12 @@ const formatPiiType = (piiType: string): string => {
   const dataColumn = splitPiiTypePath.shift()
   const dataTarget = splitPiiTypePath.join('.')
 
-  return `json_extract(${dataColumn}, '$.${dataTarget}') as ${piiType}`
+  // Use json_extract for complex objects (addresses, name) to preserve structure
+  // Use json_extract_scalar for simple values to ensure string output
+  const useScalar = !['addresses', 'name'].includes(piiType)
+  const extractFunction = useScalar ? 'json_extract_scalar' : 'json_extract'
+
+  return `${extractFunction}(${dataColumn}, '$.${dataTarget}') as ${piiType}`
 }
 
 const piiTypeDataPathMap = (piiType: string): string => {
