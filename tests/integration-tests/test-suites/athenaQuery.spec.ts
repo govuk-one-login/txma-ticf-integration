@@ -61,7 +61,12 @@ const waitForAthenaQueryOutputFile = async (
     `ticf-automated-audit-data-queries/${athenaQueryId}.csv`
   )
   const csvRows = CSV.parse(csvData as string, { output: 'objects' })
-  return csvRows
+  // Ensure all values are strings to maintain backward compatibility
+  return csvRows.map((row) =>
+    Object.fromEntries(
+      Object.entries(row).map(([key, value]) => [key, String(value)])
+    )
+  )
 }
 
 describe('Athena Query SQL generation and execution', () => {
