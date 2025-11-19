@@ -7,11 +7,15 @@ ENVIRONMENT=${ENVIRONMENT:-build}
 AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-761029721660}
 SOURCE_BUCKET=${SOURCE_BUCKET:-audit-${ENVIRONMENT}-permanent-message-batch}
 DEST_BUCKET=${DEST_BUCKET:-txma-ticf-integration-${ENVIRONMENT}-glac-mig-bucket}
+ETAG_OVERRIDE=${ETAG_OVERRIDE:-}
 
 echo "Using environment: $ENVIRONMENT"
 echo "Using AWS account: $AWS_ACCOUNT_ID"
 echo "Using source bucket: $SOURCE_BUCKET"
 echo "Using destination bucket: $DEST_BUCKET"
+if [ -n "$ETAG_OVERRIDE" ]; then
+    echo "Using ETag override: $ETAG_OVERRIDE"
+fi
 
 # Check AWS credentials
 if ! aws sts get-caller-identity >/dev/null 2>&1; then
@@ -37,6 +41,12 @@ for i in "${!MANIFEST_FILES[@]}"; do
     if [ ! -f "$CONFIG_FILE" ]; then
         echo "Error: $CONFIG_FILE not found. Run step1-initiate-restore.sh first."
         exit 1
+    fi
+    
+    # Override ETag in manifest config if provided
+    if [ -n "$ETAG_OVERRIDE" ]; then
+        echo "Overriding ETag in $CONFIG_FILE with: $ETAG_OVERRIDE"
+        jq --arg etag "$ETAG_OVERRIDE" '.Location.ETag = $etag' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
     fi
     
     BACKUP_JOB_ID=$(aws s3control create-job \
