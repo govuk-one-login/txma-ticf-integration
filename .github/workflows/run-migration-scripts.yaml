@@ -50,6 +50,10 @@ on:
         description: 'Run ID from step1 (required for step2/step3)'
         required: false
         type: string
+      etag_override:
+        description: 'ETag override for manifest files (step2/step3 only)'
+        required: false
+        type: string
 
 env:
   AWS_REGION: eu-west-2
@@ -95,6 +99,7 @@ jobs:
           echo "  Dest Bucket: ${{ inputs.dest_bucket }}" | tee -a migration-audit.log
           echo "  Prefix: ${{ inputs.prefix }}" | tee -a migration-audit.log
           echo "  State Run Number: ${{ inputs.state_run_number }}" | tee -a migration-audit.log
+          echo "  ETag Override: ${{ inputs.etag_override }}" | tee -a migration-audit.log
           echo "=============================================" | tee -a migration-audit.log
 
       - name: Make script executable
@@ -118,6 +123,7 @@ jobs:
           SOURCE_BUCKET: ${{ inputs.source_bucket }}
           DEST_BUCKET: ${{ inputs.dest_bucket }}
           PREFIX: ${{ inputs.prefix }}
+          ETAG_OVERRIDE: ${{ inputs.etag_override }}
         run: |
           echo "Starting script execution..." | tee -a ../migration-audit.log
           echo "Script output:" | tee -a ../migration-audit.log
