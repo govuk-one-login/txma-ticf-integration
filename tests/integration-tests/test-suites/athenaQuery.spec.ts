@@ -55,11 +55,15 @@ const maxRandomTicketId = 1000000000000
 
 const normalizeAddressesJson = (addressesString: string): string => {
   return JSON.stringify(
-    JSON.parse(addressesString).map((item: Record<string, unknown>) =>
-      Object.fromEntries(
+    JSON.parse(addressesString).map((item: Record<string, unknown>) => {
+      const normalized = Object.fromEntries(
         Object.entries(item).map(([key, value]) => [key, String(value)])
       )
-    )
+      // Sort properties to ensure consistent ordering
+      return Object.fromEntries(
+        Object.entries(normalized).sort(([a], [b]) => a.localeCompare(b))
+      )
+    })
   )
 }
 
