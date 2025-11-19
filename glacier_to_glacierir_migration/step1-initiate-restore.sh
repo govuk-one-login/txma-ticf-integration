@@ -32,7 +32,8 @@ echo "Listing objects with pagination for large buckets..."
 
 # Initialize variables for multiple manifests
 MANIFEST_COUNT=1
-CURRENT_MANIFEST="glacier-backup-manifest-${MANIFEST_COUNT}.csv"
+BUCKET_SUFFIX=$(echo "$SOURCE_BUCKET" | sed 's/audit-[^-]*-//' | tr '-' '_')
+CURRENT_MANIFEST="glacier-backup-manifest-${BUCKET_SUFFIX}-${MANIFEST_COUNT}.csv"
 MAX_SIZE=$((900*1024*1024))  # 900MB to stay under 1GB limit
 MANIFEST_FILES=()
 
@@ -92,7 +93,7 @@ while true; do
                 exit 1
             fi
             MANIFEST_COUNT=$((MANIFEST_COUNT + 1))
-            CURRENT_MANIFEST="glacier-backup-manifest-${MANIFEST_COUNT}.csv"
+            CURRENT_MANIFEST="glacier-backup-manifest-${BUCKET_SUFFIX}-${MANIFEST_COUNT}.csv"
             > "$CURRENT_MANIFEST"
             MANIFEST_FILES+=("$CURRENT_MANIFEST")
         fi
@@ -152,7 +153,7 @@ for MANIFEST_FILE in "${MANIFEST_FILES[@]}"; do
 done
 
 # Create JSON config files
-cat > restore-operation.json << EOF
+cat > restore-operation-${BUCKET_SUFFIX}.json << EOF
 {
   "S3InitiateRestoreObject": {
     "ExpirationInDays": 5,
@@ -161,7 +162,7 @@ cat > restore-operation.json << EOF
 }
 EOF
 
-cat > backup-operation.json << EOF
+cat > backup-operation-${BUCKET_SUFFIX}.json << EOF
 {
   "S3PutObjectCopy": {
     "TargetResource": "arn:aws:s3:::${DEST_BUCKET}",
@@ -170,7 +171,7 @@ cat > backup-operation.json << EOF
 }
 EOF
 
-cat > migrate-operation.json << EOF
+cat > migrate-operation-${BUCKET_SUFFIX}.json << EOF
 {
   "S3PutObjectCopy": {
     "TargetResource": "arn:aws:s3:::${SOURCE_BUCKET}",
@@ -183,7 +184,7 @@ EOF
 for i in "${!MANIFEST_FILES[@]}"; do
     MANIFEST_FILE="${MANIFEST_FILES[$i]}"
     ETAG="${ETAGS[$i]}"
-    CONFIG_FILE="manifest-config-$((i+1)).json"
+    CONFIG_FILE="manifest-config-${BUCKET_SUFFIX}-$((i+1)).json"
     
     cat > "$CONFIG_FILE" << EOF
 {
@@ -199,7 +200,7 @@ for i in "${!MANIFEST_FILES[@]}"; do
 EOF
 done
 
-cat > report-config.json << EOF
+cat > report-config-${BUCKET_SUFFIX}.json << EOF
 {
   "Enabled": true,
   "Bucket": "arn:aws:s3:::txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket",
@@ -209,7 +210,7 @@ cat > report-config.json << EOF
 }
 EOF
 
-cat > restore-report-config.json << EOF
+cat > restore-report-config-${BUCKET_SUFFIX}.json << EOF
 {
   "Enabled": true,
   "Bucket": "arn:aws:s3:::txma-data-analysis-${ENVIRONMENT}-batch-job-manifest-bucket",
@@ -220,8 +221,8 @@ cat > restore-report-config.json << EOF
 EOF
 
 # Save manifest files list for step 2
-printf '%s\n' "${MANIFEST_FILES[@]}" > manifest-files.txt
-echo "Manifest files list saved to manifest-files.txt"
+printf '%s\n' "${MANIFEST_FILES[@]}" > manifest-files-${BUCKET_SUFFIX}.txt
+echo "Manifest files list saved to manifest-files-${BUCKET_SUFFIX}.txt"
 
 # Display manifest information
 for i in "${!MANIFEST_FILES[@]}"; do
@@ -236,17 +237,17 @@ done
 echo "Creating restore jobs..."
 RESTORE_JOB_IDS=()
 for i in "${!MANIFEST_FILES[@]}"; do
-    CONFIG_FILE="manifest-config-$((i+1)).json"
+    CONFIG_FILE="manifest-config-${BUCKET_SUFFIX}-$((i+1)).json"
     
     RESTORE_JOB_ID=$(aws s3control create-job \
       --account-id $AWS_ACCOUNT_ID \
       --no-confirmation-required \
       --client-request-token "restore-$((i+1))-$(date +%s)" \
-      --operation file://restore-operation.json \
+      --operation file://restore-operation-${BUCKET_SUFFIX}.json \
       --manifest file://"$CONFIG_FILE" \
       --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/txma-ticf-integration-${ENVIRONMENT}-batch-jobs-role \
       --priority 10 \
-      --report file://restore-report-config.json \
+      --report file://restore-report-config-${BUCKET_SUFFIX}.json \
       --query 'JobId' --output text)
     
     RESTORE_JOB_IDS+=("$RESTORE_JOB_ID")
@@ -261,5 +262,5 @@ for i in "${!RESTORE_JOB_IDS[@]}"; do
 done
 
 # Save job IDs for step 2
-printf '%s\n' "${RESTORE_JOB_IDS[@]}" > restore-job-ids.txt
-echo "Restore job IDs saved to restore-job-ids.txt"
+printf '%s\n' "${RESTORE_JOB_IDS[@]}" > restore-job-ids-${BUCKET_SUFFIX}.txt
+echo "Restore job IDs saved to restore-job-ids-${BUCKET_SUFFIX}.txt"

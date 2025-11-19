@@ -8,6 +8,7 @@ AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-761029721660}
 SOURCE_BUCKET=${SOURCE_BUCKET:-audit-${ENVIRONMENT}-permanent-message-batch}
 DEST_BUCKET=${DEST_BUCKET:-txma-ticf-integration-${ENVIRONMENT}-glac-mig-bucket}
 ETAG_OVERRIDE=${ETAG_OVERRIDE:-}
+BUCKET_SUFFIX=$(echo "$SOURCE_BUCKET" | sed 's/audit-[^-]*-//' | tr '-' '_')
 
 echo "Using environment: $ENVIRONMENT"
 echo "Using AWS account: $AWS_ACCOUNT_ID"
@@ -25,18 +26,18 @@ if ! aws sts get-caller-identity >/dev/null 2>&1; then
 fi
 
 # Check if config files exist from step 1
-if [ ! -f "manifest-files.txt" ] || [ ! -f "report-config.json" ]; then
+if [ ! -f "manifest-files-${BUCKET_SUFFIX}.txt" ] || [ ! -f "report-config-${BUCKET_SUFFIX}.json" ]; then
     echo "Error: Config files not found. Run step1-initiate-restore.sh first."
     exit 1
 fi
 
 # Read manifest files list
-readarray -t MANIFEST_FILES < manifest-files.txt
+readarray -t MANIFEST_FILES < manifest-files-${BUCKET_SUFFIX}.txt
 
 echo "Creating backup jobs (copy to migration bucket)..."
 BACKUP_JOB_IDS=()
 for i in "${!MANIFEST_FILES[@]}"; do
-    CONFIG_FILE="manifest-config-$((i+1)).json"
+    CONFIG_FILE="manifest-config-${BUCKET_SUFFIX}-$((i+1)).json"
     
     if [ ! -f "$CONFIG_FILE" ]; then
         echo "Error: $CONFIG_FILE not found. Run step1-initiate-restore.sh first."
@@ -53,11 +54,11 @@ for i in "${!MANIFEST_FILES[@]}"; do
       --account-id $AWS_ACCOUNT_ID \
       --no-confirmation-required \
       --client-request-token "backup-$((i+1))-$(date +%s)" \
-      --operation file://backup-operation.json \
+      --operation file://backup-operation-${BUCKET_SUFFIX}.json \
       --manifest file://"$CONFIG_FILE" \
       --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/txma-ticf-integration-${ENVIRONMENT}-batch-jobs-role \
       --priority 10 \
-      --report file://report-config.json \
+      --report file://report-config-${BUCKET_SUFFIX}.json \
       --query 'JobId' --output text)
     
     BACKUP_JOB_IDS+=("$BACKUP_JOB_ID")
@@ -70,5 +71,5 @@ for i in "${!BACKUP_JOB_IDS[@]}"; do
 done
 
 # Save job IDs for step 3
-printf '%s\n' "${BACKUP_JOB_IDS[@]}" > backup-job-ids.txt
-echo "Backup job IDs saved to backup-job-ids.txt"
+printf '%s\n' "${BACKUP_JOB_IDS[@]}" > backup-job-ids-${BUCKET_SUFFIX}.txt
+echo "Backup job IDs saved to backup-job-ids-${BUCKET_SUFFIX}.txt"
