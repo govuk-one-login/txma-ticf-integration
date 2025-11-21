@@ -41,9 +41,11 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 
 **Output**:
 
-- `glacier-backup-manifest.csv` - List of objects to migrate
-- Various JSON config files for batch operations
+- `glacier-backup-manifest-{bucket_suffix}-{count}.csv` - List of objects to migrate (bucket-specific)
+- Various JSON config files for batch operations (bucket-specific)
 - Restore job ID for monitoring
+- `manifest-files-{bucket_suffix}.txt` - List of manifest files created
+- `restore-job-ids-{bucket_suffix}.txt` - List of restore job IDs
 
 ### step2-create-backup.sh
 
@@ -70,6 +72,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 **Output**:
 
 - Backup job ID for monitoring
+- `backup-job-ids-{bucket_suffix}.txt` - List of backup job IDs
 
 ### step3-migrate.sh
 
@@ -95,6 +98,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 
 - Migration job ID for monitoring
 - Commands to check job status
+- `migrate-job-ids-{bucket_suffix}.txt` - List of migration job IDs
 
 ### step4-verify.sh
 
@@ -288,3 +292,5 @@ export PREFIX="firehose/2023/"
 - Optional PREFIX: Filter objects by prefix (empty = all objects)
 - Scripts use pagination to handle millions of objects automatically
 - Large manifests (>1GB) will trigger warnings and may need to be split
+- **Multi-bucket support**: All generated files include bucket-specific suffixes to prevent conflicts when migrating multiple buckets
+- File naming pattern: `{filename}-{bucket_suffix}.{extension}` where bucket_suffix is derived from the source bucket name

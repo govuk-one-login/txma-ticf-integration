@@ -53,6 +53,20 @@ const ticketWithMultipleDates = generateZendeskTicketData({
 
 const maxRandomTicketId = 1000000000000
 
+const normalizeAddressesJson = (addressesString: string): string => {
+  return JSON.stringify(
+    JSON.parse(addressesString).map((item: Record<string, unknown>) => {
+      const normalized = Object.fromEntries(
+        Object.entries(item).map(([key, value]) => [key, String(value)])
+      )
+      // Sort properties to ensure consistent ordering
+      return Object.fromEntries(
+        Object.entries(normalized).sort(([a], [b]) => a.localeCompare(b))
+      )
+    })
+  )
+}
+
 const waitForAthenaQueryOutputFile = async (
   athenaQueryId: string
 ): Promise<Record<string, string>[]> => {
@@ -179,7 +193,10 @@ describe('Athena Query SQL generation and execution', () => {
 
       expect(csvRows).toHaveLength(1)
       expect(csvRows[0].name).toEqual(testData.athenaTestName)
-      expect(csvRows[0].addresses).toEqual(testData.athenaTestAddresses)
+
+      expect(normalizeAddressesJson(csvRows[0].addresses)).toEqual(
+        testData.athenaTestAddresses
+      )
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
@@ -226,7 +243,10 @@ describe('Athena Query SQL generation and execution', () => {
         testData.athenaTestBuildingName
       )
       expect(csvRows[0].name).toEqual(testData.athenaTestName)
-      expect(csvRows[0].addresses).toEqual(testData.athenaTestAddresses)
+
+      expect(normalizeAddressesJson(csvRows[0].addresses)).toEqual(
+        testData.athenaTestAddresses
+      )
     })
 
     it('Successful Athena processing - requests having multiples dates', async () => {
@@ -285,14 +305,20 @@ describe('Athena Query SQL generation and execution', () => {
         testData.athenaTestBuildingName
       )
       expect(event1Data.name).toEqual(testData.athenaTestName)
-      expect(event1Data.addresses).toEqual(testData.athenaTestAddresses)
+
+      expect(normalizeAddressesJson(event1Data.addresses)).toEqual(
+        testData.athenaTestAddresses
+      )
 
       expect(event2Data.birthDate0_value).toEqual(testData.athenaTestBirthDate2)
       expect(event2Data.address0_buildingName).toEqual(
         testData.athenaTestBuildingName2
       )
       expect(event2Data.name).toEqual(testData.athenaTestName2)
-      expect(event2Data.addresses).toEqual(testData.athenaTestAddresses2)
+
+      expect(normalizeAddressesJson(event2Data.addresses)).toEqual(
+        testData.athenaTestAddresses2
+      )
     })
   })
 

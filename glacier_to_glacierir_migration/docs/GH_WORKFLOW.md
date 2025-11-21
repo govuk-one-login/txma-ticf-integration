@@ -26,6 +26,8 @@ The migration workflow allows you to run `migration-step*.sh` scripts remotely v
    - **Destination bucket**: (optional override)
    - **Prefix**: (optional filter for objects)
    - **State run number**: (required for step2/step3 - use run number from step1)
+   - **Run ID**: (required for step2/step3 - use run ID from step1)
+   - **ETag override**: (optional for step2/step3 - manual ETag if manifest upload issues occur)
 
 ### Via Local Execution
 
@@ -52,6 +54,8 @@ glacier_to_glacierir_migration/run-migration.sh step1-initiate-restore.sh --envi
 | dest_bucket      | Destination S3 bucket   | No                   | Script default |
 | prefix           | Object prefix filter    | No                   | -              |
 | state_run_number | Run number from step1   | No (Yes for step2/3) | -              |
+| run_id           | Run ID from step1       | No (Yes for step2/3) | -              |
+| etag_override    | Manual ETag override    | No                   | -              |
 
 ## Audit Logging
 

@@ -3,9 +3,9 @@
 set -e  # Exit on any error
 
 # Configuration variables
-ENVIRONMENT=${ENVIRONMENT:-build}
-AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-761029721660}
-SOURCE_BUCKET=${SOURCE_BUCKET:-audit-${ENVIRONMENT}-permanent-message-batch}
+ENVIRONMENT=${ENVIRONMENT:-integration}
+AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-423448613278}
+SOURCE_BUCKET=${SOURCE_BUCKET:-audit-${ENVIRONMENT}-message-batch}
 PREFIX=${PREFIX:-}
 
 echo "=== MIGRATION VERIFICATION ==="
