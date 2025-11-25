@@ -47,7 +47,7 @@ describe('startTransferToAnalysisBucket', () => {
       when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
       const fileList = ['myFile1', 'myFile2']
 
-      await startTransferToAnalysisBucket(fileList, ZENDESK_TICKET_ID)
+      await startTransferToAnalysisBucket(fileList, [], ZENDESK_TICKET_ID)
 
       expect(writeJobManifestFileToJobBucket).toHaveBeenCalledWith(
         testAuditSourceDataBucket,
