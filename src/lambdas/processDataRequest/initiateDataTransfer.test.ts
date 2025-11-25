@@ -71,10 +71,12 @@ describe('initiate data transfer', () => {
   const givenDataResult = (
     dataAvailable: boolean,
     standardTierLocationsToCopy: string[],
-    glacierTierLocationsToCopy: string[]
+    glacierTierLocationsToCopy: string[],
+    glacierIRTierLocationsToCopy: string[] = []
   ) => {
     mockCheckS3BucketData.mockResolvedValue({
       standardTierLocationsToCopy: standardTierLocationsToCopy,
+      glacierIRTierLocationsToCopy: glacierIRTierLocationsToCopy,
       glacierTierLocationsToCopy: glacierTierLocationsToCopy,
       dataAvailable
     })
@@ -131,6 +133,7 @@ describe('initiate data transfer', () => {
     )
     expect(mockStartTransferToAnalysisBucket).toHaveBeenCalledWith(
       filesToCopy,
+      [],
       ZENDESK_TICKET_ID
     )
     expect(mockStartGlacierRestore).not.toHaveBeenCalled()

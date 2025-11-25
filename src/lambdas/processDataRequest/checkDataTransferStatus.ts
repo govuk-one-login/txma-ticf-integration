@@ -34,6 +34,7 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     logger.info('Glacier restore complete. Starting copy job')
     await startTransferToAnalysisBucket(
       s3BucketDataLocationResult.standardTierLocationsToCopy,
+      s3BucketDataLocationResult.glacierIRTierLocationsToCopy,
       zendeskId
     )
   } else {

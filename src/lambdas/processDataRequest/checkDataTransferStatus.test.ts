@@ -66,10 +66,12 @@ describe('checkDataTransferStatus', () => {
 
   const givenDataResult = (
     standardTierLocationsToCopy: string[],
-    glacierTierLocationsToCopy: string[]
+    glacierTierLocationsToCopy: string[],
+    glacierIRTierLocationsToCopy: string[] = []
   ) => {
     when(checkS3BucketData).mockResolvedValue({
       standardTierLocationsToCopy: standardTierLocationsToCopy,
+      glacierIRTierLocationsToCopy: glacierIRTierLocationsToCopy,
       glacierTierLocationsToCopy: glacierTierLocationsToCopy,
       dataAvailable: true
     })
@@ -140,6 +142,7 @@ describe('checkDataTransferStatus', () => {
     )
     expect(startTransferToAnalysisBucket).toHaveBeenCalledWith(
       filesToCopy,
+      [],
       ZENDESK_TICKET_ID
     )
     expect(mockSendContinuePollingDataTransferMessage).not.toHaveBeenCalled()

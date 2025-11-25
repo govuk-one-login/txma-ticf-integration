@@ -159,10 +159,11 @@ describe('check objects in analysis bucket', () => {
 
   const assertNumberOfFilesLogged = (
     standardTierFiles: number,
-    glacierTierFiles: number
+    glacierTierFiles: number,
+    glacierIRTierFiles = 0
   ) => {
     expect(logger.info).toHaveBeenLastCalledWith(
-      `Number of standard tier files to copy was ${standardTierFiles}, glacier tier files to copy was ${glacierTierFiles}`
+      `Number of standard tier files to copy was ${standardTierFiles}, glacier_ir tier files to copy was ${glacierIRTierFiles}, glacier tier files to copy was ${glacierTierFiles}`
     )
   }
 
@@ -189,23 +190,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
-      glacierTierLocationsToCopy: [],
-      standardTierLocationsToCopy: []
-    })
-    assertNumberOfFilesLogged(0, 0)
-  })
-
-  test('all data in analysis bucket', async () => {
-    givenDataInBucketForPrefixes(
-      prefixes,
-      testAuditSourceDataBucket,
-      'STANDARD'
-    )
-    givenDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET, 'STANDARD')
-
-    const result = await checkS3BucketData(testDataRequest)
-    expect(result).toEqual({
-      dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: []
     })
@@ -223,6 +208,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -253,6 +239,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -281,6 +268,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -309,6 +297,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -340,6 +329,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -361,6 +351,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
         'firehose/2022/10/10/21/example-object-2',
@@ -392,6 +383,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
         'firehose/2022/10/10/21/example-object-2',
@@ -409,6 +401,80 @@ describe('check objects in analysis bucket', () => {
     assertNumberOfFilesLogged(3, 6)
   })
 
+  test('no data in analysis bucket, some audit data in glacier IR tier already restored', async () => {
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+    givenDataInBucketForPrefix(prefixes[0], testAuditSourceDataBucket, [
+      {
+        Key: 'firehose/2022/10/10/21/example-object-1',
+        StorageClass: 'GLACIER_IR',
+        RestoreStatus: {
+          IsRestoreInProgress: false
+        }
+      },
+      {
+        Key: 'firehose/2022/10/10/21/example-object-2',
+        StorageClass: 'GLACIER_IR',
+        RestoreStatus: {
+          IsRestoreInProgress: false
+        }
+      }
+    ])
+    givenDataInBucketForPrefixes(
+      [prefixes[1]],
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
+    givenNoDataInBucketForPrefixes([prefixes[2]], testAuditSourceDataBucket)
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierIRTierLocationsToCopy: [
+        'firehose/2022/10/10/21/example-object-1',
+        'firehose/2022/10/10/21/example-object-2'
+      ],
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3'
+      ]
+    })
+    assertNumberOfFilesLogged(3, 0, 2)
+  })
+
+  test('no data in analysis bucket, some audit data in glacier IR tier with restore in progress', async () => {
+    givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
+    givenDataInBucketForPrefix(prefixes[0], testAuditSourceDataBucket, [
+      {
+        Key: 'firehose/2022/10/10/21/example-object-1',
+        StorageClass: 'GLACIER_IR',
+        RestoreStatus: {
+          IsRestoreInProgress: true
+        }
+      }
+    ])
+    givenDataInBucketForPrefixes(
+      [prefixes[1]],
+      testAuditSourceDataBucket,
+      'STANDARD'
+    )
+    givenNoDataInBucketForPrefixes([prefixes[2]], testAuditSourceDataBucket)
+
+    const result = await checkS3BucketData(testDataRequest)
+    expect(result).toEqual({
+      dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
+      glacierTierLocationsToCopy: [],
+      standardTierLocationsToCopy: [
+        'firehose/2022/10/10/22/example-object-1',
+        'firehose/2022/10/10/22/example-object-2',
+        'firehose/2022/10/10/22/example-object-3'
+      ]
+    })
+    assertNumberOfFilesLogged(3, 0, 0)
+  })
+
   test('no data in analysis bucket, some audit data is currently being restored from Glacier tier', async () => {
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
     givenGlacierRestoreInProgressForPrefixes(
@@ -423,6 +489,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
         'firehose/2022/10/10/21/example-object-2',
@@ -454,6 +521,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -489,6 +557,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -527,6 +596,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -567,6 +637,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -607,6 +678,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -650,6 +722,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: true,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: [
         'firehose/2022/10/10/21/example-object-1',
@@ -671,6 +744,7 @@ describe('check objects in analysis bucket', () => {
     const result = await checkS3BucketData(testDataRequest)
     expect(result).toEqual({
       dataAvailable: false,
+      glacierIRTierLocationsToCopy: [],
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: []
     })
