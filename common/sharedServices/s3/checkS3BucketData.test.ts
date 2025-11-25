@@ -160,7 +160,7 @@ describe('check objects in analysis bucket', () => {
   const assertNumberOfFilesLogged = (
     standardTierFiles: number,
     glacierTierFiles: number,
-    glacierIRTierFiles = 0
+    glacierIRTierFiles: number
   ) => {
     expect(logger.info).toHaveBeenLastCalledWith(
       `Number of standard tier files to copy was ${standardTierFiles}, glacier_ir tier files to copy was ${glacierIRTierFiles}, glacier tier files to copy was ${glacierTierFiles}`
@@ -194,7 +194,7 @@ describe('check objects in analysis bucket', () => {
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: []
     })
-    assertNumberOfFilesLogged(0, 0)
+    assertNumberOfFilesLogged(0, 0, 0)
   })
 
   test('no data in analysis bucket, all audit data is standard tier', async () => {
@@ -222,7 +222,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(9, 0)
+    assertNumberOfFilesLogged(9, 0, 0)
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with missing keys', async () => {
@@ -250,7 +250,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(6, 0)
+    assertNumberOfFilesLogged(6, 0, 0)
     assertFilesMissingKeysLogged(testAuditSourceDataBucket)
   })
 
@@ -279,7 +279,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(6, 0)
+    assertNumberOfFilesLogged(6, 0, 0)
     assertFilesMissingKeysLogged(testAuditSourceDataBucket)
   })
 
@@ -308,7 +308,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(6, 0)
+    assertNumberOfFilesLogged(6, 0, 0)
     assertFilesMissingStorageClassLogged(testAuditSourceDataBucket)
   })
 
@@ -340,7 +340,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(6, 0)
+    assertNumberOfFilesLogged(6, 0, 0)
     assertFilesMissingStorageClassLogged(testAuditSourceDataBucket)
   })
 
@@ -365,7 +365,7 @@ describe('check objects in analysis bucket', () => {
       ],
       standardTierLocationsToCopy: []
     })
-    assertNumberOfFilesLogged(0, 9)
+    assertNumberOfFilesLogged(0, 9, 0)
   })
 
   test('no data in analysis bucket, some audit data in glacier tier', async () => {
@@ -398,7 +398,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/22/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(3, 6)
+    assertNumberOfFilesLogged(3, 6, 0)
   })
 
   test('no data in analysis bucket, some audit data in glacier IR tier already restored', async () => {
@@ -504,7 +504,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/22/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(3, 6)
+    assertNumberOfFilesLogged(3, 6, 0)
   })
 
   test('no data in analysis bucket, some audit data has been restored from Glacier tier', async () => {
@@ -535,7 +535,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(9, 0)
+    assertNumberOfFilesLogged(9, 0, 0)
   })
 
   test('partial data in analysis bucket', async () => {
@@ -568,7 +568,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/22/example-object-3'
       ]
     })
-    assertNumberOfFilesLogged(6, 0)
+    assertNumberOfFilesLogged(6, 0, 0)
   })
 
   test('partial data in analysis bucket, some data in analysis bucket missing keys', async () => {
@@ -608,7 +608,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-1'
       ]
     })
-    assertNumberOfFilesLogged(7, 0)
+    assertNumberOfFilesLogged(7, 0, 0)
     assertFilesMissingKeysLogged(TEST_ANALYSIS_BUCKET)
   })
 
@@ -649,7 +649,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-1'
       ]
     })
-    assertNumberOfFilesLogged(7, 0)
+    assertNumberOfFilesLogged(7, 0, 0)
     assertFilesMissingKeysLogged(TEST_ANALYSIS_BUCKET)
   })
 
@@ -690,7 +690,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-1'
       ]
     })
-    assertNumberOfFilesLogged(7, 0)
+    assertNumberOfFilesLogged(7, 0, 0)
     assertFilesMissingStorageClassLogged(TEST_ANALYSIS_BUCKET)
   })
 
@@ -734,7 +734,7 @@ describe('check objects in analysis bucket', () => {
         'firehose/2022/10/10/23/example-object-1'
       ]
     })
-    assertNumberOfFilesLogged(7, 0)
+    assertNumberOfFilesLogged(7, 0, 0)
     assertFilesMissingStorageClassLogged(TEST_ANALYSIS_BUCKET)
   })
 
@@ -748,6 +748,6 @@ describe('check objects in analysis bucket', () => {
       glacierTierLocationsToCopy: [],
       standardTierLocationsToCopy: []
     })
-    assertNumberOfFilesLogged(0, 0)
+    assertNumberOfFilesLogged(0, 0, 0)
   })
 })

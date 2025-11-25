@@ -45,13 +45,18 @@ describe('startTransferToAnalysisBucket', () => {
       )
       s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
       when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
-      const fileList = ['myFile1', 'myFile2']
+      const standardS3FileList = ['myFile1', 'myFile2']
+      const glacierIRFileList: string[] = []
 
-      await startTransferToAnalysisBucket(fileList, [], ZENDESK_TICKET_ID)
+      await startTransferToAnalysisBucket(
+        standardS3FileList,
+        glacierIRFileList,
+        ZENDESK_TICKET_ID
+      )
 
       expect(writeJobManifestFileToJobBucket).toHaveBeenCalledWith(
         testAuditSourceDataBucket,
-        fileList,
+        standardS3FileList,
         `${TEST_ANALYSIS_BUCKET}-copy-job-for-ticket-id-${ZENDESK_TICKET_ID}.csv`
       )
       expect(s3ControlClientMock).toHaveReceivedCommandWith(CreateJobCommand, {
