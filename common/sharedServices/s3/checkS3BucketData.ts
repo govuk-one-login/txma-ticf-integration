@@ -33,8 +33,8 @@ export const checkS3BucketData = async (
     .filter(
       (o) =>
         o.StorageClass === 'STANDARD' ||
-        //
-        o.RestoreStatus?.IsRestoreInProgress === false
+        (o.StorageClass === 'GLACIER' &&
+          o.RestoreStatus?.IsRestoreInProgress === false)
     )
     .map((o) => o.Key as string)
 
