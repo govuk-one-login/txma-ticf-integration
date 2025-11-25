@@ -53,7 +53,7 @@ export const setupEncryptedData = async (
     await s3ChangeStorageClass(
       getEnv('PERMANENT_AUDIT_BUCKET_NAME'),
       destinationS3Key,
-      'GLACIER'
+      'GLACIER_IR'
     )
   }
 
