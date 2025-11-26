@@ -15,9 +15,13 @@ const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
 
 export const startTransferToAnalysisBucket = async (
   filesToTransfer: string[],
+  glacierIRFilesToTransfer: string[],
   zendeskTicketId: string
 ) => {
-  if (filesToTransfer?.length < 1) {
+  const allFilesToTransfer: string[] = filesToTransfer.concat(
+    glacierIRFilesToTransfer
+  )
+  if (allFilesToTransfer?.length < 1) {
     logger.warn(
       'startTransferToAnalysisBucket called with no files. Not performing any action'
     )
@@ -27,7 +31,7 @@ export const startTransferToAnalysisBucket = async (
   const manifestFileName = `${analysisBucketName}-copy-job-for-ticket-id-${zendeskTicketId}.csv`
   const manifestFileEtag = await writeJobManifestFileToJobBucket(
     getAuditDataSourceBucketName(),
-    filesToTransfer,
+    allFilesToTransfer,
     manifestFileName
   )
   const decryptDataFlagOn = getFeatureFlagValue('DECRYPT_DATA')

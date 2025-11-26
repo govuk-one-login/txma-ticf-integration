@@ -33,8 +33,15 @@ export const checkS3BucketData = async (
     .filter(
       (o) =>
         o.StorageClass === 'STANDARD' ||
-        o.StorageClass === 'GLACIER_IR' ||
-        //
+        (o.StorageClass === 'GLACIER' &&
+          o.RestoreStatus?.IsRestoreInProgress === false)
+    )
+    .map((o) => o.Key as string)
+
+  const glacierIRTierLocationsToCopy = objectsToCopy
+    .filter(
+      (o) =>
+        o.StorageClass === 'GLACIER_IR' &&
         o.RestoreStatus?.IsRestoreInProgress === false
     )
     .map((o) => o.Key as string)
@@ -48,10 +55,11 @@ export const checkS3BucketData = async (
     .map((o) => o.Key as string)
 
   logger.info(
-    `Number of standard tier files to copy was ${standardTierLocationsToCopy?.length}, glacier tier files to copy was ${glacierTierLocationsToCopy?.length}`
+    `Number of standard tier files to copy was ${standardTierLocationsToCopy?.length}, glacier_ir tier files to copy was ${glacierIRTierLocationsToCopy?.length}, glacier tier files to copy was ${glacierTierLocationsToCopy?.length}`
   )
   return Promise.resolve({
     standardTierLocationsToCopy,
+    glacierIRTierLocationsToCopy,
     glacierTierLocationsToCopy,
     dataAvailable:
       requestedAuditBucketObjects?.length > 0 ||

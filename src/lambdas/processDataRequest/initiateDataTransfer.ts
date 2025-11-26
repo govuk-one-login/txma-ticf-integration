@@ -31,7 +31,8 @@ export const initiateDataTransfer = async (
     bucketData.glacierTierLocationsToCopy.length > 0
 
   const copyFromAuditToAnalysisBucketRequired =
-    bucketData.standardTierLocationsToCopy.length > 0
+    bucketData.standardTierLocationsToCopy.length > 0 ||
+    bucketData.glacierIRTierLocationsToCopy.length > 0
 
   await addNewDataRequestRecord(dataRequestParams, glacierRestoreRequired)
   logger.info('Added data request to query request database')
@@ -55,6 +56,7 @@ export const initiateDataTransfer = async (
   } else if (copyFromAuditToAnalysisBucketRequired) {
     await startTransferToAnalysisBucket(
       bucketData.standardTierLocationsToCopy,
+      bucketData.glacierIRTierLocationsToCopy,
       dataRequestParams.zendeskId
     )
   }
