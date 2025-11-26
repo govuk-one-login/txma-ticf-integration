@@ -107,7 +107,7 @@ describe('Data should be copied to analysis bucket', () => {
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [
-            cloudwatchLogFilters.glacierTierCopy,
+            cloudwatchLogFilters.glacierIRTierCopy,
             cloudwatchLogFilters.zendeskId,
             ticketId
           ],

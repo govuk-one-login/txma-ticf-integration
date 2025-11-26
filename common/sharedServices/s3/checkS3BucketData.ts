@@ -39,11 +39,7 @@ export const checkS3BucketData = async (
     .map((o) => o.Key as string)
 
   const glacierIRTierLocationsToCopy = objectsToCopy
-    .filter(
-      (o) =>
-        o.StorageClass === 'GLACIER_IR' &&
-        o.RestoreStatus?.IsRestoreInProgress === false
-    )
+    .filter((o) => o.StorageClass === 'GLACIER_IR')
     .map((o) => o.Key as string)
 
   const glacierTierLocationsToCopy = objectsToCopy
