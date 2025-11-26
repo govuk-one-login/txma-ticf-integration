@@ -10,13 +10,16 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   dataSentToQueue: 'Sent data transfer queue message',
   glacierTierCopy:
     'Number of standard tier files to copy was 0, glacier tier files to copy was 1',
+  glacierIRTierCopy:
+    'Number of standard tier files to copy was 0, glacier tier files to copy was 0, glacier IR tier files to copy was 1',
   nothingToCopyMessage:
-    'Number of standard tier files to copy was 0, glacier tier files to copy was 0',
+    'Number of standard tier files to copy was 0, glacier tier files to copy was 0, glacier IR tier files to copy was 0',
   mixedTierCopy:
-    'Number of standard tier files to copy was 1, glacier tier files to copy was 1',
+    'Number of standard tier files to copy was 1, glacier tier files to copy was 1, glacier IR tier files to copy was 0',
+  mixedWithIRTierCopy: 'glacier IR tier files to copy was',
   restoreStarted: 'Started Glacier restore',
   standardTierCopy:
-    'Number of standard tier files to copy was 1, glacier tier files to copy was 0',
+    'Number of standard tier files to copy was 1, glacier tier files to copy was 0, glacier IR tier files to copy was 0',
   sqsEventReceived: 'Handling data request SQS event',
   webhookInvalid: 'Zendesk request was invalid',
   webhookReceived: 'received Zendesk webhook',
@@ -37,8 +40,10 @@ interface CloudwatchLogFiltersConstants {
   readonly copyComplete: string
   readonly dataSentToQueue: string
   readonly glacierTierCopy: string
+  readonly glacierIRTierCopy: string
   readonly nothingToCopyMessage: string
   readonly mixedTierCopy: string
+  readonly mixedWithIRTierCopy: string
   readonly restoreStarted: string
   readonly standardTierCopy: string
   readonly sqsEventReceived: string
