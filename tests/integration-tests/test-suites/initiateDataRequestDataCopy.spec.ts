@@ -13,7 +13,6 @@ import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebho
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { setupAuditSourceTestData } from '../../shared-test-code/utils/aws/setupAuditSourceTestData'
 import { deleteDynamoDBTestItem } from '../../shared-test-code/utils/aws/dynamoDB'
-import { waitForAuditFileRestore } from '../../shared-test-code/utils/aws/glacierRestoreCheck/waitForAuditFileRestore'
 
 describe('Data should be copied to analysis bucket', () => {
   describe('valid requests for standard copy - analysis bucket empty', () => {
@@ -77,7 +76,6 @@ describe('Data should be copied to analysis bucket', () => {
 
   describe('glacier copy - analysis bucket empty', () => {
     let ticketId: string
-    let testDataFileKey: string
     beforeEach(async () => {
       const availableDate = await getAvailableTestDate()
       await setupAuditSourceTestData(
@@ -85,7 +83,6 @@ describe('Data should be copied to analysis bucket', () => {
         `${availableDate.prefix}/01`,
         true
       )
-      testDataFileKey = `${availableDate.prefix}/01/${testData.dataCopyTestFileName}`
 
       const defaultWebhookRequestData =
         getWebhookRequestDataForTestCaseNumberAndDate(3, availableDate.date)
@@ -115,17 +112,16 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      const isGlacierRestoreStartedMessageInLogs = eventIsPresent(
+      const isCopyJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
-        cloudwatchLogFilters.restoreStarted
+        getFeatureFlagValue('DECRYPT_DATA')
+          ? cloudwatchLogFilters.decryptStarted
+          : cloudwatchLogFilters.copyStarted
       )
       expect({
-        result: isGlacierRestoreStartedMessageInLogs,
+        result: isCopyJobStartedMessageInLogs,
         events: processDataRequestEvents
       }).toEqual({ result: true, events: processDataRequestEvents })
-      const auditFileRestoringStatusFound =
-        await waitForAuditFileRestore(testDataFileKey)
-      expect(auditFileRestoringStatusFound).toEqual(true)
     })
   })
 
@@ -163,17 +159,23 @@ describe('Data should be copied to analysis bucket', () => {
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [cloudwatchLogFilters.mixedTierCopy, 'zendeskId', ticketId],
+          [
+            'Number of standard tier files to copy was 1',
+            'zendeskId',
+            ticketId
+          ],
           50
         )
       expect(processDataRequestEvents).not.toEqual([])
 
-      const isMixTierObjectsToCopyMessageInLogs = eventIsPresent(
+      const isCopyJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
-        cloudwatchLogFilters.mixedTierCopy
+        getFeatureFlagValue('DECRYPT_DATA')
+          ? cloudwatchLogFilters.decryptStarted
+          : cloudwatchLogFilters.copyStarted
       )
       expect({
-        result: isMixTierObjectsToCopyMessageInLogs,
+        result: isCopyJobStartedMessageInLogs,
         events: processDataRequestEvents
       }).toEqual({ result: true, events: processDataRequestEvents })
     })
