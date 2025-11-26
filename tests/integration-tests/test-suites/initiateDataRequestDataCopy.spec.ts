@@ -75,69 +75,6 @@ describe('Data should be copied to analysis bucket', () => {
     })
   })
 
-  describe('glacier IR copy - analysis bucket empty', () => {
-    let ticketId: string
-
-    beforeEach(async () => {
-      const availableDate = await getAvailableTestDate()
-      await setupAuditSourceTestData(
-        testData.dataCopyTestFileName,
-        `${availableDate.prefix}/01`,
-        true
-      )
-      const defaultWebhookRequestData =
-        getWebhookRequestDataForTestCaseNumberAndDate(2, availableDate.date)
-      ticketId = defaultWebhookRequestData.zendeskId
-      await sendWebhookRequest(defaultWebhookRequestData)
-    })
-
-    it('data all in glacier IR tier', async () => {
-      const processDataRequestEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
-          [
-            cloudwatchLogFilters.glacierIRTierCopy,
-            cloudwatchLogFilters.zendeskId,
-            ticketId
-          ],
-          50
-        )
-      expect(processDataRequestEvents).not.toEqual([])
-
-      const isCopyJobStartedMessageInLogs = eventIsPresent(
-        processDataRequestEvents,
-        getFeatureFlagValue('DECRYPT_DATA')
-          ? cloudwatchLogFilters.decryptStarted
-          : cloudwatchLogFilters.copyStarted
-      )
-      expect({
-        result: isCopyJobStartedMessageInLogs,
-        events: processDataRequestEvents
-      }).toEqual({ result: true, events: processDataRequestEvents })
-
-      const athenaQueryQueuedEvents =
-        await getCloudWatchLogEventsGroupByMessagePattern(
-          getEnv('DATA_READY_FOR_QUERY_LAMBDA_LOG_GROUP_NAME'),
-          [
-            cloudwatchLogFilters.athenaQueryQueued,
-            cloudwatchLogFilters.zendeskId,
-            ticketId
-          ],
-          50
-        )
-      expect(athenaQueryQueuedEvents).not.toEqual([])
-
-      const isAthenaQueryQueuedMessageInLogs = eventIsPresent(
-        athenaQueryQueuedEvents,
-        cloudwatchLogFilters.athenaQueryQueued
-      )
-      expect({
-        result: isAthenaQueryQueuedMessageInLogs,
-        events: athenaQueryQueuedEvents
-      }).toEqual({ result: true, events: athenaQueryQueuedEvents })
-    })
-  })
-
   describe('glacier copy - analysis bucket empty', () => {
     let ticketId: string
     let testDataFileKey: string
@@ -170,7 +107,7 @@ describe('Data should be copied to analysis bucket', () => {
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [
-            cloudwatchLogFilters.glacierTierCopy,
+            cloudwatchLogFilters.glacierIRTierCopy,
             cloudwatchLogFilters.zendeskId,
             ticketId
           ],

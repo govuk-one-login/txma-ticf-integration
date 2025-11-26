@@ -10,6 +10,9 @@ export const setupAuditSourceTestData = async (
   sendToGlacier = false
 ) => {
   const destinationS3Key = `${destinationPrefix}/${testDataFileName}`
+  console.log(
+    `getFeatureFlagValue('DECRYPT_DATA'): ${getFeatureFlagValue('DECRYPT_DATA')}`
+  )
   if (getFeatureFlagValue('DECRYPT_DATA')) {
     await setupEncryptedData(testDataFileName, destinationS3Key, sendToGlacier)
   } else {
