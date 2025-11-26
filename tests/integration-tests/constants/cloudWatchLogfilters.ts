@@ -9,17 +9,17 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   decryptStarted: 'Started data decrypt batch job',
   dataSentToQueue: 'Sent data transfer queue message',
   glacierTierCopy:
-    'Number of standard tier files to copy was 0, glacier tier files to copy was 1',
+    'Number of standard tier files to copy was 0, glacier_ir tier files to copy was 0, glacier tier files to copy was 1',
   glacierIRTierCopy:
-    'Number of standard tier files to copy was 0, glacier tier files to copy was 0, glacier IR tier files to copy was 1',
+    'Number of standard tier files to copy was 0, glacier_ir tier files to copy was 1, glacier tier files to copy was 0',
   nothingToCopyMessage:
-    'Number of standard tier files to copy was 0, glacier tier files to copy was 0, glacier IR tier files to copy was 0',
+    'Number of standard tier files to copy was 0, glacier_ir tier files to copy was 0, glacier tier files to copy was 0',
   mixedTierCopy:
-    'Number of standard tier files to copy was 1, glacier tier files to copy was 1, glacier IR tier files to copy was 0',
-  mixedWithIRTierCopy: 'glacier IR tier files to copy was',
+    'Number of standard tier files to copy was 1, glacier_ir tier files to copy was 0, glacier tier files to copy was 1',
+  mixedWithIRTierCopy: 'glacier_ir tier files to copy was',
   restoreStarted: 'Started Glacier restore',
   standardTierCopy:
-    'Number of standard tier files to copy was 1, glacier tier files to copy was 0, glacier IR tier files to copy was 0',
+    'Number of standard tier files to copy was 1, glacier_ir tier files to copy was 0, glacier tier files to copy was 0',
   sqsEventReceived: 'Handling data request SQS event',
   webhookInvalid: 'Zendesk request was invalid',
   webhookReceived: 'received Zendesk webhook',
