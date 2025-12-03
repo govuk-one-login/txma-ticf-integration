@@ -1442,6 +1442,15 @@ Resources:
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket'
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2'
                   - !Sub 'arn:aws:s3:::txma-data-analysis-${Environment}-batch-job-manifest-bucket'
+              - !If
+                - TestEnvironment
+                - Sid: S3ListBucketsTxma2
+                  Effect: Allow
+                  Action:
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch-txma2'
+                - !Ref AWS::NoValue
               - Sid: S3ObjectOperations
                 Effect: Allow
                 Action:
@@ -1455,6 +1464,18 @@ Resources:
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*'
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2/*'
                   - !Sub 'arn:aws:s3:::txma-data-analysis-${Environment}-batch-job-manifest-bucket/*'
+              - !If
+                - TestEnvironment
+                - Sid: S3ObjectOperationsTxma2
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:PutObject
+                    - s3:HeadObject
+                    - s3:RestoreObject
+                  Resource:
+                    - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch-txma2/*'
+                - !Ref AWS::NoValue
               - Sid: S3BatchOperations
                 Effect: Allow
                 Action:

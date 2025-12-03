@@ -294,3 +294,32 @@ export PREFIX="firehose/2023/"
 - Large manifests (>1GB) will trigger warnings and may need to be split
 - **Multi-bucket support**: All generated files include bucket-specific suffixes to prevent conflicts when migrating multiple buckets
 - File naming pattern: `{filename}-{bucket_suffix}.{extension}` where bucket_suffix is derived from the source bucket name
+
+## Operation Configs (What to do)
+
+restore-operation-\*.json - Defines restore operation (make GLACIER objects accessible for 5 days using BULK tier)
+
+backup-operation-\*.json - Defines copy operation to backup bucket with GLACIER storage
+
+migrate-operation-\*.json - Defines copy operation to change storage class to GLACIER_IR
+
+## Manifest Configs (What objects to process)
+
+manifest-config-\*-N.json (one per manifest file) - Points AWS to the S3 location of each manifest file with its ETag for integrity verification
+
+## Report Configs (Job monitoring)
+
+report-config-\*.json - Configures failure reports for backup/migrate jobs
+
+restore-report-config-\*.json - Configures detailed reports for restore jobs (all tasks, not just failures)
+
+## State Files
+
+manifest-files-\*.txt - Lists all manifest files for subsequent steps
+
+## AWS Batch Operations requires this separation because:
+
+Reusability - Same operation can be used with different manifests
+Security - Each component can have different permissions
+Monitoring - Different report configurations for different job types
+Scalability - Multiple manifest files (due to 1GB limit) need separate configs but can share operation definitions
