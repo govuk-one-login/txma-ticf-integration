@@ -1403,7 +1403,6 @@ Resources:
   GHActionsGlacierMigrationDeployRole:
     #checkov:skip=CKV_AWS_62:Role needs S3 batch operations permissions which require wildcard resources
     #checkov:skip=CKV_AWS_111:S3 batch operations require wildcard resources for job management
-    Condition: TestEnvironment
     Type: AWS::IAM::Role
     Properties:
       PermissionsBoundary: !If
@@ -1440,13 +1439,18 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch'
                   - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch'
-                  - !If
-                    - TestEnvironment
-                    - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch-txma2'
-                    - !Ref AWS::NoValue
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket'
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2'
                   - !Sub 'arn:aws:s3:::txma-data-analysis-${Environment}-batch-job-manifest-bucket'
+              - !If
+                - TestEnvironment
+                - Sid: S3ListBucketsTxma2
+                  Effect: Allow
+                  Action:
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch-txma2'
+                - !Ref AWS::NoValue
               - Sid: S3ObjectOperations
                 Effect: Allow
                 Action:
@@ -1457,13 +1461,21 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::audit-${Environment}-permanent-message-batch/*'
                   - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch/*'
-                  - !If
-                    - TestEnvironment
-                    - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch-txma2/*'
-                    - !Ref AWS::NoValue
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket/*'
                   - !Sub 'arn:aws:s3:::${AWS::StackName}-${Environment}-glac-mig-bucket-2/*'
                   - !Sub 'arn:aws:s3:::txma-data-analysis-${Environment}-batch-job-manifest-bucket/*'
+              - !If
+                - TestEnvironment
+                - Sid: S3ObjectOperationsTxma2
+                  Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:PutObject
+                    - s3:HeadObject
+                    - s3:RestoreObject
+                  Resource:
+                    - !Sub 'arn:aws:s3:::audit-${Environment}-message-batch-txma2/*'
+                - !Ref AWS::NoValue
               - Sid: S3BatchOperations
                 Effect: Allow
                 Action:
