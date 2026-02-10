@@ -14,7 +14,9 @@
 - [Code standards](#code-standards)
 - [Scripts](#scripts)
   - [Valid email recipients management](#valid-email-recipients-management)
-  - [Licence](#licence)
+- [Dependabot notes](#dependabot-notes)
+  - [Ignored dependency versions](#ignored-dependency-versions)
+- [Licence](#licence)
 
 This repository allows for Zendesk integration with Transaction Monitoring and Auditing (TxMA) which is part of the Digital Identity (DI) system. Events from Zendesk will be able to trigger an automated process to begin the extraction of Audit data from S3.
 
@@ -237,6 +239,16 @@ To remove an email from the list:
 ```
 npm run validRecipientsManager --env production --removeEmail <userEmail>
 ```
+
+# Dependabot notes
+
+## Ignored dependency versions
+
+Record any packages we have configured dependabot to ignore and the reason why here so we can unignore when the problem is resolved.
+Include links to any relevant Jira or Github tickets where possible.
+
+- eslint 10.x.x - Not supported by typescript-eslint/eslint-plugin
+  - https://github.com/typescript-eslint/typescript-eslint/issues/11952
 
 ## Licence
 
