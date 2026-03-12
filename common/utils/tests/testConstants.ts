@@ -72,6 +72,7 @@ export const ZENDESK_PII_TYPE_PREFIX = 'pii_requested_'
 
 export const TEST_DECRYPTION_LAMBDA_ARN = 'myDecryptionLambdaArn'
 export const TEST_GENERATOR_KEY_ID = 'testEncryptionKey'
+export const TEST_BACKUP_KEY_ID = 'testBackupEncryptionKey'
 export const TEST_S3_OBJECT_KEY = 'testKey'
 export const TEST_S3_BATCH_TASK_ID = 's3BatchTaskId'
 export const TEST_S3_OBJECT_DATA_STRING = 'testData'
