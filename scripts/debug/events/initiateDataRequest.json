@@ -1,0 +1,14 @@
+{
+  "httpMethod": "POST",
+  "path": "/data-request",
+  "headers": {
+    "x-zendesk-webhook-signature": "test-signature",
+    "x-zendesk-webhook-signature-timestamp": "2022-01-01T00:00:00Z"
+  },
+  "body": "{\"zendeskId\":\"123456\",\"dateFrom\":\"2022-01-01\",\"dateTo\":\"2022-01-02\",\"dataPath\":\"test/path\",\"eventIds\":[],\"piiTypes\":[],\"requesterEmail\":\"test@example.com\",\"requesterName\":\"Test User\",\"recipientEmail\":\"recipient@example.com\",\"recipientName\":\"Recipient User\"}",
+  "isBase64Encoded": false,
+  "queryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {}
+}

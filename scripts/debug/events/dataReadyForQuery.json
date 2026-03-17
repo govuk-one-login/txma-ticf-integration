@@ -1,0 +1,15 @@
+{
+  "version": "0",
+  "id": "test-event-id",
+  "source": "aws.s3",
+  "account": "123456789012",
+  "time": "2022-01-01T00:00:00Z",
+  "region": "eu-west-2",
+  "detail-type": "AWS Service Event via CloudTrail",
+  "detail": {
+    "serviceEventDetails": {
+      "status": "Complete",
+      "jobId": "test-job-id"
+    }
+  }
+}
