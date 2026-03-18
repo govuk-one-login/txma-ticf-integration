@@ -1,0 +1,15 @@
+{
+  "invocationSchemaVersion": "1.0",
+  "invocationId": "test-invocation-id",
+  "job": {
+    "id": "test-job-id"
+  },
+  "tasks": [
+    {
+      "taskId": "test-task-id",
+      "s3Key": "test/path/to/encrypted-file.gz",
+      "s3VersionId": null,
+      "s3BucketArn": "arn:aws:s3:::test-audit-bucket"
+    }
+  ]
+}

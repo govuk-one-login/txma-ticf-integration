@@ -1,0 +1,13 @@
+{
+  "version": "0",
+  "id": "test-event-id",
+  "source": "aws.athena",
+  "account": "123456789012",
+  "time": "2022-01-01T00:00:00Z",
+  "region": "eu-west-2",
+  "detail-type": "Athena Query State Change",
+  "detail": {
+    "currentState": "SUCCEEDED",
+    "queryExecutionId": "test-athena-query-id"
+  }
+}
