@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { Context } from 'aws-lambda'
 
 export const mockLambdaContext: Context = {
@@ -10,7 +11,7 @@ export const mockLambdaContext: Context = {
   logGroupName: 'someLogGroupName',
   logStreamName: 'someLogStreamName',
   getRemainingTimeInMillis: () => 1,
-  done: jest.fn(),
-  fail: jest.fn(),
-  succeed: jest.fn()
+  done: vi.fn(),
+  fail: vi.fn(),
+  succeed: vi.fn()
 }

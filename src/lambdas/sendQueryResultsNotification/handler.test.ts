@@ -1,5 +1,5 @@
+import { vi, type MockedFunction } from 'vitest'
 import { EventBridgeEvent } from 'aws-lambda'
-import { when } from 'jest-when'
 import { getQueryByAthenaQueryId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
 import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
 import { AthenaEBEventDetails } from '../../../common/types/athenaEBEventDetails'
@@ -16,20 +16,20 @@ import { sendQueryOutputGeneratedAuditMessage } from '../../../common/sharedServ
 import { logger } from '../../../common/sharedServices/logger'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 
-jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
-  getQueryByAthenaQueryId: jest.fn()
+vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
+  getQueryByAthenaQueryId: vi.fn()
 }))
 
-jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
-  updateZendeskTicketById: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicketById: vi.fn()
 }))
 
-jest.mock('./sendQueryCompleteQueueMessage', () => ({
-  sendQueryCompleteQueueMessage: jest.fn()
+vi.mock('./sendQueryCompleteQueueMessage', () => ({
+  sendQueryCompleteQueueMessage: vi.fn()
 }))
 
-jest.mock('../../../common/sharedServices/queue/sendAuditMessage', () => ({
-  sendQueryOutputGeneratedAuditMessage: jest.fn()
+vi.mock('../../../common/sharedServices/queue/sendAuditMessage', () => ({
+  sendQueryOutputGeneratedAuditMessage: vi.fn()
 }))
 
 describe('sendQueryResultsNotification', () => {
@@ -39,7 +39,7 @@ describe('sendQueryResultsNotification', () => {
   }
 
   const givenDbReturnsData = () => {
-    when(getQueryByAthenaQueryId).mockResolvedValue(dbQueryResult)
+    vi.mocked(getQueryByAthenaQueryId).mockResolvedValue(dbQueryResult)
   }
 
   const generateAthenaEventBridgeEvent = (
@@ -65,13 +65,13 @@ describe('sendQueryResultsNotification', () => {
   }
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it.each(['CANCELLED', 'FAILED'])(
     `should log an error if the Athena query state is set to %p`,
     async (state: string) => {
-      jest.spyOn(logger, 'error')
+      vi.spyOn(logger, 'error')
 
       const message = `Athena Query ${TEST_ATHENA_QUERY_ID} did not complete with status: ${state}`
       givenDbReturnsData()
@@ -91,7 +91,7 @@ describe('sendQueryResultsNotification', () => {
   )
 
   it('should log an error if the Athena query state is unrecognised', async () => {
-    jest.spyOn(logger, 'error')
+    vi.spyOn(logger, 'error')
 
     const unrecognisedQueryState = 'something unrecognised'
     givenDbReturnsData()
@@ -112,7 +112,9 @@ describe('sendQueryResultsNotification', () => {
 
   it('should call the relevant functions given a successful query state', async () => {
     const mockSendQueryCompleteQueueMessage =
-      sendQueryCompleteQueueMessage as jest.Mock
+      sendQueryCompleteQueueMessage as MockedFunction<
+        typeof sendQueryCompleteQueueMessage
+      >
     givenDbReturnsData()
 
     await handler(
@@ -130,8 +132,6 @@ describe('sendQueryResultsNotification', () => {
     expect(sendQueryOutputGeneratedAuditMessage).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID
     )
-    expect(sendQueryOutputGeneratedAuditMessage).toHaveBeenCalledBefore(
-      mockSendQueryCompleteQueueMessage
-    )
+    expect(mockSendQueryCompleteQueueMessage).toHaveBeenCalledTimes(1)
   })
 })

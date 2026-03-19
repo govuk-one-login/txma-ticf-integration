@@ -1,4 +1,4 @@
-import { when } from 'jest-when'
+import { vi } from 'vitest'
 import { cliBaseCommand } from '../common/utils/tests/testConstants'
 import { parseCliCallerForTesting } from './cli'
 import * as sendAuditDataActionFile from './sendQueryResults/sendAuditDataAction'
@@ -14,21 +14,20 @@ const queryResultsCommandBase = cliBaseCommand
   .slice()
   .concat(['send-query-results'])
 
-jest.mock('./sendQueryResults/sendAuditDataAction', () => ({
-  sendAuditDataAction: jest.fn()
+vi.mock('./sendQueryResults/sendAuditDataAction', () => ({
+  sendAuditDataAction: vi.fn()
 }))
-jest.mock(
+vi.mock(
   './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction.ts',
   () => ({
-    initiateCopyAndDecryptAction: jest.fn()
+    initiateCopyAndDecryptAction: vi.fn()
   })
 )
 
 describe('testing command: send-query-results', () => {
   beforeEach(() => {
-    // jest.clearAllMocks()
-    jest.resetAllMocks()
-    jest.spyOn(sendAuditDataActionFile, 'sendAuditDataAction')
+    vi.resetAllMocks()
+    vi.spyOn(sendAuditDataActionFile, 'sendAuditDataAction')
   })
 
   // testing to ensure that only the valid envs are used
@@ -52,7 +51,7 @@ describe('testing command: send-query-results', () => {
     'Happy Path: testing send-query-results. Test case $#: $testDescription',
     ({ arg, testDescription }) => {
       console.log(testDescription)
-      when(sendAuditDataAction).mockResolvedValue()
+      vi.mocked(sendAuditDataAction).mockResolvedValue()
       parseCliCallerForTesting(arg)
       expect(sendAuditDataActionFile.sendAuditDataAction).toHaveBeenCalledWith({
         athenaQueryId: 'athenaId123',
@@ -85,7 +84,7 @@ describe('testing command: send-query-results', () => {
   it.each(unhappyPath)(
     'Unhappy Path that raises exceptions: testing send-query-results. Test case $#: $testDescription ',
     () => {
-      when(sendAuditDataAction).mockResolvedValue()
+      vi.mocked(sendAuditDataAction).mockResolvedValue()
       expect(sendAuditDataActionFile.sendAuditDataAction).not.toHaveBeenCalled()
     }
   )
@@ -120,8 +119,8 @@ describe('testing command: send-query-results', () => {
   it.each(unhappyPathThatRaisesExceptions)(
     'Unhappy Path that raises exceptions: testing send-query-results. Test case $#: $testDescription ',
     (testCase) => {
-      when(sendAuditDataAction).mockResolvedValue()
-      expect(() => parseCliCallerForTesting(testCase.arg)).toThrow(
+      vi.mocked(sendAuditDataAction).mockResolvedValue()
+      expect(() => parseCliCallerForTesting(testCase.arg)).toThrowError(
         testCase.expectedErrorMessage
       )
       expect(sendAuditDataActionFile.sendAuditDataAction).not.toHaveBeenCalled()

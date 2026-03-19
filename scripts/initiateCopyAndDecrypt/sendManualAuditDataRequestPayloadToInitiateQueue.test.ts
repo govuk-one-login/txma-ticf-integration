@@ -1,15 +1,15 @@
-import { when } from 'jest-when'
+import { vi } from 'vitest'
 import { sendSqsMessage } from '../../common/sharedServices/queue/sendSqsMessage'
 import { getAwsAccountNumber } from '../sharedServices/aws/sts/getAwsAccountNumber'
 import { ManualAuditDataRequestPayload } from '../types/manualAuditDataRequestPayload'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './sendManualAuditDataRequestPayloadToInitiateQueue'
 
-jest.mock('../../src/sharedServices/queue/sendSqsMessage', () => ({
-  sendSqsMessage: jest.fn()
+vi.mock('../../common/sharedServices/queue/sendSqsMessage', () => ({
+  sendSqsMessage: vi.fn()
 }))
 
-jest.mock('../sharedServices/aws/sts/getAwsAccountNumber', () => ({
-  getAwsAccountNumber: jest.fn()
+vi.mock('../sharedServices/aws/sts/getAwsAccountNumber', () => ({
+  getAwsAccountNumber: vi.fn()
 }))
 
 describe('sendManualAuditDataRequestPayloadToInitiateQueue', () => {
@@ -21,7 +21,7 @@ describe('sendManualAuditDataRequestPayloadToInitiateQueue', () => {
       dates: ['2020-01-01']
     }
 
-    when(getAwsAccountNumber).mockResolvedValue(mockAccountNumber)
+    vi.mocked(getAwsAccountNumber).mockResolvedValue(mockAccountNumber)
 
     await sendManualAuditDataRequestPayloadToInitiateQueue(
       testPayload as ManualAuditDataRequestPayload

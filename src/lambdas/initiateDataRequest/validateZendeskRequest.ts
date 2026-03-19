@@ -60,9 +60,9 @@ export const validateZendeskRequest = async (
     isValid = isValid && v.isValid
   }
   return {
-    validationMessage: validationMessages.length
-      ? validationMessages.join(', ')
-      : undefined,
+    ...(validationMessages.length
+      ? { validationMessage: validationMessages.join(', ') }
+      : {}),
     dataRequestParams: {
       dates:
         data.dateFrom && data.dateFrom.length > 0

@@ -1,3 +1,4 @@
+import { vi, type MockedFunction } from 'vitest'
 import { handler } from './handler'
 import { defaultApiRequest } from '../../../common/utils/tests/events/defaultApiRequest'
 import { validateZendeskRequest } from './validateZendeskRequest'
@@ -21,46 +22,56 @@ import { logger } from '../../../common/sharedServices/logger'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 import { APIGatewayProxyResult } from 'aws-lambda'
 
-const mockValidateZendeskRequest = validateZendeskRequest as jest.Mock<
-  Promise<ValidatedDataRequestParamsResult>
+const mockValidateZendeskRequest = validateZendeskRequest as MockedFunction<
+  typeof validateZendeskRequest
 >
 
-const mockUpdateZendeskTicket = updateZendeskTicket as jest.Mock
+const mockUpdateZendeskTicket = updateZendeskTicket as MockedFunction<
+  typeof updateZendeskTicket
+>
 
-const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock
+const mockUpdateZendeskTicketById = updateZendeskTicketById as MockedFunction<
+  typeof updateZendeskTicketById
+>
 
-const mockIsSignatureInvalid = isSignatureInvalid as jest.Mock<Promise<boolean>>
+const mockIsSignatureInvalid = isSignatureInvalid as MockedFunction<
+  typeof isSignatureInvalid
+>
 
 const mockZendeskTicketDiffersFromRequest =
-  zendeskTicketDiffersFromRequest as jest.Mock<Promise<boolean>>
+  zendeskTicketDiffersFromRequest as MockedFunction<
+    typeof zendeskTicketDiffersFromRequest
+  >
 
 const mockSendInitiateDataTransferMessage =
-  sendInitiateDataTransferMessage as jest.Mock
+  sendInitiateDataTransferMessage as MockedFunction<
+    typeof sendInitiateDataTransferMessage
+  >
 
-jest.mock('./validateZendeskRequest', () => ({
-  validateZendeskRequest: jest.fn()
+vi.mock('./validateZendeskRequest', () => ({
+  validateZendeskRequest: vi.fn()
 }))
 
-jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
-  updateZendeskTicket: jest.fn(),
-  updateZendeskTicketById: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicket: vi.fn(),
+  updateZendeskTicketById: vi.fn()
 }))
 
-jest.mock('./validateRequestSource', () => ({
-  isSignatureInvalid: jest.fn()
+vi.mock('./validateRequestSource', () => ({
+  isSignatureInvalid: vi.fn()
 }))
 
-jest.mock('./zendeskTicketDiffersFromRequest', () => ({
-  zendeskTicketDiffersFromRequest: jest.fn()
+vi.mock('./zendeskTicketDiffersFromRequest', () => ({
+  zendeskTicketDiffersFromRequest: vi.fn()
 }))
 
-jest.mock('./sendInitiateDataTransferMessage', () => ({
-  sendInitiateDataTransferMessage: jest.fn()
+vi.mock('./sendInitiateDataTransferMessage', () => ({
+  sendInitiateDataTransferMessage: vi.fn()
 }))
 
-jest.mock('../../../common/sharedServices/queue/sendAuditMessage', () => ({
-  sendAuditDataRequestMessage: jest.fn(),
-  sendIllegalRequestAuditMessage: jest.fn()
+vi.mock('../../../common/sharedServices/queue/sendAuditMessage', () => ({
+  sendAuditDataRequestMessage: vi.fn(),
+  sendIllegalRequestAuditMessage: vi.fn()
 }))
 
 describe('initiate data request handler', () => {
@@ -73,7 +84,7 @@ describe('initiate data request handler', () => {
       isValid,
       dataRequestParams,
       validationMessage
-    })
+    } as ValidatedDataRequestParamsResult)
   }
 
   const givenValidRequest = () => {
@@ -164,7 +175,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 400 response when request signature is invalid and zendeskId is undefined', async () => {
-    jest.spyOn(logger, 'warn')
+    vi.spyOn(logger, 'warn')
     givenSignatureIsInvalid()
 
     const handlerCallResult = await callHandlerWithBody()
@@ -192,7 +203,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 400 response when request signature is invalid and zendeskId is present', async () => {
-    jest.spyOn(logger, 'warn')
+    vi.spyOn(logger, 'warn')
     givenSignatureIsInvalid()
     const customBody = { zendeskId: ZENDESK_TICKET_ID }
 

@@ -1,12 +1,8 @@
 {
   "parser": "@typescript-eslint/parser",
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "eslint:recommended",
-    "prettier"
-  ],
+  "extends": ["plugin:vitest/recommended", "eslint:recommended", "prettier"],
   "env": {
-    "jest/globals": true,
+    "vitest/globals": true,
     "node": true
   },
   "rules": {
@@ -19,5 +15,5 @@
       "rules": { "no-console": ["off"] }
     }
   ],
-  "plugins": ["jest"]
+  "plugins": ["vitest"]
 }

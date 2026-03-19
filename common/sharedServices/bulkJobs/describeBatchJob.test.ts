@@ -4,7 +4,7 @@ import {
   S3ControlClient
 } from '@aws-sdk/client-s3-control'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
 import {
   TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID,
   TEST_AWS_ACCOUNT_ID

@@ -19,7 +19,8 @@ export const s3ChangeStorageClass = async (
     })
   } catch (error) {
     throw Error(
-      `Error while calling Copy S3 lambda to update storage class for file '${key}' in bucket ${bucket}: \n${error}`
+      `Error while calling Copy S3 lambda to update storage class for file '${key}' in bucket ${bucket}: \n${error}`,
+      { cause: error }
     )
   }
 }

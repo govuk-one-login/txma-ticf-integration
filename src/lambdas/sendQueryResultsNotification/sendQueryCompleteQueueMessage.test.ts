@@ -7,9 +7,10 @@ import {
   TEST_RECIPIENT_NAME,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
+import { vi } from 'vitest'
 
-jest.mock('../../../common/sharedServices/queue/sendSqsMessage', () => ({
-  sendSqsMessage: jest.fn()
+vi.mock('../../../common/sharedServices/queue/sendSqsMessage', () => ({
+  sendSqsMessage: vi.fn()
 }))
 
 describe('sendQueryCompletedQueueMessage', () => {

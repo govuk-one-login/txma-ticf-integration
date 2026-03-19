@@ -1,9 +1,10 @@
+import { vi } from 'vitest'
 import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { readS3DataToString } from '../../../common/sharedServices/s3/readS3DataToString'
-import { when } from 'jest-when'
 import { TEST_VALID_EMAIL_RECIPIENTS_BUCKET } from '../../../common/utils/tests/testConstants'
-jest.mock('../../../common/sharedServices/s3/readS3DataToString', () => ({
-  readS3DataToString: jest.fn()
+
+vi.mock('../../../common/sharedServices/s3/readS3DataToString', () => ({
+  readS3DataToString: vi.fn()
 }))
 
 const GIVEN_VALID_RECIPIENT = 'recipient1@example.com'
@@ -11,7 +12,7 @@ const GIVEN_INVALID_RECIPIENT = 'someOtherRecipient@example.com'
 const GIVEN_EMAIL_RECIPIENT_LIST = `${GIVEN_VALID_RECIPIENT}\nrecipient2@example.com`
 describe('isEmailInValidRecipientList', () => {
   beforeEach(() => {
-    when(readS3DataToString).mockResolvedValue(GIVEN_EMAIL_RECIPIENT_LIST)
+    vi.mocked(readS3DataToString).mockResolvedValue(GIVEN_EMAIL_RECIPIENT_LIST)
   })
 
   it('should return true if the supplied email is in the given list', async () => {

@@ -1,14 +1,14 @@
+import { vi } from 'vitest'
 import { getValidRecipientBucketName } from './getValidRecipientBucketName'
-import { when } from 'jest-when'
 import { writeRecipientListToBucket } from './writeRecipientListToBucket'
 import { putS3Object } from '../../common/sharedServices/s3/putS3Object'
 
-jest.mock('./getValidRecipientBucketName', () => ({
-  getValidRecipientBucketName: jest.fn()
+vi.mock('./getValidRecipientBucketName', () => ({
+  getValidRecipientBucketName: vi.fn()
 }))
 
-jest.mock('../../src/sharedServices/s3/putS3Object', () => ({
-  putS3Object: jest.fn()
+vi.mock('../../common/sharedServices/s3/putS3Object', () => ({
+  putS3Object: vi.fn()
 }))
 
 describe('writeRecipientListToBucket', () => {
@@ -19,7 +19,7 @@ describe('writeRecipientListToBucket', () => {
     const recipient2 = 'email2@example.com'
     const recipient3 = 'email3@example.com'
 
-    when(getValidRecipientBucketName).mockReturnValue(testBucketName)
+    vi.mocked(getValidRecipientBucketName).mockReturnValue(testBucketName)
 
     await writeRecipientListToBucket(
       [recipient1, recipient2, recipient3],

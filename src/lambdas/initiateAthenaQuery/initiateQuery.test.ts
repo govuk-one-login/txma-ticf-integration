@@ -1,3 +1,4 @@
+import { vi, type MockedFunction } from 'vitest'
 import { initiateQuery } from './initiateQuery'
 import { startQueryExecution } from './startQueryExecution'
 import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
@@ -11,34 +12,45 @@ import {
 } from '../../../common/utils/tests/testDataRequest'
 import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
 
-jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
-  updateZendeskTicketById: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicketById: vi.fn()
 }))
-jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
-  getDatabaseEntryByZendeskId: jest.fn()
+vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
+  getDatabaseEntryByZendeskId: vi.fn()
 }))
-jest.mock('./createQuerySql', () => ({
-  createQuerySql: jest.fn()
+vi.mock('./createQuerySql', () => ({
+  createQuerySql: vi.fn()
 }))
-jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
-  updateQueryByZendeskId: jest.fn()
+vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
+  updateQueryByZendeskId: vi.fn()
 }))
-jest.mock('./startQueryExecution', () => ({
-  startQueryExecution: jest.fn()
+vi.mock('./startQueryExecution', () => ({
+  startQueryExecution: vi.fn()
 }))
 
-const mockUpdateZendeskTicket = updateZendeskTicketById as jest.Mock
-const mockGetDatabaseEntryByZendeskId = getDatabaseEntryByZendeskId as jest.Mock
-const mockCreateQuerySql = createQuerySql as jest.Mock
-const mockUpdateQueryByZendeskId = updateQueryByZendeskId as jest.Mock
-const mockStartQueryExecution = startQueryExecution as jest.Mock
+const mockUpdateZendeskTicket = updateZendeskTicketById as MockedFunction<
+  typeof updateZendeskTicketById
+>
+const mockGetDatabaseEntryByZendeskId =
+  getDatabaseEntryByZendeskId as MockedFunction<
+    typeof getDatabaseEntryByZendeskId
+  >
+const mockCreateQuerySql = createQuerySql as MockedFunction<
+  typeof createQuerySql
+>
+const mockUpdateQueryByZendeskId = updateQueryByZendeskId as MockedFunction<
+  typeof updateQueryByZendeskId
+>
+const mockStartQueryExecution = startQueryExecution as MockedFunction<
+  typeof startQueryExecution
+>
 
 const testAthenaQueryParameters = ['test-query-parameter']
 const testAthenaQueryExecutionId = 'test-query-execution-id'
 
 describe('initiateQuery', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     mockGetDatabaseEntryByZendeskId.mockResolvedValue({
       requestInfo: testDataRequest
     })
@@ -50,7 +62,7 @@ describe('initiateQuery', () => {
       sql: 'test sql string',
       queryParameters: testAthenaQueryParameters
     })
-    mockStartQueryExecution.mockReturnValue({
+    mockStartQueryExecution.mockResolvedValue({
       queryExecuted: true,
       queryExecutionId: testAthenaQueryExecutionId
     })
@@ -78,13 +90,13 @@ describe('initiateQuery', () => {
       sql: 'test sql string',
       queryParameters: testAthenaQueryParameters
     })
-    mockStartQueryExecution.mockReturnValue({
+    mockStartQueryExecution.mockResolvedValue({
       queryExecuted: true,
       queryExecutionId: testAthenaQueryExecutionId
     })
     mockUpdateQueryByZendeskId.mockRejectedValue(new Error('test error'))
 
-    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrowError(
       `Error updating database for zendesk ticket: ${ZENDESK_TICKET_ID}`
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
@@ -113,7 +125,7 @@ describe('initiateQuery', () => {
       new Error('test error message')
     )
 
-    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrowError(
       `Error retrieving request details from database for zendesk ticket: ${ZENDESK_TICKET_ID}`
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
@@ -137,7 +149,7 @@ describe('initiateQuery', () => {
       error: 'sql error message'
     })
 
-    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrowError(
       'sql error message'
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
@@ -166,7 +178,7 @@ describe('initiateQuery', () => {
       error: new Error('test athena error')
     })
 
-    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrowError(
       'test athena error'
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(

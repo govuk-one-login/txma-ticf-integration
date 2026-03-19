@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
 import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
 import {
@@ -7,13 +8,13 @@ import {
 import { logger } from '../logger'
 import { getZendeskUser } from './getZendeskUser'
 
-jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
-  retrieveZendeskApiSecrets: jest.fn()
+vi.mock('../secrets/retrieveZendeskApiSecrets', () => ({
+  retrieveZendeskApiSecrets: vi.fn()
 }))
 
-jest.mock('../http/httpsRequestUtils', () => ({
-  base64Encode: jest.fn(),
-  makeHttpsRequest: jest.fn()
+vi.mock('../http/httpsRequestUtils', () => ({
+  base64Encode: vi.fn(),
+  makeHttpsRequest: vi.fn()
 }))
 
 const successResponse = {
@@ -28,11 +29,11 @@ describe('get zendesk ticket information', () => {
   beforeEach(() => {
     givenAllSecretsAvailable()
     mockHttpsRequestUtils.givenAuthTokenGenerated()
-    jest.spyOn(logger, 'info')
+    vi.spyOn(logger, 'info')
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('show user call succeeds', async () => {

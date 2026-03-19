@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { buildDecrypt, MessageHeader } from '@aws-crypto/decrypt-node'
 import { KmsKeyringNode } from '@aws-crypto/kms-keyring-node'
 import {
@@ -11,28 +12,33 @@ import { decryptS3Object } from './decryptS3Object'
 import { logger } from '../../../common/sharedServices/logger'
 import { Readable } from 'stream'
 
-const mockDecrypt = jest.fn()
+const mockDecrypt = vi.fn()
 
-jest.mock('@aws-crypto/decrypt-node', () => ({
-  buildDecrypt: jest.fn()
+vi.mock('@aws-crypto/decrypt-node', () => ({
+  buildDecrypt: vi.fn()
 }))
-jest.mock('@aws-crypto/kms-keyring-node', () => ({
-  KmsKeyringNode: jest.fn()
+vi.mock('@aws-crypto/kms-keyring-node', () => ({
+  KmsKeyringNode: vi.fn()
 }))
-jest.mock('../../../common/sharedServices/logger', () => ({
+vi.mock('../../../common/sharedServices/logger', () => ({
   logger: {
-    warn: jest.fn(),
-    error: jest.fn()
+    warn: vi.fn(),
+    error: vi.fn()
   }
 }))
 
 describe('decryptS3Object', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     process.env.GENERATOR_KEY_ID = TEST_GENERATOR_KEY_ID
     process.env.BACKUP_KEY_ID = TEST_BACKUP_KEY_ID
-    ;(buildDecrypt as jest.Mock).mockReturnValue({ decrypt: mockDecrypt })
-    ;(KmsKeyringNode as jest.Mock).mockImplementation((config) => config)
+    vi.mocked(buildDecrypt).mockReturnValue({ decrypt: mockDecrypt } as never)
+    vi.mocked(KmsKeyringNode).mockImplementation(function (
+      this: unknown,
+      config: never
+    ) {
+      return config
+    } as never)
   })
 
   describe('primary key decryption', () => {
@@ -55,28 +61,28 @@ describe('decryptS3Object', () => {
       expect(logger.error).not.toHaveBeenCalled()
     })
 
-    // it('accepts a Buffer input and decrypts with primary key', async () => {
-    //   mockDecrypt.mockResolvedValueOnce({
-    //     plaintext: TEST_S3_OBJECT_DATA_BUFFER,
-    //     messageHeader: {} as MessageHeader
-    //   })
-    //
-    //   const result = await decryptS3Object(TEST_S3_OBJECT_DATA_BUFFER)
-    //
-    //   expect(result).toEqual(TEST_S3_OBJECT_DATA_BUFFER)
-    //   expect(KmsKeyringNode).toHaveBeenCalledWith({
-    //     keyIds: [TEST_GENERATOR_KEY_ID]
-    //   })
-    //   expect(mockDecrypt).toHaveBeenCalledTimes(1)
-    //   expect(logger.warn).not.toHaveBeenCalled()
-    // })
+    it('accepts a Buffer input and decrypts with primary key', async () => {
+      mockDecrypt.mockResolvedValueOnce({
+        plaintext: TEST_S3_OBJECT_DATA_BUFFER,
+        messageHeader: {} as MessageHeader
+      })
+
+      const result = await decryptS3Object(TEST_S3_OBJECT_DATA_BUFFER)
+
+      expect(result).toEqual(TEST_S3_OBJECT_DATA_BUFFER)
+      expect(KmsKeyringNode).toHaveBeenCalledWith({
+        keyIds: [TEST_GENERATOR_KEY_ID]
+      })
+      expect(mockDecrypt).toHaveBeenCalledTimes(1)
+      expect(logger.warn).not.toHaveBeenCalled()
+    })
 
     it('throws when the input stream errors before decryption', async () => {
       const streamError = new Error('Stream read failure')
       const errorStream = new Readable({ read() {} }) // eslint-disable-line @typescript-eslint/no-empty-function
       process.nextTick(() => errorStream.destroy(streamError))
 
-      await expect(decryptS3Object(errorStream)).rejects.toThrow(
+      await expect(decryptS3Object(errorStream)).rejects.toThrowError(
         'Stream read failure'
       )
       expect(mockDecrypt).not.toHaveBeenCalled()
@@ -165,7 +171,7 @@ describe('decryptS3Object', () => {
 
       await expect(
         decryptS3Object(createDataStream(TEST_S3_OBJECT_DATA_STRING))
-      ).rejects.toThrow('All KMS keys inaccessible')
+      ).rejects.toThrowError('All KMS keys inaccessible')
 
       expect(logger.warn).toHaveBeenCalledWith(
         expect.stringContaining('Primary KMS wrapper key unavailable'),
@@ -184,7 +190,7 @@ describe('decryptS3Object', () => {
 
       await expect(
         decryptS3Object(createDataStream(TEST_S3_OBJECT_DATA_STRING))
-      ).rejects.toThrow('backup-string-rejection')
+      ).rejects.toThrowError('backup-string-rejection')
 
       expect(logger.error).toHaveBeenCalledWith(
         expect.stringContaining('Both KMS wrapper keys'),

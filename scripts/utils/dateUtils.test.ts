@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import * as cliUtils from './cliUtils'
 import {
   addDay,
@@ -56,8 +57,8 @@ const daterangeTestCases = [
 
 describe('testing date utility code', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.resetAllMocks()
+    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
 
   it.each(dateTestCases)('testing date string %p', ({ date, expected }) => {
@@ -74,7 +75,7 @@ describe('testing date utility code', () => {
   it('testing func testDateArgs', async () => {
     const currentValue = '2023-01-01'
     const previousValue = '2023-01-02'
-    jest.spyOn(cliUtils, 'testVariadicArgs')
+    vi.spyOn(cliUtils, 'testVariadicArgs')
     testDateArgs(currentValue, previousValue)
     expect(cliUtils.testVariadicArgs).toHaveBeenCalledWith(
       currentValue,
@@ -86,7 +87,7 @@ describe('testing date utility code', () => {
   it('testing func testDateArgs with date range', async () => {
     const currentValue = '2023/01/01-2023/02/01'
     const previousValue = '2024/01/01-2024/02/01'
-    jest.spyOn(cliUtils, 'testVariadicArgs')
+    vi.spyOn(cliUtils, 'testVariadicArgs')
     testDateRangeArgs(currentValue, previousValue)
     expect(cliUtils.testVariadicArgs).toHaveBeenCalledWith(
       currentValue,
@@ -158,12 +159,12 @@ describe('testing date utility code', () => {
 
     expect(() =>
       convertDateRangeToIndividualDateArray(['2024/01/01-2022/01/05'])
-    ).toThrow('Start date of range must be before end date')
+    ).toThrowError('Start date of range must be before end date')
     expect(() =>
       convertDateRangeToIndividualDateArray(['2024/01/06-2024/01/05'])
-    ).toThrow('Start date of range must be before end date')
+    ).toThrowError('Start date of range must be before end date')
     expect(() =>
       convertDateRangeToIndividualDateArray(['2024/01/05-2024/01/05'])
-    ).toThrow('Start date of range must be before end date')
+    ).toThrowError('Start date of range must be before end date')
   })
 })

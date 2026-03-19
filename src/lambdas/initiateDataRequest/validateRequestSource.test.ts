@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 // Under test
 import { isSignatureInvalid } from './validateRequestSource'
 // Dependencies
@@ -7,10 +8,10 @@ import { givenAllSecretsAvailable } from '../../../common/utils/tests/mocks/retr
 import { ALL_ZENDESK_SECRETS } from '../../../common/utils/tests/testConstants'
 import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 
-jest.mock(
+vi.mock(
   '../../../common/sharedServices/secrets/retrieveZendeskApiSecrets',
   () => ({
-    retrieveZendeskApiSecrets: jest.fn()
+    retrieveZendeskApiSecrets: vi.fn()
   })
 )
 

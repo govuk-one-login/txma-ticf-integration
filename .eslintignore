@@ -1,4 +1,0 @@
-.env*
-coverage/
-dist/
-reports/

@@ -1,4 +1,4 @@
-import { when } from 'jest-when'
+import { vi } from 'vitest'
 import { cliBaseCommand } from '../common/utils/tests/testConstants'
 import { parseCliCallerForTesting } from './cli'
 import * as initiateCopyAndDecryptActionFile from './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
@@ -10,9 +10,8 @@ export const retrieveAuditDataCommandBase = cliBaseCommand
 
 describe('testing command: retrieve-audit-data', () => {
   beforeEach(() => {
-    // jest.clearAllMocks()
-    jest.resetAllMocks()
-    jest.spyOn(initiateCopyAndDecryptActionFile, 'initiateCopyAndDecryptAction')
+    vi.resetAllMocks()
+    vi.spyOn(initiateCopyAndDecryptActionFile, 'initiateCopyAndDecryptAction')
   })
 
   interface happyPath {
@@ -27,7 +26,6 @@ describe('testing command: retrieve-audit-data', () => {
         .concat(['zendeskId123', '--dates', '2023-11-11', '2023-11-12']),
       parsedCliParams: {
         zendeskId: 'zendeskId123',
-        daterange: undefined,
         dates: ['2023-11-11', '2023-11-12']
       }
     },
@@ -37,7 +35,6 @@ describe('testing command: retrieve-audit-data', () => {
         .concat(['zendeskId456', '--dates', '2023-01-01']),
       parsedCliParams: {
         zendeskId: 'zendeskId456',
-        daterange: undefined,
         dates: ['2023-01-01']
       }
     }
@@ -46,7 +43,7 @@ describe('testing command: retrieve-audit-data', () => {
   it.each(table)(
     'retrieve-audit-data happy path. Test case %#',
     ({ cliParams, parsedCliParams }) => {
-      when(initiateCopyAndDecryptAction).mockResolvedValue()
+      vi.mocked(initiateCopyAndDecryptAction).mockResolvedValue()
       console.log(cliParams)
       parseCliCallerForTesting(cliParams)
       expect(

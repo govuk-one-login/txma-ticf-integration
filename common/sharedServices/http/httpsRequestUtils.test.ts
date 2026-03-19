@@ -1,11 +1,12 @@
 import https from 'node:https'
 import { EventEmitter } from 'events'
+import { vi, type MockedFunction } from 'vitest'
 import {
   base64Encode,
   makeHttpsRequest
 } from '../../../common/sharedServices/http/httpsRequestUtils'
 
-jest.mock('node:https')
+vi.mock('node:https')
 
 describe('#base64Encode', () => {
   it('returns the correctly encoded value along with the "Basic " prefix', () => {
@@ -19,34 +20,38 @@ describe('#base64Encode', () => {
 
 describe('#makeHttpsRequest', () => {
   let mockRequest: {
-    write: jest.Mock
-    end: jest.Mock
+    write: ReturnType<typeof vi.fn>
+    end: ReturnType<typeof vi.fn>
   }
   let mockResponse: EventEmitter & {
     statusCode?: number
-    setEncoding: jest.Mock
+    setEncoding: ReturnType<typeof vi.fn>
   }
 
   beforeEach(() => {
     mockRequest = {
-      write: jest.fn(),
-      end: jest.fn()
+      write: vi.fn(),
+      end: vi.fn()
     }
 
     mockResponse = Object.assign(new EventEmitter(), {
       statusCode: 200,
-      setEncoding: jest.fn()
+      setEncoding: vi.fn()
     })
-    ;(https.request as jest.Mock).mockImplementation((options, callback) => {
-      if (callback && typeof callback === 'function') {
-        process.nextTick(() => callback(mockResponse))
+    ;(https.request as MockedFunction<typeof https.request>).mockImplementation(
+      (options, callback) => {
+        if (callback && typeof callback === 'function') {
+          process.nextTick(() =>
+            (callback as (res: typeof mockResponse) => void)(mockResponse)
+          )
+        }
+        return mockRequest as unknown as ReturnType<typeof https.request>
       }
-      return mockRequest
-    })
+    )
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should make a successful request and return parsed JSON', async () => {
@@ -97,7 +102,7 @@ describe('#makeHttpsRequest', () => {
 
   it('should reject when response statusCode is undefined', async () => {
     const options = { host: 'example.com', path: '/test' }
-    mockResponse.statusCode = undefined
+    delete mockResponse.statusCode
 
     await expect(makeHttpsRequest(options)).rejects.toThrow(
       "Error making HTTPS request. Response or statusCode undefined. Host:'example.com', path:'/test'."

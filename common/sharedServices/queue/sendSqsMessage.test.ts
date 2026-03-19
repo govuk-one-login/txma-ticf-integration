@@ -2,12 +2,13 @@ import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
 import { sendSqsMessage, sendSqsMessageWithStringBody } from './sendSqsMessage'
 import { testDataRequest } from '../../utils/tests/testDataRequest'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
+import { vi } from 'vitest'
 
 const sqsMock = mockClient(SQSClient)
 
-jest.mock('../../../common/utils/helpers', () => ({
-  getEnv: jest.fn()
+vi.mock('../../../common/utils/helpers', () => ({
+  getEnv: vi.fn()
 }))
 
 const MOCK_QUEUE_URL = 'http://my_queue_url'

@@ -78,7 +78,7 @@ const updateDb = async (
     } catch (error) {
       const errorMessage = `Error updating database for zendesk ticket: ${zendeskId}`
       await updateZendeskTicketById(zendeskId, errorMessage, 'closed')
-      throw new Error(errorMessage)
+      throw new Error(errorMessage, { cause: error })
     }
   }
 }

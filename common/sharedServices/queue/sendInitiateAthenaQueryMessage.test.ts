@@ -1,3 +1,4 @@
+import { vi, type MockedFunction } from 'vitest'
 import { sendInitiateAthenaQueryMessage } from './sendInitiateAthenaQueryMessage'
 import { sendSqsMessageWithStringBody } from './sendSqsMessage'
 import {
@@ -5,12 +6,14 @@ import {
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
 
-jest.mock('./sendSqsMessage', () => ({
-  sendSqsMessageWithStringBody: jest.fn()
+vi.mock('./sendSqsMessage', () => ({
+  sendSqsMessageWithStringBody: vi.fn()
 }))
 
 const mockSendSqsMessageWithStringBody =
-  sendSqsMessageWithStringBody as jest.Mock<Promise<string | undefined>>
+  sendSqsMessageWithStringBody as MockedFunction<
+    typeof sendSqsMessageWithStringBody
+  >
 
 const MOCK_MESSAGE_ID = 'myMessageId'
 

@@ -1,3 +1,4 @@
+import { vi, type MockedFunction } from 'vitest'
 import { sendContinuePollingDataTransferMessage } from './sendContinuePollingDataTransferMessage'
 import { sendSqsMessage } from './sendSqsMessage'
 import {
@@ -5,12 +6,12 @@ import {
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
 
-jest.mock('./sendSqsMessage', () => ({
-  sendSqsMessage: jest.fn()
+vi.mock('./sendSqsMessage', () => ({
+  sendSqsMessage: vi.fn()
 }))
 
-const mockSendSqsMessage = sendSqsMessage as jest.Mock<
-  Promise<string | undefined>
+const mockSendSqsMessage = sendSqsMessage as MockedFunction<
+  typeof sendSqsMessage
 >
 
 const MOCK_MESSAGE_ID = 'myMessageId'

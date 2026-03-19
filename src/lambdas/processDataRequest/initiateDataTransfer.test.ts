@@ -1,4 +1,4 @@
-import { S3BucketDataLocationResult } from '../../../common/types/s3BucketDataLocationResult'
+import { vi, type MockedFunction } from 'vitest'
 import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { startGlacierRestore } from '../../../common/sharedServices/bulkJobs/startGlacierRestore'
@@ -10,61 +10,55 @@ import { startTransferToAnalysisBucket } from '../../../common/sharedServices/bu
 import { sendContinuePollingDataTransferMessage } from '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage'
 
-jest.mock('../../../common/sharedServices/s3/checkS3BucketData', () => ({
-  checkS3BucketData: jest.fn()
+vi.mock('../../../common/sharedServices/s3/checkS3BucketData', () => ({
+  checkS3BucketData: vi.fn()
 }))
-
-const mockCheckS3BucketData = checkS3BucketData as jest.Mock<
-  Promise<S3BucketDataLocationResult>
+const mockCheckS3BucketData = checkS3BucketData as MockedFunction<
+  typeof checkS3BucketData
 >
 
-jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
-  updateZendeskTicketById: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicketById: vi.fn()
 }))
+const mockUpdateZendeskTicketById = vi.mocked(updateZendeskTicketById)
 
-const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock
-
-jest.mock(
-  '../../../common/sharedServices/bulkJobs/startGlacierRestore',
-  () => ({
-    startGlacierRestore: jest.fn()
-  })
-)
-
-const mockStartGlacierRestore = startGlacierRestore as jest.Mock
-
-jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBPut', () => ({
-  addNewDataRequestRecord: jest.fn()
+vi.mock('../../../common/sharedServices/bulkJobs/startGlacierRestore', () => ({
+  startGlacierRestore: vi.fn()
 }))
+const mockStartGlacierRestore = vi.mocked(startGlacierRestore)
 
-const mockAddNewDataRequestRecord = addNewDataRequestRecord as jest.Mock
+vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBPut', () => ({
+  addNewDataRequestRecord: vi.fn()
+}))
+const mockAddNewDataRequestRecord = vi.mocked(addNewDataRequestRecord)
 
-jest.mock(
+vi.mock(
   '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket',
   () => ({
-    startTransferToAnalysisBucket: jest.fn()
+    startTransferToAnalysisBucket: vi.fn()
   })
 )
+const mockStartTransferToAnalysisBucket = vi.mocked(
+  startTransferToAnalysisBucket
+)
 
-const mockStartTransferToAnalysisBucket =
-  startTransferToAnalysisBucket as jest.Mock
-
-jest.mock(
+vi.mock(
   '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage',
   () => ({
-    sendContinuePollingDataTransferMessage: jest.fn()
+    sendContinuePollingDataTransferMessage: vi.fn()
   })
 )
 
-jest.mock(
+vi.mock(
   '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage',
   () => ({
-    sendInitiateAthenaQueryMessage: jest.fn()
+    sendInitiateAthenaQueryMessage: vi.fn()
   })
 )
 
-const mockSendContinuePollingDataTransferMessage =
-  sendContinuePollingDataTransferMessage as jest.Mock
+const mockSendContinuePollingDataTransferMessage = vi.mocked(
+  sendContinuePollingDataTransferMessage
+)
 
 describe('initiate data transfer', () => {
   const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
@@ -91,7 +85,7 @@ describe('initiate data transfer', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('calls Zendesk to close ticket if no data can be found for the requested parameters', async () => {

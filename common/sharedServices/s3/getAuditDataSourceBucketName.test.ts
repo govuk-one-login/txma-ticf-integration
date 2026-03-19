@@ -1,17 +1,19 @@
-import { when } from 'jest-when'
+import { vi } from 'vitest'
+import { when } from 'vitest-when'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import {
   TEST_AUDIT_BUCKET,
   TEST_PERMANENT_BUCKET_NAME
 } from '../../../common/utils/tests/testConstants'
 import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
-jest.mock('../../utils/getFeatureFlagValue', () => ({
-  getFeatureFlagValue: jest.fn()
+
+vi.mock('../../utils/getFeatureFlagValue', () => ({
+  getFeatureFlagValue: vi.fn()
 }))
 
 describe('getAuditDataSourceBucketName', () => {
   const givenDecryptionFeatureFlagSetToValue = (value: boolean) =>
-    when(getFeatureFlagValue).calledWith('DECRYPT_DATA').mockReturnValue(value)
+    when(getFeatureFlagValue).calledWith('DECRYPT_DATA').thenReturn(value)
 
   const givenDecryptionFeatureFlagOn = () => {
     givenDecryptionFeatureFlagSetToValue(true)

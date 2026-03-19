@@ -59,5 +59,5 @@ const maintainRetryState = async (zendeskId: string) => {
 
 const addOneToRetryCountForLogs = (checkCount: number | undefined): string => {
   if (!checkCount) return ''
-  return (++checkCount).toString()
+  return (checkCount + 1).toString()
 }

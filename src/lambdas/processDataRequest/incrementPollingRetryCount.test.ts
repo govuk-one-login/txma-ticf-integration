@@ -1,9 +1,10 @@
+import { vi } from 'vitest'
 import { incrementObjectFieldByOne } from '../../../common/sharedServices/dynamoDB/dynamoDBUpdate'
 import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 
-jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
-  incrementObjectFieldByOne: jest.fn()
+vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
+  incrementObjectFieldByOne: vi.fn()
 }))
 
 describe('incrementPollingRetryCount', () => {

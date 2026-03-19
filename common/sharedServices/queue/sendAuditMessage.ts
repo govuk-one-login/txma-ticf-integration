@@ -26,9 +26,15 @@ export const sendAuditDataRequestMessage = async (
       extensions: {
         ticket_details: {
           zendeskId: auditQueryRequestDetails.zendeskId,
-          dateFrom: auditQueryRequestDetails.dateFrom,
-          dateTo: auditQueryRequestDetails.dateTo,
-          dates: auditQueryRequestDetails.dates,
+          ...(auditQueryRequestDetails.dateFrom !== undefined
+            ? { dateFrom: auditQueryRequestDetails.dateFrom }
+            : {}),
+          ...(auditQueryRequestDetails.dateTo !== undefined
+            ? { dateTo: auditQueryRequestDetails.dateTo }
+            : {}),
+          ...(auditQueryRequestDetails.dates !== undefined
+            ? { dates: auditQueryRequestDetails.dates }
+            : {}),
           identifierType: auditQueryRequestDetails.identifierType,
           requested_sessionIds:
             auditQueryRequestDetails.requested_sessionIds ?? '',

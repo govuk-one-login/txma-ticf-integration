@@ -1,4 +1,4 @@
-import { when } from 'jest-when'
+import { vi } from 'vitest'
 import { SendManualQueryPayload } from '../types/sendManualQueryPayload'
 import * as copyManualRequestDataImportHelper from './copyManualRequestData'
 import { copyManualRequestData } from './copyManualRequestData'
@@ -14,30 +14,30 @@ const payload = {
   zendeskId: 'zendeskId123'
 }
 
-jest.mock('./copyManualRequestData', () => ({
-  copyManualRequestData: jest.fn()
+vi.mock('./copyManualRequestData', () => ({
+  copyManualRequestData: vi.fn()
 }))
 
-jest.mock('./sendSQSMessageToCompletedQueue', () => ({
-  sendSQSMessageToCompletedQueue: jest.fn()
+vi.mock('./sendSQSMessageToCompletedQueue', () => ({
+  sendSQSMessageToCompletedQueue: vi.fn()
 }))
 
 describe('testing the sendAuditData cli action', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest.clearAllMocks()
-    jest.spyOn(copyManualRequestDataImportHelper, 'copyManualRequestData')
-    jest.spyOn(
+    vi.resetAllMocks()
+    vi.clearAllMocks()
+    vi.spyOn(copyManualRequestDataImportHelper, 'copyManualRequestData')
+    vi.spyOn(
       sendSQSMessageToCompletedQueueImportHelper,
       'sendSQSMessageToCompletedQueue'
     )
   })
 
   it('copyManualRequestData(): failed', async () => {
-    when(copyManualRequestData).mockRejectedValue('error')
-    when(sendSQSMessageToCompletedQueue).mockResolvedValue()
+    vi.mocked(copyManualRequestData).mockRejectedValue('error')
+    vi.mocked(sendSQSMessageToCompletedQueue).mockResolvedValue()
 
-    await expect(sendAuditDataAction(payload)).rejects.toThrow(
+    await expect(sendAuditDataAction(payload)).rejects.toThrowError(
       'Failed to copy data within output bucket'
     )
     expect(copyManualRequestData).toHaveBeenCalledWith(
@@ -47,10 +47,10 @@ describe('testing the sendAuditData cli action', () => {
   })
 
   it('copyManualRequestData(): sucess, sendSQSMessageToCompletedQueue(): fail', async () => {
-    when(copyManualRequestData).mockResolvedValue()
-    when(sendSQSMessageToCompletedQueue).mockRejectedValue('error')
+    vi.mocked(copyManualRequestData).mockResolvedValue()
+    vi.mocked(sendSQSMessageToCompletedQueue).mockRejectedValue('error')
 
-    await expect(sendAuditDataAction(payload)).rejects.toThrow(
+    await expect(sendAuditDataAction(payload)).rejects.toThrowError(
       'Failed to send payload to query completed queue'
     )
     expect(copyManualRequestData).toHaveBeenCalledWith(
@@ -60,8 +60,8 @@ describe('testing the sendAuditData cli action', () => {
   })
 
   it('copyManualRequestData(): sucess, sendSQSMessageToCompletedQueue(): success', async () => {
-    when(copyManualRequestData).mockResolvedValue()
-    when(sendSQSMessageToCompletedQueue).mockResolvedValue()
+    vi.mocked(copyManualRequestData).mockResolvedValue()
+    vi.mocked(sendSQSMessageToCompletedQueue).mockResolvedValue()
 
     await sendAuditDataAction(payload)
     expect(copyManualRequestData).toHaveBeenCalledWith(

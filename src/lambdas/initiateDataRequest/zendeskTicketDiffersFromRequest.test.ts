@@ -1,3 +1,4 @@
+import { vi, type MockedFunction } from 'vitest'
 import { getZendeskTicket } from '../../../common/sharedServices/zendesk/getZendeskTicket'
 import { getZendeskUser } from '../../../common/sharedServices/zendesk/getZendeskUser'
 import { DataRequestParams } from '../../../common/types/dataRequestParams'
@@ -6,11 +7,7 @@ import {
   testDataRequestWithAllValuesSet,
   testDataRequestWithEmptyValuesForIds
 } from '../../../common/utils/tests/testDataRequest'
-import {
-  CustomField,
-  ZendeskTicket
-} from '../../../common/types/zendeskTicketResult'
-import { ZendeskUser } from '../../../common/types/zendeskUserResult'
+import { CustomField } from '../../../common/types/zendeskTicketResult'
 import {
   TEST_DATE_1,
   TEST_DATE_2,
@@ -35,25 +32,27 @@ import {
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 import { logger } from '../../../common/sharedServices/logger'
 
-jest.mock('../../../common/sharedServices/zendesk/getZendeskTicket', () => ({
-  getZendeskTicket: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/getZendeskTicket', () => ({
+  getZendeskTicket: vi.fn()
 }))
 
-jest.mock('../../../common/sharedServices/zendesk/getZendeskUser', () => ({
-  getZendeskUser: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/getZendeskUser', () => ({
+  getZendeskUser: vi.fn()
 }))
 
-const mockGetZendeskTicket = getZendeskTicket as jest.Mock<
-  Promise<ZendeskTicket>
+const mockGetZendeskTicket = getZendeskTicket as MockedFunction<
+  typeof getZendeskTicket
 >
-const mockGetZendeskUser = getZendeskUser as jest.Mock<Promise<ZendeskUser>>
+const mockGetZendeskUser = getZendeskUser as MockedFunction<
+  typeof getZendeskUser
+>
 
 describe('match zendesk ticket details', () => {
   beforeEach(() => {
-    jest.spyOn(logger, 'warn')
+    vi.spyOn(logger, 'warn')
   })
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const updateKey = <K extends keyof DataRequestParams>(
@@ -480,6 +479,8 @@ describe('match zendesk ticket details', () => {
     const error = async () => {
       await zendeskTicketDiffersFromRequest(testDataRequest)
     }
-    await expect(error()).rejects.toThrow('Custom field with id 1 not found')
+    await expect(error()).rejects.toThrowError(
+      'Custom field with id 1 not found'
+    )
   })
 })

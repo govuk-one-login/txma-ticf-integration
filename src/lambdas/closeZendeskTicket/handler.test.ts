@@ -1,3 +1,4 @@
+import { vi, type MockedFunction } from 'vitest'
 import {
   ZENDESK_TICKET_ID,
   TEST_COMMENT_COPY
@@ -8,10 +9,12 @@ import { constructSqsEvent } from '../../../common/utils/tests/events/sqsEvent'
 import { logger } from '../../../common/sharedServices/logger'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 
-jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
-  updateZendeskTicketById: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicketById: vi.fn()
 }))
-const mockUpdateZendeskTicketById = updateZendeskTicketById as jest.Mock
+const mockUpdateZendeskTicketById = updateZendeskTicketById as MockedFunction<
+  typeof updateZendeskTicketById
+>
 
 const givenUnsuccessfulUpdateZendeskTicket = () => {
   mockUpdateZendeskTicketById.mockImplementation(() => {
@@ -28,10 +31,10 @@ const callHandlerWithBody = async (customBody: string) => {
 
 describe('initiate closeZendeskTicket handler', () => {
   beforeEach(() => {
-    jest.spyOn(logger, 'error')
+    vi.spyOn(logger, 'error')
   })
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('updates zendesk ticket correct parameters', async () => {
@@ -46,15 +49,15 @@ describe('initiate closeZendeskTicket handler', () => {
   })
 
   it('throws an error when no event records are in the SQSEvent object', async () => {
-    await expect(handler({ Records: [] }, mockLambdaContext)).rejects.toThrow(
-      'No records found in event'
-    )
+    await expect(
+      handler({ Records: [] }, mockLambdaContext)
+    ).rejects.toThrowError('No records found in event')
   })
 
   it('throws an error when no event body is present', async () => {
     const invalidEventBody = ''
 
-    await expect(callHandlerWithBody(invalidEventBody)).rejects.toThrow(
+    await expect(callHandlerWithBody(invalidEventBody)).rejects.toThrowError(
       'Could not find event body'
     )
   })
@@ -73,7 +76,7 @@ describe('initiate closeZendeskTicket handler', () => {
 
       await expect(
         callHandlerWithBody(JSON.stringify(eventBodyParams))
-      ).rejects.toThrow(`${missingPropertyError} missing from event body`)
+      ).rejects.toThrowError(`${missingPropertyError} missing from event body`)
     }
   )
   it.each([
@@ -93,7 +96,9 @@ describe('initiate closeZendeskTicket handler', () => {
 
       await expect(
         callHandlerWithBody(JSON.stringify(eventBodyParams))
-      ).rejects.toThrow(`${emptyStringPropertyError} missing from event body`)
+      ).rejects.toThrowError(
+        `${emptyStringPropertyError} missing from event body`
+      )
     }
   )
 

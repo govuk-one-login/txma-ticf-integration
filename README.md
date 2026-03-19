@@ -25,13 +25,13 @@ Threat Intelligence and Counter Fraud (TICF) analysts will be able to request au
 To run this project you will need the following:
 
 - [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) - Used to build and deploy the application
-- [Node.js](https://nodejs.org/en/) version 22 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
+- [Node.js](https://nodejs.org/en/) version 24 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
 - [Docker](https://docs.docker.com/get-docker/) - Required to run SAM locally
 - [Checkov](https://www.checkov.io/) - Scans cloud infrastructure configurations to find misconfigurations before they're deployed. Added as a Husky pre-commit hook.
 
 ## Important
 
-- **Node version 22 or higher** is required
+- **Node version 24 or higher** is required
 
 - **Package manager is now NPM**
 
@@ -73,9 +73,9 @@ The variables required to run the test are stored in AWS in the following places
 - Secrets Manager
 - Stack Outputs
 
-Any variables can be overriden by setting them as environment variables when running the tests:
+Any variables can be overridden by setting them as environment variables when running the tests:
 
-Overriding the `STACK_NAME` parameter, which is set in the config files (`tests/integration-tests/jest.integtation.config.ts` and `tests/e2e-tests/jest.e2e.config.ts`), will allow you to point at a dev stack with different stack outputs. SSM parameters and Secrets defined in other stacks will remain unchanged. However, these can be overriden using environmet variables if they need to change.
+Overriding the `STACK_NAME` parameter, which is set in the config files (`tests/integration-tests/vitest.integration.config.ts` and `tests/e2e-tests/vitest.e2e.config.ts`), will allow you to point at a dev stack with different stack outputs. SSM parameters and Secrets defined in other stacks will remain unchanged. However, these can be overriden using environmet variables if they need to change.
 
 Note: For the dev environment some Secrets or SSM Parameters may be missing since there is no main stack.
 
@@ -89,7 +89,7 @@ If you are unsure of any values ask the tech lead/dev team.
 
 To run tests against the environment you will need to be authenticated against the environment you wish to run the tests.
 
-To run the integraton pack which pulls variables from AWS and assumes external services are stubbed you should assume a build account role and run the following:
+To run the integration pack which pulls variables from AWS and assumes external services are stubbed you should assume a build account role and run the following:
 
 ```shell
 npm run test:integration
@@ -180,13 +180,13 @@ and the utility will create and approve a Zendesk ticket for you.
 
 # Code standards
 
-This repository is set up to use [Prettier](https://prettier.io/) for formatting, and [ESLint](https://eslint.org/) to look for problems in any Typescript and Javascript code.
+This repository is set up to use [Prettier](https://prettier.io/) for formatting and [ESLint](https://eslint.org/) to look for problems in any Typescript and Javascript code.
 
 Prettier is an opinionated formatting tool for multiple languages/file formats. Exceptions can be added to the `.prettierrc.json` file.
 
 ESLint is configured to use just its recommended rules via the `.eslintrc.json` file. These can be viewed at:
 
-- [Javscript](https://eslint.org/docs/latest/rules/)
+- [Javascript](https://eslint.org/docs/latest/rules/)
 - [Typescript](https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/src/configs/eslint-recommended.ts)
 
 Additionally, its code formatting rules are disabled as these are handled by Prettier.
@@ -196,6 +196,27 @@ To run the linting:
 ```
 npm run lint
 ```
+
+## Testing Framework Migration
+
+This project has been migrated from Jest to Vitest and from CommonJS to ESM (February 2026). Key changes:
+
+### For Developers
+
+- **Module system:** Now uses ES Modules (ESM) - `"type": "module"` in package.json
+- **Test framework:** Now uses [Vitest](https://vitest.dev/) instead of Jest
+- **Node version:** Upgraded to Node.js 24 (from 22)
+- **Lambda runtime:** Uses `nodejs24.x` runtime
+- **Test imports:** Must explicitly import test functions:
+  ```typescript
+  import { describe, it, expect, vi } from 'vitest'
+  ```
+- **Mock functions:** Use `vi.*` instead of `jest.*`:
+  ```typescript
+  vi.fn() // instead of jest.fn()
+  vi.mock() // instead of jest.mock()
+  vi.spyOn() // instead of jest.spyOn()
+  ```
 
 # Scripts
 

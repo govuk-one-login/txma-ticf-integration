@@ -18,7 +18,7 @@ export const sendAuditDataAction = async (options: options) => {
   } catch (error: unknown) {
     const errMsg = 'Failed to copy data within output bucket'
     console.error(errMsg, error)
-    throw new Error(errMsg)
+    throw new Error(errMsg, { cause: error })
   }
 
   const sqsMessage = {
@@ -34,6 +34,6 @@ export const sendAuditDataAction = async (options: options) => {
   } catch (error: unknown) {
     const errorMsg = 'Failed to send payload to query completed queue'
     console.error(errorMsg, error)
-    throw new Error(errorMsg)
+    throw new Error(errorMsg, { cause: error })
   }
 }
