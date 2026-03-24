@@ -40,4 +40,5 @@ export interface EnvironmentVar {
     | 'DECRYPTION_LAMBDA_ARN'
     | 'PERMANENT_AUDIT_BUCKET_NAME'
     | 'GENERATOR_KEY_ID'
+    | 'BACKUP_KEY_ID'
 }

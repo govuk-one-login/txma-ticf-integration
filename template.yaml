@@ -630,6 +630,7 @@ Resources:
         Variables:
           ANALYSIS_BUCKET_NAME: !Ref AnalysisBucket
           GENERATOR_KEY_ID: '{{resolve:ssm:S3EncryptionGeneratorKmsKeyArn}}'
+          BACKUP_KEY_ID: '{{resolve:ssm:S3EncryptionGeneratorKmsKeyArnBck}}'
       FunctionName: !Sub ${AWS::StackName}-decrypt-and-copy
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt DecryptAndCopyFunctionRole.Arn
@@ -705,6 +706,11 @@ Resources:
               - kms:GenerateDataKey*
               - kms:ReEncrypt*
             Resource: '{{resolve:ssm:S3EncryptionGeneratorKmsKeyArn}}'
+          - Sid: UseBackupKmsKey
+            Effect: Allow
+            Action:
+              - kms:Decrypt
+            Resource: '{{resolve:ssm:S3EncryptionGeneratorKmsKeyArnBck}}'
 
   DecryptAndCopyLogs:
     Type: AWS::Logs::LogGroup
