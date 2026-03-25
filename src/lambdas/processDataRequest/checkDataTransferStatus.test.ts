@@ -1,9 +1,9 @@
+import { vi } from 'vitest'
 import { sendContinuePollingDataTransferMessage } from '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
 import { startTransferToAnalysisBucket } from '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket'
 import { incrementPollingRetryCount } from './incrementPollingRetryCount'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
-import { when } from 'jest-when'
 import {
   TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT,
   ZENDESK_TICKET_ID
@@ -15,53 +15,44 @@ import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/
 import { logger } from '../../../common/sharedServices/logger'
 import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
 
-jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
-  getDatabaseEntryByZendeskId: jest.fn()
+vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
+  getDatabaseEntryByZendeskId: vi.fn()
 }))
-
-jest.mock('../../../common/sharedServices/s3/checkS3BucketData', () => ({
-  checkS3BucketData: jest.fn()
+vi.mock('../../../common/sharedServices/s3/checkS3BucketData', () => ({
+  checkS3BucketData: vi.fn()
 }))
-
-jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
-  updateZendeskTicketById: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicketById: vi.fn()
 }))
-
-jest.mock('./terminateStatusCheckProcess', () => ({
-  terminateStatusCheckProcess: jest.fn()
+vi.mock('./terminateStatusCheckProcess', () => ({
+  terminateStatusCheckProcess: vi.fn()
 }))
-
-jest.mock(
+vi.mock(
   '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket',
-  () => ({
-    startTransferToAnalysisBucket: jest.fn()
-  })
+  () => ({ startTransferToAnalysisBucket: vi.fn() })
 )
-
-jest.mock(
+vi.mock(
   '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage',
-  () => ({
-    sendContinuePollingDataTransferMessage: jest.fn()
-  })
+  () => ({ sendContinuePollingDataTransferMessage: vi.fn() })
 )
-
-jest.mock('./incrementPollingRetryCount', () => ({
-  incrementPollingRetryCount: jest.fn()
+vi.mock('./incrementPollingRetryCount', () => ({
+  incrementPollingRetryCount: vi.fn()
 }))
 
-const mockIncrementPollingRetryCount = incrementPollingRetryCount as jest.Mock
-const mockSendContinuePollingDataTransferMessage =
-  sendContinuePollingDataTransferMessage as jest.Mock
+const mockIncrementPollingRetryCount = vi.mocked(incrementPollingRetryCount)
+const mockSendContinuePollingDataTransferMessage = vi.mocked(
+  sendContinuePollingDataTransferMessage
+)
 
 describe('checkDataTransferStatus', () => {
   const EXPECTED_DEFROST_WAIT_TIME_IN_SECONDS = 900
 
   beforeEach(() => {
-    jest.spyOn(logger, 'info')
-    jest.spyOn(logger, 'error')
+    vi.spyOn(logger, 'info')
+    vi.spyOn(logger, 'error')
   })
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   const givenDataResult = (
@@ -69,10 +60,10 @@ describe('checkDataTransferStatus', () => {
     glacierTierLocationsToCopy: string[],
     glacierIRTierLocationsToCopy: string[] = []
   ) => {
-    when(checkS3BucketData).mockResolvedValue({
-      standardTierLocationsToCopy: standardTierLocationsToCopy,
-      glacierIRTierLocationsToCopy: glacierIRTierLocationsToCopy,
-      glacierTierLocationsToCopy: glacierTierLocationsToCopy,
+    vi.mocked(checkS3BucketData).mockResolvedValue({
+      standardTierLocationsToCopy,
+      glacierIRTierLocationsToCopy,
+      glacierTierLocationsToCopy,
       dataAvailable: true
     })
   }
@@ -95,7 +86,7 @@ describe('checkDataTransferStatus', () => {
       | { checkGlacierStatusCount?: number }
       | undefined = undefined
   ) => {
-    when(getDatabaseEntryByZendeskId).mockResolvedValue({
+    vi.mocked(getDatabaseEntryByZendeskId).mockResolvedValue({
       requestInfo: testDataRequest,
       ...(statusCountObject?.checkGlacierStatusCount && {
         checkGlacierStatusCount: statusCountObject.checkGlacierStatusCount
@@ -104,18 +95,14 @@ describe('checkDataTransferStatus', () => {
   }
 
   it('should continue polling if a glacier defrost is pending', async () => {
-    givenDatabaseEntryResult({
-      checkGlacierStatusCount: 1
-    })
+    givenDatabaseEntryResult({ checkGlacierStatusCount: 1 })
     givenGlacierDefrostPending()
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
     expect(logger.info).toHaveBeenLastCalledWith(
       'Placing zendeskId back on InitiateDataRequestQueue because Glacier restore is still in progress',
-      {
-        numberOfChecks: '2'
-      }
+      { numberOfChecks: '2' }
     )
     expect(mockIncrementPollingRetryCount).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID
@@ -130,9 +117,7 @@ describe('checkDataTransferStatus', () => {
   })
 
   it('should start copy from audit to analysis bucket if no glacier defrost is pending, there are files to copy and no copy is in progress', async () => {
-    givenDatabaseEntryResult({
-      checkGlacierStatusCount: 1
-    })
+    givenDatabaseEntryResult({ checkGlacierStatusCount: 1 })
     givenCopyRequired()
 
     await checkDataTransferStatus(ZENDESK_TICKET_ID)

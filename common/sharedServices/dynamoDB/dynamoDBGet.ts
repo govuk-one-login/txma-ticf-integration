@@ -73,12 +73,17 @@ const parseDatabaseItem = (item: Record<string, AttributeValue>) => {
     throw new Error(`Event data returned from db was not of correct type`)
   }
 
+  const checkGlacierStatusCount = retrieveNumericValue(
+    item?.checkGlacierStatusCount
+  )
+  const athenaQueryId = item?.athenaQueryId?.S
+
   return {
     requestInfo: dataRequestParams,
-    checkGlacierStatusCount: retrieveNumericValue(
-      item?.checkGlacierStatusCount
-    ),
-    athenaQueryId: item?.athenaQueryId?.S
+    ...(checkGlacierStatusCount !== undefined
+      ? { checkGlacierStatusCount }
+      : {}),
+    ...(athenaQueryId !== undefined ? { athenaQueryId } : {})
   }
 }
 const retrieveNumericValue = (

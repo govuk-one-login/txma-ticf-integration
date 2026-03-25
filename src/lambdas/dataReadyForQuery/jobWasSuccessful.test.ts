@@ -1,10 +1,10 @@
+import { vi } from 'vitest'
 import { jobWasSuccessful } from './jobWasSuccessful'
 import { describeBatchJob } from '../../../common/sharedServices/bulkJobs/describeBatchJob'
-import { when } from 'jest-when'
 import { TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID } from '../../../common/utils/tests/testConstants'
 
-jest.mock('../../../common/sharedServices/bulkJobs/describeBatchJob', () => ({
-  describeBatchJob: jest.fn()
+vi.mock('../../../common/sharedServices/bulkJobs/describeBatchJob', () => ({
+  describeBatchJob: vi.fn()
 }))
 
 const givenDescribeBatchJobReturns = (parameters: {
@@ -19,12 +19,12 @@ const givenDescribeBatchJobReturns = (parameters: {
       NumberOfTasksSucceeded: parameters.numberOfTasksSucceeded
     }
   }
-  when(describeBatchJob).mockResolvedValue(result)
+  vi.mocked(describeBatchJob).mockResolvedValue(result)
 }
 
 describe('jobWasSuccessful', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('returns false if status is failed', async () => {

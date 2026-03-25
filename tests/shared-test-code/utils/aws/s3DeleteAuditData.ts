@@ -14,6 +14,8 @@ export const deleteAuditData = async (bucket: string, key: string) => {
       commandInput: input
     })
   } catch (error) {
-    throw new Error(`Failed to delete data in bucket ${bucket}\n${error}`)
+    throw new Error(`Failed to delete data in bucket ${bucket}\n${error}`, {
+      cause: error
+    })
   }
 }

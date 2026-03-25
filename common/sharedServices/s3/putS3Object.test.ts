@@ -4,7 +4,7 @@ import {
   S3Client
 } from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_S3_OBJECT_KEY,
@@ -31,7 +31,7 @@ describe('putS3Object', () => {
 
     expect(s3Mock).toHaveReceivedCommandWith(
       PutObjectCommand,
-      putObjectCommandInput
+      putObjectCommandInput as unknown as Record<string, unknown>
     )
   })
 })

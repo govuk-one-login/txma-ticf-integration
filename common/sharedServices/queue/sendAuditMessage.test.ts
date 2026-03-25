@@ -1,4 +1,4 @@
-import { when } from 'jest-when'
+import { vi } from 'vitest'
 import { ErrorType } from '../../../common/types/audit/auditEventDetails'
 import { AuditQueryDataRequestDetails } from '../../../common/types/audit/auditQueryDataRequestDetails'
 import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
@@ -21,12 +21,12 @@ import {
 } from './sendAuditMessage'
 import { sendSqsMessage } from './sendSqsMessage'
 
-jest.mock('./sendSqsMessage', () => ({
-  sendSqsMessage: jest.fn()
+vi.mock('./sendSqsMessage', () => ({
+  sendSqsMessage: vi.fn()
 }))
 
-jest.mock('../../utils/currentDateEpochSeconds', () => ({
-  currentDateEpochSeconds: jest.fn()
+vi.mock('../../utils/currentDateEpochSeconds', () => ({
+  currentDateEpochSeconds: vi.fn()
 }))
 
 const TEST_TIMESTAMP = 1669811435
@@ -34,23 +34,23 @@ const TEST_TIMESTAMP = 1669811435
 const errorPrefix = 'An error occurred while sending message to audit queue: '
 const errorMessage = 'Error sending message to queue'
 const givenSendSqsError = () => {
-  when(sendSqsMessage).mockImplementation(() => {
+  vi.mocked(sendSqsMessage).mockImplementation(() => {
     throw new Error(errorMessage)
   })
 }
 
 const givenSendSQSMessageReturnsMessageId = () => {
-  when(sendSqsMessage).mockResolvedValue(TEST_SQS_MESSAGE_ID)
+  vi.mocked(sendSqsMessage).mockResolvedValue(TEST_SQS_MESSAGE_ID)
 }
 
 describe('sendAuditMessage', () => {
   beforeEach(() => {
-    when(currentDateEpochSeconds).mockReturnValue(TEST_TIMESTAMP)
-    jest.spyOn(logger, 'info')
-    jest.spyOn(logger, 'error')
+    vi.mocked(currentDateEpochSeconds).mockReturnValue(TEST_TIMESTAMP)
+    vi.spyOn(logger, 'info')
+    vi.spyOn(logger, 'error')
   })
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
   describe('sendAuditDataRequestMessage', () => {
     const testAuditQueryRequestDetails = (
@@ -61,11 +61,9 @@ describe('sendAuditMessage', () => {
       recipientEmail: TEST_RECIPIENT_EMAIL,
       recipientName: TEST_RECIPIENT_NAME,
       zendeskId: ZENDESK_TICKET_ID,
-      dateFrom: isLegacyDateFromToRequest ? TEST_DATE_1 : undefined,
-      dateTo: isLegacyDateFromToRequest ? TEST_DATE_1 : undefined,
-      dates: !isLegacyDateFromToRequest
-        ? `${TEST_DATE_1} ${TEST_DATE_2}`
-        : undefined,
+      ...(isLegacyDateFromToRequest
+        ? { dateFrom: TEST_DATE_1, dateTo: TEST_DATE_1 }
+        : { dates: `${TEST_DATE_1} ${TEST_DATE_2}` }),
       identifierType: 'event_id',
       requested_sessionIds: '',
       requested_journeyIds: '',

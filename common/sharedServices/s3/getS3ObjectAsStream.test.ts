@@ -5,7 +5,7 @@ import {
   GetObjectCommandOutput
 } from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
 import {
   TEST_PERMANENT_BUCKET_NAME,
   TEST_S3_OBJECT_DATA_STRING,
@@ -43,7 +43,7 @@ describe('getS3Object - ', () => {
 
     expect(s3Mock).toHaveReceivedCommandWith(
       GetObjectCommand,
-      getObjectCommandInput
+      getObjectCommandInput as unknown as Record<string, unknown>
     )
     expect(returnedData).toEqual(testDataStream)
   })

@@ -22,11 +22,11 @@ import {
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
-import { when } from 'jest-when'
+import 'aws-sdk-client-mock-vitest'
+import { vi } from 'vitest'
 
-jest.mock('../../utils/currentDateEpochSeconds', () => ({
-  currentDateEpochSeconds: jest.fn()
+vi.mock('../../utils/currentDateEpochSeconds', () => ({
+  currentDateEpochSeconds: vi.fn()
 }))
 
 const dynamoMock = mockClient(DynamoDBClient)
@@ -34,7 +34,9 @@ const dynamoMock = mockClient(DynamoDBClient)
 describe('dynamoDbPut', () => {
   beforeEach(() => {
     dynamoMock.reset()
-    when(currentDateEpochSeconds).mockReturnValue(TEST_CURRENT_EPOCH_SECONDS)
+    vi.mocked(currentDateEpochSeconds).mockReturnValue(
+      TEST_CURRENT_EPOCH_SECONDS
+    )
   })
 
   describe('addNewDataRequestRecord', () => {
@@ -75,7 +77,7 @@ describe('dynamoDbPut', () => {
       await addNewDataRequestRecord(testDataRequest, false)
       expect(dynamoMock).toHaveReceivedCommandWith(
         PutItemCommand,
-        basicRecordExpectation
+        basicRecordExpectation as unknown as Record<string, unknown>
       )
     })
 

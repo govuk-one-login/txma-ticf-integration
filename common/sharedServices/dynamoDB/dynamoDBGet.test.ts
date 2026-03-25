@@ -18,7 +18,7 @@ import {
   getDatabaseEntryByZendeskId,
   getQueryByAthenaQueryId
 } from './dynamoDBGet'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
 
 const dynamoMock = mockClient(DynamoDBClient)
 

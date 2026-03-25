@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { initiateDataTransfer } from './initiateDataTransfer'
 import { handler } from './handler'
 import { constructSqsEvent } from '../../../common/utils/tests/events/sqsEvent'
@@ -5,19 +6,20 @@ import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
 import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
 import { checkDataTransferStatus } from './checkDataTransferStatus'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
-jest.mock('./initiateDataTransfer', () => ({
-  initiateDataTransfer: jest.fn()
+
+vi.mock('./initiateDataTransfer', () => ({
+  initiateDataTransfer: vi.fn()
 }))
 
-const initiateDataTransferMock = initiateDataTransfer as jest.Mock
+const initiateDataTransferMock = vi.mocked(initiateDataTransfer)
 
-jest.mock('./checkDataTransferStatus', () => ({
-  checkDataTransferStatus: jest.fn()
+vi.mock('./checkDataTransferStatus', () => ({
+  checkDataTransferStatus: vi.fn()
 }))
 
 describe('processDataRequest', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should handle a valid initiate data request event', async () => {
@@ -38,9 +40,9 @@ describe('processDataRequest', () => {
   })
 
   it('should throw an appropriate error if there is no data in the event', async () => {
-    await expect(handler({ Records: [] }, mockLambdaContext)).rejects.toThrow(
-      'No data in event'
-    )
+    await expect(
+      handler({ Records: [] }, mockLambdaContext)
+    ).rejects.toThrowError('No data in event')
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
   })
 
@@ -50,7 +52,7 @@ describe('processDataRequest', () => {
     )
     await expect(
       handler(initiateDataRequestEvent, mockLambdaContext)
-    ).rejects.toThrow('Event data was not of the correct type')
+    ).rejects.toThrowError('Event data was not of the correct type')
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
   })
 
@@ -58,7 +60,7 @@ describe('processDataRequest', () => {
     const initiateDataRequestEvent = constructSqsEvent('some message')
     await expect(
       handler(initiateDataRequestEvent, mockLambdaContext)
-    ).rejects.toThrow('Event data did not include a valid JSON body')
+    ).rejects.toThrowError('Event data did not include a valid JSON body')
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
   })
 })

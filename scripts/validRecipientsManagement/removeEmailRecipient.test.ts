@@ -1,13 +1,14 @@
+import { vi } from 'vitest'
 import { listCurrentEmailRecipients } from './listCurrentEmailRecipients'
 import { writeRecipientListToBucket } from './writeRecipientListToBucket'
-import { when } from 'jest-when'
 import { removeEmailRecipient } from './removeEmailRecipient'
-jest.mock('./listCurrentEmailRecipients', () => ({
-  listCurrentEmailRecipients: jest.fn()
+
+vi.mock('./listCurrentEmailRecipients', () => ({
+  listCurrentEmailRecipients: vi.fn()
 }))
 
-jest.mock('./writeRecipientListToBucket', () => ({
-  writeRecipientListToBucket: jest.fn()
+vi.mock('./writeRecipientListToBucket', () => ({
+  writeRecipientListToBucket: vi.fn()
 }))
 
 describe('removeEmailRecipient', () => {
@@ -22,11 +23,11 @@ describe('removeEmailRecipient', () => {
   ]
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should remove an email if it exists on the current list', async () => {
-    when(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
+    vi.mocked(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
 
     await removeEmailRecipient(testEmailToRemove, testEnvironment)
 
@@ -40,7 +41,7 @@ describe('removeEmailRecipient', () => {
   })
 
   it('should not try to remove the email if it does not exist in the current list', async () => {
-    when(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
+    vi.mocked(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
 
     await removeEmailRecipient('someOtherEmail@example.com', testEnvironment)
 

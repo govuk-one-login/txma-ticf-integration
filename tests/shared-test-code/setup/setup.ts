@@ -2,23 +2,10 @@ import { checkSecretsSet, retrieveSecretValue } from './retrieveSecretValue'
 import { retrieveSsmParameterValue } from './retrieveSsmParameterValues'
 import { getOutputValue, retrieveStackOutputs } from './retrieveStackOutputs'
 
-// eslint-disable-next-line @typescript-eslint/prefer-namespace-keyword, @typescript-eslint/no-namespace
-declare module global {
-  const AWS_REGION: string
-  const STACK_NAME: string
-  const ZENDESK_ADMIN_EMAIL: string
-  const ZENDESK_AGENT_EMAIL: string
-  const ZENDESK_END_USER_EMAIL: string
-  const ZENDESK_END_USER_NAME: string
-  const ZENDESK_RECIPIENT_NAME: string
-}
+const region = process.env.AWS_REGION ?? 'eu-west-2'
+const stack = process.env.STACK_NAME ?? 'txma-ticf-integration'
 
-const region = global.AWS_REGION
-const stack = process.env.STACK_NAME
-  ? process.env.STACK_NAME
-  : global.STACK_NAME
-
-module.exports = async () => {
+export async function setup() {
   const secretMappings = {
     [`tests/${stack}/ZendeskSecrets`]: [
       'ZENDESK_API_KEY',
@@ -93,7 +80,7 @@ module.exports = async () => {
   await setEnvVarsFromSecretsManager(secretMappings)
   await setEnvVarsFromSsm(ssmMappings)
   await setEnvVarsFromStackOutputs(stack, stackOutputMappings)
-  setEnvVarsFromJestGlobals(globals)
+  setEnvVarsFromProcessEnv(globals)
 }
 
 const setEnvVarsFromSecretsManager = async (
@@ -133,11 +120,17 @@ const setEnvVarsFromStackOutputs = async (
   }
 }
 
-const setEnvVarsFromJestGlobals = (globals: string[]) => {
-  globals.forEach(
-    (v) =>
-      (process.env[v] = process.env[v]
-        ? process.env[v]
-        : global[v as keyof typeof global])
-  )
+const setEnvVarsFromProcessEnv = (vars: string[]) => {
+  const defaults: Record<string, string> = {
+    ZENDESK_ADMIN_EMAIL: 'txma-team2-ticf-admin-dev@test.gov.uk',
+    ZENDESK_AGENT_EMAIL: 'txma-team2-ticf-approver-dev@test.gov.uk',
+    ZENDESK_END_USER_EMAIL: 'txma-team2-ticf-analyst-dev@test.gov.uk',
+    ZENDESK_END_USER_NAME: 'Txma-team2-ticf-analyst-dev',
+    ZENDESK_RECIPIENT_NAME: 'Test User'
+  }
+  vars.forEach((v) => {
+    if (!process.env[v] && defaults[v]) {
+      process.env[v] = defaults[v]
+    }
+  })
 }

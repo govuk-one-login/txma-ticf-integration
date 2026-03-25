@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { getS3BatchJobTags } from '../../../common/sharedServices/bulkJobs/getS3BatchJobTags'
 import { jobWasSuccessful } from './jobWasSuccessful'
 import { sendInitiateAthenaQueryMessage } from '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage'
@@ -5,30 +6,29 @@ import { batchJobStatusChangeEvent } from '../../../common/utils/tests/events/ba
 import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 import { handler } from './handler'
-import { when } from 'jest-when'
 import {
   TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
 import { logger } from '../../../common/sharedServices/logger'
 
-jest.mock('../../../common/sharedServices/bulkJobs/getS3BatchJobTags', () => ({
-  getS3BatchJobTags: jest.fn()
+vi.mock('../../../common/sharedServices/bulkJobs/getS3BatchJobTags', () => ({
+  getS3BatchJobTags: vi.fn()
 }))
 
-jest.mock(
+vi.mock(
   '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage',
   () => ({
-    sendInitiateAthenaQueryMessage: jest.fn()
+    sendInitiateAthenaQueryMessage: vi.fn()
   })
 )
 
-jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
-  updateZendeskTicketById: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicketById: vi.fn()
 }))
 
-jest.mock('./jobWasSuccessful', () => ({
-  jobWasSuccessful: jest.fn()
+vi.mock('./jobWasSuccessful', () => ({
+  jobWasSuccessful: vi.fn()
 }))
 
 const TRANSFER_TO_ANALYSIS_BUCKET_JOB_TAG_NAME = 'isTransferToAnalysisBucketJob'
@@ -36,12 +36,12 @@ const ZENDESK_ID_TAG_NAME = 'zendeskId'
 
 describe('dataReadyForQuery', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest.spyOn(logger, 'error')
+    vi.resetAllMocks()
+    vi.spyOn(logger, 'error')
   })
 
   const givenS3BatchJobTagsContainsZendeskId = () => {
-    when(getS3BatchJobTags).mockResolvedValue([
+    vi.mocked(getS3BatchJobTags).mockResolvedValue([
       {
         Key: TRANSFER_TO_ANALYSIS_BUCKET_JOB_TAG_NAME,
         Value: 'true'
@@ -54,11 +54,11 @@ describe('dataReadyForQuery', () => {
   }
 
   const givenJobWasSuccessful = () => {
-    when(jobWasSuccessful).mockResolvedValue(true)
+    vi.mocked(jobWasSuccessful).mockResolvedValue(true)
   }
 
   const givenJobWasNotSuccessful = () => {
-    when(jobWasSuccessful).mockResolvedValue(false)
+    vi.mocked(jobWasSuccessful).mockResolvedValue(false)
   }
 
   it('Initiates athena query if batch job has completed successfully', async () => {
@@ -129,7 +129,7 @@ describe('dataReadyForQuery', () => {
   }
 ]}
   `('disregards when $testCase', async ({ tags }) => {
-    when(getS3BatchJobTags).mockResolvedValue(tags)
+    vi.mocked(getS3BatchJobTags).mockResolvedValue(tags)
 
     await handler(batchJobStatusChangeEvent('Complete'), mockLambdaContext)
 

@@ -3,13 +3,14 @@ import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
 // Dependencies
 import { retrieveSecrets } from './retrieveSecrets'
 import { TEST_ZENDESK_SECRET_ARN } from '../../../common/utils/tests/testConstants'
+import { vi, type MockedFunction } from 'vitest'
 
-jest.mock('./retrieveSecrets', () => ({
-  retrieveSecrets: jest.fn()
+vi.mock('./retrieveSecrets', () => ({
+  retrieveSecrets: vi.fn()
 }))
 
-const mockRetrieveSecrets = retrieveSecrets as jest.Mock<
-  Promise<Record<string, string>>
+const mockRetrieveSecrets = retrieveSecrets as MockedFunction<
+  typeof retrieveSecrets
 >
 
 const TEST_ZENDESK_API_KEY = 'myZendeskApiKey'

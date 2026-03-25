@@ -12,7 +12,7 @@ import {
   UpdateItemOutput
 } from '@aws-sdk/client-dynamodb'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
 
 const dynamoMock = mockClient(DynamoDBClient)
 

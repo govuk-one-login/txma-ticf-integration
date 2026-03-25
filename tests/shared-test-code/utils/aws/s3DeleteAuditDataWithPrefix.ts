@@ -29,7 +29,9 @@ export const deleteAuditDataWithPrefix = async (
 
     if (!objects || objects?.length === 0) return
   } catch (error) {
-    throw new Error(`Failed to list objects in bucket ${bucket}\n${error}`)
+    throw new Error(`Failed to list objects in bucket ${bucket}\n${error}`, {
+      cause: error
+    })
   }
 
   const deleteObjectsInput = {
@@ -49,6 +51,8 @@ export const deleteAuditDataWithPrefix = async (
       commandInput: deleteObjectsInput
     })
   } catch (error) {
-    throw new Error(`Failed to delete data in bucket ${bucket}\n${error}`)
+    throw new Error(`Failed to delete data in bucket ${bucket}\n${error}`, {
+      cause: error
+    })
   }
 }

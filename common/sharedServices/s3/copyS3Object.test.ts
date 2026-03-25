@@ -5,7 +5,8 @@ import {
 } from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
 import { copyS3Object } from '../../../common/sharedServices/s3/copyS3Object'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
+import { vi } from 'vitest'
 
 const s3Mock = mockClient(S3Client)
 const TEST_S3_BUCKET_DESTINATION = 'aTestBucket'
@@ -14,7 +15,7 @@ const TEST_FILE_PATH = '/sourcebucket/data'
 
 describe('copyS3Object tests', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   const copyCommandInput: CopyObjectCommandInput = {
@@ -32,7 +33,7 @@ describe('copyS3Object tests', () => {
 
     expect(s3Mock).toHaveReceivedCommandWith(
       CopyObjectCommand,
-      copyCommandInput
+      copyCommandInput as unknown as Record<string, unknown>
     )
   })
 })

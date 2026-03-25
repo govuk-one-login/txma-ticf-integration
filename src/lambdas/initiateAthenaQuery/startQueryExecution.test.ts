@@ -1,10 +1,11 @@
+import { vi } from 'vitest'
 import { startQueryExecution } from './startQueryExecution'
 import {
   AthenaClient,
   StartQueryExecutionCommand
 } from '@aws-sdk/client-athena'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
 import * as awsSdkClients from '../../../common/utils/awsSdkClients'
 
 const athenaMock = mockClient(AthenaClient)
@@ -83,7 +84,7 @@ describe('start Query execution', () => {
 
   it('returns a generic "Unknown error" when athenaClient.send throws a non-Error object', async () => {
     const originalSend = awsSdkClients.athenaClient.send
-    awsSdkClients.athenaClient.send = jest.fn().mockRejectedValue(42)
+    awsSdkClients.athenaClient.send = vi.fn().mockRejectedValue(42)
 
     const result = await startQueryExecution({
       sqlGenerated: true,

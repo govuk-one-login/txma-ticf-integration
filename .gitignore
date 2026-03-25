@@ -1,11 +1,6 @@
 # Build
 dist/
 
-# Jest
-coverage/
-tests/**/.env
-tests/reports/
-
 # Miscellaneous
 .DS_Store
 

@@ -9,7 +9,7 @@ import {
   TEST_VALID_EMAIL_RECIPIENTS_BUCKET_KEY
 } from '../../../common/utils/tests/testConstants'
 import { readS3DataToString } from '../../../common/sharedServices/s3/readS3DataToString'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
 import { StreamingBlobPayloadOutputTypes } from '@smithy/types'
 import { Readable } from 'stream'
 
@@ -43,7 +43,7 @@ describe('readS3DataToString', () => {
 
     expect(s3Mock).toHaveReceivedCommandWith(
       GetObjectCommand,
-      getObjectCommandInput
+      getObjectCommandInput as unknown as Record<string, unknown>
     )
     expect(returnedRecipientList).toEqual(testRecipientEmailList)
   })

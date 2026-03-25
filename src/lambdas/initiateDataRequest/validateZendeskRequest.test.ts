@@ -1,15 +1,16 @@
+import { vi } from 'vitest'
+import { when } from 'vitest-when'
 import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { validateZendeskRequest } from './validateZendeskRequest'
 import { IdentifierTypes } from '../../../common/types/dataRequestParams'
-import { when } from 'jest-when'
 import {
   TEST_DATE_1,
   TEST_DATE_2,
   ZENDESK_PII_TYPE_PREFIX
 } from '../../../common/utils/tests/testConstants'
 
-jest.mock('./isEmailInValidRecipientList', () => ({
-  isEmailInValidRecipientList: jest.fn()
+vi.mock('./isEmailInValidRecipientList', () => ({
+  isEmailInValidRecipientList: vi.fn()
 }))
 
 describe('validateZendeskRequest', () => {
@@ -150,10 +151,10 @@ describe('validateZendeskRequest', () => {
       .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
 
   beforeEach(() => {
+    vi.mocked(isEmailInValidRecipientList).mockResolvedValue(false)
     when(isEmailInValidRecipientList)
       .calledWith(testValidResultsEmail)
-      .mockResolvedValue(true)
-      .defaultResolvedValue(false)
+      .thenResolve(true)
   })
 
   it('should return an invalid response if request body is null', () => {
@@ -520,8 +521,8 @@ describe('validateZendeskRequest', () => {
 
   it('should return an invalid response if neither a dateFrom or dates property is passed', async () => {
     const validRequestBody = buildValidRequestBody()
-    validRequestBody.dateFrom = undefined
-    validRequestBody.dates = undefined
+    delete validRequestBody.dateFrom
+    delete validRequestBody.dates
     const validationResult = await validateZendeskRequest(
       JSON.stringify(validRequestBody)
     )

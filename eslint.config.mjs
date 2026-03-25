@@ -3,7 +3,7 @@ import pluginJs from '@eslint/js'
 import tsEslint from 'typescript-eslint'
 import tsEslintParser from '@typescript-eslint/parser'
 import eslintConfigPrettier from 'eslint-config-prettier'
-import eslintPluginJest from 'eslint-plugin-jest'
+import vitestPlugin from '@vitest/eslint-plugin'
 
 export default [
   { files: ['**/*.{js,ts}'] },
@@ -32,17 +32,17 @@ export default [
   },
   {
     files: ['tests/**/*.ts', 'scripts/**/*.ts', 'src/**/*.test.ts'],
-    plugins: { jest: eslintPluginJest },
+    plugins: { vitest: vitestPlugin },
     languageOptions: {
-      globals: eslintPluginJest.environments.globals.globals
+      globals: vitestPlugin.environments.env.globals
     },
     rules: {
-      'jest/no-disabled-tests': 'warn',
-      'jest/no-focused-tests': 'error',
-      'jest/no-identical-title': 'error',
-      'jest/prefer-to-have-length': 'warn',
-      'jest/valid-expect': 'error',
-      'jest/no-alias-methods': 'error',
+      'vitest/no-disabled-tests': 'warn',
+      'vitest/no-focused-tests': 'error',
+      'vitest/no-identical-title': 'error',
+      'vitest/prefer-to-have-length': 'warn',
+      'vitest/valid-expect': 'error',
+      'vitest/no-alias-methods': 'error',
       'no-console': ['off']
     }
   },

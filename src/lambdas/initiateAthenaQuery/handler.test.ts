@@ -1,3 +1,4 @@
+import { vi, type MockedFunction } from 'vitest'
 import { handler } from './handler'
 import {
   testAthenaQueryEvent,
@@ -8,33 +9,32 @@ import {
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 import { logger } from '../../../common/sharedServices/logger'
 import { initiateQuery } from './initiateQuery'
-import { when } from 'jest-when'
 
-jest.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
-  updateZendeskTicketById: jest.fn()
+vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
+  updateZendeskTicketById: vi.fn()
 }))
-jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
-  getDatabaseEntryByZendeskId: jest.fn()
+vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
+  getDatabaseEntryByZendeskId: vi.fn()
 }))
-jest.mock('./createQuerySql', () => ({
-  createQuerySql: jest.fn()
+vi.mock('./createQuerySql', () => ({
+  createQuerySql: vi.fn()
 }))
-jest.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
-  updateQueryByZendeskId: jest.fn()
+vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
+  updateQueryByZendeskId: vi.fn()
 }))
-jest.mock('./startQueryExecution', () => ({
-  startQueryExecution: jest.fn()
+vi.mock('./startQueryExecution', () => ({
+  startQueryExecution: vi.fn()
 }))
-jest.mock('./initiateQuery', () => ({
-  initiateQuery: jest.fn()
+vi.mock('./initiateQuery', () => ({
+  initiateQuery: vi.fn()
 }))
 
-const mockInitiateQuery = initiateQuery as jest.Mock
+const mockInitiateQuery = initiateQuery as MockedFunction<typeof initiateQuery>
 
 describe('tests related to running manual queries', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest.spyOn(logger, 'info')
+    vi.resetAllMocks()
+    vi.spyOn(logger, 'info')
   })
 
   it('checks that the lambda exits early and does not run an athena query as it is a manual query', async () => {
@@ -48,7 +48,7 @@ describe('tests related to running manual queries', () => {
 
 describe('tests related to running automated queries', () => {
   it('checks that the lambda continues as normal as its an automated query', async () => {
-    when(initiateQuery).mockResolvedValue()
+    vi.mocked(initiateQuery).mockResolvedValue()
     const testZendeskId = testAthenaQueryEvent.Records[0].body
     await handler(testAthenaQueryEvent, mockLambdaContext)
     expect(mockInitiateQuery).toHaveBeenCalledTimes(1)
@@ -60,12 +60,12 @@ describe('misc tests', () => {
   it('checks if error is thrown when sqs event has no records', async () => {
     await expect(
       handler(testAthenaQueryEventNoRecords, mockLambdaContext)
-    ).rejects.toThrow('No data in Athena Query event')
+    ).rejects.toThrowError('No data in Athena Query event')
   })
 
   it('checks if error is thrown when zendeskID has length < 1', async () => {
     await expect(
       handler(testAthenaQueryEventSmallZendeskId, mockLambdaContext)
-    ).rejects.toThrow('No zendeskId received from SQS')
+    ).rejects.toThrowError('No zendeskId received from SQS')
   })
 })

@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { currentDateEpochSeconds } from './currentDateEpochSeconds'
 
 describe('currentDateEpochSeconds', () => {
@@ -5,7 +6,7 @@ describe('currentDateEpochSeconds', () => {
     const mockDate = new Date('2025-01-01T00:00:00.000Z')
     const expectedEpochSeconds = Math.round(mockDate.getTime() / 1000)
 
-    jest.spyOn(Date, 'now').mockReturnValue(mockDate.getTime())
+    vi.spyOn(Date, 'now').mockReturnValue(mockDate.getTime())
 
     const result = currentDateEpochSeconds()
 
@@ -17,10 +18,10 @@ describe('currentDateEpochSeconds', () => {
     const mockDate1 = new Date('2025-01-01T00:00:00.000Z')
     const mockDate2 = new Date('2025-01-01T00:00:01.000Z')
 
-    jest.spyOn(Date, 'now').mockReturnValue(mockDate1.getTime())
+    vi.spyOn(Date, 'now').mockReturnValue(mockDate1.getTime())
     const result1 = currentDateEpochSeconds()
 
-    jest.spyOn(Date, 'now').mockReturnValue(mockDate2.getTime())
+    vi.spyOn(Date, 'now').mockReturnValue(mockDate2.getTime())
     const result2 = currentDateEpochSeconds()
 
     expect(result2).toBe(result1 + 1)

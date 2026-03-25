@@ -5,7 +5,7 @@ import {
 } from '@aws-sdk/client-s3-control'
 import { getS3BatchJobTags } from './getS3BatchJobTags'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
 import { TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID } from '../../../common/utils/tests/testConstants'
 const s3ControlClientMock = mockClient(S3ControlClient)
 

@@ -3,7 +3,6 @@ import {
   CreateJobCommand,
   JobReportScope
 } from '@aws-sdk/client-s3-control'
-import { when } from 'jest-when'
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_ANALYSIS_BUCKET_ARN,
@@ -16,19 +15,21 @@ import {
 import { startTransferToAnalysisBucket } from './startTransferToAnalysisBucket'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
-import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
+import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
-jest.mock('../../utils/getFeatureFlagValue', () => ({
-  getFeatureFlagValue: jest.fn()
+import 'aws-sdk-client-mock-vitest'
+import { vi } from 'vitest'
+
+vi.mock('../../utils/getFeatureFlagValue', () => ({
+  getFeatureFlagValue: vi.fn()
 }))
 
-jest.mock('../s3/getAuditDataSourceBucketName', () => ({
-  getAuditDataSourceBucketName: jest.fn()
+vi.mock('../s3/getAuditDataSourceBucketName', () => ({
+  getAuditDataSourceBucketName: vi.fn()
 }))
 
-jest.mock('./writeJobManifestFileToJobBucket', () => ({
-  writeJobManifestFileToJobBucket: jest.fn()
+vi.mock('./writeJobManifestFileToJobBucket', () => ({
+  writeJobManifestFileToJobBucket: vi.fn()
 }))
 
 const s3ControlClientMock = mockClient(S3ControlClient)
@@ -39,12 +40,12 @@ describe('startTransferToAnalysisBucket', () => {
   it.each([true, false])(
     'should write the manifest and start the copy or decrypt job if a file is supplied and decrypt feature flag is set to %p',
     async (decryptFeatureFlagOn: boolean) => {
-      when(getFeatureFlagValue).mockReturnValue(decryptFeatureFlagOn)
-      when(getAuditDataSourceBucketName).mockReturnValue(
+      vi.mocked(getFeatureFlagValue).mockReturnValue(decryptFeatureFlagOn)
+      vi.mocked(getAuditDataSourceBucketName).mockReturnValue(
         testAuditSourceDataBucket
       )
       s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
-      when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
+      vi.mocked(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
       const standardS3FileList = ['myFile1', 'myFile2']
       const glacierIRFileList: string[] = []
 

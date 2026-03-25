@@ -9,16 +9,16 @@ import {
   TEST_BATCH_JOB_ROLE_ARN,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { when } from 'jest-when'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
+import { vi } from 'vitest'
 
-jest.mock('./writeJobManifestFileToJobBucket', () => ({
-  writeJobManifestFileToJobBucket: jest.fn()
+vi.mock('./writeJobManifestFileToJobBucket', () => ({
+  writeJobManifestFileToJobBucket: vi.fn()
 }))
 
-jest.mock('../s3/getAuditDataSourceBucketName', () => ({
-  getAuditDataSourceBucketName: jest.fn()
+vi.mock('../s3/getAuditDataSourceBucketName', () => ({
+  getAuditDataSourceBucketName: vi.fn()
 }))
 
 const s3ControlClientMock = mockClient(S3ControlClient)
@@ -28,14 +28,16 @@ const testSourceDataBucket = 'someSourceDataBucket'
 
 describe('startGlacierRestore', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     s3ControlClientMock.reset()
   })
 
   it('should write the manifest and start the glacier restore if a file list is supplied', async () => {
     s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
-    when(getAuditDataSourceBucketName).mockReturnValue(testSourceDataBucket)
-    when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
+    vi.mocked(getAuditDataSourceBucketName).mockReturnValue(
+      testSourceDataBucket
+    )
+    vi.mocked(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
     const fileList = ['myFile1', 'myFile2']
 
     await startGlacierRestore(fileList, ZENDESK_TICKET_ID)
@@ -85,8 +87,10 @@ describe('startGlacierRestore', () => {
 
   it('should handle null filesToRestore gracefully', async () => {
     s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
-    when(getAuditDataSourceBucketName).mockReturnValue(testSourceDataBucket)
-    when(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
+    vi.mocked(getAuditDataSourceBucketName).mockReturnValue(
+      testSourceDataBucket
+    )
+    vi.mocked(writeJobManifestFileToJobBucket).mockResolvedValue(testEtag)
 
     await startGlacierRestore(null as unknown as string[], ZENDESK_TICKET_ID)
 

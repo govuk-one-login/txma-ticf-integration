@@ -1,10 +1,11 @@
+import { vi } from 'vitest'
 import { sendSQSMessageToCompletedQueue } from './sendSQSMessageToCompletedQueue'
 import { sendSqsMessage } from '../../common/sharedServices/queue/sendSqsMessage'
 import { GetQueueUrlCommand, SQSClient } from '@aws-sdk/client-sqs'
 import { mockClient } from 'aws-sdk-client-mock'
 
-jest.mock('../../src/sharedServices/queue/sendSqsMessage', () => ({
-  sendSqsMessage: jest.fn()
+vi.mock('../../src/sharedServices/queue/sendSqsMessage', () => ({
+  sendSqsMessage: vi.fn()
 }))
 
 const TEST_ATHENA_QUERY_ID = '46e34211-f930-4e15-a9fb-802f2ae77052'
@@ -16,7 +17,7 @@ const mockSQSClient = mockClient(SQSClient)
 
 describe('sendSQSMessageToCompletedQueue function tests', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     mockSQSClient.reset()
     mockSQSClient.callsFake((input) => {
       throw new Error(`Unexpected SQS request - ${JSON.stringify(input)}`)
@@ -50,7 +51,7 @@ describe('sendSQSMessageToCompletedQueue function tests', () => {
 
     await expect(
       sendSQSMessageToCompletedQueue(environment, payload)
-    ).rejects.toThrow(getQueueUrlError)
+    ).rejects.toThrowError(getQueueUrlError)
     expect(sendSqsMessage).not.toHaveBeenCalled()
   })
 })

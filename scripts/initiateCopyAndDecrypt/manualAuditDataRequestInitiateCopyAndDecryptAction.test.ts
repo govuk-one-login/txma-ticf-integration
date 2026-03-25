@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { initiateCopyAndDecryptAction } from './manualAuditDataRequestInitiateCopyAndDecryptAction'
 import * as sendManualAuditDataRequestPayloadToInitiateQueueImportHelper from './sendManualAuditDataRequestPayloadToInitiateQueue'
 import { sendManualAuditDataRequestPayloadToInitiateQueue } from './sendManualAuditDataRequestPayloadToInitiateQueue'
@@ -114,16 +115,16 @@ const testCaseDateAndDateRange = [
   }
 ]
 
-jest.mock('./sendManualAuditDataRequestPayloadToInitiateQueue', () => ({
-  sendManualAuditDataRequestPayloadToInitiateQueue: jest.fn()
+vi.mock('./sendManualAuditDataRequestPayloadToInitiateQueue', () => ({
+  sendManualAuditDataRequestPayloadToInitiateQueue: vi.fn()
 }))
 
 describe('testing CLI action: initiateCopyAndDecryptAction', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest.clearAllMocks()
+    vi.resetAllMocks()
+    vi.clearAllMocks()
 
-    jest.spyOn(
+    vi.spyOn(
       sendManualAuditDataRequestPayloadToInitiateQueueImportHelper,
       'sendManualAuditDataRequestPayloadToInitiateQueue'
     )

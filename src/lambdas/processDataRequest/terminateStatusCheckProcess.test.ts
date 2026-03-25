@@ -1,3 +1,4 @@
+import { vi, type MockedFunction } from 'vitest'
 import { sendSqsMessageWithStringBody } from '../../../common/sharedServices/queue/sendSqsMessage'
 import {
   MOCK_TERMINATED_JOB_QUEUE_URL,
@@ -5,12 +6,14 @@ import {
 } from '../../../common/utils/tests/testConstants'
 import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
 
-jest.mock('../../../common/sharedServices/queue/sendSqsMessage', () => ({
-  sendSqsMessageWithStringBody: jest.fn()
+vi.mock('../../../common/sharedServices/queue/sendSqsMessage', () => ({
+  sendSqsMessageWithStringBody: vi.fn()
 }))
 
 const mockSendSqsMessageWithStringBody =
-  sendSqsMessageWithStringBody as jest.Mock<Promise<string | undefined>>
+  sendSqsMessageWithStringBody as MockedFunction<
+    typeof sendSqsMessageWithStringBody
+  >
 
 const MOCK_MESSAGE_ID = 'myMessageId'
 

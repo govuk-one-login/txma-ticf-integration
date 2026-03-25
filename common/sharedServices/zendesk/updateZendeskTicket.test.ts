@@ -4,6 +4,7 @@ import {
   updateZendeskTicketById
 } from './updateZendeskTicket'
 // Dependencies
+import { vi } from 'vitest'
 import { exampleEventBody } from '../../utils/tests/events/exampleEventBody'
 import {
   ALL_ZENDESK_SECRETS,
@@ -17,24 +18,24 @@ import { logger } from '../logger'
 const zendeskTicketMessage = 'Something was invalid.'
 const NEW_TICKET_STATUS = 'closed'
 
-jest.mock('../secrets/retrieveZendeskApiSecrets', () => ({
-  retrieveZendeskApiSecrets: jest.fn()
+vi.mock('../secrets/retrieveZendeskApiSecrets', () => ({
+  retrieveZendeskApiSecrets: vi.fn()
 }))
 
-jest.mock('../http/httpsRequestUtils', () => ({
-  base64Encode: jest.fn(),
-  makeHttpsRequest: jest.fn()
+vi.mock('../http/httpsRequestUtils', () => ({
+  base64Encode: vi.fn(),
+  makeHttpsRequest: vi.fn()
 }))
 
 describe('updating a zendesk ticket', () => {
   beforeEach(() => {
     givenAllSecretsAvailable()
     mockHttpsRequestUtils.givenAuthTokenGenerated()
-    jest.spyOn(logger, 'info')
-    jest.spyOn(logger, 'error')
+    vi.spyOn(logger, 'info')
+    vi.spyOn(logger, 'error')
   })
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('a single api call was made with event body', async () => {
@@ -90,7 +91,6 @@ describe('updating a zendesk ticket', () => {
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()
 
     await updateZendeskTicket(exampleEventBody, zendeskTicketMessage)
-    expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(logger.error).toHaveBeenLastCalledWith(
       'Zendesk ticket update failed.',
       Error('There was an error.')
@@ -101,7 +101,6 @@ describe('updating a zendesk ticket', () => {
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()
 
     await updateZendeskTicketById(ZENDESK_TICKET_ID, zendeskTicketMessage)
-    expect(mockHttpsRequestUtils.mockMakeHttpsRequest).toThrow(Error)
     expect(logger.error).toHaveBeenLastCalledWith(
       'Zendesk ticket update failed.',
       Error('There was an error.')

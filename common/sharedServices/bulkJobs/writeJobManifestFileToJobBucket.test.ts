@@ -6,12 +6,13 @@ import { createManifestFileText } from './createManifestFileText'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
+import 'aws-sdk-client-mock-vitest'
+import { vi } from 'vitest'
 
-jest.mock('./createManifestFileText', () => ({
-  createManifestFileText: jest.fn()
+vi.mock('./createManifestFileText', () => ({
+  createManifestFileText: vi.fn()
 }))
-const createManifestFileTextMock = createManifestFileText as jest.Mock
+const createManifestFileTextMock = vi.mocked(createManifestFileText)
 const s3ClientMock = mockClient(S3Client)
 const testEtag = 'myTestEtag'
 const manifestFileContents = 'my,manifest,file,contents'

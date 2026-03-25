@@ -109,8 +109,7 @@ describe('interpolateTemplate', () => {
     const messages = [
       {
         name: 'no-replacements',
-        message: 'Static message with {placeholder}',
-        replacements: undefined
+        message: 'Static message with {placeholder}'
       }
     ]
     const result = interpolateTemplate('no-replacements', messages, {

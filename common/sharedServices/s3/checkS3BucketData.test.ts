@@ -1,9 +1,10 @@
+import { vi } from 'vitest'
 import { listS3Files } from '../../../common/sharedServices/s3/listS3Files'
 import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
 import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
 import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
 import { StorageClass, _Object } from '@aws-sdk/client-s3'
-import { when } from 'jest-when'
+import { when } from 'vitest-when'
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_DATE_1,
@@ -12,19 +13,19 @@ import {
 } from '../../../common/utils/tests/testConstants'
 import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
 import { logger } from '../../../common/sharedServices/logger'
-jest.mock('./listS3Files', () => ({
-  listS3Files: jest.fn()
+vi.mock('./listS3Files', () => ({
+  listS3Files: vi.fn()
 }))
 
-jest.mock('./getAuditDataSourceBucketName', () => ({
-  getAuditDataSourceBucketName: jest.fn()
+vi.mock('./getAuditDataSourceBucketName', () => ({
+  getAuditDataSourceBucketName: vi.fn()
 }))
 
-jest.mock('./generateS3ObjectPrefixesForDateList', () => ({
-  generateS3ObjectPrefixesForDateList: jest.fn()
+vi.mock('./generateS3ObjectPrefixesForDateList', () => ({
+  generateS3ObjectPrefixesForDateList: vi.fn()
 }))
 const mockgenerateS3ObjectPrefixesForDateList =
-  generateS3ObjectPrefixesForDateList as jest.Mock<string[]>
+  generateS3ObjectPrefixesForDateList as ReturnType<typeof vi.fn>
 
 describe('check objects in analysis bucket', () => {
   const testAuditSourceDataBucket = 'mySourceDataBucket'
@@ -58,7 +59,7 @@ describe('check objects in analysis bucket', () => {
         Bucket: bucketName,
         OptionalObjectAttributes: ['RestoreStatus']
       })
-      .mockResolvedValue(objects)
+      .thenResolve(objects)
   }
 
   const givenDataInBucketForPrefixes = (
@@ -140,21 +141,21 @@ describe('check objects in analysis bucket', () => {
           Bucket: bucketName,
           OptionalObjectAttributes: ['RestoreStatus']
         })
-        .mockResolvedValue([])
+        .thenResolve([])
     })
   }
 
   const givenNoDataInEitherBucket = () => {
-    when(listS3Files).defaultResolvedValue([])
+    vi.mocked(listS3Files).mockResolvedValue([])
   }
 
   beforeEach(() => {
-    when(listS3Files).resetWhenMocks()
-    when(getAuditDataSourceBucketName).mockReturnValue(
+    vi.mocked(listS3Files).mockReset()
+    vi.mocked(getAuditDataSourceBucketName).mockReturnValue(
       testAuditSourceDataBucket
     )
-    jest.spyOn(logger, 'info')
-    jest.spyOn(logger, 'warn')
+    vi.spyOn(logger, 'info')
+    vi.spyOn(logger, 'warn')
   })
 
   const assertNumberOfFilesLogged = (

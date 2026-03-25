@@ -24,7 +24,8 @@ export const copyAuditDataFromTestDataBucket = async (
     })
   } catch (error) {
     throw new Error(
-      `Failed to copy from ${input.CopySource} to bucket ${targetBucket}\n${error}`
+      `Failed to copy from ${input.CopySource} to bucket ${targetBucket}\n${error}`,
+      { cause: error }
     )
   }
 }
