@@ -4,11 +4,18 @@ Runs Lambda handlers directly in Node.js without Docker or SAM, enabling breakpo
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/en/) version 22 (via [NVM](https://github.com/nvm-sh/nvm))
-- `ts-node` — installed via `npm install`
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) with `ticf-integration-dev` SSO profile configured
+- [Node.js](https://nodejs.org/en/) version 24 (via [NVM](https://github.com/nvm-sh/nvm))
+- `tsx` — installed via `npm install`
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) with AWS SSO configured
 - [jq](https://jqlang.org/) — required by `fetch-env-vars.sh`
-- Access to the dev AWS environment
+- Access to the dev AWS environment with the `AdministratorAccessPermission` SSO role
+
+**Important**: Lambda execution roles can be assumed by developers with the `AdministratorAccessPermission` SSO role in the dev environment for debugging purposes. The debug script will attempt to assume the Lambda execution role to provide realistic permissions for testing operations like cross-account KMS decryption.
+
+```bash
+# Use the AdministratorAccessPermission SSO role for debugging
+aws sso login --profile audit-dev
+```
 
 ## Setup
 
@@ -25,7 +32,7 @@ This generates `.vscode/launch.json` with a debug configuration for each Lambda.
 `env-vars.json` is the local substitute for Lambda environment variables. Fetch the current values from the deployed dev stack:
 
 ```bash
-aws sso login --profile ticf-integration-dev
+aws sso login --profile audit-dev
 bash scripts/debug/setup/fetch-env-vars.sh
 ```
 
@@ -62,6 +69,7 @@ The install script auto-discovers lambdas from `src/lambdas/` — no other chang
 ## Notes
 
 - Edit `events/<lambdaName>.json` to change the input event
+- **Role Assumption**: The debug script attempts to assume the Lambda execution role for realistic permissions. This works for developers with the `AdministratorAccessPermission` SSO role in the dev environment. If role assumption fails, the script continues with your current credentials but may encounter permission issues.
 - The `initiateDataRequest` handler validates the Zendesk webhook signature — expect a 400 response locally unless `ZENDESK_WEBHOOK_SECRET_KEY` is set correctly in `env-vars.json`
 - The `initiateAthenaQuery` handler reads the raw `zendeskId` directly from `Records[0].body` — the event body is a plain string, not a JSON object
 - The `dataReadyForQuery` and `sendQueryResultsNotification` handlers expect EventBridge events, not SQS events

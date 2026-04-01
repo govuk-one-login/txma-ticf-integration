@@ -7,9 +7,9 @@
   "tasks": [
     {
       "taskId": "test-task-id",
-      "s3Key": "test/path/to/encrypted-file.gz",
+      "s3Key": "firehose/2026/03/25/17/audit-message-batch-9-2026-03-25-17-03-24-4dff11e7-78ab-45fc-9e1a-0cd9968c0cd6.gz",
       "s3VersionId": null,
-      "s3BucketArn": "arn:aws:s3:::test-audit-bucket"
+      "s3BucketArn": "arn:aws:s3:::audit-dev-permanent-message-batch"
     }
   ]
 }
