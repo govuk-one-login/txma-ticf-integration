@@ -38,16 +38,34 @@ EOF
 }
 
 setup_intellij() {
+    local IDEA_DIR="$ROOT_DIR/.idea/runConfigurations"
+    mkdir -p "$IDEA_DIR"
+    local NODE_INTERPRETER
+    NODE_INTERPRETER="$HOME/.nvm/versions/node/v24.14.1/bin/node"
+    for d in "$ROOT_DIR/src/lambdas/"/*/; do
+        local LAMBDA
+        LAMBDA=$(basename "$d")
+        cat > "$IDEA_DIR/Debug_${LAMBDA}.xml" <<EOF
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Debug ${LAMBDA}" type="NodeJSConfigurationType" factoryName="Node.js">
+    <node-interpreter>${NODE_INTERPRETER}</node-interpreter>
+    <node-parameters>--import tsx/esm</node-parameters>
+    <working-dir>${ROOT_DIR}</working-dir>
+    <script-path>${ROOT_DIR}/scripts/debug/invoke-local.ts</script-path>
+    <script-parameters>${LAMBDA}</script-parameters>
+    <method v="2" />
+  </configuration>
+</component>
+EOF
+        echo "==> Generated $IDEA_DIR/Debug_${LAMBDA}.xml"
+    done
     echo ""
-    echo "==> IntelliJ: create a Node.js run configuration manually for each Lambda:"
+    echo "==> IntelliJ run configurations installed. Reload the project if already open."
     echo ""
-    echo "   Run > Edit Configurations > + > Node.js"
-    echo ""
-    echo "   Node interpreter : <your Node 22 path>"
-    echo "   Node parameters  : --require ts-node/register"
+    echo "   Node interpreter : ${NODE_INTERPRETER}"
+    echo "   Node parameters  : --import tsx/esm"
     echo "   Working directory: $ROOT_DIR"
     echo "   JavaScript file  : $ROOT_DIR/scripts/debug/invoke-local.ts"
-    echo "   App parameters   : <lambdaName>  e.g. initiateDataRequest"
     echo ""
     echo "   Available lambdas:"
     for d in "$ROOT_DIR/src/lambdas/"/*/; do
