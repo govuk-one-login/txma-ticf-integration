@@ -63,7 +63,7 @@
     "@vitest/eslint-plugin": "1.6.9",
     "aws-sdk-client-mock": "^4.1.0",
     "aws-sdk-client-mock-vitest": "^7.0.1",
-    "axios": "1.13.5",
+    "axios": "1.15.0",
     "commander": "14.0.2",
     "csv-string": "4.1.1",
     "esbuild": "0.27.0",
