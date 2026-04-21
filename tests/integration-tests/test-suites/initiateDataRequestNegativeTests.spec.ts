@@ -22,6 +22,7 @@ describe('Invalid requests should not start a data copy', () => {
     })
 
     it('recipient email not in approved list should not start data retrieval process', async () => {
+      // Component Test
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -61,6 +62,7 @@ describe('Invalid requests should not start a data copy', () => {
     })
 
     it('invalid data should not start data retrieval process', async () => {
+      // Component Test
       const initiateDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),

@@ -22,6 +22,7 @@ describe('Data should not be copied to analysis bucket', () => {
     })
 
     it('request for valid data, no files present', async () => {
+      // Component Test
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -63,6 +64,7 @@ describe('Data should not be copied to analysis bucket', () => {
     })
 
     it('request for valid data already in analysis bucket', async () => {
+      // Component Test
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),

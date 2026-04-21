@@ -32,6 +32,7 @@ describe('Data should be copied to analysis bucket', () => {
     })
 
     it('data all in standard tier', async () => {
+      // Component Test
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -100,6 +101,7 @@ describe('Data should be copied to analysis bucket', () => {
     })
 
     it('data all in glacier tier', async () => {
+      // Component Test
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
@@ -156,6 +158,7 @@ describe('Data should be copied to analysis bucket', () => {
     })
 
     it('data in standard and glacier tier', async () => {
+      // Component Test
       const processDataRequestEvents =
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
