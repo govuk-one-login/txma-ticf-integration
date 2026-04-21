@@ -17,6 +17,7 @@ describe('getFeatureFlagValue', () => {
   )
 
   it('should return false if the required environment variable for the feature flag is not set', () => {
+    // Unit Test
     delete process.env.FEATURE_DECRYPT_DATA
     expect(getFeatureFlagValue('DECRYPT_DATA')).toEqual(false)
   })

@@ -15,6 +15,7 @@ const MOCK_QUEUE_URL = 'http://my_queue_url'
 const MOCK_MESSAGE_ID = 'MyMessageId'
 describe('sendSqsMessage', () => {
   it('sends message to correct queue', async () => {
+    // Unit Test
     sqsMock.on(SendMessageCommand).resolves({ MessageId: MOCK_MESSAGE_ID })
 
     const messageId = await sendSqsMessage(testDataRequest, MOCK_QUEUE_URL)
@@ -26,6 +27,7 @@ describe('sendSqsMessage', () => {
   })
 
   it('sets delaySend when set in parameters', async () => {
+    // Unit Test
     sqsMock.on(SendMessageCommand).resolves({ MessageId: MOCK_MESSAGE_ID })
     const delaySendInSeconds = 60
     const messageId = await sendSqsMessage(
@@ -44,6 +46,7 @@ describe('sendSqsMessage', () => {
 
 describe('sendSqsMessageWithStringBody', () => {
   it('sends message string to correct queue', async () => {
+    // Unit Test
     sqsMock.on(SendMessageCommand).resolves({ MessageId: MOCK_MESSAGE_ID })
     const messageBody = 'myMessageBody'
     const messageId = await sendSqsMessageWithStringBody(

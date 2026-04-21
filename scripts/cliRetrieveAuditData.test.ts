@@ -43,6 +43,7 @@ describe('testing command: retrieve-audit-data', () => {
   it.each(table)(
     'retrieve-audit-data happy path. Test case %#',
     ({ cliParams, parsedCliParams }) => {
+      // Unit Test
       vi.mocked(initiateCopyAndDecryptAction).mockResolvedValue()
       console.log(cliParams)
       parseCliCallerForTesting(cliParams)

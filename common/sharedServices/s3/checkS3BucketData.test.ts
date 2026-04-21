@@ -181,6 +181,7 @@ describe('check objects in analysis bucket', () => {
   }
 
   test('all data in analysis bucket', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       prefixes,
       testAuditSourceDataBucket,
@@ -199,6 +200,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, all audit data is standard tier', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       prefixes,
       testAuditSourceDataBucket,
@@ -227,6 +229,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with missing keys', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
       testAuditSourceDataBucket,
@@ -256,6 +259,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with undefined keys', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
       testAuditSourceDataBucket,
@@ -285,6 +289,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with missing storage class', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
       testAuditSourceDataBucket,
@@ -314,6 +319,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with undefined storage class', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
       testAuditSourceDataBucket,
@@ -346,6 +352,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, all audit data in glacier tier', async () => {
+    // Unit Test
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
     givenDataInBucketForPrefixes(prefixes, testAuditSourceDataBucket, 'GLACIER')
 
@@ -370,6 +377,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, some audit data in glacier tier', async () => {
+    // Unit Test
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
     givenDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
@@ -403,6 +411,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, some audit data in glacier IR tier already restored', async () => {
+    // Unit Test
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
     givenDataInBucketForPrefix(prefixes[0], testAuditSourceDataBucket, [
       {
@@ -445,6 +454,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, some audit data in glacier IR tier with restore in progress', async () => {
+    // Unit Test
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
     givenDataInBucketForPrefix(prefixes[0], testAuditSourceDataBucket, [
       {
@@ -477,6 +487,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, some audit data is currently being restored from Glacier tier', async () => {
+    // Unit Test
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
     givenGlacierRestoreInProgressForPrefixes(
       [prefixes[0], prefixes[2]],
@@ -509,6 +520,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in analysis bucket, some audit data has been restored from Glacier tier', async () => {
+    // Unit Test
     givenNoDataInBucketForPrefixes(prefixes, TEST_ANALYSIS_BUCKET)
     givenGlacierRestoredDataInBucketForPrefixes(
       [prefixes[0], prefixes[2]],
@@ -540,6 +552,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       prefixes,
       testAuditSourceDataBucket,
@@ -573,6 +586,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket, some data in analysis bucket missing keys', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       prefixes,
       testAuditSourceDataBucket,
@@ -614,6 +628,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket, some data in analysis bucket with undefined keys', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       prefixes,
       testAuditSourceDataBucket,
@@ -655,6 +670,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket, some data in analysis bucket missing storage class', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       prefixes,
       testAuditSourceDataBucket,
@@ -696,6 +712,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('partial data in analysis bucket, some data in analysis bucket with undefined storage class', async () => {
+    // Unit Test
     givenDataInBucketForPrefixes(
       prefixes,
       testAuditSourceDataBucket,
@@ -740,6 +757,7 @@ describe('check objects in analysis bucket', () => {
   })
 
   test('no data in either bucket', async () => {
+    // Unit Test
     givenNoDataInEitherBucket()
 
     const result = await checkS3BucketData(testDataRequest)

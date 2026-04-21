@@ -16,6 +16,7 @@ describe('start Query execution', () => {
   })
 
   it('returns a QueryExecutionId if a query is successfully initiated', async () => {
+    // Unit Test
     athenaMock.on(StartQueryExecutionCommand).resolves({
       QueryExecutionId: '123'
     })
@@ -40,6 +41,7 @@ describe('start Query execution', () => {
   })
 
   it('returns an error if a query execution id is not returned', async () => {
+    // Unit Test
     athenaMock.on(StartQueryExecutionCommand).resolves({})
 
     const result = await startQueryExecution({
@@ -54,6 +56,7 @@ describe('start Query execution', () => {
   })
 
   it('returns an error if the StartQueryExecutionCommand fails', async () => {
+    // Unit Test
     const testError = new Error('Athena query execution initiation failed')
     athenaMock.on(StartQueryExecutionCommand).rejects(testError)
 
@@ -69,6 +72,7 @@ describe('start Query execution', () => {
   })
 
   it('returns a generic error if the StartQueryExecutionCommand fails with a non-Error object', async () => {
+    // Unit Test
     athenaMock.on(StartQueryExecutionCommand).rejects('string error')
 
     const result = await startQueryExecution({
@@ -83,6 +87,7 @@ describe('start Query execution', () => {
   })
 
   it('returns a generic "Unknown error" when athenaClient.send throws a non-Error object', async () => {
+    // Unit Test
     const originalSend = awsSdkClients.athenaClient.send
     awsSdkClients.athenaClient.send = vi.fn().mockRejectedValue(42)
 

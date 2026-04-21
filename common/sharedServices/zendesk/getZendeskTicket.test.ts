@@ -51,6 +51,7 @@ describe('get zendesk ticket information', () => {
   })
 
   test('show ticket call succeeds', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenSuccessfulApiCall(successResponse)
     const ticket = await getZendeskTicket(ZENDESK_TICKET_ID)
 
@@ -59,6 +60,7 @@ describe('get zendesk ticket information', () => {
   })
 
   test('throws error if response is not a zendesk ticket', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenSuccessfulApiCall(invalidResponse)
 
     const error = async () => {
@@ -71,6 +73,7 @@ describe('get zendesk ticket information', () => {
   })
 
   test('show ticket call fails', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()
 
     const error = async () => {

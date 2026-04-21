@@ -91,6 +91,7 @@ describe('sendQueryResultsNotification', () => {
   )
 
   it('should log an error if the Athena query state is unrecognised', async () => {
+    // Unit Test
     vi.spyOn(logger, 'error')
 
     const unrecognisedQueryState = 'something unrecognised'
@@ -111,6 +112,7 @@ describe('sendQueryResultsNotification', () => {
   })
 
   it('should call the relevant functions given a successful query state', async () => {
+    // Unit Test
     const mockSendQueryCompleteQueueMessage =
       sendQueryCompleteQueueMessage as MockedFunction<
         typeof sendQueryCompleteQueueMessage

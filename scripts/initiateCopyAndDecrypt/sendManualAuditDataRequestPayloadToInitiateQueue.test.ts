@@ -14,6 +14,7 @@ vi.mock('../sharedServices/aws/sts/getAwsAccountNumber', () => ({
 
 describe('sendManualAuditDataRequestPayloadToInitiateQueue', () => {
   it('should send the payload to the initiate queue', async () => {
+    // Unit Test
     const mockAccountNumber = '123456789012'
     const queueUrl = `https://sqs.eu-west-2.amazonaws.com/${mockAccountNumber}/txma-ticf-integration-initiate-data-request-queue`
     const testPayload = {

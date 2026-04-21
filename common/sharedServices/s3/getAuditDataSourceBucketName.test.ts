@@ -24,11 +24,13 @@ describe('getAuditDataSourceBucketName', () => {
   }
 
   it('should return the original audit bucket when the decryption feature flag is off', () => {
+    // Unit Test
     givenDecryptionFeatureFlagOff()
     expect(getAuditDataSourceBucketName()).toEqual(TEST_AUDIT_BUCKET)
   })
 
   it('should return the permanent encrypted audit bucket when the decryption feature flag is on', () => {
+    // Unit Test
     givenDecryptionFeatureFlagOn()
     expect(getAuditDataSourceBucketName()).toEqual(TEST_PERMANENT_BUCKET_NAME)
   })

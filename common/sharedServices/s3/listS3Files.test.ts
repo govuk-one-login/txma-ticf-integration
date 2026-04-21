@@ -18,6 +18,7 @@ describe('list S3 objects', () => {
   })
 
   test('response has no continuation token - only 1 page of results', async () => {
+    // Unit Test
     s3Mock.on(ListObjectsV2Command).resolves({
       Contents: [{ Key: 'example-object' }]
     })
@@ -27,6 +28,7 @@ describe('list S3 objects', () => {
   })
 
   test('folders in the output are ignored', async () => {
+    // Unit Test
     s3Mock.on(ListObjectsV2Command).resolves({
       Contents: [
         { Key: 'example-folder/' },
@@ -39,6 +41,7 @@ describe('list S3 objects', () => {
   })
 
   test('response has continuation token - return results for all pages', async () => {
+    // Unit Test
     s3Mock
       .on(ListObjectsV2Command)
       .resolvesOnce({
@@ -64,6 +67,7 @@ describe('list S3 objects', () => {
   })
 
   test('response has no next continuation token - no more pages after the current', async () => {
+    // Unit Test
     s3Mock.on(ListObjectsV2Command).resolves({
       Contents: [{ Key: 'example-object' }],
       ContinuationToken: 'page2'
@@ -74,6 +78,7 @@ describe('list S3 objects', () => {
   })
 
   test('response has no continuation token or contents', async () => {
+    // Unit Test
     s3Mock.on(ListObjectsV2Command).resolves({})
 
     const result = await listS3Files(input)

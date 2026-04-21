@@ -89,6 +89,7 @@ describe('initiate data transfer', () => {
   })
 
   it('calls Zendesk to close ticket if no data can be found for the requested parameters', async () => {
+    // Unit Test
     givenNoDataAvailable()
     await initiateDataTransfer(testDataRequest)
     expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
@@ -100,6 +101,7 @@ describe('initiate data transfer', () => {
   })
 
   it('stores a record to the data request database and sends a message to the Athena queue when data is ready to go', async () => {
+    // Unit Test
     givenDataAvailable()
     await initiateDataTransfer(testDataRequest)
     expect(mockCheckS3BucketData).toHaveBeenCalledWith(testDataRequest)
@@ -116,6 +118,7 @@ describe('initiate data transfer', () => {
   })
 
   it('initiates a copy when we require a copy and no glacier restore', async () => {
+    // Unit Test
     const filesToCopy = ['myFile1', 'myFile2']
     givenDataResult(true, filesToCopy, [])
     await initiateDataTransfer(testDataRequest)
@@ -136,6 +139,7 @@ describe('initiate data transfer', () => {
   })
 
   it('initiates a glacier restore if necessary', async () => {
+    // Unit Test
     const glacierTierLocationsToCopy = ['glacier-file1', 'glacier-file-2']
     givenDataResult(true, [], glacierTierLocationsToCopy)
     await initiateDataTransfer(testDataRequest)
@@ -157,6 +161,7 @@ describe('initiate data transfer', () => {
   })
 
   it('does not start a copy if glacier restore required', async () => {
+    // Unit Test
     const glacierTierLocationsToCopy = ['glacier-file1', 'glacier-file-2']
     givenDataResult(true, ['some-file-to-copy'], glacierTierLocationsToCopy)
     await initiateDataTransfer(testDataRequest)

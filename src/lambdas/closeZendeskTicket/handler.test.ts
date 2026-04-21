@@ -38,6 +38,7 @@ describe('initiate closeZendeskTicket handler', () => {
   })
 
   it('updates zendesk ticket correct parameters', async () => {
+    // Unit Test
     await callHandlerWithBody(validEventBody)
 
     expect(mockUpdateZendeskTicketById).toHaveBeenCalledTimes(1)
@@ -49,12 +50,14 @@ describe('initiate closeZendeskTicket handler', () => {
   })
 
   it('throws an error when no event records are in the SQSEvent object', async () => {
+    // Unit Test
     await expect(
       handler({ Records: [] }, mockLambdaContext)
     ).rejects.toThrowError('No records found in event')
   })
 
   it('throws an error when no event body is present', async () => {
+    // Unit Test
     const invalidEventBody = ''
 
     await expect(callHandlerWithBody(invalidEventBody)).rejects.toThrowError(
@@ -103,6 +106,7 @@ describe('initiate closeZendeskTicket handler', () => {
   )
 
   it('given valid event body, it logs an error when updateZendeskTicketById fails', async () => {
+    // Unit Test
     givenUnsuccessfulUpdateZendeskTicket()
 
     await callHandlerWithBody(validEventBody)

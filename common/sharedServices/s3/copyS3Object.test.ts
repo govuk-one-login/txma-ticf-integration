@@ -25,6 +25,7 @@ describe('copyS3Object tests', () => {
   }
 
   it('copies an s3 Object', async () => {
+    // Unit Test
     await copyS3Object(
       TEST_FILE_NAME,
       TEST_FILE_PATH,

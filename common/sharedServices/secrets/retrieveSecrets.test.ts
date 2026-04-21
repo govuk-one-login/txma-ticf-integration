@@ -18,6 +18,7 @@ describe('retrieve secrets', () => {
   }
   secretsMockClient.on(GetSecretValueCommand).resolves(secretValueCommandOutput)
   it('should retrieve secrets when available', async () => {
+    // Unit Test
     const secrets = await retrieveSecrets(GIVEN_SECRET_ID)
     expect(secrets[GIVEN_SECRET_KEY]).toEqual(GIVEN_SECRET_VALUE)
     expect(secretsMockClient).toHaveReceivedCommandWith(GetSecretValueCommand, {

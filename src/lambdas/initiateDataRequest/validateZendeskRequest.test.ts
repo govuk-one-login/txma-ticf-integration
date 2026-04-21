@@ -158,14 +158,17 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if request body is null', () => {
+    // Unit Test
     runValidationWithInvalidRequestBody(null)
   })
 
   it('should return an invalid response if request body is blank', () => {
+    // Unit Test
     runValidationWithInvalidRequestBody('')
   })
 
   it('should return an invalid response if request body is malformed', () => {
+    // Unit Test
     runValidationWithInvalidRequestBody('hello')
   })
 
@@ -226,6 +229,7 @@ describe('validateZendeskRequest', () => {
   )
 
   it('should parse data into response if request data is valid', async () => {
+    // Unit Test
     const request = buildValidRequestBodyWithIds(
       'session_id',
       'sessionId1 sessionId2 sessionId3',
@@ -268,6 +272,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should parse data into response if request contains sessionIds', async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithIds(
@@ -287,6 +292,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should parse data into response if request contains a fromDate', async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(buildRequestBodyWithDates(TEST_DATE_1, TEST_DATE_1))
     )
@@ -295,6 +301,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if request does not contain sessionIds when required', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.identifierType = 'session_id'
     requestBody.sessionIds = ''
@@ -324,6 +331,7 @@ describe('validateZendeskRequest', () => {
   )
 
   it('should return an invalid response if request does not contain journeyIds when required', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.identifierType = 'journey_id'
     requestBody.journeyIds = ''
@@ -337,6 +345,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if request does not contain eventIds when required', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.identifierType = 'event_id'
     requestBody.eventIds = ''
@@ -350,6 +359,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if request does not contain userIds when required', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.identifierType = 'user_id'
     requestBody.userIds = ''
@@ -363,6 +373,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should parse data into response if request contains journeyIds', async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithIds(
@@ -383,6 +394,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should parse data into response if request contains eventIds', async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(buildValidRequestBodyWithIds('event_id', 'id1 id2 id3'))
     )
@@ -395,6 +407,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should parse data into response if request contains userIds', async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithIds('user_id', 'userId1 userId2 userId3')
@@ -433,6 +446,7 @@ describe('validateZendeskRequest', () => {
   )
 
   it('should remove the Zendesk prefix from the PII type if it is found', async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithPiiTypes(
@@ -447,6 +461,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if piiTypes contains an invalid value', async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithPiiTypes('passport_number something')
@@ -459,6 +474,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return a valid response with dataPaths set', async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithDataPaths(
@@ -476,6 +492,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it(`should handle dataPaths containing multiple white space`, async () => {
+    // Unit Test
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
         buildValidRequestBodyWithDataPaths(
@@ -520,6 +537,7 @@ describe('validateZendeskRequest', () => {
   )
 
   it('should return an invalid response if neither a dateFrom or dates property is passed', async () => {
+    // Unit Test
     const validRequestBody = buildValidRequestBody()
     delete validRequestBody.dateFrom
     delete validRequestBody.dates
@@ -565,6 +583,7 @@ describe('validateZendeskRequest', () => {
   const todayDateString = getTodayAsString()
   const tomorrowDateString = getTodayPlusDaysAsString(1)
   it(`should return an invalid response if fromDate is ${tomorrowDateString} after today ${todayDateString}`, async () => {
+    // Unit Test
     const dayAfterTomorrowDateString = getTodayPlusDaysAsString(2)
     const validationResult = await validateZendeskRequest(
       JSON.stringify(
@@ -581,6 +600,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it(`should return an invalid response if one of the dates in the date list is in the future`, async () => {
+    // Unit Test
     const dayAfterTomorrowDateString = getTodayPlusDaysAsString(2)
     const twoDaysAgoDateString = getTodayPlusDaysAsString(-2)
     const validationResult = await validateZendeskRequest(
@@ -597,6 +617,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if recipientEmail is not set', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     delete requestBody.recipientEmail
     const validationResult = await validateZendeskRequest(
@@ -609,6 +630,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if requesterEmail is not set', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     delete requestBody.requesterEmail
     const validationResult = await validateZendeskRequest(
@@ -621,6 +643,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if recipientEmail is not valid', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.recipientEmail = 'notanemail'
     const validationResult = await validateZendeskRequest(
@@ -633,6 +656,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if requesterEmail is not valid', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.requesterEmail = 'notanemail'
     const validationResult = await validateZendeskRequest(
@@ -645,6 +669,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if recipientEmail is not for a .gov.uk domain', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.recipientEmail = 'someperson@example.com'
     const validationResult = await validateZendeskRequest(
@@ -657,6 +682,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if recipientEmail is not in the valid recipient list', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.recipientEmail = testNotInValidRecipientListEmail
     const validationResult = await validateZendeskRequest(
@@ -669,6 +695,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if requesterEmail is not for a .gov.uk domain', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.requesterEmail = 'someperson@example.com'
     const validationResult = await validateZendeskRequest(
@@ -681,6 +708,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if recipientName is blank', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.recipientName = ''
     const validationResult = await validateZendeskRequest(
@@ -693,6 +721,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if requesterName is blank', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.requesterName = ''
     const validationResult = await validateZendeskRequest(
@@ -705,6 +734,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if recipientName is not set', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     delete requestBody.recipientName
     const validationResult = await validateZendeskRequest(
@@ -717,6 +747,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if requesterName is not set', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     delete requestBody.requesterName
     const validationResult = await validateZendeskRequest(
@@ -729,6 +760,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if neither piiTypes or dataPaths are set', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     requestBody.piiTypes = ''
     requestBody.dataPaths = ''
@@ -742,6 +774,7 @@ describe('validateZendeskRequest', () => {
   })
 
   it('should return an invalid response if piiTypes and dataPaths properties are missing', async () => {
+    // Unit Test
     const requestBody = buildValidRequestBody()
     delete requestBody.dataPaths
     const validationResult = await validateZendeskRequest(

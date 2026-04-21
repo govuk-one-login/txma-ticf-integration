@@ -36,6 +36,7 @@ describe('sendSQSMessageToCompletedQueue function tests', () => {
   }
 
   it('sends an sqs message containing the relevant information to the completed SQS queue', async () => {
+    // Unit Test
     mockSQSClient
       .on(GetQueueUrlCommand, { QueueName: queueName })
       .resolvesOnce({ QueueUrl: queueUrl })
@@ -45,6 +46,7 @@ describe('sendSQSMessageToCompletedQueue function tests', () => {
   })
 
   it('cannot get the name of the completed SQS queue', async () => {
+    // Unit Test
     mockSQSClient
       .on(GetQueueUrlCommand, { QueueName: queueName })
       .rejectsOnce(getQueueUrlError)

@@ -48,6 +48,7 @@ describe('DecryptAndCopy', function () {
   }
 
   it('retrieves, decrypts and copies an S3 object', async () => {
+    // Unit Test
     const s3ObjectStream = givenS3DataAvailable()
 
     const response = await handler(testS3BatchEvent, mockLambdaContext)
@@ -66,6 +67,7 @@ describe('DecryptAndCopy', function () {
   })
 
   it('catches and logs errors, and marks the operation as a temporary failure', async () => {
+    // Unit Test
     const s3ObjectStream = createDataStream(TEST_S3_OBJECT_DATA_STRING)
     mockGetS3ObjectAsStream.mockResolvedValue(s3ObjectStream)
     mockDecryptS3Object.mockResolvedValue(TEST_S3_OBJECT_DATA_BUFFER)
@@ -79,6 +81,7 @@ describe('DecryptAndCopy', function () {
   })
 
   it('throws an error if there is no data in the SQS Event', async () => {
+    // Unit Test
     await expect(
       handler(emptyTestS3BatchEvent, mockLambdaContext)
     ).rejects.toThrowError('No tasks in event')

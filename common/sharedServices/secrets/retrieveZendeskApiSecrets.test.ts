@@ -36,6 +36,7 @@ describe('retrieveZendeskApiSecrets', () => {
   }
 
   it('should return object containing secrets when available', async () => {
+    // Unit Test
     givenAllSecretsAvailable()
     const secrets = await retrieveZendeskApiSecrets()
     expect(secrets.zendeskApiKey).toEqual(TEST_ZENDESK_API_KEY)
@@ -58,6 +59,7 @@ describe('retrieveZendeskApiSecrets', () => {
 
   keyList.forEach((keyToOmit) => {
     it(`should throw an error when the secret key ${keyToOmit} is not set`, async () => {
+      // Unit Test
       const secretCollection: Record<string, string> = { ...allSecretKeys }
 
       delete secretCollection[keyToOmit]

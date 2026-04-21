@@ -43,6 +43,7 @@ describe('decryptS3Object', () => {
 
   describe('primary key decryption', () => {
     it('decrypts successfully using the primary key (GENERATOR_KEY_ID)', async () => {
+      // Unit Test
       mockDecrypt.mockResolvedValueOnce({
         plaintext: TEST_S3_OBJECT_DATA_BUFFER,
         messageHeader: {} as MessageHeader
@@ -62,6 +63,7 @@ describe('decryptS3Object', () => {
     })
 
     it('accepts a Buffer input and decrypts with primary key', async () => {
+      // Unit Test
       mockDecrypt.mockResolvedValueOnce({
         plaintext: TEST_S3_OBJECT_DATA_BUFFER,
         messageHeader: {} as MessageHeader
@@ -78,6 +80,7 @@ describe('decryptS3Object', () => {
     })
 
     it('throws when the input stream errors before decryption', async () => {
+      // Unit Test
       const streamError = new Error('Stream read failure')
       const errorStream = new Readable({ read() {} }) // eslint-disable-line @typescript-eslint/no-empty-function
       process.nextTick(() => errorStream.destroy(streamError))
@@ -91,6 +94,7 @@ describe('decryptS3Object', () => {
 
   describe('fallback to backup key', () => {
     it('decrypts successfully using the backup key (BACKUP_KEY_ID) when primary is unavailable', async () => {
+      // Unit Test
       mockDecrypt
         .mockRejectedValueOnce(new Error('KMS key unavailable'))
         .mockResolvedValueOnce({
@@ -118,6 +122,7 @@ describe('decryptS3Object', () => {
     })
 
     it('uses backup key when primary key is missing from KMS and retrieves data', async () => {
+      // Unit Test
       const accessDeniedError = new Error(
         'AccessDeniedException: User is not authorized'
       )
@@ -143,6 +148,7 @@ describe('decryptS3Object', () => {
     })
 
     it('wraps a non-Error primary failure and falls back to backup key', async () => {
+      // Unit Test
       mockDecrypt
         .mockRejectedValueOnce('string-rejection')
         .mockResolvedValueOnce({
@@ -164,6 +170,7 @@ describe('decryptS3Object', () => {
 
   describe('both keys unavailable', () => {
     it('throws and logs an error when both KMS keys are unavailable', async () => {
+      // Unit Test
       const backupError = new Error('All KMS keys inaccessible')
       mockDecrypt
         .mockRejectedValueOnce(new Error('Primary key unavailable'))
@@ -184,6 +191,7 @@ describe('decryptS3Object', () => {
     })
 
     it('wraps a non-Error backup failure and rethrows', async () => {
+      // Unit Test
       mockDecrypt
         .mockRejectedValueOnce(new Error('Primary key unavailable'))
         .mockRejectedValueOnce('backup-string-rejection')

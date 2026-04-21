@@ -29,6 +29,7 @@ describe('dynamoDbUpdate', () => {
     }
 
     it('should call the send function with the correct parameters', async () => {
+      // Unit Test
       await incrementObjectFieldByOne(ZENDESK_TICKET_ID, myFieldToUpdate)
       expect(dynamoMock).toHaveReceivedCommandWith(
         UpdateItemCommand,
@@ -43,6 +44,7 @@ describe('dynamoDbUpdate', () => {
     })
 
     test('Updates a request query in database', async () => {
+      // Unit Test
       const mockUpdatedDbContents = {
         Attributes: {
           requestInfo: {
@@ -81,6 +83,7 @@ describe('dynamoDbUpdate', () => {
     })
 
     test('Does not find request query in database - empty object response', async () => {
+      // Unit Test
       dynamoMock.on(UpdateItemCommand).resolves({} as UpdateItemOutput)
 
       await expect(
@@ -89,6 +92,7 @@ describe('dynamoDbUpdate', () => {
     })
 
     test('Does not find request query in database - undefined response', async () => {
+      // Unit Test
       dynamoMock
         .on(UpdateItemCommand)
         .resolves(undefined as unknown as UpdateItemOutput)

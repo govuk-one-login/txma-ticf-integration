@@ -28,6 +28,7 @@ describe('getS3BatchJobTags', () => {
     Tags: givenTags
   } as GetJobTaggingCommandOutput)
   it('should retrieve any batch job tags that exist', async () => {
+    // Unit Test
     const result = await getS3BatchJobTags(
       TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID
     )

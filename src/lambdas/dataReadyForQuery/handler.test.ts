@@ -62,6 +62,7 @@ describe('dataReadyForQuery', () => {
   }
 
   it('Initiates athena query if batch job has completed successfully', async () => {
+    // Unit Test
     givenS3BatchJobTagsContainsZendeskId()
     givenJobWasSuccessful()
     await handler(batchJobStatusChangeEvent('Complete'), mockLambdaContext)
@@ -76,6 +77,7 @@ describe('dataReadyForQuery', () => {
   })
 
   it('Closes the Zendesk ticket if the batch job has failed', async () => {
+    // Unit Test
     givenS3BatchJobTagsContainsZendeskId()
     givenJobWasNotSuccessful()
     await handler(batchJobStatusChangeEvent('Failed'), mockLambdaContext)
@@ -91,6 +93,7 @@ describe('dataReadyForQuery', () => {
   })
 
   it('Disregards if batch job status is not correct', async () => {
+    // Unit Test
     givenS3BatchJobTagsContainsZendeskId()
     await handler(batchJobStatusChangeEvent('Test'), mockLambdaContext)
 

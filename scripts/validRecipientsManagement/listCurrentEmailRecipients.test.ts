@@ -13,6 +13,7 @@ vi.mock('./getValidRecipientBucketName', () => ({
 
 describe('listCurrentEmailRecipients', () => {
   it('should read from the correct bucket and file name, and return the data as a list', async () => {
+    // Unit Test
     const testEnvironment = 'myEnvironment'
     const testBucketName = 'emailRecipientsBucketName'
     const recipient1 = 'email1@example.com'

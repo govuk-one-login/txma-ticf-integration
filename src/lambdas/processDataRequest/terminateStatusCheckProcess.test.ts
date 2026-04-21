@@ -23,6 +23,7 @@ describe('terminateStatusCheckProcess', () => {
   }
 
   it('sends a message to the correct queue to signify the process has ended', async () => {
+    // Unit Test
     givenSqsMessageIdReturned()
 
     const messageId = await terminateStatusCheckProcess(ZENDESK_TICKET_ID)

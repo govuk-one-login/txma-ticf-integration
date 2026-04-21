@@ -183,6 +183,7 @@ describe('testing CLI action: initiateCopyAndDecryptAction', () => {
   )
 
   it('testing date deduplication', async () => {
+    // Unit Test
     const testCaseDateAndDateRange = {
       // note that date and dateRange have overlapping date
       // note that individualDates is deduplicated

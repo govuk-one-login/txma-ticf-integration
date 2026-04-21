@@ -25,6 +25,7 @@ describe('interpolateTemplate', () => {
   ]
 
   it('should interpolate template with additions overriding defaults', () => {
+    // Unit Test
     const result = interpolateTemplate('test-message', mockMessages, {
       type: 'unit',
       value: '123'
@@ -33,11 +34,13 @@ describe('interpolateTemplate', () => {
   })
 
   it('should work with messages that have no replacements property', () => {
+    // Unit Test
     const result = interpolateTemplate('simple-message', mockMessages)
     expect(result).toBe('Basic test message')
   })
 
   it('should work with empty additions object', () => {
+    // Unit Test
     const messages = [
       {
         name: 'test-message',
@@ -50,6 +53,7 @@ describe('interpolateTemplate', () => {
   })
 
   it('should work without additions parameter', () => {
+    // Unit Test
     const messages = [
       {
         name: 'test-message',
@@ -62,6 +66,7 @@ describe('interpolateTemplate', () => {
   })
 
   it('should merge default replacements with additions', () => {
+    // Unit Test
     const result = interpolateTemplate(
       'message-with-multiple-replacements',
       mockMessages,
@@ -74,24 +79,28 @@ describe('interpolateTemplate', () => {
   })
 
   it('should throw error when messages is not provided', () => {
+    // Unit Test
     expect(() => {
       interpolateTemplate('test-message', null as unknown as TestMessage[])
     }).toThrow('Messages data is not included')
   })
 
   it('should throw error when messages is undefined', () => {
+    // Unit Test
     expect(() => {
       interpolateTemplate('test-message', undefined as unknown as TestMessage[])
     }).toThrow('Messages data is not included')
   })
 
   it('should throw error when message key is not found', () => {
+    // Unit Test
     expect(() => {
       interpolateTemplate('non-existent-message', mockMessages)
     }).toThrow("No message object returned for 'non-existent-message'")
   })
 
   it('should only replace first occurrence of each placeholder', () => {
+    // Unit Test
     const messages = [
       {
         name: 'multi-replace',
@@ -106,6 +115,7 @@ describe('interpolateTemplate', () => {
   })
 
   it('should handle messages with undefined replacements property', () => {
+    // Unit Test
     const messages = [
       {
         name: 'no-replacements',

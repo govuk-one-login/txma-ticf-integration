@@ -33,6 +33,7 @@ describe('getS3Object - ', () => {
   })
 
   it('getS3ObjectAsStream returns a stream read from the file', async () => {
+    // Unit Test
     givenDataAvailable()
     const testDataStream = createDataStream(TEST_S3_OBJECT_DATA_STRING)
 
@@ -49,6 +50,7 @@ describe('getS3Object - ', () => {
   })
 
   it('throws error when Body is not a Readable stream', async () => {
+    // Unit Test
     s3Mock.on(GetObjectCommand).resolves({
       Body: 'not a stream' as unknown
     } as GetObjectCommandOutput)

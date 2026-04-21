@@ -363,6 +363,7 @@ describe('match zendesk ticket details', () => {
   }
 
   test('ticket and request match', async () => {
+    // Unit Test
     givenZendeskTicketHasStandardFieldsSetWithDateList()
     expect(await zendeskTicketDiffersFromRequest(testDataRequest)).toEqual(
       false
@@ -370,6 +371,7 @@ describe('match zendesk ticket details', () => {
   })
 
   test('ticket and request match with legacy date field set', async () => {
+    // Unit Test
     givenZendeskTicketHasLegacyDateSet()
     testDataRequest.dates = [TEST_DATE_1]
     expect(await zendeskTicketDiffersFromRequest(testDataRequest)).toEqual(
@@ -378,6 +380,7 @@ describe('match zendesk ticket details', () => {
   })
 
   test('ticket and request match with no PII type prefix in response from Zendesk', async () => {
+    // Unit Test
     givenZendeskTicketMatchesWithNoPiiTypePrefix()
     expect(await zendeskTicketDiffersFromRequest(testDataRequest)).toEqual(
       false
@@ -410,6 +413,7 @@ describe('match zendesk ticket details', () => {
   )
 
   test('Date field set in Zendesk ticket which does not match dates array in request', async () => {
+    // Unit Test
     givenZendeskTicketHasLegacyDateSet()
     const testRequest = Object.assign({}, testDataRequest)
     testRequest.dates = ['2023-01-04']
@@ -421,6 +425,7 @@ describe('match zendesk ticket details', () => {
   })
 
   test('Date list field set in Zendesk ticket which does not match dates array in request', async () => {
+    // Unit Test
     givenZendeskTicketHasStandardFieldsSetWithDateList()
     const testRequest = Object.assign({}, testDataRequest)
     testRequest.dates = [TEST_DATE_1, '2021-09-09']
@@ -474,6 +479,7 @@ describe('match zendesk ticket details', () => {
   )
 
   test('custom field not found in ticket', async () => {
+    // Unit Test
     givenCustomFieldNotFound()
 
     const error = async () => {

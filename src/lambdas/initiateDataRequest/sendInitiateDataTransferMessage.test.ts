@@ -18,6 +18,7 @@ describe('sendInitiateDataTransferMessage', () => {
     mockSendSqsMessage.mockResolvedValue(MOCK_MESSAGE_ID)
   }
   it('sends message to correct queue', async () => {
+    // Unit Test
     givenSqsMessageIdReturned()
 
     const messageId = await sendInitiateDataTransferMessage(testDataRequest)

@@ -34,6 +34,7 @@ const givenRecipientEmailListAvailable = () => {
 
 describe('readS3DataToString', () => {
   it('returns a string read from the file', async () => {
+    // Unit Test
     givenRecipientEmailListAvailable()
 
     const returnedRecipientList = await readS3DataToString(

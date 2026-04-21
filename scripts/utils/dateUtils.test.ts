@@ -62,6 +62,7 @@ describe('testing date utility code', () => {
   })
 
   it.each(dateTestCases)('testing date string %p', ({ date, expected }) => {
+    // Unit Test
     expect(isDateString(date)).toBe(expected)
   })
 
@@ -73,6 +74,7 @@ describe('testing date utility code', () => {
   )
 
   it('testing func testDateArgs', async () => {
+    // Unit Test
     const currentValue = '2023-01-01'
     const previousValue = '2023-01-02'
     vi.spyOn(cliUtils, 'testVariadicArgs')
@@ -85,6 +87,7 @@ describe('testing date utility code', () => {
   })
 
   it('testing func testDateArgs with date range', async () => {
+    // Unit Test
     const currentValue = '2023/01/01-2023/02/01'
     const previousValue = '2024/01/01-2024/02/01'
     vi.spyOn(cliUtils, 'testVariadicArgs')
@@ -97,6 +100,7 @@ describe('testing date utility code', () => {
   })
 
   it('testing convertDateRangeToIndividualDateArray', async () => {
+    // Unit Test
     const daterange = '2023/01/01-2023/02/01'
     const expected = [
       '2023-01-01',
@@ -139,12 +143,14 @@ describe('testing date utility code', () => {
   })
 
   it('testing addDay', async () => {
+    // Unit Test
     const startingDate = new Date('2023-01-01')
     const nextDay = new Date('2023-01-02')
     expect(addDay(startingDate).valueOf()).toBe(nextDay.valueOf())
   })
 
   it('date range validation', () => {
+    // Unit Test
     expect(
       convertDateRangeToIndividualDateArray(['2024/01/01-2024/01/05'])
     ).toEqual(

@@ -34,6 +34,7 @@ describe('testing the sendAuditData cli action', () => {
   })
 
   it('copyManualRequestData(): failed', async () => {
+    // Unit Test
     vi.mocked(copyManualRequestData).mockRejectedValue('error')
     vi.mocked(sendSQSMessageToCompletedQueue).mockResolvedValue()
 
@@ -47,6 +48,7 @@ describe('testing the sendAuditData cli action', () => {
   })
 
   it('copyManualRequestData(): sucess, sendSQSMessageToCompletedQueue(): fail', async () => {
+    // Unit Test
     vi.mocked(copyManualRequestData).mockResolvedValue()
     vi.mocked(sendSQSMessageToCompletedQueue).mockRejectedValue('error')
 
@@ -60,6 +62,7 @@ describe('testing the sendAuditData cli action', () => {
   })
 
   it('copyManualRequestData(): sucess, sendSQSMessageToCompletedQueue(): success', async () => {
+    // Unit Test
     vi.mocked(copyManualRequestData).mockResolvedValue()
     vi.mocked(sendSQSMessageToCompletedQueue).mockResolvedValue()
 
