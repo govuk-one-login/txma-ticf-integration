@@ -22,6 +22,7 @@ describe('sendContinuePollingDataTransferMessage', () => {
   }
 
   it('sends a message with the correct data', async () => {
+    // Unit Test
     givenSqsMessageIdReturned()
     const delaySendInSeconds = 30
     await sendContinuePollingDataTransferMessage(

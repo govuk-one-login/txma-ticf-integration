@@ -13,6 +13,7 @@ const assertSecurityHeadersSet = (result: AxiosResponse) => {
 
 describe('Zendesk request integrity', () => {
   it('API Gateway returns an invalid request on invalid Zendesk Webhook Signature', async () => {
+    // Component Test
     const defaultWebhookRequestData =
       getWebhookRequestDataForTestCaseNumberAndDate(1, '2022-01-01')
     const invalidSignature = 'cCxJHacr678ZZigFZZlYq4qz2XLWPEOeS+PPDuTivwQ='
@@ -41,6 +42,7 @@ describe('Zendesk ticket check', () => {
   })
 
   it('API Gateway returns 200 for a matching zendesk ticket', async () => {
+    // Component Test
     const response = await sendWebhookRequest(defaultWebhookRequestData)
 
     expect(response.status).toEqual(200)
@@ -49,6 +51,7 @@ describe('Zendesk ticket check', () => {
   })
 
   it('API Gateway returns a 404 response if the request refers to a non-existent Zendesk ticket', async () => {
+    // Component Test
     defaultWebhookRequestData.zendeskId = '0'
 
     const errorResponse = await sendWebhookRequest(defaultWebhookRequestData)
@@ -59,6 +62,7 @@ describe('Zendesk ticket check', () => {
   })
 
   it('API Gateway returns a 400 response if the request does not match info in corresponding Zendesk ticket', async () => {
+    // Component Test
     defaultWebhookRequestData.identifierType = 'journey_id'
     defaultWebhookRequestData.journeyIds = '3457879'
 

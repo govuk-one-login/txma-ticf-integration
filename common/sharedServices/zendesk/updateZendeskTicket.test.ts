@@ -39,6 +39,7 @@ describe('updating a zendesk ticket', () => {
   })
 
   it('a single api call was made with event body', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenSuccessfulApiCall()
     await updateZendeskTicket(
       exampleEventBody,
@@ -50,6 +51,7 @@ describe('updating a zendesk ticket', () => {
   })
 
   it('a single api call was made with zendesk ID', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenSuccessfulApiCall()
     await updateZendeskTicketById(
       ZENDESK_TICKET_ID,
@@ -88,6 +90,7 @@ describe('updating a zendesk ticket', () => {
     )
   }
   it('a single api call fails', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()
 
     await updateZendeskTicket(exampleEventBody, zendeskTicketMessage)
@@ -98,6 +101,7 @@ describe('updating a zendesk ticket', () => {
   })
 
   it('a single api call fails with zendesk ID', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()
 
     await updateZendeskTicketById(ZENDESK_TICKET_ID, zendeskTicketMessage)
@@ -108,6 +112,7 @@ describe('updating a zendesk ticket', () => {
   })
 
   it('returns from the function if eventBody is null', async () => {
+    // Unit Test
     await updateZendeskTicket(null, zendeskTicketMessage)
     expect(logger.error).toHaveBeenLastCalledWith(
       'No Zendesk info available. Cannot update ticket.'
@@ -115,6 +120,7 @@ describe('updating a zendesk ticket', () => {
   })
 
   it('returns from the function if Zendesk Ticket ID is not set', async () => {
+    // Unit Test
     await updateZendeskTicket("{zendeskId: ''}", zendeskTicketMessage)
     expect(logger.error).toHaveBeenLastCalledWith(
       'No Zendesk ticket ID present. Cannot update ticket.'
@@ -122,6 +128,7 @@ describe('updating a zendesk ticket', () => {
   })
 
   it('returns from the function if Zendesk Ticket ID key is not present', async () => {
+    // Unit Test
     await updateZendeskTicket("{someOtherKey: ''}", zendeskTicketMessage)
     expect(logger.error).toHaveBeenLastCalledWith(
       'No Zendesk ticket ID present. Cannot update ticket.'
@@ -129,6 +136,7 @@ describe('updating a zendesk ticket', () => {
   })
 
   it('returns from the function if eventBody is not JSON', async () => {
+    // Unit Test
     await updateZendeskTicket('hello', zendeskTicketMessage)
     expect(logger.error).toHaveBeenCalledWith('Error parsing JSON')
     expect(logger.error).toHaveBeenLastCalledWith(

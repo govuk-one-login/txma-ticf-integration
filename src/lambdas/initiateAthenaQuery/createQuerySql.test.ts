@@ -73,6 +73,7 @@ describe('create Query SQL', () => {
   )
 
   test('returns a formatted SQL query handling root dataPaths', () => {
+    // Unit Test
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = [
       'restricted',
       'timestamp_formatted'
@@ -86,6 +87,7 @@ describe('create Query SQL', () => {
   })
 
   test('returns a formatted SQL query handling dataPaths and piiTypes', () => {
+    // Unit Test
     testDataRequestWithNoDataPathsOrPiiTypes.dataPaths = [
       'restricted.user[0].firstName',
       'restricted.user[1].firstName'
@@ -101,6 +103,7 @@ describe('create Query SQL', () => {
   })
 
   test('returns a formatted SQL query handling multiple dates', () => {
+    // Unit Test
     expect(createQuerySql(testDataRequestWithAllValuesSet)).toEqual({
       sqlGenerated: true,
       sql: `SELECT datetime, event_id, path_to_data1, path_to_data2, json_extract(restricted, '$.passport[0].documentNumber') as passport_number FROM test_database.test_table WHERE event_id IN (?, ?) AND datetime IN (?,?)`,
@@ -114,6 +117,7 @@ describe('create Query SQL', () => {
   })
 
   test('returns an error message if there are no dataPaths or piiTypes', () => {
+    // Unit Test
     expect(createQuerySql(testDataRequestWithNoDataPathsOrPiiTypes)).toEqual({
       sqlGenerated: false,
       error: 'No dataPaths or piiTypes in request'

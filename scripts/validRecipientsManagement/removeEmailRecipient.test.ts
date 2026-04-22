@@ -27,6 +27,7 @@ describe('removeEmailRecipient', () => {
   })
 
   it('should remove an email if it exists on the current list', async () => {
+    // Unit Test
     vi.mocked(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
 
     await removeEmailRecipient(testEmailToRemove, testEnvironment)
@@ -41,6 +42,7 @@ describe('removeEmailRecipient', () => {
   })
 
   it('should not try to remove the email if it does not exist in the current list', async () => {
+    // Unit Test
     vi.mocked(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
 
     await removeEmailRecipient('someOtherEmail@example.com', testEnvironment)

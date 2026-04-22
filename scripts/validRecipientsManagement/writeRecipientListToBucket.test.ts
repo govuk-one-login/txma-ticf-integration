@@ -13,6 +13,7 @@ vi.mock('../../common/sharedServices/s3/putS3Object', () => ({
 
 describe('writeRecipientListToBucket', () => {
   it('should write the data to the correct bucket and file name', async () => {
+    // Unit Test
     const testEnvironment = 'myEnvironment'
     const testBucketName = 'emailRecipientsBucketName'
     const recipient1 = 'email1@example.com'

@@ -28,6 +28,7 @@ describe('jobWasSuccessful', () => {
   })
 
   it('returns false if status is failed', async () => {
+    // Unit Test
     const result = await jobWasSuccessful(
       TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID,
       'Failed'

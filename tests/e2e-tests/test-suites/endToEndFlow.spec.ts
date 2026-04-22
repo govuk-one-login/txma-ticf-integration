@@ -70,6 +70,7 @@ describe('Query results generated', () => {
   })
 
   it('Query matching data with event id and data paths', async () => {
+    // End-to-end Test
     const expectedAddressValidFromDate = `"2014-01-01"`
     const expectedBirthDate = `"1981-07-28"`
     const expectedPostalCode = `"EH2 5BJ"`
@@ -92,6 +93,7 @@ describe('Query results generated', () => {
   })
 
   it('Query matching data with two dates', async () => {
+    // End-to-end Test
     zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithTwoDates)
     await approveZendeskTicket(zendeskId)
 
@@ -123,6 +125,7 @@ describe('Query results generated', () => {
   })
 
   it('Query matching data with user id', async () => {
+    // End-to-end Test
     const expectedPassportNumber = `"543543543"`
     const expectedPassportExpiryDate = `"2030-01-01"`
 
@@ -138,6 +141,7 @@ describe('Query results generated', () => {
   })
 
   it('Query matching data with journey id', async () => {
+    // End-to-end Test
     const expectedDriverslicence = [
       {
         expirydate: '2024-06-19',
@@ -159,6 +163,7 @@ describe('Query results generated', () => {
   })
 
   it('Query matching data with session id', async () => {
+    // End-to-end Test
     const expectedBirthDate = `"1981-07-28"`
 
     zendeskId = await createZendeskTicket(endToEndFlowRequestDataWithSessionId)
@@ -174,6 +179,7 @@ describe('Query results generated', () => {
   })
 
   it('Query does not match data - Empty CSV file should be downloaded', async () => {
+    // End-to-end Test
     zendeskId = await createZendeskTicket(endToEndFlowRequestDataNoMatch)
     await approveZendeskTicket(zendeskId)
 

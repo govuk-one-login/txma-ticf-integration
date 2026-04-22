@@ -150,6 +150,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 200 response when request is valid and matches zendesk ticket', async () => {
+    // Unit Test
     givenValidRequest()
     givenSignatureIsValid()
     givenZendeskTicketMatchesRequest()
@@ -175,6 +176,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 400 response when request signature is invalid and zendeskId is undefined', async () => {
+    // Unit Test
     vi.spyOn(logger, 'warn')
     givenSignatureIsInvalid()
 
@@ -203,6 +205,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 400 response when request signature is invalid and zendeskId is present', async () => {
+    // Unit Test
     vi.spyOn(logger, 'warn')
     givenSignatureIsInvalid()
     const customBody = { zendeskId: ZENDESK_TICKET_ID }
@@ -232,6 +235,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 400 response when request body is invalid (without ticket ID)', async () => {
+    // Unit Test
     const validationMessage = 'my validation message'
     const newTicketStatus = 'closed'
     const dataRequestParams = undefined
@@ -261,6 +265,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 400 response when request body is invalid (with ticket ID)', async () => {
+    // Unit Test
     const validationMessage = 'my validation message'
     const newTicketStatus = 'closed'
     const dataRequestParams = {
@@ -292,6 +297,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 400 response when request is valid, but does not match zendesk ticket', async () => {
+    // Unit Test
     const newTicketStatus = 'closed'
     const customBody = { zendeskId: ZENDESK_TICKET_ID }
     givenValidRequest()
@@ -327,6 +333,7 @@ describe('initiate data request handler', () => {
   })
 
   it('returns 404 response when zendesk ticket does not exist', async () => {
+    // Unit Test
     givenValidRequest()
     givenSignatureIsValid()
     givenZendeskTicketDoesNotExist()
@@ -351,6 +358,7 @@ describe('initiate data request handler', () => {
   })
 
   it('handles event with null body', async () => {
+    // Unit Test
     givenSignatureIsInvalid()
 
     const response = await handler(
@@ -366,6 +374,7 @@ describe('initiate data request handler', () => {
   })
 
   it('handles request with no validationMessage', async () => {
+    // Unit Test
     const dataRequestParams = undefined
     givenRequestValidationResult(false, dataRequestParams, undefined)
     givenSignatureIsValid()

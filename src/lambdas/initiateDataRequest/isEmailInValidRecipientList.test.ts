@@ -16,6 +16,7 @@ describe('isEmailInValidRecipientList', () => {
   })
 
   it('should return true if the supplied email is in the given list', async () => {
+    // Unit Test
     expect(await isEmailInValidRecipientList(GIVEN_VALID_RECIPIENT)).toEqual(
       true
     )
@@ -26,6 +27,7 @@ describe('isEmailInValidRecipientList', () => {
   })
 
   it('should return false if the supplied email is not in the given list', async () => {
+    // Unit Test
     expect(await isEmailInValidRecipientList(GIVEN_INVALID_RECIPIENT)).toEqual(
       false
     )

@@ -15,6 +15,7 @@ vi.mock('../../../common/sharedServices/queue/sendSqsMessage', () => ({
 
 describe('sendQueryCompletedQueueMessage', () => {
   it('should send query completed message to correct queue', async () => {
+    // Unit Test
     await sendQueryCompleteQueueMessage({
       athenaQueryId: TEST_ATHENA_QUERY_ID,
       recipientEmail: TEST_RECIPIENT_EMAIL,

@@ -50,6 +50,7 @@ describe('testing command: send-query-results', () => {
   it.each(happyPath)(
     'Happy Path: testing send-query-results. Test case $#: $testDescription',
     ({ arg, testDescription }) => {
+      // Unit Test
       console.log(testDescription)
       vi.mocked(sendAuditDataAction).mockResolvedValue()
       parseCliCallerForTesting(arg)
@@ -84,6 +85,7 @@ describe('testing command: send-query-results', () => {
   it.each(unhappyPath)(
     'Unhappy Path that raises exceptions: testing send-query-results. Test case $#: $testDescription ',
     () => {
+      // Unit Test
       vi.mocked(sendAuditDataAction).mockResolvedValue()
       expect(sendAuditDataActionFile.sendAuditDataAction).not.toHaveBeenCalled()
     }
@@ -119,6 +121,7 @@ describe('testing command: send-query-results', () => {
   it.each(unhappyPathThatRaisesExceptions)(
     'Unhappy Path that raises exceptions: testing send-query-results. Test case $#: $testDescription ',
     (testCase) => {
+      // Unit Test
       vi.mocked(sendAuditDataAction).mockResolvedValue()
       expect(() => parseCliCallerForTesting(testCase.arg)).toThrowError(
         testCase.expectedErrorMessage

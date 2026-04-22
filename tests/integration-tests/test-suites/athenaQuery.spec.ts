@@ -110,6 +110,7 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having only data paths', async () => {
+      // Component Test
       console.log(
         `Test: Successful Athena processing - requests having only data paths. ticketId: ${randomTicketId}`
       )
@@ -154,6 +155,7 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having only PII type', async () => {
+      // Component Test
       console.log(
         `Test: Successful Athena processing - requests having only PII type. ticketId: ${randomTicketId}`
       )
@@ -200,6 +202,7 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having both data paths and PII types', async () => {
+      // Component Test
       console.log(
         `Test:Successful Athena processing - requests having both data paths and PII types. ticketId: ${randomTicketId}`
       )
@@ -250,6 +253,7 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Successful Athena processing - requests having multiples dates', async () => {
+      // Component Test
       console.log(
         `Test: Successful Athena processing - requests having multiples dates. ticketId: ${randomTicketId}`
       )
@@ -330,6 +334,7 @@ describe('Athena Query SQL generation and execution', () => {
     })
 
     it('Lambda should error if ticket details are not in Dynamodb', async () => {
+      // Component Test
       console.log(
         `Test: Lambda should error if ticket details are not in Dynamodb. ticketId: ${randomTicketId}`
       )

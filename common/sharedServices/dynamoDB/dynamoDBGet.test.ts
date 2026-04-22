@@ -83,6 +83,7 @@ describe('dynamoDBGet', () => {
 
   describe('getDatabaseEntryByZendeskId', () => {
     test('Finds valid request query in database', async () => {
+      // Unit Test
       givenDatabaseReturnsData()
 
       const result = await getDatabaseEntryByZendeskId('12')
@@ -106,6 +107,7 @@ describe('dynamoDBGet', () => {
     })
 
     test('Supports legacy record with dateFrom instead of dates', async () => {
+      // Unit Test
       givenDatabaseReturnsData({ isLegacyRecordWithDateFromTo: true })
 
       const result = await getDatabaseEntryByZendeskId('12')
@@ -129,6 +131,7 @@ describe('dynamoDBGet', () => {
     })
 
     test('parses checkGlacierStatusCount if set', async () => {
+      // Unit Test
       const checkGlacierStatusCount = 1
       givenDatabaseReturnsData({ checkGlacierStatusCount })
 
@@ -137,6 +140,7 @@ describe('dynamoDBGet', () => {
     })
 
     test('parses athenaQueryId if set', async () => {
+      // Unit Test
       const athenaQueryId = 'abc123'
       givenDatabaseReturnsData({ athenaQueryId })
 
@@ -146,6 +150,7 @@ describe('dynamoDBGet', () => {
     })
 
     test('Does not find request query in database - empty object response', async () => {
+      // Unit Test
       dynamoMock.on(GetItemCommand).resolves({} as GetItemOutput)
 
       await expect(getDatabaseEntryByZendeskId('12')).rejects.toThrow(
@@ -154,6 +159,7 @@ describe('dynamoDBGet', () => {
     })
 
     test('Does not find request query in database - undefined response', async () => {
+      // Unit Test
       dynamoMock
         .on(GetItemCommand)
         .resolves(undefined as unknown as QueryCommandOutput)
@@ -164,6 +170,7 @@ describe('dynamoDBGet', () => {
     })
 
     test('Finds Request query but cant turn info into a valid query', async () => {
+      // Unit Test
       const mockDbContents = {
         Item: {
           requestInfo: {
@@ -193,6 +200,7 @@ describe('dynamoDBGet', () => {
     }
 
     it('should retrieve a record by athena query id', async () => {
+      // Unit Test
       givenDatabaseReturnsData({ athenaQueryId: TEST_ATHENA_QUERY_ID })
 
       const result = await getQueryByAthenaQueryId(TEST_ATHENA_QUERY_ID)
@@ -217,6 +225,7 @@ describe('dynamoDBGet', () => {
     })
 
     it('Does not find request query in database - empty array response', async () => {
+      // Unit Test
       dynamoMock.on(QueryCommand).resolves({ Items: [] } as QueryOutput)
 
       expect(getQueryByAthenaQueryId(TEST_ATHENA_QUERY_ID)).rejects.toThrow(
@@ -226,6 +235,7 @@ describe('dynamoDBGet', () => {
     })
 
     it('Does not find request query in database - undefined response', async () => {
+      // Unit Test
       dynamoMock
         .on(QueryCommand)
         .resolves(undefined as unknown as QueryCommandOutput)
@@ -239,6 +249,7 @@ describe('dynamoDBGet', () => {
 
   describe('parseDatabaseItem edge cases', () => {
     it('handles checkGlacierStatusCount with no N attribute', async () => {
+      // Unit Test
       const mockItem: Record<string, AttributeValue> = {
         requestInfo: {
           M: {
@@ -270,6 +281,7 @@ describe('dynamoDBGet', () => {
     })
 
     it('handles all optional ID arrays with values', async () => {
+      // Unit Test
       const mockItem: Record<string, AttributeValue> = {
         requestInfo: {
           M: {

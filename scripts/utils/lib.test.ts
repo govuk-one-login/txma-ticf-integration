@@ -8,6 +8,7 @@ describe('testing lib functions', () => {
   ]
 
   it.each(table)('testing is string array %p', ({ array, value }) => {
+    // Unit Test
     expect(isStringArray(array)).toBe(value)
   })
 })

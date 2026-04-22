@@ -23,6 +23,7 @@ describe('processDataRequest', () => {
   })
 
   it('should handle a valid initiate data request event', async () => {
+    // Unit Test
     await handler(
       constructSqsEvent(JSON.stringify(testDataRequest)),
       mockLambdaContext
@@ -32,6 +33,7 @@ describe('processDataRequest', () => {
   })
 
   it('should handle a valid continue data transfer event', async () => {
+    // Unit Test
     await handler(
       constructSqsEvent(JSON.stringify({ zendeskId: ZENDESK_TICKET_ID })),
       mockLambdaContext
@@ -40,6 +42,7 @@ describe('processDataRequest', () => {
   })
 
   it('should throw an appropriate error if there is no data in the event', async () => {
+    // Unit Test
     await expect(
       handler({ Records: [] }, mockLambdaContext)
     ).rejects.toThrowError('No data in event')
@@ -47,6 +50,7 @@ describe('processDataRequest', () => {
   })
 
   it('should throw an appropriate error if the request includes data of the wrong shape', async () => {
+    // Unit Test
     const initiateDataRequestEvent = constructSqsEvent(
       JSON.stringify({ someProperty: 'someValue' })
     )
@@ -57,6 +61,7 @@ describe('processDataRequest', () => {
   })
 
   it('should throw an appropriate error if the request includes non-JSON data', async () => {
+    // Unit Test
     const initiateDataRequestEvent = constructSqsEvent('some message')
     await expect(
       handler(initiateDataRequestEvent, mockLambdaContext)

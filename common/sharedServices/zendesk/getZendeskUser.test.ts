@@ -37,6 +37,7 @@ describe('get zendesk ticket information', () => {
   })
 
   test('show user call succeeds', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenSuccessfulApiCall(successResponse)
     const user = await getZendeskUser(userId)
 
@@ -45,6 +46,7 @@ describe('get zendesk ticket information', () => {
   })
 
   test('show user call fails', async () => {
+    // Unit Test
     mockHttpsRequestUtils.givenUnsuccessfulApiCall()
 
     const error = async () => {
@@ -54,6 +56,7 @@ describe('get zendesk ticket information', () => {
   })
 
   test('show user call succeeds but returns invalid data format', async () => {
+    // Unit Test
     const invalidResponse = {
       user: {
         email: 123, // should be string

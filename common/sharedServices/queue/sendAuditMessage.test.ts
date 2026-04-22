@@ -102,6 +102,7 @@ describe('sendAuditMessage', () => {
     })
 
     it('calls the sendSqsMessage function with the correct parameters', async () => {
+      // Unit Test
       await sendAuditDataRequestMessage(testAuditQueryRequestDetails())
       expect(sendSqsMessage).toHaveBeenCalledWith(
         testAuditDataRequestEvent(),
@@ -110,6 +111,7 @@ describe('sendAuditMessage', () => {
     })
 
     it('calls the sendSqsMessage function correctly when we pass a request with date from/to instead of the new dates array', async () => {
+      // Unit Test
       await sendAuditDataRequestMessage(testAuditQueryRequestDetails(true))
       expect(sendSqsMessage).toHaveBeenCalledWith(
         testAuditDataRequestEvent(true),
@@ -118,6 +120,7 @@ describe('sendAuditMessage', () => {
     })
 
     it('logs an error message when an error occurs', async () => {
+      // Unit Test
       givenSendSqsError()
 
       await sendAuditDataRequestMessage(testAuditQueryRequestDetails())
@@ -129,6 +132,7 @@ describe('sendAuditMessage', () => {
     })
 
     it('logs success message when message is sent successfully', async () => {
+      // Unit Test
       givenSendSQSMessageReturnsMessageId()
 
       await sendAuditDataRequestMessage(testAuditQueryRequestDetails())
@@ -140,6 +144,7 @@ describe('sendAuditMessage', () => {
     })
 
     it('handles null/undefined values for request IDs using nulls', async () => {
+      // Unit Test
       const testDetailsWithNulls = {
         ...testAuditQueryRequestDetails(),
         requested_sessionIds: null,
@@ -247,6 +252,7 @@ describe('sendAuditMessage', () => {
     )
 
     it('logs an error message when an error occurs', async () => {
+      // Unit Test
       const exampleErrorType: ErrorType = 'invalid-signature'
       givenSendSqsError()
 
@@ -259,6 +265,7 @@ describe('sendAuditMessage', () => {
     })
 
     it('handles undefined zendeskId by setting empty string', async () => {
+      // Unit Test
       const exampleErrorType: ErrorType = 'invalid-signature'
       const errorDescription =
         'The webhook signature check failed, probably indicating that the request did not come from Zendesk'
@@ -289,6 +296,7 @@ describe('sendAuditMessage', () => {
       }
     }
     it('calls the sendSqsMessage function with the correct parameters', async () => {
+      // Unit Test
       givenSendSQSMessageReturnsMessageId()
       await sendQueryOutputGeneratedAuditMessage(ZENDESK_TICKET_ID)
 
@@ -303,6 +311,7 @@ describe('sendAuditMessage', () => {
     })
 
     it('logs an error message when an error occurs', async () => {
+      // Unit Test
       givenSendSqsError()
 
       await sendQueryOutputGeneratedAuditMessage(ZENDESK_TICKET_ID)

@@ -23,6 +23,7 @@ describe('sendInitiateAthenaQueryMessage', () => {
   }
 
   it('sends message to correct queue', async () => {
+    // Unit Test
     givenSqsMessageIdReturned()
 
     const messageId = await sendInitiateAthenaQueryMessage(ZENDESK_TICKET_ID)

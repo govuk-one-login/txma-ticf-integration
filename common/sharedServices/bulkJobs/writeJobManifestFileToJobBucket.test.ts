@@ -18,6 +18,7 @@ const testEtag = 'myTestEtag'
 const manifestFileContents = 'my,manifest,file,contents'
 describe('writeJobManifestFileToJobBucket', () => {
   it('should write the generated manifest file to the manifest bucket, and return the etag of the written file', async () => {
+    // Unit Test
     s3ClientMock.on(PutObjectCommand).resolves({ ETag: testEtag })
     createManifestFileTextMock.mockReturnValue(manifestFileContents)
     const fileList = ['file1', 'file2']

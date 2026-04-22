@@ -3,6 +3,7 @@ import { currentDateEpochSeconds } from './currentDateEpochSeconds'
 
 describe('currentDateEpochSeconds', () => {
   it('should return the current date in epoch seconds', () => {
+    // Unit Test
     const mockDate = new Date('2025-01-01T00:00:00.000Z')
     const expectedEpochSeconds = Math.round(mockDate.getTime() / 1000)
 
@@ -15,6 +16,7 @@ describe('currentDateEpochSeconds', () => {
   })
 
   it('should return different values for different times', () => {
+    // Unit Test
     const mockDate1 = new Date('2025-01-01T00:00:00.000Z')
     const mockDate2 = new Date('2025-01-01T00:00:01.000Z')
 

@@ -20,6 +20,7 @@ describe('addEmailRecipient', () => {
     vi.resetAllMocks()
   })
   it('should add a new email if it does not exist in the current list', async () => {
+    // Unit Test
     vi.mocked(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
     await addEmailRecipient(testNewEmail, testEnvironment)
     expect(listCurrentEmailRecipients).toHaveBeenCalledWith(testEnvironment)
@@ -32,6 +33,7 @@ describe('addEmailRecipient', () => {
   })
 
   it('should not try to add the email if it already exists in the current list', async () => {
+    // Unit Test
     vi.mocked(listCurrentEmailRecipients).mockResolvedValue(currentRecipients)
     await addEmailRecipient(testExistingEmail, testEnvironment)
     expect(listCurrentEmailRecipients).toHaveBeenCalledWith(testEnvironment)

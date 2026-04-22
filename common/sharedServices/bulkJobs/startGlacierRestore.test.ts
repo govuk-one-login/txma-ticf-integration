@@ -33,6 +33,7 @@ describe('startGlacierRestore', () => {
   })
 
   it('should write the manifest and start the glacier restore if a file list is supplied', async () => {
+    // Unit Test
     s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
     vi.mocked(getAuditDataSourceBucketName).mockReturnValue(
       testSourceDataBucket
@@ -78,6 +79,7 @@ describe('startGlacierRestore', () => {
   })
 
   it('should return early and not start restore when filesToRestore is empty', async () => {
+    // Unit Test
     await startGlacierRestore([], ZENDESK_TICKET_ID)
 
     expect(getAuditDataSourceBucketName).not.toHaveBeenCalled()
@@ -86,6 +88,7 @@ describe('startGlacierRestore', () => {
   })
 
   it('should handle null filesToRestore gracefully', async () => {
+    // Unit Test
     s3ControlClientMock.on(CreateJobCommand).resolves({ JobId: testJobId })
     vi.mocked(getAuditDataSourceBucketName).mockReturnValue(
       testSourceDataBucket

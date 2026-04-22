@@ -26,6 +26,7 @@ describe('describeBatchJob', () => {
   })
 
   it('correct parameters passed to describe batch job', async () => {
+    // Unit Test
     s3ControlClientMock.on(DescribeJobCommand).resolves(describeJobResult)
 
     const result = await describeBatchJob(
@@ -41,6 +42,7 @@ describe('describeBatchJob', () => {
   })
 
   it('throws error when Job is not in response', async () => {
+    // Unit Test
     s3ControlClientMock.on(DescribeJobCommand).resolves({
       $metadata: {},
       Job: undefined

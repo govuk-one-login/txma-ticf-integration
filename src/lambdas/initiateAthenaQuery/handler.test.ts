@@ -38,6 +38,7 @@ describe('tests related to running manual queries', () => {
   })
 
   it('checks that the lambda exits early and does not run an athena query as it is a manual query', async () => {
+    // Unit Test
     await handler(testManualAthenaQueryEvent, mockLambdaContext)
     expect(logger.info).toHaveBeenCalledWith(
       'Manual query detected, no need to run athena query'
@@ -48,6 +49,7 @@ describe('tests related to running manual queries', () => {
 
 describe('tests related to running automated queries', () => {
   it('checks that the lambda continues as normal as its an automated query', async () => {
+    // Unit Test
     vi.mocked(initiateQuery).mockResolvedValue()
     const testZendeskId = testAthenaQueryEvent.Records[0].body
     await handler(testAthenaQueryEvent, mockLambdaContext)
@@ -58,12 +60,14 @@ describe('tests related to running automated queries', () => {
 
 describe('misc tests', () => {
   it('checks if error is thrown when sqs event has no records', async () => {
+    // Unit Test
     await expect(
       handler(testAthenaQueryEventNoRecords, mockLambdaContext)
     ).rejects.toThrowError('No data in Athena Query event')
   })
 
   it('checks if error is thrown when zendeskID has length < 1', async () => {
+    // Unit Test
     await expect(
       handler(testAthenaQueryEventSmallZendeskId, mockLambdaContext)
     ).rejects.toThrowError('No zendeskId received from SQS')

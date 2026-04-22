@@ -57,6 +57,7 @@ describe('initiateQuery', () => {
   })
 
   it('updates the database when the athena query is initiated', async () => {
+    // Unit Test
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
@@ -85,6 +86,7 @@ describe('initiateQuery', () => {
   })
 
   it('closes the zendesk ticket if the database update fails', async () => {
+    // Unit Test
     mockCreateQuerySql.mockReturnValue({
       sqlGenerated: true,
       sql: 'test sql string',
@@ -121,6 +123,7 @@ describe('initiateQuery', () => {
   })
 
   it('updates zendesk and throws an error if the request data cannot be retrived from the database', async () => {
+    // Unit Test
     mockGetDatabaseEntryByZendeskId.mockRejectedValue(
       new Error('test error message')
     )
@@ -141,6 +144,7 @@ describe('initiateQuery', () => {
   })
 
   it('updates zendesk and throws an error if no query sql is generated', async () => {
+    // Unit Test
     mockGetDatabaseEntryByZendeskId.mockResolvedValue({
       requestInfo: noIdTestDataRequest
     })
@@ -165,6 +169,7 @@ describe('initiateQuery', () => {
   })
 
   it('updates zendesk and throws an error if it is unable to initiate an athena query', async () => {
+    // Unit Test
     mockGetDatabaseEntryByZendeskId.mockResolvedValue({
       requestInfo: dataPathsTestDataRequest
     })

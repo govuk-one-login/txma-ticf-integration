@@ -10,6 +10,7 @@ vi.mock('node:https')
 
 describe('#base64Encode', () => {
   it('returns the correctly encoded value along with the "Basic " prefix', () => {
+    // Unit Test
     const value = 'test.user@example.email.com/token:aBcDe12345F6g7H8i9'
     const encodedValue =
       'Basic ' +
@@ -55,6 +56,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should make a successful request and return parsed JSON', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test' }
     const responseData = { success: true }
 
@@ -71,6 +73,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should handle empty response body', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test' }
 
     const requestPromise = makeHttpsRequest(options)
@@ -85,6 +88,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should send POST data when provided', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test', method: 'POST' }
     const postData = { key: 'value' }
 
@@ -101,6 +105,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should reject when response statusCode is undefined', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test' }
     delete mockResponse.statusCode
 
@@ -110,6 +115,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should reject when response statusCode is < 200', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test' }
     mockResponse.statusCode = 199
 
@@ -119,6 +125,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should reject when response statusCode is >= 300', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test' }
     mockResponse.statusCode = 404
 
@@ -128,6 +135,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should reject when JSON parsing fails', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test' }
 
     const requestPromise = makeHttpsRequest(options)
@@ -141,6 +149,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should reject when response emits error', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test' }
     const errorMessage = 'Connection failed'
 
@@ -156,6 +165,7 @@ describe('#makeHttpsRequest', () => {
   })
 
   it('should handle non-Error objects in response error', async () => {
+    // Unit Test
     const options = { host: 'example.com', path: '/test' }
     const errorObj = { code: 'ECONNRESET' }
 

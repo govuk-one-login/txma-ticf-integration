@@ -95,6 +95,7 @@ describe('checkDataTransferStatus', () => {
   }
 
   it('should continue polling if a glacier defrost is pending', async () => {
+    // Unit Test
     givenDatabaseEntryResult({ checkGlacierStatusCount: 1 })
     givenGlacierDefrostPending()
 
@@ -117,6 +118,7 @@ describe('checkDataTransferStatus', () => {
   })
 
   it('should start copy from audit to analysis bucket if no glacier defrost is pending, there are files to copy and no copy is in progress', async () => {
+    // Unit Test
     givenDatabaseEntryResult({ checkGlacierStatusCount: 1 })
     givenCopyRequired()
 
@@ -135,6 +137,7 @@ describe('checkDataTransferStatus', () => {
   })
 
   it('should stop checking the data transfer status if checkGlacierStatusCount exceeds maximum amount', async () => {
+    // Unit Test
     givenDatabaseEntryResult({
       checkGlacierStatusCount: TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT
     })

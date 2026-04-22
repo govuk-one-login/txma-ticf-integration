@@ -9,6 +9,7 @@ vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBUpdate', () => ({
 
 describe('incrementPollingRetryCount', () => {
   it('calls incrementObjectFieldByOne with zendeskId and checkGlacierStatusCount parameters', async () => {
+    // Unit Test
     await incrementPollingRetryCount(ZENDESK_TICKET_ID)
 
     expect(incrementObjectFieldByOne).toHaveBeenCalledWith(

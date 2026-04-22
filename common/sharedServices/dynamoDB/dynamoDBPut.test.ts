@@ -73,6 +73,7 @@ describe('dynamoDbPut', () => {
     }
 
     it('should write a new data request record when we do not require any data to be copied', async () => {
+      // Unit Test
       dynamoMock.on(PutItemCommand).resolves({})
       await addNewDataRequestRecord(testDataRequest, false)
       expect(dynamoMock).toHaveReceivedCommandWith(
@@ -82,6 +83,7 @@ describe('dynamoDbPut', () => {
     })
 
     it('should write a new data request record when we require a glacier restore', async () => {
+      // Unit Test
       await addNewDataRequestRecord(testDataRequest, true)
       expect(dynamoMock).toHaveReceivedCommandWith(PutItemCommand, {
         TableName: TEST_QUERY_DATABASE_TABLE_NAME,
@@ -93,6 +95,7 @@ describe('dynamoDbPut', () => {
     })
 
     it('should write a new data request record when we require an audit bucket copy', async () => {
+      // Unit Test
       await addNewDataRequestRecord(testDataRequest, false)
       expect(dynamoMock).toHaveReceivedCommandWith(PutItemCommand, {
         TableName: TEST_QUERY_DATABASE_TABLE_NAME,
@@ -103,6 +106,7 @@ describe('dynamoDbPut', () => {
     })
 
     it('should write a new data request record with all fields populated', async () => {
+      // Unit Test
       const fullRecordItem = {
         zendeskId: { S: ZENDESK_TICKET_ID },
         ttl: {
