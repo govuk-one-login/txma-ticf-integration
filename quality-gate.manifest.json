@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.1.0/schemas/schema.json",
+  "services": [
+    {
+      "quality-gates": [
+        {
+          "check-types": ["unit", "code style and linting", "new feature"],
+          "phase": "pre-merge",
+          "provider": "GitHub",
+          "config": {
+            "file": ".github/workflows/build-test-package.yaml",
+            "name": "Build, Test and Package"
+          }
+        },
+        {
+          "check-types": [
+            "unit test coverage",
+            "code quality",
+            "vulnerability detection"
+          ],
+          "config": {
+            "file": ".github/workflows/sonarcloud.yaml",
+            "name": "Sonarcloud"
+          },
+          "phase": "pre-merge",
+          "provider": "GitHub"
+        },
+        {
+          "check-types": [
+            "unit",
+            "code style and linting",
+            "new feature",
+            "canary"
+          ],
+          "phase": "pre-upload",
+          "provider": "GitHub",
+          "config": {
+            "file": ".github/workflows/build-test-package.yaml",
+            "name": "Build, Test and Package"
+          }
+        }
+      ],
+      "service-tag": "data-dpt"
+    }
+  ]
+}
