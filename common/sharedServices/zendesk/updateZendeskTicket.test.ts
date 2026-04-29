@@ -143,4 +143,28 @@ describe('updating a zendesk ticket', () => {
       'No Zendesk ticket ID present. Cannot update ticket.'
     )
   })
+
+  it('skips Zendesk update for manual request (MR-prefixed) ticket IDs', async () => {
+    // Unit Test
+    const manualRequestId = 'MRdpt-2904-2020-1'
+    await updateZendeskTicketById(manualRequestId, zendeskTicketMessage)
+
+    expect(logger.info).toHaveBeenCalledWith(
+      `Skipping Zendesk ticket update for manual request with ID: ${manualRequestId}`
+    )
+    expect(mockHttpsRequestUtils.mockMakeHttpsRequest).not.toHaveBeenCalled()
+  })
+
+  it('skips Zendesk update for MR-prefixed ticket ID via updateZendeskTicket', async () => {
+    // Unit Test
+    const manualRequestBody = JSON.stringify({
+      zendeskId: 'MRtest-123'
+    })
+    await updateZendeskTicket(manualRequestBody, zendeskTicketMessage)
+
+    expect(logger.info).toHaveBeenCalledWith(
+      'Skipping Zendesk ticket update for manual request with ID: MRtest-123'
+    )
+    expect(mockHttpsRequestUtils.mockMakeHttpsRequest).not.toHaveBeenCalled()
+  })
 })

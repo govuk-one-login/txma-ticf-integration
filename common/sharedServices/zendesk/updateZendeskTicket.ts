@@ -31,11 +31,20 @@ export const updateZendeskTicket = async (
   )
 }
 
+const MANUAL_REQUEST_PREFIX = 'MR'
+
 export const updateZendeskTicketById = async (
   zendeskTicketId: string,
   message: string,
   ticketStatus: string | null = null
 ) => {
+  if (zendeskTicketId.startsWith(MANUAL_REQUEST_PREFIX)) {
+    logger.info(
+      `Skipping Zendesk ticket update for manual request with ID: ${zendeskTicketId}`
+    )
+    return
+  }
+
   const secrets = await retrieveZendeskApiSecrets()
   const options: https.RequestOptions = {
     method: 'PUT',
