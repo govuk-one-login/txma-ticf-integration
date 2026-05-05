@@ -98,7 +98,7 @@ describe('initiateQuery', () => {
     })
     mockUpdateQueryByZendeskId.mockRejectedValue(new Error('test error'))
 
-    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrowError(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
       `Error updating database for zendesk ticket: ${ZENDESK_TICKET_ID}`
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
@@ -122,13 +122,13 @@ describe('initiateQuery', () => {
     )
   })
 
-  it('updates zendesk and throws an error if the request data cannot be retrived from the database', async () => {
+  it('updates zendesk and throws an error if the request data cannot be retrieved from the database', async () => {
     // Unit Test
     mockGetDatabaseEntryByZendeskId.mockRejectedValue(
       new Error('test error message')
     )
 
-    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrowError(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
       `Error retrieving request details from database for zendesk ticket: ${ZENDESK_TICKET_ID}`
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
@@ -153,7 +153,7 @@ describe('initiateQuery', () => {
       error: 'sql error message'
     })
 
-    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrowError(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
       'sql error message'
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
@@ -183,7 +183,7 @@ describe('initiateQuery', () => {
       error: new Error('test athena error')
     })
 
-    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrowError(
+    await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
       'test athena error'
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(

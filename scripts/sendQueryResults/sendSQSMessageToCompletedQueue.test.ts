@@ -53,7 +53,7 @@ describe('sendSQSMessageToCompletedQueue function tests', () => {
 
     await expect(
       sendSQSMessageToCompletedQueue(environment, payload)
-    ).rejects.toThrowError(getQueueUrlError)
+    ).rejects.toThrow(getQueueUrlError)
     expect(sendSqsMessage).not.toHaveBeenCalled()
   })
 })

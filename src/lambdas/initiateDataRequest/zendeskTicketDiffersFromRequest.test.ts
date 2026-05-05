@@ -485,8 +485,6 @@ describe('match zendesk ticket details', () => {
     const error = async () => {
       await zendeskTicketDiffersFromRequest(testDataRequest)
     }
-    await expect(error()).rejects.toThrowError(
-      'Custom field with id 1 not found'
-    )
+    await expect(error()).rejects.toThrow('Custom field with id 1 not found')
   })
 })

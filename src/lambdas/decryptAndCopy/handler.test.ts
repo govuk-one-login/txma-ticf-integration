@@ -84,7 +84,7 @@ describe('DecryptAndCopy', function () {
     // Unit Test
     await expect(
       handler(emptyTestS3BatchEvent, mockLambdaContext)
-    ).rejects.toThrowError('No tasks in event')
+    ).rejects.toThrow('No tasks in event')
     expect(mockGetS3ObjectAsStream).not.toHaveBeenCalled()
     expect(mockDecryptS3Object).not.toHaveBeenCalled()
     expect(mockPutS3Object).not.toHaveBeenCalled()

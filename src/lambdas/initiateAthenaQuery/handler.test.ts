@@ -63,13 +63,13 @@ describe('misc tests', () => {
     // Unit Test
     await expect(
       handler(testAthenaQueryEventNoRecords, mockLambdaContext)
-    ).rejects.toThrowError('No data in Athena Query event')
+    ).rejects.toThrow('No data in Athena Query event')
   })
 
   it('checks if error is thrown when zendeskID has length < 1', async () => {
     // Unit Test
     await expect(
       handler(testAthenaQueryEventSmallZendeskId, mockLambdaContext)
-    ).rejects.toThrowError('No zendeskId received from SQS')
+    ).rejects.toThrow('No zendeskId received from SQS')
   })
 })

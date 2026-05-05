@@ -51,16 +51,16 @@ describe('initiate closeZendeskTicket handler', () => {
 
   it('throws an error when no event records are in the SQSEvent object', async () => {
     // Unit Test
-    await expect(
-      handler({ Records: [] }, mockLambdaContext)
-    ).rejects.toThrowError('No records found in event')
+    await expect(handler({ Records: [] }, mockLambdaContext)).rejects.toThrow(
+      'No records found in event'
+    )
   })
 
   it('throws an error when no event body is present', async () => {
     // Unit Test
     const invalidEventBody = ''
 
-    await expect(callHandlerWithBody(invalidEventBody)).rejects.toThrowError(
+    await expect(callHandlerWithBody(invalidEventBody)).rejects.toThrow(
       'Could not find event body'
     )
   })
@@ -79,7 +79,7 @@ describe('initiate closeZendeskTicket handler', () => {
 
       await expect(
         callHandlerWithBody(JSON.stringify(eventBodyParams))
-      ).rejects.toThrowError(`${missingPropertyError} missing from event body`)
+      ).rejects.toThrow(`${missingPropertyError} missing from event body`)
     }
   )
   it.each([
@@ -99,9 +99,7 @@ describe('initiate closeZendeskTicket handler', () => {
 
       await expect(
         callHandlerWithBody(JSON.stringify(eventBodyParams))
-      ).rejects.toThrowError(
-        `${emptyStringPropertyError} missing from event body`
-      )
+      ).rejects.toThrow(`${emptyStringPropertyError} missing from event body`)
     }
   )
 

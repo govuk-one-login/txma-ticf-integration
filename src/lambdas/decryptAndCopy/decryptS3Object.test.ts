@@ -85,7 +85,7 @@ describe('decryptS3Object', () => {
       const errorStream = new Readable({ read() {} }) // eslint-disable-line @typescript-eslint/no-empty-function
       process.nextTick(() => errorStream.destroy(streamError))
 
-      await expect(decryptS3Object(errorStream)).rejects.toThrowError(
+      await expect(decryptS3Object(errorStream)).rejects.toThrow(
         'Stream read failure'
       )
       expect(mockDecrypt).not.toHaveBeenCalled()
@@ -178,7 +178,7 @@ describe('decryptS3Object', () => {
 
       await expect(
         decryptS3Object(createDataStream(TEST_S3_OBJECT_DATA_STRING))
-      ).rejects.toThrowError('All KMS keys inaccessible')
+      ).rejects.toThrow('All KMS keys inaccessible')
 
       expect(logger.warn).toHaveBeenCalledWith(
         expect.stringContaining('Primary KMS wrapper key unavailable'),
@@ -198,7 +198,7 @@ describe('decryptS3Object', () => {
 
       await expect(
         decryptS3Object(createDataStream(TEST_S3_OBJECT_DATA_STRING))
-      ).rejects.toThrowError('backup-string-rejection')
+      ).rejects.toThrow('backup-string-rejection')
 
       expect(logger.error).toHaveBeenCalledWith(
         expect.stringContaining('Both KMS wrapper keys'),

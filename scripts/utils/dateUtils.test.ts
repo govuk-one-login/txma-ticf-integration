@@ -165,12 +165,12 @@ describe('testing date utility code', () => {
 
     expect(() =>
       convertDateRangeToIndividualDateArray(['2024/01/01-2022/01/05'])
-    ).toThrowError('Start date of range must be before end date')
+    ).toThrow('Start date of range must be before end date')
     expect(() =>
       convertDateRangeToIndividualDateArray(['2024/01/06-2024/01/05'])
-    ).toThrowError('Start date of range must be before end date')
+    ).toThrow('Start date of range must be before end date')
     expect(() =>
       convertDateRangeToIndividualDateArray(['2024/01/05-2024/01/05'])
-    ).toThrowError('Start date of range must be before end date')
+    ).toThrow('Start date of range must be before end date')
   })
 })

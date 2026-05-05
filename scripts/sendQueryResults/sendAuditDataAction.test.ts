@@ -38,7 +38,7 @@ describe('testing the sendAuditData cli action', () => {
     vi.mocked(copyManualRequestData).mockRejectedValue('error')
     vi.mocked(sendSQSMessageToCompletedQueue).mockResolvedValue()
 
-    await expect(sendAuditDataAction(payload)).rejects.toThrowError(
+    await expect(sendAuditDataAction(payload)).rejects.toThrow(
       'Failed to copy data within output bucket'
     )
     expect(copyManualRequestData).toHaveBeenCalledWith(
@@ -47,12 +47,12 @@ describe('testing the sendAuditData cli action', () => {
     )
   })
 
-  it('copyManualRequestData(): sucess, sendSQSMessageToCompletedQueue(): fail', async () => {
+  it('copyManualRequestData(): success, sendSQSMessageToCompletedQueue(): fail', async () => {
     // Unit Test
     vi.mocked(copyManualRequestData).mockResolvedValue()
     vi.mocked(sendSQSMessageToCompletedQueue).mockRejectedValue('error')
 
-    await expect(sendAuditDataAction(payload)).rejects.toThrowError(
+    await expect(sendAuditDataAction(payload)).rejects.toThrow(
       'Failed to send payload to query completed queue'
     )
     expect(copyManualRequestData).toHaveBeenCalledWith(
@@ -61,7 +61,7 @@ describe('testing the sendAuditData cli action', () => {
     )
   })
 
-  it('copyManualRequestData(): sucess, sendSQSMessageToCompletedQueue(): success', async () => {
+  it('copyManualRequestData(): success, sendSQSMessageToCompletedQueue(): success', async () => {
     // Unit Test
     vi.mocked(copyManualRequestData).mockResolvedValue()
     vi.mocked(sendSQSMessageToCompletedQueue).mockResolvedValue()

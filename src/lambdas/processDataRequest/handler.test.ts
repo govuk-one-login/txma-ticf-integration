@@ -43,9 +43,9 @@ describe('processDataRequest', () => {
 
   it('should throw an appropriate error if there is no data in the event', async () => {
     // Unit Test
-    await expect(
-      handler({ Records: [] }, mockLambdaContext)
-    ).rejects.toThrowError('No data in event')
+    await expect(handler({ Records: [] }, mockLambdaContext)).rejects.toThrow(
+      'No data in event'
+    )
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
   })
 
@@ -56,7 +56,7 @@ describe('processDataRequest', () => {
     )
     await expect(
       handler(initiateDataRequestEvent, mockLambdaContext)
-    ).rejects.toThrowError('Event data was not of the correct type')
+    ).rejects.toThrow('Event data was not of the correct type')
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
   })
 
@@ -65,7 +65,7 @@ describe('processDataRequest', () => {
     const initiateDataRequestEvent = constructSqsEvent('some message')
     await expect(
       handler(initiateDataRequestEvent, mockLambdaContext)
-    ).rejects.toThrowError('Event data did not include a valid JSON body')
+    ).rejects.toThrow('Event data did not include a valid JSON body')
     expect(initiateDataTransferMock).not.toHaveBeenCalled()
   })
 })
