@@ -123,7 +123,7 @@ describe('testing command: send-query-results', () => {
     (testCase) => {
       // Unit Test
       vi.mocked(sendAuditDataAction).mockResolvedValue()
-      expect(() => parseCliCallerForTesting(testCase.arg)).toThrowError(
+      expect(() => parseCliCallerForTesting(testCase.arg)).toThrow(
         testCase.expectedErrorMessage
       )
       expect(sendAuditDataActionFile.sendAuditDataAction).not.toHaveBeenCalled()
