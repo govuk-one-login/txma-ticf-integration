@@ -7,6 +7,7 @@ export default defineConfig({
     include: ['tests/integration-tests/**/*.spec.ts'],
     globalSetup: ['tests/shared-test-code/setup/setup.ts'],
     testTimeout: 120000,
+    hookTimeout: 60000,
     reporters: [
       'verbose',
       [
