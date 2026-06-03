@@ -68,13 +68,13 @@ jobs:
       contents: read
     steps:
       - name: Check out repository code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
       - name: Setup AWS CLI
         uses: aws-actions/setup-sam@89ddb14d60e682855e3fea4be85b3c56485de310
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885
+        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ inputs.environment == 'build' && secrets.GH_ACTIONS_BUILD_ROLE_ARN || inputs.environment == 'staging' && secrets.GH_ACTIONS_STAGING_ROLE_ARN || inputs.environment == 'integration' && secrets.GH_ACTIONS_INTEGRATION_ROLE_ARN || inputs.environment == 'production' && secrets.GH_ACTIONS_PRODUCTION_ROLE_ARN || secrets.GH_ACTIONS_BUILD_ROLE_ARN }}
