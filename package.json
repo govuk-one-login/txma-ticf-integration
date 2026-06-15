@@ -67,7 +67,7 @@
     "axios": "1.17.0",
     "commander": "15.0.0",
     "csv-string": "4.1.1",
-    "esbuild": "0.28.0",
+    "esbuild": "0.28.1",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "10.1.8",
     "globals": "^17.6.0",
