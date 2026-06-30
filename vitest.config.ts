@@ -25,7 +25,6 @@ export default defineConfig({
         '**/tests/**',
         '**/*.config.ts',
         '**/*.test.ts',
-        '**/.*',
         'common/utils/tests/mocks/mockLambdaContext.ts'
       ],
       thresholds: {
