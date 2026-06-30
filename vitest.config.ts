@@ -11,8 +11,11 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
+      reporter: ['text', 'lcov'],
       include: ['src/**/*.ts', 'common/**/*.ts'],
       exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
         '**/scripts/**',
         '**/interface/**',
         '**/interfaces/**',
@@ -21,6 +24,7 @@ export default defineConfig({
         '**/logger.ts',
         '**/tests/**',
         '**/*.config.ts',
+        '**/*.test.ts',
         '**/.*',
         'common/utils/tests/mocks/mockLambdaContext.ts'
       ],
