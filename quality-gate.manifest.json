@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.14.0/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.15.0/schemas/schema.json",
   "services": [
     {
       "product": "Audit-Service",
@@ -7,41 +7,61 @@
       "promotionType": "securePipelines",
       "automated": [
         {
-          "checkTypes": [
-            "unit",
-            "code style and linting",
-            "new feature"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/build-test-package.yaml"
-          }
+          },
+          "checks": [
+            {
+              "name": "unit"
+            },
+            {
+              "name": "code style and linting"
+            },
+            {
+              "name": "new feature"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "unit test coverage",
-            "code quality",
-            "vulnerability detection"
-          ],
           "phase": "pre-merge",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/sonarcloud.yaml"
-          }
+          },
+          "checks": [
+            {
+              "name": "unit test coverage"
+            },
+            {
+              "name": "code quality"
+            },
+            {
+              "name": "vulnerability detection"
+            }
+          ]
         },
         {
-          "checkTypes": [
-            "unit",
-            "code style and linting",
-            "new feature",
-            "canary"
-          ],
           "phase": "pre-upload",
           "provider": "GitHub",
           "config": {
             "file": ".github/workflows/build-test-package.yaml"
-          }
+          },
+          "checks": [
+            {
+              "name": "unit"
+            },
+            {
+              "name": "code style and linting"
+            },
+            {
+              "name": "new feature"
+            },
+            {
+              "name": "canary"
+            }
+          ]
         }
       ]
     }
