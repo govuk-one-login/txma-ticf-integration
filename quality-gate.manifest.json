@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.16.0/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.17.0/schemas/schema.json",
   "services": [
     {
       "product": "Audit-Service",
@@ -9,9 +9,6 @@
         {
           "phase": "pre-merge",
           "provider": "GitHub",
-          "config": {
-            "file": ".github/workflows/build-test-package.yaml"
-          },
           "checks": [
             {
               "name": "unit",
@@ -22,14 +19,12 @@
             {
               "name": "code style and linting"
             }
-          ]
+          ],
+          "file": ".github/workflows/build-test-package.yaml"
         },
         {
           "phase": "pre-merge",
           "provider": "GitHub",
-          "config": {
-            "file": ".github/workflows/sonarcloud.yaml"
-          },
           "checks": [
             {
               "name": "unit test coverage"
@@ -40,14 +35,12 @@
             {
               "name": "vulnerability detection"
             }
-          ]
+          ],
+          "file": ".github/workflows/sonarcloud.yaml"
         },
         {
           "phase": "pre-upload",
           "provider": "GitHub",
-          "config": {
-            "file": ".github/workflows/build-test-package.yaml"
-          },
           "checks": [
             {
               "name": "unit",
@@ -61,7 +54,8 @@
             {
               "name": "canary"
             }
-          ]
+          ],
+          "file": ".github/workflows/build-test-package.yaml"
         }
       ]
     }
