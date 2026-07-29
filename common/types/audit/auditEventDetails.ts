@@ -6,9 +6,7 @@ export type EventName =
   | 'TXMA_AUDIT_QUERY_ILLEGAL_REQUEST'
   | 'TXMA_AUDIT_QUERY_OUTPUT_GENERATED'
 export type ErrorType =
-  | 'invalid-signature'
-  | 'mismatched-ticket'
-  | 'non-existent-ticket'
+  'invalid-signature' | 'mismatched-ticket' | 'non-existent-ticket'
 export interface ErrorObject {
   error_type: ErrorType
   error_description: string
