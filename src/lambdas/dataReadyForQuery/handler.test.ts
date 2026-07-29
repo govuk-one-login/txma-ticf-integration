@@ -105,32 +105,32 @@ describe('dataReadyForQuery', () => {
   it.each`
     testCase     | tags
     ${'Incorrect Job tag'} | ${[
-  {
-    Key: 'Random tag',
-    Value: 'true'
-  },
-  {
-    Key: ZENDESK_ID_TAG_NAME,
-    Value: ZENDESK_TICKET_ID
-  }
-]}
+      {
+        Key: 'Random tag',
+        Value: 'true'
+      },
+      {
+        Key: ZENDESK_ID_TAG_NAME,
+        Value: ZENDESK_TICKET_ID
+      }
+    ]}
     ${'missing zendesk ID'} | ${[
-  {
-    Key: TRANSFER_TO_ANALYSIS_BUCKET_JOB_TAG_NAME,
-    Value: 'true'
-  },
-  {
-    Key: 'random tag',
-    Value: 'random value'
-  }
-]}
+      {
+        Key: TRANSFER_TO_ANALYSIS_BUCKET_JOB_TAG_NAME,
+        Value: 'true'
+      },
+      {
+        Key: 'random tag',
+        Value: 'random value'
+      }
+    ]}
     ${'no tags'} | ${[]}
     ${'missing zendesk ID and incorrect job tag'} | ${[
-  {
-    Key: 'random tag',
-    Value: 'true'
-  }
-]}
+      {
+        Key: 'random tag',
+        Value: 'true'
+      }
+    ]}
   `('disregards when $testCase', async ({ tags }) => {
     vi.mocked(getS3BatchJobTags).mockResolvedValue(tags)
 
