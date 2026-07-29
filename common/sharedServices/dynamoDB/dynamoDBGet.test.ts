@@ -228,7 +228,9 @@ describe('dynamoDBGet', () => {
       // Unit Test
       dynamoMock.on(QueryCommand).resolves({ Items: [] } as QueryOutput)
 
-      expect(getQueryByAthenaQueryId(TEST_ATHENA_QUERY_ID)).rejects.toThrow(
+      await expect(
+        getQueryByAthenaQueryId(TEST_ATHENA_QUERY_ID)
+      ).rejects.toThrow(
         `No data returned from db for athenaQueryId: ${TEST_ATHENA_QUERY_ID}`
       )
       expect(dynamoMock).toHaveReceivedCommandWith(QueryCommand, testParams)
@@ -240,7 +242,9 @@ describe('dynamoDBGet', () => {
         .on(QueryCommand)
         .resolves(undefined as unknown as QueryCommandOutput)
 
-      expect(getQueryByAthenaQueryId(TEST_ATHENA_QUERY_ID)).rejects.toThrow(
+      await expect(
+        getQueryByAthenaQueryId(TEST_ATHENA_QUERY_ID)
+      ).rejects.toThrow(
         `No data returned from db for athenaQueryId: ${TEST_ATHENA_QUERY_ID}`
       )
       expect(dynamoMock).toHaveReceivedCommandWith(QueryCommand, testParams)

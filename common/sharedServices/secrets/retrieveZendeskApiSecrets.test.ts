@@ -65,7 +65,7 @@ describe('retrieveZendeskApiSecrets', () => {
       delete secretCollection[keyToOmit]
       givenSecretKeysSet(secretCollection)
 
-      expect(retrieveZendeskApiSecrets()).rejects.toThrow(
+      await expect(retrieveZendeskApiSecrets()).rejects.toThrow(
         `Secret with key ${keyToOmit} not set in ${TEST_ZENDESK_SECRET_ARN}`
       )
     })
