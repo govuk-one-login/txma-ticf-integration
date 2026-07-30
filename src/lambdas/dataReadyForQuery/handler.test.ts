@@ -87,8 +87,8 @@ describe('dataReadyForQuery', () => {
       'closed'
     )
     expect(logger.error).toHaveBeenLastCalledWith(
-      'Transfer to analysis bucket job failed for jobID. Please check the job report and lambda logs for details of what went wrong',
-      { jobId: TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID }
+      'Transfer to analysis bucket job failed',
+      { errorCode: 'TICF004', jobId: TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID }
     )
   })
 

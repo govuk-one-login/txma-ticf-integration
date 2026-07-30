@@ -99,7 +99,7 @@ describe('initiateQuery', () => {
     mockUpdateQueryByZendeskId.mockRejectedValue(new Error('test error'))
 
     await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
-      `Error updating database for zendesk ticket: ${ZENDESK_TICKET_ID}`
+      'Error updating database'
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID
@@ -117,7 +117,7 @@ describe('initiateQuery', () => {
     )
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      `Error updating database for zendesk ticket: ${ZENDESK_TICKET_ID}`,
+      'Error updating database',
       'closed'
     )
   })
@@ -129,14 +129,14 @@ describe('initiateQuery', () => {
     )
 
     await expect(initiateQuery(ZENDESK_TICKET_ID)).rejects.toThrow(
-      `Error retrieving request details from database for zendesk ticket: ${ZENDESK_TICKET_ID}`
+      'Error retrieving request details from database'
     )
     expect(mockGetDatabaseEntryByZendeskId).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID
     )
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      `Error retrieving request details from database for zendesk ticket: ${ZENDESK_TICKET_ID}`,
+      'Error retrieving request details from database',
       'closed'
     )
     expect(mockCreateQuerySql).not.toHaveBeenCalled()
@@ -197,7 +197,7 @@ describe('initiateQuery', () => {
     })
     expect(mockUpdateZendeskTicket).toHaveBeenCalledWith(
       ZENDESK_TICKET_ID,
-      `Athena query execution failed for zendesk ticket: ${ZENDESK_TICKET_ID}`,
+      'Athena query execution failed',
       'closed'
     )
     expect(mockUpdateQueryByZendeskId).not.toHaveBeenCalled()

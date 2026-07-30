@@ -52,12 +52,16 @@ export const sendAuditDataRequestMessage = async (
       auditDataRequestEvent,
       getEnv('AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL')
     )
-    logger.info('sent audit data request message', { messageId })
+    logger.info('Sent audit data request message', { messageId })
   } catch (error) {
-    logger.error(
-      'An error occurred while sending message to audit queue: ',
-      error as Error
-    )
+    logger.error('Failed to send message to audit queue', {
+      errorCode: 'TICF020',
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
   }
 }
 
@@ -78,10 +82,14 @@ export const sendIllegalRequestAuditMessage = async (
     )
     logger.info('Sent TXMA_AUDIT_QUERY_ILLEGAL_REQUEST event', { messageId })
   } catch (error) {
-    logger.error(
-      'An error occurred while sending message to audit queue: ',
-      error as Error
-    )
+    logger.error('Failed to send message to audit queue', {
+      errorCode: 'TICF020',
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
   }
 }
 
@@ -100,10 +108,14 @@ export const sendQueryOutputGeneratedAuditMessage = async (
     )
     logger.info('Sent TXMA_AUDIT_QUERY_OUTPUT_GENERATED event', { messageId })
   } catch (error) {
-    logger.error(
-      'An error occurred while sending message to audit queue: ',
-      error as Error
-    )
+    logger.error('Failed to send message to audit queue', {
+      errorCode: 'TICF020',
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
   }
 }
 

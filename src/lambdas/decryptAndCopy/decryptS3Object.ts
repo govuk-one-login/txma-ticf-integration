@@ -28,13 +28,19 @@ export const decryptS3Object = async (
     const { plaintext } = await decrypt(primaryKeyring, dataBuffer)
     return plaintext
   } catch (primaryError) {
-    const primaryErr =
-      primaryError instanceof Error
-        ? primaryError
-        : new Error(String(primaryError))
     logger.warn(
-      'Primary KMS wrapper key unavailable – system operating in degraded mode, attempting decryption with backup key',
-      primaryErr
+      'Primary KMS wrapper key unavailable, attempting decryption with backup key',
+      {
+        errorCode: 'TICF011',
+        error: {
+          message:
+            primaryError instanceof Error
+              ? primaryError.message
+              : String(primaryError),
+          name: primaryError instanceof Error ? primaryError.name : undefined,
+          stack: primaryError instanceof Error ? primaryError.stack : undefined
+        }
+      }
     )
   }
 
@@ -44,14 +50,19 @@ export const decryptS3Object = async (
     const { plaintext } = await decrypt(backupKeyring, dataBuffer)
     return plaintext
   } catch (backupError) {
-    const backupErr =
-      backupError instanceof Error
-        ? backupError
-        : new Error(String(backupError))
-    logger.error(
-      'Both KMS wrapper keys are unavailable – decryption failed',
-      backupErr
-    )
-    throw backupErr
+    logger.error('Both KMS wrapper keys are unavailable, decryption failed', {
+      errorCode: 'TICF012',
+      error: {
+        message:
+          backupError instanceof Error
+            ? backupError.message
+            : String(backupError),
+        name: backupError instanceof Error ? backupError.name : undefined,
+        stack: backupError instanceof Error ? backupError.stack : undefined
+      }
+    })
+    throw backupError instanceof Error
+      ? backupError
+      : new Error(String(backupError))
   }
 }

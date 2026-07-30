@@ -41,7 +41,7 @@ describe('tests related to running manual queries', () => {
     // Unit Test
     await handler(testManualAthenaQueryEvent, mockLambdaContext)
     expect(logger.info).toHaveBeenCalledWith(
-      'Manual query detected, no need to run athena query'
+      'Manual query detected, no need to run Athena query'
     )
     expect(mockInitiateQuery).not.toHaveBeenCalled()
   })

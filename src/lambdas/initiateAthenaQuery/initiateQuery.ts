@@ -26,10 +26,23 @@ const getRequestData = async (
     logger.info('Retrieved request details from database')
 
     return requestData
-  } catch {
-    const errorMessage = `Error retrieving request details from database for zendesk ticket: ${zendeskId}`
-    await updateZendeskTicketById(zendeskId, errorMessage, 'closed')
-    throw new Error(errorMessage)
+  } catch (error) {
+    logger.error('Error retrieving request details from database', {
+      errorCode: 'TICF016',
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
+    await updateZendeskTicketById(
+      zendeskId,
+      'Error retrieving request details from database',
+      'closed'
+    )
+    throw new Error('Error retrieving request details from database', {
+      cause: error
+    })
   }
 }
 
@@ -50,7 +63,7 @@ const confirmQueryExecution = async (
   if (!queryExecutionDetails.queryExecuted && queryExecutionDetails.error) {
     await updateZendeskTicketById(
       zendeskId,
-      `Athena query execution failed for zendesk ticket: ${zendeskId}`,
+      'Athena query execution failed',
       'closed'
     )
     throw queryExecutionDetails.error
@@ -76,9 +89,20 @@ const updateDb = async (
         queryExecutionId: queryExecutionDetails.queryExecutionId
       })
     } catch (error) {
-      const errorMessage = `Error updating database for zendesk ticket: ${zendeskId}`
-      await updateZendeskTicketById(zendeskId, errorMessage, 'closed')
-      throw new Error(errorMessage, { cause: error })
+      logger.error('Error updating database', {
+        errorCode: 'TICF017',
+        error: {
+          message: error instanceof Error ? error.message : String(error),
+          name: error instanceof Error ? error.name : undefined,
+          stack: error instanceof Error ? error.stack : undefined
+        }
+      })
+      await updateZendeskTicketById(
+        zendeskId,
+        'Error updating database',
+        'closed'
+      )
+      throw new Error('Error updating database', { cause: error })
     }
   }
 }

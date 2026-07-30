@@ -7,7 +7,7 @@ export const sendQueryCompleteQueueMessage = async (parameters: {
   recipientName: string
   zendeskTicketId: string
 }) => {
-  logger.info('sending query complete message')
+  logger.info('Sending query complete message')
   const messageId = await sendSqsMessage(
     parameters,
     getEnv('QUERY_COMPLETED_QUEUE_URL')

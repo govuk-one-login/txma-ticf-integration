@@ -16,7 +16,8 @@ export const startGlacierRestore = async (
 ) => {
   if (filesToRestore?.length < 1) {
     logger.warn(
-      'startGlacierRestore called with no files. Not performing any action'
+      'startGlacierRestore called with no files, not performing any action',
+      { errorCode: 'TICF021' }
     )
     return
   }
