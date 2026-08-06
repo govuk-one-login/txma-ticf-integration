@@ -23,7 +23,7 @@ export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   const data = await makeHttpsRequest(options)
 
   if (!isZendeskUserResult(data)) {
-    throw Error('The returned data was not a Zendesk user')
+    throw new Error('The returned data was not a Zendesk user')
   }
   logger.info('Retrieved Zendesk user info successfully')
   return data.user
