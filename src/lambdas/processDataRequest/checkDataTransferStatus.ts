@@ -18,7 +18,11 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     dbEntry.checkGlacierStatusCount &&
     dbEntry.checkGlacierStatusCount >= MAX_GLACIER_RETRIES
   ) {
-    logger.error('Status check count exceeded. Process terminated')
+    logger.error('Status check count exceeded, process terminated', {
+      errorCode: 'TICF015',
+      checkCount: dbEntry.checkGlacierStatusCount,
+      maxRetries: MAX_GLACIER_RETRIES
+    })
     await terminateStatusCheckProcess(zendeskId)
     return await updateZendeskTicketById(
       zendeskId,
@@ -31,21 +35,19 @@ export const checkDataTransferStatus = async (zendeskId: string) => {
     s3BucketDataLocationResult.glacierTierLocationsToCopy.length > 0
 
   if (!glacierRestoreStillInProgress) {
-    logger.info('Glacier restore complete. Starting copy job')
+    logger.info('Glacier restore complete, starting copy job')
     await startTransferToAnalysisBucket(
       s3BucketDataLocationResult.standardTierLocationsToCopy,
       s3BucketDataLocationResult.glacierIRTierLocationsToCopy,
       zendeskId
     )
   } else {
-    logger.info(
-      'Placing zendeskId back on InitiateDataRequestQueue because Glacier restore is still in progress',
-      {
-        numberOfChecks: addOneToRetryCountForLogs(
-          dbEntry.checkGlacierStatusCount
-        )
-      }
-    )
+    const numberOfChecks = dbEntry.checkGlacierStatusCount
+      ? (dbEntry.checkGlacierStatusCount + 1).toString()
+      : ''
+    logger.info('Glacier restore still in progress, queuing retry', {
+      numberOfChecks
+    })
     await maintainRetryState(zendeskId)
   }
 }
@@ -55,9 +57,4 @@ const maintainRetryState = async (zendeskId: string) => {
 
   await incrementPollingRetryCount(zendeskId)
   await sendContinuePollingDataTransferMessage(zendeskId, waitTimeInSeconds)
-}
-
-const addOneToRetryCountForLogs = (checkCount: number | undefined): string => {
-  if (!checkCount) return ''
-  return (checkCount + 1).toString()
 }

@@ -1,4 +1,3 @@
-import { loggingCopy } from '../../../common/constants/loggingCopy'
 import { zendeskCopy } from '../../../common/constants/zendeskCopy'
 import { DataRequestParams } from '../../../common/types/dataRequestParams'
 import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
@@ -16,7 +15,7 @@ export const initiateDataTransfer = async (
 ) => {
   const bucketData = await checkS3BucketData(dataRequestParams)
   if (!bucketData.dataAvailable) {
-    logger.info(interpolateTemplate('noDataFound', loggingCopy), {
+    logger.info('No data found for period, closing Zendesk ticket', {
       dates: dataRequestParams.dates
     })
     await updateZendeskTicketById(
@@ -37,7 +36,7 @@ export const initiateDataTransfer = async (
   await addNewDataRequestRecord(dataRequestParams, glacierRestoreRequired)
   logger.info('Added data request to query request database')
   if (!glacierRestoreRequired && !copyFromAuditToAnalysisBucketRequired) {
-    logger.info(interpolateTemplate('dataAvailableQueuingQuery', loggingCopy))
+    logger.info('All data available, queuing Athena query')
     await sendInitiateAthenaQueryMessage(dataRequestParams.zendeskId)
     return
   }
@@ -47,7 +46,7 @@ export const initiateDataTransfer = async (
       bucketData.glacierTierLocationsToCopy,
       dataRequestParams.zendeskId
     )
-    logger.info(interpolateTemplate('queuingMessageLongPoll', loggingCopy))
+    logger.info('Batch job started, queuing message for long poll')
     const waitTimeInSeconds = 900
     await sendContinuePollingDataTransferMessage(
       dataRequestParams.zendeskId,

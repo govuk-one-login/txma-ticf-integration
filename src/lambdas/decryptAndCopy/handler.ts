@@ -19,6 +19,12 @@ export const handler = async (
   context: Context
 ): Promise<S3BatchResult> => {
   initialiseLogger(context)
+  const startTime = Date.now()
+
+  logger.info('Decrypt and copy handler started', {
+    invocationId: event.invocationId,
+    taskCount: event.tasks.length
+  })
 
   let resultCode: S3BatchResultResultCode = 'Succeeded'
   let resultString = ''
@@ -32,13 +38,25 @@ export const handler = async (
       s3Key: event.tasks[0].s3Key
     })
   } catch (err) {
-    logger.error('Error during decrypt and copy', {
-      err,
-      s3Key: event.tasks[0].s3Key
+    logger.error('Decrypt and copy failed', {
+      errorCode: 'TICF006',
+      s3Key: event.tasks[0].s3Key,
+      error: {
+        message: err instanceof Error ? err.message : String(err),
+        name: err instanceof Error ? err.name : undefined,
+        stack: err instanceof Error ? err.stack : undefined
+      }
     })
     resultCode = 'TemporaryFailure'
-    resultString = `Err: ${JSON.stringify(err)}`
+    resultString = `Failed: ${err instanceof Error ? err.message : 'Unknown error'}`
   }
+
+  logger.info('Decrypt and copy handler completed', {
+    invocationId: event.invocationId,
+    outcome: resultCode === 'Succeeded' ? 'success' : 'failure',
+    duration: Date.now() - startTime
+  })
+
   return {
     invocationSchemaVersion: '1.0',
     treatMissingKeysAs: 'PermanentFailure',
@@ -56,7 +74,7 @@ const decryptAndCopy = async (task: S3BatchEventTask) => {
   const bucket = extractS3BucketNameFromArn(task.s3BucketArn)
 
   const encryptedData = await getS3ObjectAsStream(bucket, key)
-  logger.info('Successfully retrived S3 object', { key })
+  logger.info('Successfully retrieved S3 object', { key })
 
   const decryptedData = await decryptS3Object(encryptedData)
   logger.info('Successfully decrypted S3 object', { key })

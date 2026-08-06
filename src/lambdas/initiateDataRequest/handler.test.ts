@@ -191,7 +191,8 @@ describe('initiate data request handler', () => {
     )
 
     expect(logger.warn).toHaveBeenLastCalledWith(
-      'Request received with invalid webhook signature'
+      'Request received with invalid webhook signature',
+      { errorCode: 'TICF003' }
     )
     expect(sendInitiateDataTransferMessage).not.toHaveBeenCalled()
     expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(parsedEventBody)
@@ -221,7 +222,8 @@ describe('initiate data request handler', () => {
     )
 
     expect(logger.warn).toHaveBeenLastCalledWith(
-      'Request received with invalid webhook signature'
+      'Request received with invalid webhook signature',
+      { errorCode: 'TICF003' }
     )
     expect(sendInitiateDataTransferMessage).not.toHaveBeenCalled()
     expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(parsedEventBody)

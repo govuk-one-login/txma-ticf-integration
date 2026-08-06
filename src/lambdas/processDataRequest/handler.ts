@@ -12,6 +12,14 @@ import {
 
 export const handler = async (event: SQSEvent, context: Context) => {
   initialiseLogger(context)
+  const startTime = Date.now()
+  const correlationId = event.Records[0]?.messageId
+
+  logger.info('Process data request started', {
+    correlationId,
+    recordCount: event.Records.length
+  })
+
   if (event.Records.length === 0) {
     throw new Error('No data in event')
   }
@@ -24,9 +32,21 @@ export const handler = async (event: SQSEvent, context: Context) => {
   if (isDataRequestParams(eventData)) {
     await initiateDataTransfer(eventData)
     logger.info('Data transfer process initiated')
+    logger.info('Process data request completed', {
+      correlationId,
+      outcome: 'success',
+      duration: Date.now() - startTime,
+      action: 'initiateDataTransfer'
+    })
   } else if (isContinueDataTransferParams(eventData)) {
     const params = eventData
     await checkDataTransferStatus(params.zendeskId)
+    logger.info('Process data request completed', {
+      correlationId,
+      outcome: 'success',
+      duration: Date.now() - startTime,
+      action: 'checkDataTransferStatus'
+    })
   } else {
     throw new Error('Event data was not of the correct type')
   }

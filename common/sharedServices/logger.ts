@@ -1,22 +1,6 @@
-import { Logger } from '@aws-lambda-powertools/logger'
-import { LogLevel } from '@aws-lambda-powertools/logger/types'
-import { Context } from 'aws-lambda'
-
-const loggerInstance = new Logger({
-  ...(process.env.AWS_LAMBDA_FUNCTION_NAME
-    ? { serviceName: process.env.AWS_LAMBDA_FUNCTION_NAME }
-    : {}),
-  logLevel: (process.env.LOG_LEVEL as LogLevel) || 'DEBUG',
-  ...(process.env.ENVIRONMENT ? { environment: process.env.ENVIRONMENT } : {})
-})
-
-export const initialiseLogger = (context: Context) => {
-  loggerInstance.addContext(context)
-  loggerInstance.removeKeys(['zendeskId'])
-}
+export { logger, initialiseLogger } from '@govuk-one-login/dpt-logging'
+import { logger } from '@govuk-one-login/dpt-logging'
 
 export const appendZendeskIdToLogger = (zendeskId: string) => {
-  loggerInstance.appendKeys({ zendeskId })
+  logger.appendKeys({ zendeskId })
 }
-
-export const logger = loggerInstance

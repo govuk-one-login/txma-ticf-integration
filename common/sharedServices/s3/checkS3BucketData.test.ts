@@ -5,12 +5,7 @@ import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3Buck
 import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
 import { StorageClass, _Object } from '@aws-sdk/client-s3'
 import { when } from 'vitest-when'
-import {
-  TEST_ANALYSIS_BUCKET,
-  TEST_DATE_1,
-  TEST_DATE_2,
-  ZENDESK_TICKET_ID
-} from '../../../common/utils/tests/testConstants'
+import { TEST_ANALYSIS_BUCKET } from '../../../common/utils/tests/testConstants'
 import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
 import { logger } from '../../../common/sharedServices/logger'
 vi.mock('./listS3Files', () => ({
@@ -164,19 +159,30 @@ describe('check objects in analysis bucket', () => {
     glacierIRTierFiles: number
   ) => {
     expect(logger.info).toHaveBeenLastCalledWith(
-      `Number of standard tier files to copy was ${standardTierFiles}, glacier_ir tier files to copy was ${glacierIRTierFiles}, glacier tier files to copy was ${glacierTierFiles}`
+      'S3 bucket data check completed',
+      {
+        standardTierCount: standardTierFiles,
+        glacierIRTierCount: glacierIRTierFiles,
+        glacierTierCount: glacierTierFiles
+      }
     )
   }
 
-  const assertFilesMissingKeysLogged = (bucketName: string) => {
-    expect(logger.warn).toHaveBeenLastCalledWith(
-      `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', dates '${TEST_DATE_1},${TEST_DATE_2}'.`
+  const assertFilesMissingKeysLogged = () => {
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Some data in bucket had missing keys, which have been ignored',
+      expect.objectContaining({
+        errorCode: 'TICF013'
+      })
     )
   }
 
-  const assertFilesMissingStorageClassLogged = (bucketName: string) => {
-    expect(logger.warn).toHaveBeenLastCalledWith(
-      `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${ZENDESK_TICKET_ID}', dates '${TEST_DATE_1},${TEST_DATE_2}'.`
+  const assertFilesMissingStorageClassLogged = () => {
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Some data in bucket had missing storage class, which have been ignored',
+      expect.objectContaining({
+        errorCode: 'TICF014'
+      })
     )
   }
 
@@ -255,7 +261,7 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0, 0)
-    assertFilesMissingKeysLogged(testAuditSourceDataBucket)
+    assertFilesMissingKeysLogged()
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with undefined keys', async () => {
@@ -285,7 +291,7 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0, 0)
-    assertFilesMissingKeysLogged(testAuditSourceDataBucket)
+    assertFilesMissingKeysLogged()
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with missing storage class', async () => {
@@ -315,7 +321,7 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0, 0)
-    assertFilesMissingStorageClassLogged(testAuditSourceDataBucket)
+    assertFilesMissingStorageClassLogged()
   })
 
   test('no data in analysis bucket, audit bucket data contains some data with undefined storage class', async () => {
@@ -348,7 +354,7 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(6, 0, 0)
-    assertFilesMissingStorageClassLogged(testAuditSourceDataBucket)
+    assertFilesMissingStorageClassLogged()
   })
 
   test('no data in analysis bucket, all audit data in glacier tier', async () => {
@@ -624,7 +630,7 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(7, 0, 0)
-    assertFilesMissingKeysLogged(TEST_ANALYSIS_BUCKET)
+    assertFilesMissingKeysLogged()
   })
 
   test('partial data in analysis bucket, some data in analysis bucket with undefined keys', async () => {
@@ -666,7 +672,7 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(7, 0, 0)
-    assertFilesMissingKeysLogged(TEST_ANALYSIS_BUCKET)
+    assertFilesMissingKeysLogged()
   })
 
   test('partial data in analysis bucket, some data in analysis bucket missing storage class', async () => {
@@ -708,7 +714,7 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(7, 0, 0)
-    assertFilesMissingStorageClassLogged(TEST_ANALYSIS_BUCKET)
+    assertFilesMissingStorageClassLogged()
   })
 
   test('partial data in analysis bucket, some data in analysis bucket with undefined storage class', async () => {
@@ -753,7 +759,7 @@ describe('check objects in analysis bucket', () => {
       ]
     })
     assertNumberOfFilesLogged(7, 0, 0)
-    assertFilesMissingStorageClassLogged(TEST_ANALYSIS_BUCKET)
+    assertFilesMissingStorageClassLogged()
   })
 
   test('no data in either bucket', async () => {

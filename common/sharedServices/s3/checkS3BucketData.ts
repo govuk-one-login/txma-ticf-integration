@@ -50,9 +50,11 @@ export const checkS3BucketData = async (
     )
     .map((o) => o.Key as string)
 
-  logger.info(
-    `Number of standard tier files to copy was ${standardTierLocationsToCopy?.length}, glacier_ir tier files to copy was ${glacierIRTierLocationsToCopy?.length}, glacier tier files to copy was ${glacierTierLocationsToCopy?.length}`
-  )
+  logger.info('S3 bucket data check completed', {
+    standardTierCount: standardTierLocationsToCopy.length,
+    glacierIRTierCount: glacierIRTierLocationsToCopy.length,
+    glacierTierCount: glacierTierLocationsToCopy.length
+  })
   return Promise.resolve({
     standardTierLocationsToCopy,
     glacierIRTierLocationsToCopy,
@@ -80,12 +82,24 @@ const retrieveS3ObjectsForPrefixes = async (
   ).then((objects: _Object[][]) => objects.flat())
   if (rawData.some((o) => !o.Key)) {
     logger.warn(
-      `Some data in the bucket '${bucketName}' had missing keys, which have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', dates '${dataRequestParams.dates}'.`
+      'Some data in bucket had missing keys, which have been ignored',
+      {
+        errorCode: 'TICF013',
+        bucketName,
+        zendeskId: dataRequestParams.zendeskId,
+        dates: dataRequestParams.dates
+      }
     )
   }
   if (rawData.some((o) => !o.StorageClass)) {
     logger.warn(
-      `Some data in the bucket '${bucketName}' had missing storage class, and these have been ignored. ZendeskId: '${dataRequestParams.zendeskId}', dates '${dataRequestParams.dates}'.`
+      'Some data in bucket had missing storage class, which have been ignored',
+      {
+        errorCode: 'TICF014',
+        bucketName,
+        zendeskId: dataRequestParams.zendeskId,
+        dates: dataRequestParams.dates
+      }
     )
   }
   return rawData.filter((o) => !!o.Key && !!o.StorageClass)

@@ -23,7 +23,8 @@ export const startTransferToAnalysisBucket = async (
   )
   if (allFilesToTransfer?.length < 1) {
     logger.warn(
-      'startTransferToAnalysisBucket called with no files. Not performing any action'
+      'startTransferToAnalysisBucket called with no files, not performing any action',
+      { errorCode: 'TICF022' }
     )
     return
   }
@@ -35,6 +36,7 @@ export const startTransferToAnalysisBucket = async (
     manifestFileName
   )
   const decryptDataFlagOn = getFeatureFlagValue('DECRYPT_DATA')
+  const jobType = decryptDataFlagOn ? 'data decrypt batch job' : 'S3 copy job'
   const jobId = await createS3TransferBatchJob(
     manifestFileName,
     manifestFileEtag,
@@ -42,10 +44,10 @@ export const startTransferToAnalysisBucket = async (
     decryptDataFlagOn
   )
 
-  logger.info(
-    `Started ${decryptDataFlagOn ? 'data decrypt batch job' : 'S3 copy job'} `,
-    { jobId }
-  )
+  logger.info(`Started ${jobType}`, {
+    jobId,
+    decryptData: decryptDataFlagOn
+  })
 }
 
 const createS3TransferBatchJob = async (

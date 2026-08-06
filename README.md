@@ -37,6 +37,24 @@ To run this project you will need the following:
 
 # Getting started
 
+This project uses the `@govuk-one-login/dpt-logging` package hosted on [GitHub Packages](https://github.com/orgs/govuk-one-login/packages). To install dependencies locally, you need a GitHub Personal Access Token (PAT) with `read:packages` scope.
+
+1. [Create a Personal Access Token](https://github.com/settings/tokens) with the `read:packages` scope.
+2. Export it as an environment variable before running `npm install`:
+
+```shell
+export NODE_AUTH_TOKEN=<your-github-pat>
+npm install
+```
+
+Alternatively, you can add the token to your `~/.npmrc` globally:
+
+```
+//npm.pkg.github.com/:_authToken=<your-github-pat>
+```
+
+> **Note:** The `NODE_AUTH_TOKEN` is set automatically in CI via `secrets.GITHUB_TOKEN`. You only need to configure this locally.
+
 ```shell
 npm install husky
 ```

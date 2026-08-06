@@ -31,7 +31,6 @@ vi.mock('../../utils/currentDateEpochSeconds', () => ({
 
 const TEST_TIMESTAMP = 1669811435
 
-const errorPrefix = 'An error occurred while sending message to audit queue: '
 const errorMessage = 'Error sending message to queue'
 const givenSendSqsError = () => {
   vi.mocked(sendSqsMessage).mockImplementation(() => {
@@ -126,8 +125,13 @@ describe('sendAuditMessage', () => {
       await sendAuditDataRequestMessage(testAuditQueryRequestDetails())
 
       expect(logger.error).toHaveBeenCalledWith(
-        errorPrefix,
-        Error(errorMessage)
+        'Failed to send message to audit queue',
+        expect.objectContaining({
+          errorCode: 'TICF020',
+          error: expect.objectContaining({
+            message: errorMessage
+          })
+        })
       )
     })
 
@@ -138,7 +142,7 @@ describe('sendAuditMessage', () => {
       await sendAuditDataRequestMessage(testAuditQueryRequestDetails())
 
       expect(logger.info).toHaveBeenCalledWith(
-        'sent audit data request message',
+        'Sent audit data request message',
         { messageId: TEST_SQS_MESSAGE_ID }
       )
     })
@@ -259,8 +263,13 @@ describe('sendAuditMessage', () => {
       await sendIllegalRequestAuditMessage(ZENDESK_TICKET_ID, exampleErrorType)
 
       expect(logger.error).toHaveBeenCalledWith(
-        errorPrefix,
-        Error(errorMessage)
+        'Failed to send message to audit queue',
+        expect.objectContaining({
+          errorCode: 'TICF020',
+          error: expect.objectContaining({
+            message: errorMessage
+          })
+        })
       )
     })
 
@@ -317,8 +326,13 @@ describe('sendAuditMessage', () => {
       await sendQueryOutputGeneratedAuditMessage(ZENDESK_TICKET_ID)
 
       expect(logger.error).toHaveBeenCalledWith(
-        errorPrefix,
-        Error(errorMessage)
+        'Failed to send message to audit queue',
+        expect.objectContaining({
+          errorCode: 'TICF020',
+          error: expect.objectContaining({
+            message: errorMessage
+          })
+        })
       )
     })
   })

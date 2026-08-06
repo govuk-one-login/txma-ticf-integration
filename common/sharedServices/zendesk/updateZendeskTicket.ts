@@ -5,8 +5,6 @@ import {
   base64Encode
 } from '../../../common/sharedServices/http/httpsRequestUtils'
 import { tryParseJSON } from '../../../common/utils/helpers'
-import { interpolateTemplate } from '../../utils/interpolateTemplate'
-import { loggingCopy } from '../../../common/constants/loggingCopy'
 import { logger } from '../logger'
 
 export const updateZendeskTicket = async (
@@ -15,12 +13,16 @@ export const updateZendeskTicket = async (
   ticketStatus: string | null = null
 ) => {
   if (!eventBody) {
-    logger.error(interpolateTemplate('zendeskNoInfo', loggingCopy))
+    logger.error('No Zendesk info available, cannot update ticket', {
+      errorCode: 'TICF008'
+    })
     return
   }
   const zendeskTicketInfo = tryParseJSON(eventBody)
   if (!zendeskTicketInfo.zendeskId) {
-    logger.error(interpolateTemplate('zendeskNoTicketId', loggingCopy))
+    logger.error('No Zendesk ticket ID present, cannot update ticket', {
+      errorCode: 'TICF009'
+    })
     return
   }
 
@@ -39,9 +41,9 @@ export const updateZendeskTicketById = async (
   ticketStatus: string | null = null
 ) => {
   if (zendeskTicketId.startsWith(MANUAL_REQUEST_PREFIX)) {
-    logger.info(
-      `Skipping Zendesk ticket update for manual request with ID: ${zendeskTicketId}`
-    )
+    logger.info('Skipping Zendesk ticket update for manual request', {
+      zendeskTicketId
+    })
     return
   }
 
@@ -70,9 +72,13 @@ export const updateZendeskTicketById = async (
     await makeHttpsRequest(options, postData)
     logger.info('Updated Zendesk ticket', { ticketStatus })
   } catch (error) {
-    logger.error(
-      interpolateTemplate('zendeskFailed', loggingCopy),
-      error as Error
-    )
+    logger.error('Zendesk ticket update failed', {
+      errorCode: 'TICF010',
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
   }
 }
