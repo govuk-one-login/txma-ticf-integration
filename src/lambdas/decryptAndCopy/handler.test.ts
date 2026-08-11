@@ -71,13 +71,24 @@ describe('DecryptAndCopy', function () {
     const s3ObjectStream = createDataStream(TEST_S3_OBJECT_DATA_STRING)
     mockGetS3ObjectAsStream.mockResolvedValue(s3ObjectStream)
     mockDecryptS3Object.mockResolvedValue(TEST_S3_OBJECT_DATA_BUFFER)
-    vi.mocked(decryptS3Object).mockRejectedValue('Some decryption error')
+    vi.mocked(decryptS3Object).mockRejectedValue(
+      new Error('Some decryption error')
+    )
     const response = await handler(testS3BatchEvent, mockLambdaContext)
     expect(response.results[0].resultCode).toEqual('TemporaryFailure')
-    expect(logger.error).toHaveBeenCalledWith('Error during decrypt and copy', {
-      err: 'Some decryption error',
-      s3Key: TEST_S3_OBJECT_KEY
-    })
+    expect(response.results[0].resultString).toEqual(
+      'Failed: Some decryption error'
+    )
+    expect(logger.error).toHaveBeenCalledWith(
+      'Decrypt and copy failed',
+      expect.objectContaining({
+        errorCode: 'TICF006',
+        s3Key: TEST_S3_OBJECT_KEY,
+        error: expect.objectContaining({
+          message: 'Some decryption error'
+        })
+      })
+    )
   })
 
   it('throws an error if there is no data in the SQS Event', async () => {

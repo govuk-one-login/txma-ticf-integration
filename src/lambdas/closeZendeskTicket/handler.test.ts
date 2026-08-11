@@ -115,8 +115,13 @@ describe('initiate closeZendeskTicket handler', () => {
       'closed'
     )
     expect(logger.error).toHaveBeenCalledWith(
-      'Could not update Zendesk ticket: ',
-      Error('An updateZendeskTicket related error')
+      'Could not update Zendesk ticket',
+      expect.objectContaining({
+        errorCode: 'TICF005',
+        error: expect.objectContaining({
+          message: 'An updateZendeskTicket related error'
+        })
+      })
     )
   })
 })

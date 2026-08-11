@@ -14,7 +14,6 @@ import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessa
 import { DataRequestParams } from '../../../common/types/dataRequestParams'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 import { zendeskCopy } from '../../../common/constants/zendeskCopy'
-import { loggingCopy } from '../../../common/constants/loggingCopy'
 import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
 import {
   sendAuditDataRequestMessage,
@@ -32,6 +31,9 @@ export const handler = async (
   context: Context
 ): Promise<APIGatewayProxyResult> => {
   initialiseLogger(context)
+  const startTime = Date.now()
+
+  logger.info('Initiate data request started')
 
   const parsedEventBody = tryParseJSON(event.body ?? '')
   appendZendeskIdToLogger(parsedEventBody.zendeskId)
@@ -43,13 +45,17 @@ export const handler = async (
       parsedEventBody.zendeskId,
       'invalid-signature'
     )
-    return await handleInvalidSignature()
+    return await handleInvalidSignature(startTime)
   }
 
   const validatedZendeskRequest = await validateZendeskRequest(event.body)
 
   if (!validatedZendeskRequest.isValid) {
-    return await handleInvalidRequest(event.body, validatedZendeskRequest)
+    return await handleInvalidRequest(
+      event.body,
+      validatedZendeskRequest,
+      startTime
+    )
   }
 
   const requestParams =
@@ -61,10 +67,17 @@ export const handler = async (
         requestParams.zendeskId,
         'mismatched-ticket'
       )
-      return await handleUnmatchedRequest(requestParams.zendeskId)
+      return await handleUnmatchedRequest(requestParams.zendeskId, startTime)
     }
   } catch (error) {
-    logger.error('error', error as Error)
+    logger.error('Failed to validate Zendesk ticket match', {
+      errorCode: 'TICF001',
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
     await sendIllegalRequestAuditMessage(
       requestParams.zendeskId,
       'non-existent-ticket'
@@ -79,7 +92,11 @@ export const handler = async (
 
   const messageId = (await sendInitiateDataTransferMessage(requestParams)) ?? ''
 
-  logger.info('Sent data transfer queue message', { messageId })
+  logger.info('Initiate data request completed', {
+    outcome: 'success',
+    duration: Date.now() - startTime,
+    messageId
+  })
 
   return createApiResponse({
     statusCode: 200,
@@ -91,12 +108,15 @@ export const handler = async (
 
 const handleInvalidRequest = async (
   requestBody: string | null,
-  validatedZendeskRequest: ValidatedDataRequestParamsResult
+  validatedZendeskRequest: ValidatedDataRequestParamsResult,
+  startTime: number
 ) => {
-  logger.info(interpolateTemplate('requestInvalid', loggingCopy))
   const validationMessage =
     validatedZendeskRequest.validationMessage ?? 'Ticket parameters invalid'
-  logger.info('Invalid ticket data', { validationMessage })
+  logger.warn('Zendesk request was invalid', {
+    errorCode: 'TICF002',
+    validationMessage
+  })
   const newTicketStatus = 'closed'
   await updateZendeskTicket(
     requestBody,
@@ -105,6 +125,12 @@ const handleInvalidRequest = async (
     }),
     newTicketStatus
   )
+
+  logger.info('Initiate data request completed', {
+    outcome: 'failure',
+    duration: Date.now() - startTime
+  })
+
   return createApiResponse({
     statusCode: 400,
     body: JSON.stringify({
@@ -113,8 +139,16 @@ const handleInvalidRequest = async (
   })
 }
 
-const handleInvalidSignature = async () => {
-  logger.warn(interpolateTemplate('invalidWebhookSignature', loggingCopy))
+const handleInvalidSignature = async (startTime: number) => {
+  logger.warn('Request received with invalid webhook signature', {
+    errorCode: 'TICF003'
+  })
+
+  logger.info('Initiate data request completed', {
+    outcome: 'failure',
+    duration: Date.now() - startTime
+  })
+
   return createApiResponse({
     statusCode: 400,
     body: JSON.stringify({
@@ -123,7 +157,7 @@ const handleInvalidSignature = async () => {
   })
 }
 
-const handleUnmatchedRequest = async (zendeskId: string) => {
+const handleUnmatchedRequest = async (zendeskId: string, startTime: number) => {
   const newTicketStatus = 'closed'
 
   await updateZendeskTicketById(
@@ -131,6 +165,11 @@ const handleUnmatchedRequest = async (zendeskId: string) => {
     interpolateTemplate('ticketClosedMismatchWithState', zendeskCopy),
     newTicketStatus
   )
+
+  logger.info('Initiate data request completed', {
+    outcome: 'failure',
+    duration: Date.now() - startTime
+  })
 
   return createApiResponse({
     statusCode: 400,

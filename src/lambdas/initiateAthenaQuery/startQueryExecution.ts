@@ -18,12 +18,13 @@ export const startQueryExecution = async (
     const response = await athenaClient.send(command)
 
     if (!response.QueryExecutionId) {
-      const error = new Error('Athena query execution id not found in response')
-      logger.error(error.message, { error })
+      logger.error('Athena query execution ID not found in response', {
+        errorCode: 'TICF018'
+      })
 
       return {
         queryExecuted: false,
-        error
+        error: new Error('Athena query execution id not found in response')
       }
     }
 
@@ -32,18 +33,18 @@ export const startQueryExecution = async (
       queryExecutionId: response.QueryExecutionId
     }
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      logger.error('Athena query execution initiation failed', { error })
+    logger.error('Athena query execution initiation failed', {
+      errorCode: 'TICF019',
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
 
-      return {
-        queryExecuted: false,
-        error
-      }
-    } else {
-      return {
-        queryExecuted: false,
-        error: new Error('Unknown error')
-      }
+    return {
+      queryExecuted: false,
+      error: error instanceof Error ? error : new Error('Unknown error')
     }
   }
 }

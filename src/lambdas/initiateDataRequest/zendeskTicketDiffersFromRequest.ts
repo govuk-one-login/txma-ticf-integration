@@ -1,4 +1,3 @@
-import { loggingCopy } from '../../../common/constants/loggingCopy'
 import { logger } from '../../../common/sharedServices/logger'
 import { getZendeskTicket } from '../../../common/sharedServices/zendesk/getZendeskTicket'
 import { getZendeskUser } from '../../../common/sharedServices/zendesk/getZendeskUser'
@@ -10,7 +9,6 @@ import {
   mapSpaceSeparatedStringToList,
   removeZendeskPiiTypePrefixFromPiiType
 } from '../../../common/utils/helpers'
-import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
 
 export const zendeskTicketDiffersFromRequest = async (
   requestParams: DataRequestParams
@@ -155,10 +153,9 @@ const ticketAndRequestDetailsDiffer = (
     unmatchedParameters.push('userIds')
 
   if (unmatchedParameters.length > 0) {
-    logger.warn(
-      interpolateTemplate('requestDoesntMatcheZendeskTickets', loggingCopy),
-      { unmatchedParameters }
-    )
+    logger.warn('Request does not match values on Zendesk ticket', {
+      unmatchedParameters
+    })
     return true
   }
   return false

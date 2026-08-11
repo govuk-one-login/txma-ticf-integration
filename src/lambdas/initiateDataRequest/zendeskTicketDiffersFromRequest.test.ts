@@ -406,7 +406,7 @@ describe('match zendesk ticket details', () => {
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(logger.warn).toHaveBeenCalledWith(
-        'Request does not match values on Ticket, the following parameters do not match:',
+        'Request does not match values on Zendesk ticket',
         { unmatchedParameters: [parameterName] }
       )
     }
@@ -419,7 +419,7 @@ describe('match zendesk ticket details', () => {
     testRequest.dates = ['2023-01-04']
     expect(await zendeskTicketDiffersFromRequest(testRequest)).toEqual(true)
     expect(logger.warn).toHaveBeenCalledWith(
-      'Request does not match values on Ticket, the following parameters do not match:',
+      'Request does not match values on Zendesk ticket',
       { unmatchedParameters: ['date'] }
     )
   })
@@ -431,7 +431,7 @@ describe('match zendesk ticket details', () => {
     testRequest.dates = [TEST_DATE_1, '2021-09-09']
     expect(await zendeskTicketDiffersFromRequest(testRequest)).toEqual(true)
     expect(logger.warn).toHaveBeenCalledWith(
-      'Request does not match values on Ticket, the following parameters do not match:',
+      'Request does not match values on Zendesk ticket',
       { unmatchedParameters: ['date'] }
     )
   })
@@ -451,7 +451,7 @@ describe('match zendesk ticket details', () => {
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(logger.warn).toHaveBeenCalledWith(
-        'Request does not match values on Ticket, the following parameters do not match:',
+        'Request does not match values on Zendesk ticket',
         { unmatchedParameters: [parameterName] }
       )
     }
@@ -472,7 +472,7 @@ describe('match zendesk ticket details', () => {
 
       expect(await zendeskTicketDiffersFromRequest(request)).toEqual(true)
       expect(logger.warn).toHaveBeenCalledWith(
-        'Request does not match values on Ticket, the following parameters do not match:',
+        'Request does not match values on Zendesk ticket',
         { unmatchedParameters: [parameterName] }
       )
     }

@@ -3,7 +3,6 @@ import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/
 import { tryParseJSON } from '../../../common/utils/helpers'
 import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
 import { zendeskCopy } from '../../../common/constants/zendeskCopy'
-import { loggingCopy } from '../../../common/constants/loggingCopy'
 import {
   appendZendeskIdToLogger,
   initialiseLogger,
@@ -12,6 +11,10 @@ import {
 
 export const handler = async (event: SQSEvent, context: Context) => {
   initialiseLogger(context)
+  const startTime = Date.now()
+  const correlationId = event.Records[0]?.messageId
+
+  logger.info('Close Zendesk ticket started', { correlationId })
 
   const requestDetails = parseRequestDetails(event)
   appendZendeskIdToLogger(requestDetails.zendeskId)
@@ -20,6 +23,12 @@ export const handler = async (event: SQSEvent, context: Context) => {
     requestDetails.zendeskId,
     requestDetails.commentCopyText
   )
+
+  logger.info('Close Zendesk ticket completed', {
+    correlationId,
+    outcome: 'success',
+    duration: Date.now() - startTime
+  })
 }
 
 const parseRequestDetails = (event: SQSEvent) => {
@@ -48,9 +57,13 @@ const closeZendeskTicket = async (ticketId: string, message: string) => {
     const ticketStatus = 'closed'
     await updateZendeskTicketById(ticketId, message, ticketStatus)
   } catch (error) {
-    logger.error(
-      interpolateTemplate('ticketNotUpdated', loggingCopy),
-      error as Error
-    )
+    logger.error('Could not update Zendesk ticket', {
+      errorCode: 'TICF005',
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
   }
 }

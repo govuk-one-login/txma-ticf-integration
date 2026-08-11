@@ -78,8 +78,14 @@ describe('sendQueryResultsNotification', () => {
 
       await handler(generateAthenaEventBridgeEvent(state), mockLambdaContext)
       expect(logger.error).toHaveBeenCalledWith(
-        'failed to confirm query state',
-        Error(message)
+        'Failed to confirm query state',
+        expect.objectContaining({
+          errorCode: 'TICF007',
+          athenaQueryId: TEST_ATHENA_QUERY_ID,
+          error: expect.objectContaining({
+            message
+          })
+        })
       )
       expect(updateZendeskTicketById).toHaveBeenCalledWith(
         dbQueryResult.requestInfo.zendeskId,
@@ -102,10 +108,14 @@ describe('sendQueryResultsNotification', () => {
       mockLambdaContext
     )
     expect(logger.error).toHaveBeenCalledWith(
-      'failed to confirm query state',
-      Error(
-        `Function was called with unexpected state: ${unrecognisedQueryState}. Ensure the template is configured correctly`
-      )
+      'Failed to confirm query state',
+      expect.objectContaining({
+        errorCode: 'TICF007',
+        athenaQueryId: TEST_ATHENA_QUERY_ID,
+        error: expect.objectContaining({
+          message: `Function was called with unexpected state: ${unrecognisedQueryState}. Ensure the template is configured correctly`
+        })
+      })
     )
 
     expect(sendQueryCompleteQueueMessage).not.toHaveBeenCalled()

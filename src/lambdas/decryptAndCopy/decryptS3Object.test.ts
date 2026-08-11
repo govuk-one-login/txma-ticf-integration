@@ -115,8 +115,11 @@ describe('decryptS3Object', () => {
       })
       expect(mockDecrypt).toHaveBeenCalledTimes(2)
       expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Primary KMS wrapper key unavailable'),
-        expect.objectContaining({ message: 'KMS key unavailable' })
+        'Primary KMS wrapper key unavailable, attempting decryption with backup key',
+        expect.objectContaining({
+          errorCode: 'TICF011',
+          error: expect.objectContaining({ message: 'KMS key unavailable' })
+        })
       )
       expect(logger.error).not.toHaveBeenCalled()
     })
@@ -142,8 +145,11 @@ describe('decryptS3Object', () => {
         keyIds: [TEST_BACKUP_KEY_ID]
       })
       expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('degraded mode'),
-        expect.objectContaining({ message: accessDeniedError.message })
+        'Primary KMS wrapper key unavailable, attempting decryption with backup key',
+        expect.objectContaining({
+          errorCode: 'TICF011',
+          error: expect.objectContaining({ message: accessDeniedError.message })
+        })
       )
     })
 
@@ -162,8 +168,11 @@ describe('decryptS3Object', () => {
 
       expect(result).toEqual(TEST_S3_OBJECT_DATA_BUFFER)
       expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Primary KMS wrapper key unavailable'),
-        expect.objectContaining({ message: 'string-rejection' })
+        'Primary KMS wrapper key unavailable, attempting decryption with backup key',
+        expect.objectContaining({
+          errorCode: 'TICF011',
+          error: expect.objectContaining({ message: 'string-rejection' })
+        })
       )
     })
   })
@@ -181,12 +190,17 @@ describe('decryptS3Object', () => {
       ).rejects.toThrow('All KMS keys inaccessible')
 
       expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Primary KMS wrapper key unavailable'),
+        'Primary KMS wrapper key unavailable, attempting decryption with backup key',
         expect.any(Object)
       )
       expect(logger.error).toHaveBeenCalledWith(
-        expect.stringContaining('Both KMS wrapper keys'),
-        expect.objectContaining({ message: 'All KMS keys inaccessible' })
+        'Both KMS wrapper keys are unavailable, decryption failed',
+        expect.objectContaining({
+          errorCode: 'TICF012',
+          error: expect.objectContaining({
+            message: 'All KMS keys inaccessible'
+          })
+        })
       )
     })
 
@@ -201,8 +215,11 @@ describe('decryptS3Object', () => {
       ).rejects.toThrow('backup-string-rejection')
 
       expect(logger.error).toHaveBeenCalledWith(
-        expect.stringContaining('Both KMS wrapper keys'),
-        expect.objectContaining({ message: 'backup-string-rejection' })
+        'Both KMS wrapper keys are unavailable, decryption failed',
+        expect.objectContaining({
+          errorCode: 'TICF012',
+          error: expect.objectContaining({ message: 'backup-string-rejection' })
+        })
       )
     })
   })

@@ -15,9 +15,12 @@ export const handler = async (
   context: Context
 ): Promise<void> => {
   initialiseLogger(context)
+  const startTime = Date.now()
 
   const queryDetails = event.detail
   const athenaQueryId = queryDetails.queryExecutionId
+
+  logger.info('Send query results notification started', { athenaQueryId })
 
   const requestData = await getQueryByAthenaQueryId(athenaQueryId)
   const zendeskTicketId = requestData.requestInfo.zendeskId
@@ -30,7 +33,15 @@ export const handler = async (
   try {
     await confirmQueryState(queryDetails, zendeskTicketId)
   } catch (error) {
-    logger.error('failed to confirm query state', error as Error)
+    logger.error('Failed to confirm query state', {
+      errorCode: 'TICF007',
+      athenaQueryId,
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : undefined,
+        stack: error instanceof Error ? error.stack : undefined
+      }
+    })
     return
   }
 
@@ -44,6 +55,12 @@ export const handler = async (
     recipientEmail,
     recipientName,
     zendeskTicketId
+  })
+
+  logger.info('Send query results notification completed', {
+    athenaQueryId,
+    outcome: 'success',
+    duration: Date.now() - startTime
   })
 }
 

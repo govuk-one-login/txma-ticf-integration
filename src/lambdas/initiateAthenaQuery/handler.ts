@@ -11,16 +11,29 @@ export const handler = async (
   context: Context
 ): Promise<void> => {
   initialiseLogger(context)
+  const startTime = Date.now()
+  const correlationId = event.Records[0]?.messageId
 
   const zendeskId = retrieveZendeskIdFromEvent(event)
   appendZendeskIdToLogger(zendeskId)
 
+  logger.info('Initiate Athena query started', {
+    correlationId,
+    isManualRequest: zendeskId.startsWith('MR')
+  })
+
   if (zendeskId.startsWith('MR')) {
-    logger.info('Manual query detected, no need to run athena query')
+    logger.info('Manual query detected, no need to run Athena query')
   } else {
-    logger.info('Automated query detected, running athena query')
+    logger.info('Automated query detected, running Athena query')
     await initiateQuery(zendeskId)
   }
+
+  logger.info('Initiate Athena query completed', {
+    correlationId,
+    outcome: 'success',
+    duration: Date.now() - startTime
+  })
 }
 
 export const retrieveZendeskIdFromEvent = (event: SQSEvent): string => {

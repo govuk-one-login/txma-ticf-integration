@@ -101,7 +101,7 @@ describe('checkDataTransferStatus', () => {
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
     expect(logger.info).toHaveBeenLastCalledWith(
-      'Placing zendeskId back on InitiateDataRequestQueue because Glacier restore is still in progress',
+      'Glacier restore still in progress, queuing retry',
       { numberOfChecks: '2' }
     )
     expect(mockIncrementPollingRetryCount).toHaveBeenCalledWith(
@@ -124,7 +124,7 @@ describe('checkDataTransferStatus', () => {
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
     expect(logger.info).toHaveBeenLastCalledWith(
-      'Glacier restore complete. Starting copy job'
+      'Glacier restore complete, starting copy job'
     )
     expect(startTransferToAnalysisBucket).toHaveBeenCalledWith(
       filesToCopy,
@@ -144,7 +144,10 @@ describe('checkDataTransferStatus', () => {
     await checkDataTransferStatus(ZENDESK_TICKET_ID)
 
     expect(logger.error).toHaveBeenLastCalledWith(
-      'Status check count exceeded. Process terminated'
+      'Status check count exceeded, process terminated',
+      expect.objectContaining({
+        errorCode: 'TICF015'
+      })
     )
     expect(terminateStatusCheckProcess).toHaveBeenCalledWith(ZENDESK_TICKET_ID)
     expect(updateZendeskTicketById).toHaveBeenCalledWith(

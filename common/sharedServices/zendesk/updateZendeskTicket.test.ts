@@ -95,8 +95,13 @@ describe('updating a zendesk ticket', () => {
 
     await updateZendeskTicket(exampleEventBody, zendeskTicketMessage)
     expect(logger.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket update failed.',
-      Error('There was an error.')
+      'Zendesk ticket update failed',
+      expect.objectContaining({
+        errorCode: 'TICF010',
+        error: expect.objectContaining({
+          message: 'There was an error.'
+        })
+      })
     )
   })
 
@@ -106,8 +111,13 @@ describe('updating a zendesk ticket', () => {
 
     await updateZendeskTicketById(ZENDESK_TICKET_ID, zendeskTicketMessage)
     expect(logger.error).toHaveBeenLastCalledWith(
-      'Zendesk ticket update failed.',
-      Error('There was an error.')
+      'Zendesk ticket update failed',
+      expect.objectContaining({
+        errorCode: 'TICF010',
+        error: expect.objectContaining({
+          message: 'There was an error.'
+        })
+      })
     )
   })
 
@@ -115,7 +125,8 @@ describe('updating a zendesk ticket', () => {
     // Unit Test
     await updateZendeskTicket(null, zendeskTicketMessage)
     expect(logger.error).toHaveBeenLastCalledWith(
-      'No Zendesk info available. Cannot update ticket.'
+      'No Zendesk info available, cannot update ticket',
+      { errorCode: 'TICF008' }
     )
   })
 
@@ -123,7 +134,8 @@ describe('updating a zendesk ticket', () => {
     // Unit Test
     await updateZendeskTicket("{zendeskId: ''}", zendeskTicketMessage)
     expect(logger.error).toHaveBeenLastCalledWith(
-      'No Zendesk ticket ID present. Cannot update ticket.'
+      'No Zendesk ticket ID present, cannot update ticket',
+      { errorCode: 'TICF009' }
     )
   })
 
@@ -131,7 +143,8 @@ describe('updating a zendesk ticket', () => {
     // Unit Test
     await updateZendeskTicket("{someOtherKey: ''}", zendeskTicketMessage)
     expect(logger.error).toHaveBeenLastCalledWith(
-      'No Zendesk ticket ID present. Cannot update ticket.'
+      'No Zendesk ticket ID present, cannot update ticket',
+      { errorCode: 'TICF009' }
     )
   })
 
@@ -140,7 +153,8 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicket('hello', zendeskTicketMessage)
     expect(logger.error).toHaveBeenCalledWith('Error parsing JSON')
     expect(logger.error).toHaveBeenLastCalledWith(
-      'No Zendesk ticket ID present. Cannot update ticket.'
+      'No Zendesk ticket ID present, cannot update ticket',
+      { errorCode: 'TICF009' }
     )
   })
 
@@ -150,7 +164,8 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicketById(manualRequestId, zendeskTicketMessage)
 
     expect(logger.info).toHaveBeenCalledWith(
-      `Skipping Zendesk ticket update for manual request with ID: ${manualRequestId}`
+      'Skipping Zendesk ticket update for manual request',
+      { zendeskTicketId: manualRequestId }
     )
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).not.toHaveBeenCalled()
   })
@@ -163,7 +178,8 @@ describe('updating a zendesk ticket', () => {
     await updateZendeskTicket(manualRequestBody, zendeskTicketMessage)
 
     expect(logger.info).toHaveBeenCalledWith(
-      'Skipping Zendesk ticket update for manual request with ID: MRtest-123'
+      'Skipping Zendesk ticket update for manual request',
+      { zendeskTicketId: 'MRtest-123' }
     )
     expect(mockHttpsRequestUtils.mockMakeHttpsRequest).not.toHaveBeenCalled()
   })

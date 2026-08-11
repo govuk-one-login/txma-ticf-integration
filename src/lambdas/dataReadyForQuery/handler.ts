@@ -20,22 +20,33 @@ export const handler = async (
   context: Context
 ) => {
   initialiseLogger(context)
+  const startTime = Date.now()
   const eventStatus = event.detail.serviceEventDetails.status
   const jobId = event.detail.serviceEventDetails.jobId
 
-  logger.info('Received batch job status change event', {
+  logger.info('Data ready for query handler started', {
     jobId,
     eventStatus
   })
 
   const statusIsOfInterest = ['Complete', 'Failed'].includes(eventStatus)
   if (!statusIsOfInterest) {
+    logger.info('Data ready for query handler completed', {
+      outcome: 'success',
+      duration: Date.now() - startTime,
+      reason: 'status not of interest'
+    })
     return
   }
 
   const batchJobTags = await getS3BatchJobTags(jobId)
-  logger.info('Successfully fetched batchJobTags', { jobId, batchJobTags })
+  logger.info('Successfully fetched batch job tags', { jobId, batchJobTags })
   if (!batchJobIsTransferToAnalysisBucket(batchJobTags)) {
+    logger.info('Data ready for query handler completed', {
+      outcome: 'success',
+      duration: Date.now() - startTime,
+      reason: 'batch job not transfer to analysis bucket'
+    })
     return
   }
 
@@ -45,12 +56,17 @@ export const handler = async (
     logger.info('Transfer to analysis bucket job was successful', { jobId })
     await sendInitiateAthenaQueryMessage(zendeskId)
   } else {
-    logger.error(
-      'Transfer to analysis bucket job failed for jobID. Please check the job report and lambda logs for details of what went wrong',
-      { jobId }
-    )
-    closeTicketOnFailure(zendeskId)
+    logger.error('Transfer to analysis bucket job failed', {
+      errorCode: 'TICF004',
+      jobId
+    })
+    await closeTicketOnFailure(zendeskId)
   }
+
+  logger.info('Data ready for query handler completed', {
+    outcome: 'success',
+    duration: Date.now() - startTime
+  })
 }
 
 const closeTicketOnFailure = async (zendeskId: string) => {

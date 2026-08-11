@@ -12,6 +12,12 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> =>
     stream.on('error', reject)
   })
 
+const serializeError = (error: unknown) => ({
+  message: error instanceof Error ? error.message : String(error),
+  name: error instanceof Error ? error.name : undefined,
+  stack: error instanceof Error ? error.stack : undefined
+})
+
 export const decryptS3Object = async (
   data: Readable | Buffer
 ): Promise<Buffer> => {
@@ -28,13 +34,12 @@ export const decryptS3Object = async (
     const { plaintext } = await decrypt(primaryKeyring, dataBuffer)
     return plaintext
   } catch (primaryError) {
-    const primaryErr =
-      primaryError instanceof Error
-        ? primaryError
-        : new Error(String(primaryError))
     logger.warn(
-      'Primary KMS wrapper key unavailable – system operating in degraded mode, attempting decryption with backup key',
-      primaryErr
+      'Primary KMS wrapper key unavailable, attempting decryption with backup key',
+      {
+        errorCode: 'TICF011',
+        error: serializeError(primaryError)
+      }
     )
   }
 
@@ -44,14 +49,12 @@ export const decryptS3Object = async (
     const { plaintext } = await decrypt(backupKeyring, dataBuffer)
     return plaintext
   } catch (backupError) {
-    const backupErr =
-      backupError instanceof Error
-        ? backupError
-        : new Error(String(backupError))
-    logger.error(
-      'Both KMS wrapper keys are unavailable – decryption failed',
-      backupErr
-    )
-    throw backupErr
+    logger.error('Both KMS wrapper keys are unavailable, decryption failed', {
+      errorCode: 'TICF012',
+      error: serializeError(backupError)
+    })
+    throw backupError instanceof Error
+      ? backupError
+      : new Error(String(backupError))
   }
 }

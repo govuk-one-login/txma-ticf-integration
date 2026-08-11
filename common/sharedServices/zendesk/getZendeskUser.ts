@@ -5,8 +5,6 @@ import {
   base64Encode,
   makeHttpsRequest
 } from '../../../common/sharedServices/http/httpsRequestUtils'
-import { loggingCopy } from '../../../common/constants/loggingCopy'
-import { interpolateTemplate } from '../../utils/interpolateTemplate'
 import { logger } from '../logger'
 
 export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
@@ -25,7 +23,7 @@ export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   const data = await makeHttpsRequest(options)
 
   if (!isZendeskUserResult(data)) {
-    throw Error(interpolateTemplate('zendeskUserNotFound', loggingCopy))
+    throw new Error('The returned data was not a Zendesk user')
   }
   logger.info('Retrieved Zendesk user info successfully')
   return data.user
