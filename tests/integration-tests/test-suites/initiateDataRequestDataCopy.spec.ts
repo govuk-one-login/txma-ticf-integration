@@ -163,7 +163,7 @@ describe('Data should be copied to analysis bucket', () => {
         await getCloudWatchLogEventsGroupByMessagePattern(
           getEnv('PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME'),
           [
-            'Number of standard tier files to copy was 1',
+            cloudwatchLogFilters.mixedTierCopy,
             'zendeskId',
             ticketId
           ],
