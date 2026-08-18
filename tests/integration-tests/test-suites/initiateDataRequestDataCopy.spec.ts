@@ -1,6 +1,7 @@
 import {
   eventIsPresent,
-  getCloudWatchLogEventsGroupByMessagePattern
+  getCloudWatchLogEventsGroupByMessagePattern,
+  getStructuredLogEntry
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 import {
@@ -40,6 +41,15 @@ describe('Data should be copied to analysis bucket', () => {
           50
         )
       expect(processDataRequestEvents).not.toEqual([])
+
+      const bucketCheckEntry = getStructuredLogEntry(
+        processDataRequestEvents,
+        cloudwatchLogFilters.standardTierCopy
+      )
+      expect(bucketCheckEntry).toBeDefined()
+      expect(bucketCheckEntry?.standardTierCount).toBe(1)
+      expect(bucketCheckEntry?.glacierIRTierCount).toBe(0)
+      expect(bucketCheckEntry?.glacierTierCount).toBe(0)
 
       const isCopyJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
@@ -114,6 +124,15 @@ describe('Data should be copied to analysis bucket', () => {
         )
       expect(processDataRequestEvents).not.toEqual([])
 
+      const bucketCheckEntry = getStructuredLogEntry(
+        processDataRequestEvents,
+        cloudwatchLogFilters.glacierIRTierCopy
+      )
+      expect(bucketCheckEntry).toBeDefined()
+      expect(bucketCheckEntry?.standardTierCount).toBe(0)
+      expect(bucketCheckEntry?.glacierIRTierCount).toBe(1)
+      expect(bucketCheckEntry?.glacierTierCount).toBe(0)
+
       const isCopyJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
         getFeatureFlagValue('DECRYPT_DATA')
@@ -166,6 +185,15 @@ describe('Data should be copied to analysis bucket', () => {
           50
         )
       expect(processDataRequestEvents).not.toEqual([])
+
+      const bucketCheckEntry = getStructuredLogEntry(
+        processDataRequestEvents,
+        cloudwatchLogFilters.mixedTierCopy
+      )
+      expect(bucketCheckEntry).toBeDefined()
+      expect(bucketCheckEntry?.standardTierCount).toBe(1)
+      expect(bucketCheckEntry?.glacierIRTierCount).toBe(1)
+      expect(bucketCheckEntry?.glacierTierCount).toBe(0)
 
       const isCopyJobStartedMessageInLogs = eventIsPresent(
         processDataRequestEvents,
