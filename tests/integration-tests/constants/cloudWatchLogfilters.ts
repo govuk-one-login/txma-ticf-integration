@@ -8,18 +8,13 @@ export const cloudwatchLogFilters: CloudwatchLogFiltersConstants = {
   copyStarted: 'Started S3 copy job',
   decryptStarted: 'Started data decrypt batch job',
   dataSentToQueue: 'Sent data transfer queue message',
-  glacierTierCopy:
-    'Number of standard tier files to copy was 0, glacier_ir tier files to copy was 0, glacier tier files to copy was 1',
-  glacierIRTierCopy:
-    'Number of standard tier files to copy was 0, glacier_ir tier files to copy was 1, glacier tier files to copy was 0',
-  nothingToCopyMessage:
-    'Number of standard tier files to copy was 0, glacier_ir tier files to copy was 0, glacier tier files to copy was 0',
-  mixedTierCopy:
-    'Number of standard tier files to copy was 1, glacier_ir tier files to copy was 0, glacier tier files to copy was 1',
-  mixedWithIRTierCopy: 'glacier_ir tier files to copy was',
+  glacierTierCopy: 'S3 bucket data check completed',
+  glacierIRTierCopy: 'S3 bucket data check completed',
+  nothingToCopyMessage: 'S3 bucket data check completed',
+  mixedTierCopy: 'S3 bucket data check completed',
+  mixedWithIRTierCopy: 'S3 bucket data check completed',
   restoreStarted: 'Started Glacier restore',
-  standardTierCopy:
-    'Number of standard tier files to copy was 1, glacier_ir tier files to copy was 0, glacier tier files to copy was 0',
+  standardTierCopy: 'S3 bucket data check completed',
   sqsEventReceived: 'Handling data request SQS event',
   webhookInvalid: 'Zendesk request was invalid',
   webhookReceived: 'received Zendesk webhook',

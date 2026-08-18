@@ -141,6 +141,15 @@ export const eventIsPresent = (
   message: string
 ) => logEvents.some((event) => event.message?.includes(message))
 
+export const getStructuredLogEntry = (
+  logEvents: FilteredLogEvent[],
+  message: string
+): Record<string, unknown> | undefined => {
+  const event = logEvents.find((event) => event.message?.includes(message))
+  if (!event || !event.message) return undefined
+  return JSON.parse(event.message)
+}
+
 export const getQueueMessageId = (
   logEvents: FilteredLogEvent[],
   message: string
