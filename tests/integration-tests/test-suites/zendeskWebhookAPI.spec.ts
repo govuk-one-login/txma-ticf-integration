@@ -30,6 +30,14 @@ describe('Zendesk request integrity', () => {
     expect(errorResponse.data.message).toEqual('Invalid request source')
     assertSecurityHeadersSet(errorResponse)
   })
+
+  it('API Gateway returns a 400 response if the Zendesk webhook request has a valid signature but a structurally invalid body', async () => {
+    const errorResponse = await sendWebhookRequest({} as unknown as ZendeskWebhookRequest)
+
+    expect(errorResponse.status).toEqual(400)
+    expect(errorResponse.data.message).toEqual('No data in request')
+    assertSecurityHeadersSet(errorResponse)
+  })
 })
 
 describe('Zendesk ticket check', () => {
