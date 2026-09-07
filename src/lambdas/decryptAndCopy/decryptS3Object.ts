@@ -61,14 +61,11 @@ export const decryptS3Object = async (
     const error = new Error(
       `Data still appears to be AWS Encryption SDK encrypted after ${MAX_DECRYPT_PASSES} decryption passes`
     )
-    logger.error(
-      'Data still encrypted after maximum decryption passes',
-      {
-        errorCode: 'TICF015',
-        passes,
-        error: serializeError(error)
-      }
-    )
+    logger.error('Data still encrypted after maximum decryption passes', {
+      errorCode: 'TICF015',
+      passes,
+      error: serializeError(error)
+    })
     throw error
   }
 
