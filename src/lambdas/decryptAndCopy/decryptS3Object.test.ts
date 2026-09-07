@@ -238,15 +238,15 @@ describe('decryptS3Object', () => {
       await expect(
         decryptS3Object(createDataStream(TEST_S3_OBJECT_DATA_STRING))
       ).rejects.toThrow(
-        'Data still appears to be AWS Encryption SDK encrypted after 3 decryption passes'
+        'Data still appears to be AWS Encryption SDK encrypted after 2 decryption passes'
       )
 
-      expect(mockDecrypt).toHaveBeenCalledTimes(3)
+      expect(mockDecrypt).toHaveBeenCalledTimes(2)
       expect(logger.error).toHaveBeenCalledWith(
         'Data still encrypted after maximum decryption passes',
         expect.objectContaining({
           errorCode: 'TICF015',
-          passes: 3
+          passes: 2
         })
       )
     })
