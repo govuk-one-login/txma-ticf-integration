@@ -381,6 +381,9 @@ Resources:
             BatchSize: 1
       FunctionName: !Sub ${AWS::StackName}-process-data
       MemorySize: 1024
+      # Overrides the global 30s timeout. This lambda lists objects across wide
+      # date ranges in both the audit and analysis buckets, which can exceed 30s.
+      Timeout: 600
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt ProcessDataRequestFunctionRole.Arn
       VpcConfig:
@@ -1768,6 +1771,10 @@ Resources:
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
       QueueName: !Sub ${AWS::StackName}-initiate-data-request-queue
+      # Must be >= the process-data lambda Timeout (600s) to avoid the message
+      # becoming visible and being redelivered while an invocation is still
+      # running. Set to 6x the lambda timeout per AWS SQS/Lambda guidance.
+      VisibilityTimeout: 3600
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
         maxReceiveCount: 5
