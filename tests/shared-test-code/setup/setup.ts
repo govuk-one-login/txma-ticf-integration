@@ -1,6 +1,5 @@
 import { checkSecretsSet, retrieveSecretValue } from './retrieveSecretValue'
 import { retrieveSsmParameterValue } from './retrieveSsmParameterValues'
-import { getOutputValue, retrieveStackOutputs } from './retrieveStackOutputs'
 
 const region = process.env.AWS_REGION ?? 'eu-west-2'
 const stack = process.env.STACK_NAME ?? 'txma-ticf-integration'
@@ -51,21 +50,29 @@ export async function setup() {
     ),
     S3_OPERATIONS_FUNCTION_NAME: formatTestStackSsmParam(
       'S3OperationsFunctionName'
+    ),
+    // Read from SSM instead of CloudFormation stack outputs, because the dev
+    // permissions boundary does not allow cloudformation:DescribeStacks. These params
+    // are published by the template (mirroring the same-named Outputs).
+    ANALYSIS_BUCKET_NAME: formatTestStackSsmParam('AnalysisBucketName'),
+    INITIATE_ATHENA_QUERY_QUEUE_URL: formatTestStackSsmParam(
+      'InitiateAthenaQueryQueueUrl'
+    ),
+    INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME: formatTestStackSsmParam(
+      'InitiateAthenaQueryLambdaLogGroupName'
+    ),
+    INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME: formatTestStackSsmParam(
+      'InitiateDataRequestLambdaLogGroupName'
+    ),
+    PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME: formatTestStackSsmParam(
+      'ProcessDataRequestLambdaLogGroupName'
+    ),
+    DATA_READY_FOR_QUERY_LAMBDA_LOG_GROUP_NAME: formatTestStackSsmParam(
+      'DataReadyForQueryLogsLambdaLogGroupName'
+    ),
+    ZENDESK_WEBHOOK_API_BASE_URL: formatTestStackSsmParam(
+      'ZendeskWebhookApiUrl'
     )
-  }
-
-  const stackOutputMappings = {
-    ANALYSIS_BUCKET_NAME: 'AnalysisBucketName',
-    INITIATE_ATHENA_QUERY_QUEUE_URL: 'InitiateAthenaQueryQueueUrl',
-    INITIATE_ATHENA_QUERY_LAMBDA_LOG_GROUP_NAME:
-      'InitiateAthenaQueryLambdaLogGroupName',
-    INITIATE_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME:
-      'InitiateDataRequestLambdaLogGroupName',
-    PROCESS_DATA_REQUEST_LAMBDA_LOG_GROUP_NAME:
-      'ProcessDataRequestLambdaLogGroupName',
-    DATA_READY_FOR_QUERY_LAMBDA_LOG_GROUP_NAME:
-      'DataReadyForQueryLogsLambdaLogGroupName',
-    ZENDESK_WEBHOOK_API_BASE_URL: 'ZendeskWebhookApiUrl'
   }
 
   const globals = [
@@ -79,7 +86,6 @@ export async function setup() {
 
   await setEnvVarsFromSecretsManager(secretMappings)
   await setEnvVarsFromSsm(ssmMappings)
-  await setEnvVarsFromStackOutputs(stack, stackOutputMappings)
   setEnvVarsFromProcessEnv(globals)
 }
 
@@ -104,19 +110,6 @@ const setEnvVarsFromSsm = async (ssmMappings: Record<string, string>) => {
     process.env[k] = process.env[k]
       ? process.env[k]
       : await retrieveSsmParameterValue(v, region)
-  }
-}
-
-const setEnvVarsFromStackOutputs = async (
-  stack: string,
-  stackOutputMappings: Record<string, string>
-) => {
-  const stackOutputs = await retrieveStackOutputs(stack, region)
-
-  for (const [k, v] of Object.entries(stackOutputMappings)) {
-    process.env[k] = process.env[k]
-      ? process.env[k]
-      : getOutputValue(stackOutputs, v)
   }
 }
 

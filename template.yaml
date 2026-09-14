@@ -219,6 +219,15 @@ Resources:
             Action: 'sts:AssumeRole'
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
+      Policies:
+        - PolicyName: AdditionalLambdaPermissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AWS::StackName}-*
 
   TICFIntegrationDeploymentStrategy:
     Condition: UseCanaryDeploy
@@ -381,6 +390,9 @@ Resources:
             BatchSize: 1
       FunctionName: !Sub ${AWS::StackName}-process-data
       MemorySize: 1024
+      # Overrides the global 30s timeout. This lambda lists objects across wide
+      # date ranges in both the audit and analysis buckets, which can exceed 30s.
+      Timeout: 600
       KmsKeyArn: '{{resolve:ssm:LambdaKmsKeyArn}}'
       Role: !GetAtt ProcessDataRequestFunctionRole.Arn
       VpcConfig:
@@ -1768,6 +1780,10 @@ Resources:
     Properties:
       KmsMasterKeyId: '{{resolve:ssm:SqsKmsKeyArn}}'
       QueueName: !Sub ${AWS::StackName}-initiate-data-request-queue
+      # Must be >= the process-data lambda Timeout (600s) to avoid the message
+      # becoming visible and being redelivered while an invocation is still
+      # running. Set to 6x the lambda timeout per AWS SQS/Lambda guidance.
+      VisibilityTimeout: 3600
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt InitiateDataRequestDeadLetterQueue.Arn
         maxReceiveCount: 5
@@ -1955,6 +1971,70 @@ Resources:
       Name: !Sub /tests/${AWS::StackName}/IntegrationTestsAthenaOutputBucketName
       Type: String
       Value: '{{resolve:ssm:AthenaQueryOutputBucketName}}'
+
+  # Published so integration tests can discover these values via SSM without needing
+  # cloudformation:DescribeStacks (which the dev permissions boundary does not allow).
+  # These mirror the same-named Outputs.
+  IntegrationTestsAnalysisBucketNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/AnalysisBucketName
+      Type: String
+      Value: !Ref AnalysisBucket
+
+  IntegrationTestsInitiateAthenaQueryQueueUrlParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/InitiateAthenaQueryQueueUrl
+      Type: String
+      Value: !Ref InitiateAthenaQueryQueue
+
+  IntegrationTestsInitiateAthenaQueryLambdaLogGroupNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/InitiateAthenaQueryLambdaLogGroupName
+      Type: String
+      Value: !Ref InitiateAthenaQueryLogs
+
+  IntegrationTestsInitiateDataRequestLambdaLogGroupNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/InitiateDataRequestLambdaLogGroupName
+      Type: String
+      Value: !Ref InitiateDataRequestLogs
+
+  IntegrationTestsProcessDataRequestLambdaLogGroupNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/ProcessDataRequestLambdaLogGroupName
+      Type: String
+      Value: !Ref ProcessDataRequestLogs
+
+  IntegrationTestsDataReadyForQueryLambdaLogGroupNameParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/DataReadyForQueryLogsLambdaLogGroupName
+      Type: String
+      Value: !Ref DataReadyForQueryLogs
+
+  IntegrationTestsZendeskWebhookApiUrlParameter:
+    Condition: TestEnvironment
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /tests/${AWS::StackName}/ZendeskWebhookApiUrl
+      Type: String
+      Value:
+        !If [
+          ApiCustomDomain,
+          'https://{{resolve:ssm:ZendeskWebhookApiDomainName}}',
+          !Sub 'https://${ZendeskWebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${ZendeskWebhookApi.Stage}'
+        ]
 
   IntegrationTestsNotifySecretSet:
     Condition: TestEnvironment
