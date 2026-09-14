@@ -1,18 +1,23 @@
 name: 'Run Integration tests'
 
+# This workflow is called from "Build, Test and Package" (via `workflow_call`)
+# after the feature stack has been deployed, so its result is reported against
+# the pull request like the other checks. It can also be run manually via
+# `workflow_dispatch`.
 on:
+  workflow_call:
+    inputs:
+      stack-name:
+        description: 'Override stack name (leave empty to derive from branch name)'
+        required: false
+        type: string
+        default: ''
   workflow_dispatch:
     inputs:
       stack-name:
         description: 'Override stack name (leave empty to derive from branch name)'
         required: false
         default: ''
-  workflow_run:
-    workflows: ['Build, Test and Package']
-    types:
-      - completed
-    branches:
-      - 'feature/**'
 
 env:
   AWS_REGION: eu-west-2
@@ -20,9 +25,6 @@ env:
 jobs:
   upload-testing-image:
     name: Upload testing image to ECR
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
     permissions:
       id-token: write
       contents: read
@@ -33,24 +35,22 @@ jobs:
       stack-name: ${{ steps.derive-stack-name.outputs.stack_name }}
       image-tag: ${{ steps.derive-stack-name.outputs.image_tag }}
     steps:
-      # Under a workflow_run trigger, github.sha (and the default checkout) resolve to the
-      # DEFAULT branch (main), not the feature branch that ran "Build, Test and Package".
-      # We must explicitly check out and tag with the triggering feature-branch commit so
-      # the built test image contains the feature branch's code (and matches the deployed
-      # feature stack).
+      # Called in-context from the PR-triggered "Build, Test and Package" run (or
+      # via workflow_dispatch), so the default checkout already resolves to the
+      # feature-branch commit. No need to re-resolve a workflow_run head SHA.
       - name: Check out repository code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
       - name: Derive stack name and image tag from branch
         id: derive-stack-name
         # Note: algorithm copied from build-test-package.yaml
+        env:
+          STACK_NAME_INPUT: ${{ inputs.stack-name }}
+          FEATURE_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
-          if [ -n "${{ inputs.stack-name }}" ]; then
-            stack_name="${{ inputs.stack-name }}"
+          if [ -n "$STACK_NAME_INPUT" ]; then
+            stack_name="$STACK_NAME_INPUT"
           else
-            FEATURE_BRANCH_NAME="${{ github.event.workflow_run.head_branch || github.ref_name }}"
             stack_name=$(
               echo ${FEATURE_BRANCH_NAME##*/} | \
               tr -cd '[a-zA-Z0-9-]' | \
@@ -58,7 +58,7 @@ jobs:
               cut -c -32
             )
           fi
-          image_tag="${{ github.event.workflow_run.head_sha || github.sha }}"
+          image_tag="${{ github.sha }}"
           echo "stack_name=${stack_name}" >> "$GITHUB_OUTPUT"
           echo "image_tag=${image_tag}" >> "$GITHUB_OUTPUT"
           echo "Resolved stack name: ${stack_name}"
@@ -128,7 +128,7 @@ jobs:
       id-token: write
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Assume AWS role
         uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
@@ -213,8 +213,8 @@ jobs:
           ECS_CLUSTER: txma-audit-dev-tools-integration-test-runner
         run: |
           echo "Waiting for task to finish..."
-          TIMEOUT=3600  # 60 minutes
-          INTERVAL=60 # 1 minute
+          TIMEOUT=1800  # 30 minutes
+          INTERVAL=30   # 30 seconds
           ELAPSED=0
 
           while [ $ELAPSED -lt $TIMEOUT ]; do
@@ -226,9 +226,7 @@ jobs:
 
             echo "Task status: $STATUS (${ELAPSED}s elapsed)"
 
-            if [ "$STATUS" = "STOPPED" ]; then
-              break
-            fi
+            [ "$STATUS" = "STOPPED" ] && break
 
             sleep $INTERVAL
             ELAPSED=$((ELAPSED + INTERVAL))
