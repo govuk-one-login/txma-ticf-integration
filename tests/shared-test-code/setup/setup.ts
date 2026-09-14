@@ -3,17 +3,32 @@ import { retrieveSsmParameterValue } from './retrieveSsmParameterValues'
 
 const region = process.env.AWS_REGION ?? 'eu-west-2'
 const stack = process.env.STACK_NAME ?? 'txma-ticf-integration'
+// In dev, feature stacks do not have seeded per-stack test secrets. The dev
+// integration tests only need the Zendesk webhook signing key (which must match
+// the deployed app) plus a couple of Zendesk API values; they mock Zendesk and do
+// not use Notify. So in dev we read from the shared `ZendeskSecrets` secret that the
+// app itself uses (exported as ZendeskSecretSetArn), guaranteeing the signing key
+// matches, and skip the e2e-only Notify secret. Build/staging keep the per-stack path.
+const isDev = process.env.TEST_ENVIRONMENT === 'dev'
 
 export async function setup() {
-  const secretMappings = {
-    [`tests/${stack}/ZendeskSecrets`]: [
-      'ZENDESK_API_KEY',
-      'ZENDESK_HOSTNAME',
-      'ZENDESK_RECIPIENT_EMAIL',
-      'ZENDESK_WEBHOOK_SECRET_KEY'
-    ],
-    [`tests/${stack}/NotifySecrets`]: ['NOTIFY_API_KEY']
-  }
+  const secretMappings = isDev
+    ? {
+        ZendeskSecrets: [
+          'ZENDESK_API_KEY',
+          'ZENDESK_HOSTNAME',
+          'ZENDESK_WEBHOOK_SECRET_KEY'
+        ]
+      }
+    : {
+        [`tests/${stack}/ZendeskSecrets`]: [
+          'ZENDESK_API_KEY',
+          'ZENDESK_HOSTNAME',
+          'ZENDESK_RECIPIENT_EMAIL',
+          'ZENDESK_WEBHOOK_SECRET_KEY'
+        ],
+        [`tests/${stack}/NotifySecrets`]: ['NOTIFY_API_KEY']
+      }
 
   const formatTestStackSsmParam = (parameterName: string) =>
     `/tests/${stack}/${parameterName}`
@@ -81,7 +96,10 @@ export async function setup() {
     'ZENDESK_AGENT_EMAIL',
     'ZENDESK_END_USER_EMAIL',
     'ZENDESK_END_USER_NAME',
-    'ZENDESK_RECIPIENT_NAME'
+    'ZENDESK_RECIPIENT_NAME',
+    // In dev the Zendesk recipient email is not in the shared secret; supply the
+    // mock value used by the integration tests. Build/staging read it from the secret.
+    ...(isDev ? ['ZENDESK_RECIPIENT_EMAIL'] : [])
   ]
 
   await setEnvVarsFromSecretsManager(secretMappings)
@@ -119,7 +137,8 @@ const setEnvVarsFromProcessEnv = (vars: string[]) => {
     ZENDESK_AGENT_EMAIL: 'txma-team2-ticf-approver-dev@test.gov.uk',
     ZENDESK_END_USER_EMAIL: 'txma-team2-ticf-analyst-dev@test.gov.uk',
     ZENDESK_END_USER_NAME: 'Txma-team2-ticf-analyst-dev',
-    ZENDESK_RECIPIENT_NAME: 'Test User'
+    ZENDESK_RECIPIENT_NAME: 'Test User',
+    ZENDESK_RECIPIENT_EMAIL: 'fake-ticf-recipient@test.gov.uk'
   }
   vars.forEach((v) => {
     if (!process.env[v] && defaults[v]) {
