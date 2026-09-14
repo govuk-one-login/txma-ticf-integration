@@ -1,46 +1,59 @@
 {
-  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.1.0/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/govuk-one-login/quality-gates/refs/tags/v0.19.0/schemas/schema.json",
   "services": [
     {
-      "quality-gates": [
+      "product": "Audit-Service",
+      "component": "txma-ticf-integration",
+      "promotionType": "securePipelines",
+      "automated": [
         {
-          "check-types": ["unit", "code style and linting", "new feature"],
           "phase": "pre-merge",
           "provider": "GitHub",
-          "config": {
-            "file": ".github/workflows/build-test-package.yaml",
-            "name": "Build, Test and Package"
-          }
+          "checks": [
+            {
+              "name": "unit",
+              "purpose": ["new feature"]
+            },
+            {
+              "name": "code style and linting"
+            }
+          ],
+          "file": ".github/workflows/build-test-package.yaml"
         },
         {
-          "check-types": [
-            "unit test coverage",
-            "code quality",
-            "vulnerability detection"
-          ],
-          "config": {
-            "file": ".github/workflows/sonarcloud.yaml",
-            "name": "Sonarcloud"
-          },
           "phase": "pre-merge",
-          "provider": "GitHub"
+          "provider": "GitHub",
+          "checks": [
+            {
+              "name": "unit test coverage"
+            },
+            {
+              "name": "code quality"
+            },
+            {
+              "name": "vulnerability detection"
+            }
+          ],
+          "file": ".github/workflows/sonarcloud.yaml"
         },
         {
-          "check-types": [
-            "unit",
-            "code style and linting",
-            "new feature",
-            "canary"
-          ],
           "phase": "pre-upload",
           "provider": "GitHub",
-          "config": {
-            "file": ".github/workflows/build-test-package.yaml",
-            "name": "Build, Test and Package"
-          }
+          "checks": [
+            {
+              "name": "unit",
+              "purpose": ["new feature"]
+            },
+            {
+              "name": "code style and linting"
+            },
+            {
+              "name": "canary"
+            }
+          ],
+          "file": ".github/workflows/build-test-package.yaml"
         }
-      ],
-      "service-tag": "data-dpt"
+      ]
     }
   ]
 }
