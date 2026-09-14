@@ -1,0 +1,281 @@
+name: 'Run Integration tests'
+
+# This workflow is called from "Build, Test and Package" (via `workflow_call`)
+# after the feature stack has been deployed, so its result is reported against
+# the pull request like the other checks. It can also be run manually via
+# `workflow_dispatch`.
+on:
+  workflow_call:
+    inputs:
+      stack-name:
+        description: 'Override stack name (leave empty to derive from branch name)'
+        required: false
+        type: string
+        default: ''
+  workflow_dispatch:
+    inputs:
+      stack-name:
+        description: 'Override stack name (leave empty to derive from branch name)'
+        required: false
+        default: ''
+
+env:
+  AWS_REGION: eu-west-2
+
+jobs:
+  upload-testing-image:
+    name: Upload testing image to ECR
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      stack-name: ${{ steps.derive-stack-name.outputs.stack_name }}
+      image-tag: ${{ steps.derive-stack-name.outputs.image_tag }}
+    steps:
+      # Called in-context from the PR-triggered "Build, Test and Package" run (or
+      # via workflow_dispatch), so the default checkout already resolves to the
+      # feature-branch commit. No need to re-resolve a workflow_run head SHA.
+      - name: Check out repository code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Derive stack name and image tag from branch
+        id: derive-stack-name
+        # Note: algorithm copied from build-test-package.yaml
+        env:
+          STACK_NAME_INPUT: ${{ inputs.stack-name }}
+          FEATURE_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          if [ -n "$STACK_NAME_INPUT" ]; then
+            stack_name="$STACK_NAME_INPUT"
+          else
+            stack_name=$(
+              echo ${FEATURE_BRANCH_NAME##*/} | \
+              tr -cd '[a-zA-Z0-9-]' | \
+              tr '[:upper:]' '[:lower:]' | \
+              cut -c -32
+            )
+          fi
+          image_tag="${{ github.sha }}"
+          echo "stack_name=${stack_name}" >> "$GITHUB_OUTPUT"
+          echo "image_tag=${image_tag}" >> "$GITHUB_OUTPUT"
+          echo "Resolved stack name: ${stack_name}"
+          echo "Resolved image tag: ${image_tag}"
+
+      - name: Assume AWS role
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
+          role-skip-session-tagging: true
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
+
+      - name: Check if image already exists in ECR
+        id: check-image
+        env:
+          IMAGE_TAG: ${{ steps.derive-stack-name.outputs.image_tag }}
+        run: |
+          if aws ecr describe-images \
+            --repository-name "${{ secrets.DEV_ECR_REPOSITORY_NAME }}" \
+            --image-ids imageTag="$IMAGE_TAG" \
+            --region ${{ env.AWS_REGION }} > /dev/null 2>&1; then
+            echo "Image ${{ secrets.DEV_ECR_REPOSITORY_NAME }}:$IMAGE_TAG already exists, skipping build"
+            echo "image_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Image not found, will build and push"
+            echo "image_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Cosign
+        if: steps.check-image.outputs.image_exists == 'false'
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          cosign-release: v2.4.0
+
+      - name: Create .npmrc file
+        if: steps.check-image.outputs.image_exists == 'false'
+        run: |
+          cat > .npmrc << EOF
+          //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}
+          @govuk-one-login:registry=https://npm.pkg.github.com
+          EOF
+
+      - name: Build, tag, and push testing image to Amazon ECR
+        if: steps.check-image.outputs.image_exists == 'false'
+        env:
+          CONTAINER_SIGN_KMS_KEY: ${{ secrets.DEV_CONTAINER_SIGN_KMS_KEY }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.DEV_ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: ${{ steps.derive-stack-name.outputs.image_tag }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          docker build -f tests/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            --secret id=NODE_AUTH_TOKEN \
+            --build-arg GIT_COMMIT=$(git log -1 --format=%h) .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          cosign sign --key awskms:///${CONTAINER_SIGN_KMS_KEY} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  run-integration-tests:
+    name: Run integration tests via ECS
+    needs: upload-testing-image
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Assume AWS role
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
+          role-skip-session-tagging: true
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
+
+      - name: Register new task definition revision with image
+        id: register-task-def
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.DEV_ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: ${{ needs.upload-testing-image.outputs.image-tag }}
+          STACK_NAME: ${{ needs.upload-testing-image.outputs.stack-name }}
+        run: |
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          TASK_DEFINITION_FAMILY="txma-audit-dev-tools-integration-test-runner"
+          echo "Updating task definition: $TASK_DEFINITION_FAMILY with image: $IMAGE_URI"
+
+          # Get the current task definition
+          TASK_DEF=$(aws ecs describe-task-definition \
+            --task-definition "$TASK_DEFINITION_FAMILY" \
+            --query 'taskDefinition' \
+            --output json)
+
+          # Update the image and remove read-only fields
+          NEW_TASK_DEF=$(echo "$TASK_DEF" | jq \
+            --arg IMAGE "$IMAGE_URI" \
+            '.containerDefinitions[0].image = $IMAGE |
+             del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+          # Register the new revision
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json "$NEW_TASK_DEF" \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          echo "Registered new task definition: $NEW_TASK_DEF_ARN"
+          echo "TASK_DEF_ARN=$NEW_TASK_DEF_ARN" >> "$GITHUB_ENV"
+
+      - name: Run ECS task
+        id: run-task
+        env:
+          ECS_CLUSTER: txma-audit-dev-tools-integration-test-runner
+          STACK_NAME: ${{ needs.upload-testing-image.outputs.stack-name }}
+          TEST_ENVIRONMENT: dev
+        run: |
+          echo "Running integration tests against cluster: $ECS_CLUSTER"
+
+          SUBNET_IDS=$(aws cloudformation describe-stacks \
+            --stack-name vpc \
+            --output json | jq -r '.Stacks[].Outputs[] | select(.OutputKey == "ProtectedSubnetIdA") | .OutputValue')
+
+          TASK_ARN=$(aws ecs run-task \
+            --cluster "$ECS_CLUSTER" \
+            --task-definition "$TASK_DEF_ARN" \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={subnets=[$SUBNET_IDS],assignPublicIp=DISABLED}" \
+            --overrides '{
+              "containerOverrides": [{
+                "name": "'"$ECS_CLUSTER"'",
+                "environment": [
+                  {"name": "AWS_REGION", "value": "eu-west-2"},
+                  {"name": "STACK_NAME", "value": "'"$STACK_NAME"'"},
+                  {"name": "TEST_ENVIRONMENT", "value": "'"$TEST_ENVIRONMENT"'"}
+                ]
+              }]
+            }' \
+            --query 'tasks[0].taskArn' \
+            --output text)
+
+          echo "Task started: $TASK_ARN"
+          echo "TASK_ARN=$TASK_ARN" >> "$GITHUB_ENV"
+
+      - name: Wait for ECS task to complete
+        env:
+          ECS_CLUSTER: txma-audit-dev-tools-integration-test-runner
+        run: |
+          echo "Waiting for task to finish..."
+          TIMEOUT=1800  # 30 minutes
+          INTERVAL=30   # 30 seconds
+          ELAPSED=0
+
+          while [ $ELAPSED -lt $TIMEOUT ]; do
+            STATUS=$(aws ecs describe-tasks \
+              --cluster "$ECS_CLUSTER" \
+              --tasks "$TASK_ARN" \
+              --query 'tasks[0].lastStatus' \
+              --output text)
+
+            echo "Task status: $STATUS (${ELAPSED}s elapsed)"
+
+            [ "$STATUS" = "STOPPED" ] && break
+
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
+
+          if [ "$STATUS" != "STOPPED" ]; then
+            echo "::error::Task timed out after ${TIMEOUT}s"
+            exit 1
+          fi
+
+          EXIT_CODE=$(aws ecs describe-tasks \
+            --cluster "$ECS_CLUSTER" \
+            --tasks "$TASK_ARN" \
+            --query 'tasks[0].containers[0].exitCode' \
+            --output text)
+
+          echo "Task exit code: $EXIT_CODE"
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "::error::Integration tests failed with exit code $EXIT_CODE"
+            exit 1
+          fi
+
+      # Delete the per-commit test image (and its cosign signature) from ECR after the run
+      # (pass or fail) so feature branch images do not accumulate. Runs even if earlier
+      # steps failed.
+      - name: Delete testing image and signature from ECR
+        if: always()
+        env:
+          ECR_REPOSITORY: ${{ secrets.DEV_ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: ${{ needs.upload-testing-image.outputs.image-tag }}
+        run: |
+          echo "Resolving digest for ${ECR_REPOSITORY}:${IMAGE_TAG}"
+          # Resolve the image digest BEFORE deleting, so we can derive the cosign
+          # signature tag. Cosign stores signatures under the tag: sha256-<hash>.sig
+          DIGEST=$(aws ecr describe-images \
+            --repository-name "$ECR_REPOSITORY" \
+            --image-ids imageTag="$IMAGE_TAG" \
+            --region "$AWS_REGION" \
+            --query 'imageDetails[0].imageDigest' \
+            --output text 2>/dev/null || echo "None")
+
+          if [ "$DIGEST" != "None" ] && [ -n "$DIGEST" ]; then
+            SIG_TAG="${DIGEST/:/-}.sig"
+            echo "Deleting image ${ECR_REPOSITORY}:${IMAGE_TAG} and signature ${SIG_TAG}"
+            aws ecr batch-delete-image \
+              --repository-name "$ECR_REPOSITORY" \
+              --image-ids imageTag="$IMAGE_TAG" imageTag="$SIG_TAG" \
+              --region "$AWS_REGION" \
+              --output json || echo "::warning::Failed to delete some test image artifacts for ${IMAGE_TAG}"
+          else
+            echo "::warning::Could not resolve digest for ${ECR_REPOSITORY}:${IMAGE_TAG}; it may already be gone"
+          fi

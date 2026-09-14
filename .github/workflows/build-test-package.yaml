@@ -115,6 +115,20 @@ jobs:
             --no-fail-on-empty-changeset \
             --resolve-s3
 
+  integration-tests:
+    name: Run integration tests
+    # Runs after the feature stack is deployed. Called as a reusable workflow so
+    # its result is reported against the pull request (unlike a decoupled
+    # workflow_run trigger, which does not surface on the PR).
+    if: startsWith(github.ref, 'refs/heads/feature') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
+    needs: [deploy-feature]
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+    secrets: inherit
+    uses: ./.github/workflows/run-integration-tests.yaml
+
   package-build:
     name: Package for deployment to build account
     if: github.ref == 'refs/heads/main'
