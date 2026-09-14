@@ -65,7 +65,7 @@ jobs:
           echo "Resolved image tag: ${image_tag}"
 
       - name: Assume AWS role
-        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
@@ -131,7 +131,7 @@ jobs:
     timeout-minutes: 35
     steps:
       - name: Assume AWS role
-        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.GH_ACTIONS_DEV_DEPLOY_ROLE_ARN }}
