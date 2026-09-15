@@ -163,6 +163,8 @@ npm run test:e2e:dev
    npm run test:integration
    ```
 
+Tests will also run against a feature branch after being pushed to GitHub.
+
 ## Test Reports
 
 Running the tests creates a results file in JUnit format at `tests/reports/results`.
