@@ -16,6 +16,9 @@
             },
             {
               "name": "code style and linting"
+            },
+            {
+              "name": "integration"
             }
           ],
           "file": ".github/workflows/build-test-package.yaml"
