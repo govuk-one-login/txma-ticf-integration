@@ -1,15 +1,15 @@
-import { createQuerySql } from './createQuerySql'
-import {
-  noIdTestDataRequest,
-  dataPathsTestDataRequest,
-  testDataRequestWithNoDataPathsOrPiiTypes,
-  testDataRequestWithAllValuesSet
-} from '../../../common/utils/tests/testDataRequest'
 import { IdentifierTypes } from '../../../common/types/dataRequestParams'
 import {
   TEST_ATHENA_FORMATTED_DATE_1,
   TEST_ATHENA_FORMATTED_DATE_2
 } from '../../../common/utils/tests/testConstants'
+import {
+  dataPathsTestDataRequest,
+  noIdTestDataRequest,
+  testDataRequestWithAllValuesSet,
+  testDataRequestWithNoDataPathsOrPiiTypes
+} from '../../../common/utils/tests/testDataRequest'
+import { createQuerySql } from './createQuerySql'
 
 describe('create Query SQL', () => {
   it.each([

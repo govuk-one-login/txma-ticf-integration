@@ -1,8 +1,8 @@
 import { AttributeValue, PutItemCommand } from '@aws-sdk/client-dynamodb'
 import { DataRequestParams } from '../../../common/types/dataRequestParams'
-import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import { getEnv } from '../../../common/utils/helpers'
 import { ddbClient } from '../../utils/awsSdkClients'
+import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 
 export const addNewDataRequestRecord = (
   dataRequestParams: DataRequestParams,

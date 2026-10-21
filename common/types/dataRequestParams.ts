@@ -1,5 +1,8 @@
 export type IdentifierTypes =
-  'event_id' | 'session_id' | 'journey_id' | 'user_id'
+  | 'event_id'
+  | 'session_id'
+  | 'journey_id'
+  | 'user_id'
 
 export interface DataRequestParams {
   zendeskId: string

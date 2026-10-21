@@ -1,8 +1,8 @@
+import { zendeskConstants } from '../tests/shared-test-code/constants/zendeskParameters'
+import { ZendeskRequestData } from '../tests/shared-test-code/types/zendeskRequestData'
+import { getEnv } from '../tests/shared-test-code/utils/helpers'
 import { makeApproveZendeskTicketRequest } from '../tests/shared-test-code/utils/zendesk/approveZendeskTicket'
 import { createZendeskTicket } from '../tests/shared-test-code/utils/zendesk/createZendeskTicket'
-import { getEnv } from '../tests/shared-test-code/utils/helpers'
-import { ZendeskRequestData } from '../tests/shared-test-code/types/zendeskRequestData'
-import { zendeskConstants } from '../tests/shared-test-code/constants/zendeskParameters'
 
 const generateTicketData = (): ZendeskRequestData => ({
   request: {

@@ -1,11 +1,11 @@
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { mockClient } from 'aws-sdk-client-mock'
 import {
   TEST_AUDIT_BUCKET,
   TEST_BATCH_JOB_MANIFEST_BUCKET_NAME
 } from '../../../common/utils/tests/testConstants'
 import { createManifestFileText } from './createManifestFileText'
 import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-vitest'
 import { vi } from 'vitest'
 

@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
+import { putS3Object } from '../../common/sharedServices/s3/putS3Object'
 import { getValidRecipientBucketName } from './getValidRecipientBucketName'
 import { writeRecipientListToBucket } from './writeRecipientListToBucket'
-import { putS3Object } from '../../common/sharedServices/s3/putS3Object'
 
 vi.mock('./getValidRecipientBucketName', () => ({
   getValidRecipientBucketName: vi.fn()

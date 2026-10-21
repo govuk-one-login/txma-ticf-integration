@@ -1,19 +1,19 @@
 import { vi } from 'vitest'
+import { startTransferToAnalysisBucket } from '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket'
+import { getDatabaseEntryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
+import { logger } from '../../../common/sharedServices/logger'
 import { sendContinuePollingDataTransferMessage } from '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
-import { startTransferToAnalysisBucket } from '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket'
-import { incrementPollingRetryCount } from './incrementPollingRetryCount'
-import { checkDataTransferStatus } from './checkDataTransferStatus'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { DataRequestDatabaseEntry } from '../../../common/types/dataRequestDatabaseEntry'
 import {
   TEST_MAXIMUM_GLACIER_STATUS_CHECK_COUNT,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { DataRequestDatabaseEntry } from '../../../common/types/dataRequestDatabaseEntry'
-import { getDatabaseEntryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
-import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
-import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
-import { logger } from '../../../common/sharedServices/logger'
 import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { checkDataTransferStatus } from './checkDataTransferStatus'
+import { incrementPollingRetryCount } from './incrementPollingRetryCount'
+import { terminateStatusCheckProcess } from './terminateStatusCheckProcess'
 
 vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
   getDatabaseEntryByZendeskId: vi.fn()
@@ -83,7 +83,8 @@ describe('checkDataTransferStatus', () => {
 
   const givenDatabaseEntryResult = (
     statusCountObject:
-      { checkGlacierStatusCount?: number } | undefined = undefined
+      | { checkGlacierStatusCount?: number }
+      | undefined = undefined
   ) => {
     vi.mocked(getDatabaseEntryByZendeskId).mockResolvedValue({
       requestInfo: testDataRequest,

@@ -3,10 +3,9 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
 import { getEnv } from '../../shared-test-code/utils/helpers'
-
+import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
-import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 describe('Invalid requests should not start a data copy', () => {
   describe('invalid request - invalid recipient email', () => {

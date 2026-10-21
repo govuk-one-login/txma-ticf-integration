@@ -1,4 +1,4 @@
-import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
+import { vi } from 'vitest'
 import { sendSqsMessage } from '../../../common/sharedServices/queue/sendSqsMessage'
 import {
   MOCK_QUERY_COMPLETED_QUEUE_URL,
@@ -7,7 +7,7 @@ import {
   TEST_RECIPIENT_NAME,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { vi } from 'vitest'
+import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
 
 vi.mock('../../../common/sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessage: vi.fn()

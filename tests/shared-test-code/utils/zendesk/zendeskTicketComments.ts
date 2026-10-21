@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { authoriseAs } from './authoriseAs'
 import { ZendeskComment } from '../../types/zendeskComment'
 import { getEnv } from '../helpers'
+import { authoriseAs } from './authoriseAs'
 
 export const listZendeskTicketComments = async (
   ticketId: string

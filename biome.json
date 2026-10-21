@@ -1,0 +1,190 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.2/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!**/coverage/**",
+      "!**/dist/**",
+      "!**/reports/**",
+      "!**/node_modules/**",
+      "!txma-ticf-integration"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "expand": "auto",
+    "useEditorconfig": true,
+    "includes": [
+      "**",
+      "!**/*.sh",
+      "!**/*.toml",
+      "!**/.dockerignore",
+      "!**/.editorconfig",
+      "!**/.env*",
+      "!**/.eslintignore",
+      "!**/.gitignore",
+      "!**/.husky",
+      "!**/.npmrc",
+      "!**/.prettierignore",
+      "!**/CODEOWNERS",
+      "!**/coverage/",
+      "!**/Dockerfile",
+      "!**/dist/",
+      "!**/sonar-project.properties",
+      "!**/reports/",
+      "!**/.nvmrc"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "none",
+      "complexity": {
+        "noAdjacentSpacesInRegex": "error",
+        "noExtraBooleanCast": "error",
+        "noUselessCatch": "error",
+        "noUselessEscapeInRegex": "error"
+      },
+      "correctness": {
+        "noConstAssign": "error",
+        "noConstantCondition": "error",
+        "noEmptyCharacterClassInRegex": "error",
+        "noEmptyPattern": "error",
+        "noGlobalObjectCalls": "error",
+        "noInvalidBuiltinInstantiation": "error",
+        "noInvalidConstructorSuper": "error",
+        "noNonoctalDecimalEscape": "error",
+        "noPrecisionLoss": "error",
+        "noSelfAssign": "error",
+        "noSetterReturn": "error",
+        "noSwitchDeclarations": "error",
+        "noUndeclaredVariables": "error",
+        "noUnreachable": "error",
+        "noUnreachableSuper": "error",
+        "noUnsafeFinally": "error",
+        "noUnsafeOptionalChaining": "error",
+        "noUnusedLabels": "error",
+        "noUnusedPrivateClassMembers": "error",
+        "noUnusedVariables": {
+          "level": "error",
+          "options": {
+            "ignoreRestSiblings": false,
+            "ignoreUsingDeclarations": false
+          }
+        },
+        "useIsNan": "error",
+        "useValidForDirection": "error",
+        "useValidTypeof": "error",
+        "useYield": "error"
+      },
+      "performance": { "noDelete": "off" },
+      "style": {
+        "noNestedTernary": "off",
+        "useBlockStatements": "off",
+        "useErrorCause": "error"
+      },
+      "suspicious": {
+        "noAssignInExpressions": "off",
+        "noAsyncPromiseExecutor": "error",
+        "noCatchAssign": "error",
+        "noClassAssign": "error",
+        "noCompareNegZero": "error",
+        "noConsole": "error",
+        "noConstantBinaryExpressions": "error",
+        "noControlCharactersInRegex": "error",
+        "noDebugger": "error",
+        "noDuplicateCase": "error",
+        "noDuplicateClassMembers": "error",
+        "noDuplicateElseIf": "error",
+        "noDuplicateObjectKeys": "error",
+        "noDuplicateParameters": "error",
+        "noEmptyBlockStatements": "off",
+        "noFallthroughSwitchClause": "error",
+        "noFunctionAssign": "error",
+        "noGlobalAssign": "error",
+        "noImportAssign": "error",
+        "noIrregularWhitespace": "error",
+        "noMisleadingCharacterClass": "error",
+        "noPrototypeBuiltins": "error",
+        "noRedeclare": "error",
+        "noShadowRestrictedNames": "error",
+        "noSparseArray": "error",
+        "noUnassignedVariables": "error",
+        "noUnsafeNegation": "error",
+        "noUselessRegexBackrefs": "error",
+        "noWith": "error",
+        "useGetterReturn": "error"
+      }
+    }
+  },
+  "javascript": {
+    "globals": [
+      "describe",
+      "it",
+      "test",
+      "expect",
+      "vi",
+      "beforeAll",
+      "beforeEach",
+      "afterAll",
+      "afterEach",
+      "suite",
+      "assert",
+      "expectTypeOf",
+      "assertType",
+      "onTestFailed",
+      "onTestFinished"
+    ],
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "none",
+      "semicolons": "asNeeded",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    }
+  },
+  "html": {
+    "formatter": {
+      "indentScriptAndStyle": false,
+      "selfCloseVoidElements": "always"
+    }
+  },
+  "yaml": {
+    "formatter": {
+      "enabled": true,
+      "indentWidth": 2,
+      "lineEnding": "lf",
+      "lineWidth": 80,
+      "quoteStyle": "single",
+      "bracketSpacing": false
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "scripts/**/*",
+        "tests/**",
+        "glacier_to_glacierir_migration/**"
+      ],
+      "linter": { "rules": { "suspicious": { "noConsole": "off" } } }
+    }
+  ],
+  "assist": {
+    "enabled": true,
+    "actions": { "source": { "organizeImports": "on" } }
+  }
+}

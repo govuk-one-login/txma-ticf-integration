@@ -1,9 +1,9 @@
 import { Argument, Command } from '@commander-js/extra-typings'
 import { initiateCopyAndDecryptAction } from './initiateCopyAndDecrypt/manualAuditDataRequestInitiateCopyAndDecryptAction'
 import { sendAuditDataAction } from './sendQueryResults/sendAuditDataAction'
-import { isStringArray } from './utils/lib'
 import { AWS_REGION } from './utils/constants'
 import { testDateArgs, testDateRangeArgs } from './utils/dateUtils'
+import { isStringArray } from './utils/lib'
 
 process.env.AWS_REGION = AWS_REGION
 

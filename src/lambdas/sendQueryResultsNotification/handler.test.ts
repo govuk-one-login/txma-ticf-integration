@@ -1,20 +1,20 @@
-import { vi, type MockedFunction } from 'vitest'
 import { EventBridgeEvent } from 'aws-lambda'
+import { type MockedFunction, vi } from 'vitest'
 import { getQueryByAthenaQueryId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
+import { logger } from '../../../common/sharedServices/logger'
+import { sendQueryOutputGeneratedAuditMessage } from '../../../common/sharedServices/queue/sendAuditMessage'
 import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
 import { AthenaEBEventDetails } from '../../../common/types/athenaEBEventDetails'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 import {
   TEST_ATHENA_QUERY_ID,
   TEST_RECIPIENT_EMAIL,
   TEST_RECIPIENT_NAME,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { handler } from './handler'
 import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { handler } from './handler'
 import { sendQueryCompleteQueueMessage } from './sendQueryCompleteQueueMessage'
-import { sendQueryOutputGeneratedAuditMessage } from '../../../common/sharedServices/queue/sendAuditMessage'
-import { logger } from '../../../common/sharedServices/logger'
-import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 
 vi.mock('../../../common/sharedServices/dynamoDB/dynamoDBGet', () => ({
   getQueryByAthenaQueryId: vi.fn()

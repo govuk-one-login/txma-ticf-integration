@@ -1,9 +1,9 @@
-import { ddbClient } from '../../utils/awsSdkClients'
 import {
   UpdateItemCommand,
   UpdateItemCommandInput
 } from '@aws-sdk/client-dynamodb'
 import { getEnv } from '../../../common/utils/helpers'
+import { ddbClient } from '../../utils/awsSdkClients'
 
 export const incrementObjectFieldByOne = async (
   zendeskId: string,

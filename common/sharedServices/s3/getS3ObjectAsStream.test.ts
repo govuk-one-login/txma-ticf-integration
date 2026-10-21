@@ -1,18 +1,18 @@
 import {
-  S3Client,
-  GetObjectCommandInput,
   GetObjectCommand,
-  GetObjectCommandOutput
+  GetObjectCommandInput,
+  GetObjectCommandOutput,
+  S3Client
 } from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-vitest'
+import { getS3ObjectAsStream } from '../../../common/sharedServices/s3/getS3ObjectAsStream'
 import {
   TEST_PERMANENT_BUCKET_NAME,
   TEST_S3_OBJECT_DATA_STRING,
   TEST_S3_OBJECT_KEY
 } from '../../../common/utils/tests/testConstants'
 import { createDataStream } from '../../utils/tests/testHelpers'
-import { getS3ObjectAsStream } from '../../../common/sharedServices/s3/getS3ObjectAsStream'
 
 process.env.AWS_REGION = 'eu-west-2'
 const s3Mock = mockClient(S3Client)

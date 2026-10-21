@@ -1,8 +1,8 @@
-import { vi } from 'vitest'
-import { sendSQSMessageToCompletedQueue } from './sendSQSMessageToCompletedQueue'
-import { sendSqsMessage } from '../../common/sharedServices/queue/sendSqsMessage'
 import { GetQueueUrlCommand, SQSClient } from '@aws-sdk/client-sqs'
 import { mockClient } from 'aws-sdk-client-mock'
+import { vi } from 'vitest'
+import { sendSqsMessage } from '../../common/sharedServices/queue/sendSqsMessage'
+import { sendSQSMessageToCompletedQueue } from './sendSQSMessageToCompletedQueue'
 
 vi.mock('../../src/sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessage: vi.fn()

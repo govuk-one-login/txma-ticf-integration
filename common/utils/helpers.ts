@@ -33,7 +33,7 @@ export const getEpochDate = (dateString: string): number => {
 export const tryParseJSON = (jsonString: string) => {
   try {
     return JSON.parse(jsonString)
-  } catch (error) {
+  } catch (_error) {
     // We deliberately don't log out the specific error here,
     // because Node 19 and onwards will include part of the string the parser
     // was attempting to parse, which can leak sensitive data

@@ -5,7 +5,6 @@ This document describes how to run migration scripts through GitHub Actions with
 ## Overview
 
 The migration workflow allows you to run `migration-step*.sh` scripts remotely via GitHub Actions with:
-
 - Parameter input validation
 - Complete audit logging
 - Artifact preservation
@@ -60,7 +59,6 @@ glacier_to_glacierir_migration/run-migration.sh step1-initiate-restore.sh --envi
 ## Audit Logging
 
 Every execution creates comprehensive audit logs containing:
-
 - **Execution metadata**: timestamp, user, run ID, repository info
 - **Parameters**: all input parameters and their values
 - **AWS context**: account ID, assumed role ARN
@@ -79,7 +77,6 @@ Every execution creates comprehensive audit logs containing:
 The workflow requires the following repository secret:
 
 Environment-specific IAM role ARNs for migration operations:
-
 - `GH_ACTIONS_BUILD_ROLE_ARN`: Build environment role
 - `GH_ACTIONS_STAGING_ROLE_ARN`: Staging environment role
 - `GH_ACTIONS_INTEGRATION_ROLE_ARN`: Integration environment role
@@ -88,14 +85,12 @@ Environment-specific IAM role ARNs for migration operations:
 ### Permissions
 
 The workflow uses:
-
 - `id-token: write` for OIDC authentication
 - `contents: read` for repository access
 
 ### AWS Role Requirements
 
 The migration role must have permissions for:
-
 - S3 operations (list, get, put, copy)
 - S3 Control batch operations
 - STS assume role operations

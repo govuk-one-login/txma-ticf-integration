@@ -1,26 +1,26 @@
-import { vi, type MockedFunction } from 'vitest'
-import { handler } from './handler'
-import { defaultApiRequest } from '../../../common/utils/tests/events/defaultApiRequest'
-import { validateZendeskRequest } from './validateZendeskRequest'
-import {
-  updateZendeskTicket,
-  updateZendeskTicketById
-} from '../../../common/sharedServices/zendesk/updateZendeskTicket'
-import { ValidatedDataRequestParamsResult } from '../../../common/types/validatedDataRequestParamsResult'
-import { DataRequestParams } from '../../../common/types/dataRequestParams'
-import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
-import { isSignatureInvalid } from './validateRequestSource'
-import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
-import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
+import { APIGatewayProxyResult } from 'aws-lambda'
+import { type MockedFunction, vi } from 'vitest'
+import { logger } from '../../../common/sharedServices/logger'
 import {
   sendAuditDataRequestMessage,
   sendIllegalRequestAuditMessage
 } from '../../../common/sharedServices/queue/sendAuditMessage'
-import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
+import {
+  updateZendeskTicket,
+  updateZendeskTicketById
+} from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { DataRequestParams } from '../../../common/types/dataRequestParams'
+import { ValidatedDataRequestParamsResult } from '../../../common/types/validatedDataRequestParamsResult'
 import { tryParseJSON } from '../../../common/utils/helpers'
-import { logger } from '../../../common/sharedServices/logger'
+import { defaultApiRequest } from '../../../common/utils/tests/events/defaultApiRequest'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
-import { APIGatewayProxyResult } from 'aws-lambda'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { handler } from './handler'
+import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
+import { isSignatureInvalid } from './validateRequestSource'
+import { validateZendeskRequest } from './validateZendeskRequest'
+import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 
 const mockValidateZendeskRequest = validateZendeskRequest as MockedFunction<
   typeof validateZendeskRequest
@@ -226,12 +226,12 @@ describe('initiate data request handler', () => {
       { errorCode: 'TICF003' }
     )
     expect(sendInitiateDataTransferMessage).not.toHaveBeenCalled()
-    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(parsedEventBody)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(customBody)
     expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
       mockIsSignatureInvalid
     )
     expect(sendIllegalRequestAuditMessage).toHaveBeenCalledWith(
-      undefined,
+      ZENDESK_TICKET_ID,
       'invalid-signature'
     )
   })

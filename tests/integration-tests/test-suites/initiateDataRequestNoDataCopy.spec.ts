@@ -6,10 +6,10 @@ import {
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
 import { getEnv } from '../../shared-test-code/utils/helpers'
+import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { testData } from '../constants/testData'
 import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
-import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
 
 describe('Data should not be copied to analysis bucket', () => {
   describe('valid requests for no data copy - analysis bucket empty', () => {

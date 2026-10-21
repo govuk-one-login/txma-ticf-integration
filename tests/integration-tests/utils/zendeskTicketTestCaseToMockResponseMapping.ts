@@ -1,6 +1,7 @@
-import { testData } from '../constants/testData'
-import { ZendeskTicketTestData } from '../../shared-test-code/types/zendeskWebhookRequest'
 import { zendeskConstants } from '../../shared-test-code/constants/zendeskParameters'
+import { ZendeskTicketTestData } from '../../shared-test-code/types/zendeskWebhookRequest'
+import { testData } from '../constants/testData'
+
 const addPrefixToZendeskPiiType = (piiType: string) =>
   `${zendeskConstants.piiTypesPrefix}${piiType}`
 

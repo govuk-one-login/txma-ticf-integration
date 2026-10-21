@@ -1,11 +1,10 @@
-import { getEnv } from '../../common/utils/helpers'
-
 import { AthenaClient } from '@aws-sdk/client-athena'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { S3Client } from '@aws-sdk/client-s3'
 import { S3ControlClient } from '@aws-sdk/client-s3-control'
-import { SQSClient } from '@aws-sdk/client-sqs'
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager'
+import { SQSClient } from '@aws-sdk/client-sqs'
+import { getEnv } from '../../common/utils/helpers'
 
 export const athenaClient = new AthenaClient({ region: getEnv('AWS_REGION') })
 export const ddbClient = new DynamoDBClient({ region: getEnv('AWS_REGION') })

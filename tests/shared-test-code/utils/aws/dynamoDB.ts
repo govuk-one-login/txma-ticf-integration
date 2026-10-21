@@ -1,8 +1,7 @@
-import { currentDateEpochSeconds } from '../helpers'
 import { zendeskConstants } from '../../constants/zendeskParameters'
-import { getEnv } from '../helpers'
-import { invokeLambdaFunction } from './invokeLambdaFunction'
 import { CustomField, ZendeskRequestData } from '../../types/zendeskRequestData'
+import { currentDateEpochSeconds, getEnv } from '../helpers'
+import { invokeLambdaFunction } from './invokeLambdaFunction'
 
 export const getValueFromDynamoDB = async (
   tableName: string,

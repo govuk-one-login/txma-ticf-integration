@@ -1,11 +1,11 @@
 import { vi } from 'vitest'
-import { initiateDataTransfer } from './initiateDataTransfer'
-import { handler } from './handler'
 import { constructSqsEvent } from '../../../common/utils/tests/events/sqsEvent'
-import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
-import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
-import { checkDataTransferStatus } from './checkDataTransferStatus'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { checkDataTransferStatus } from './checkDataTransferStatus'
+import { handler } from './handler'
+import { initiateDataTransfer } from './initiateDataTransfer'
 
 vi.mock('./initiateDataTransfer', () => ({
   initiateDataTransfer: vi.fn()

@@ -1,7 +1,7 @@
 import {
+  _Object,
   ListObjectsV2Command,
-  ListObjectsV2CommandInput,
-  _Object
+  ListObjectsV2CommandInput
 } from '@aws-sdk/client-s3'
 import { s3Client } from '../../utils/awsSdkClients'
 

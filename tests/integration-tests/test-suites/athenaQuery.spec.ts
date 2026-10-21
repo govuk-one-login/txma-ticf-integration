@@ -1,23 +1,23 @@
+import * as CSV from 'csv-string'
 import {
-  populateDynamoDBWithTestItemDetails as populateDynamoDBWithTicketDetails,
-  getValueFromDynamoDB,
-  deleteDynamoDBTestItem
-} from '../../shared-test-code/utils/aws/dynamoDB'
-import { addMessageToQueue } from '../../shared-test-code/utils/aws/sqs'
-import {
-  waitForEventWithPatterns,
-  getCloudWatchLogEventsGroupByMessagePattern
+  getCloudWatchLogEventsGroupByMessagePattern,
+  waitForEventWithPatterns
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
+import {
+  deleteDynamoDBTestItem,
+  getValueFromDynamoDB,
+  populateDynamoDBWithTestItemDetails as populateDynamoDBWithTicketDetails
+} from '../../shared-test-code/utils/aws/dynamoDB'
 import { copyAuditDataFromTestDataBucket } from '../../shared-test-code/utils/aws/s3CopyAuditDataFromTestDataBucket'
+import { s3WaitForFileContents } from '../../shared-test-code/utils/aws/s3WaitForFileContents'
+import { addMessageToQueue } from '../../shared-test-code/utils/aws/sqs'
 import {
   generateRandomNumberString,
   getEnv
 } from '../../shared-test-code/utils/helpers'
-import { testData } from '../constants/testData'
-import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
 import { generateZendeskTicketData } from '../../shared-test-code/utils/zendesk/generateZendeskTicketData'
-import * as CSV from 'csv-string'
-import { s3WaitForFileContents } from '../../shared-test-code/utils/aws/s3WaitForFileContents'
+import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
+import { testData } from '../constants/testData'
 
 const ticketWithDataPathAndPiiTypes = generateZendeskTicketData({
   identifier: 'event_id',

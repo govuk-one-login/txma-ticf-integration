@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 import { copyS3Object } from '../../common/sharedServices/s3/copyS3Object'
-import { getBucketFileName } from './getBucketFileName'
 import { copyManualRequestData } from './copyManualRequestData'
+import { getBucketFileName } from './getBucketFileName'
 
 const TEST_ATHENA_QUERY_ID = '46e34211-f930-4e15-a9fb-802f2ae77052'
 

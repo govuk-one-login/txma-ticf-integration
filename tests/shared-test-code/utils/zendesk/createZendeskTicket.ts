@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { authoriseAs } from './authoriseAs'
 import { ZendeskRequestData } from '../../types/zendeskRequestData'
 import { getEnv } from '../helpers'
+import { authoriseAs } from './authoriseAs'
 
 export const createZendeskTicket = async (requestData: ZendeskRequestData) => {
   try {

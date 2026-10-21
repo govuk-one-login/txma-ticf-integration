@@ -5,8 +5,8 @@ import {
 import { logger } from '../../../common/sharedServices/logger'
 import { CreateQuerySqlResult } from '../../../common/types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../../common/types/athena/startQueryExecutionResult'
-import { getEnv } from '../../../common/utils/helpers'
 import { athenaClient } from '../../../common/utils/awsSdkClients'
+import { getEnv } from '../../../common/utils/helpers'
 
 export const startQueryExecution = async (
   queryParams: CreateQuerySqlResult

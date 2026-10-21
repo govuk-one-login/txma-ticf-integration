@@ -1,15 +1,15 @@
-import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
+import { PII_TYPES_DATA_PATHS_MAP } from '../../../common/constants/athenaSqlMapConstants'
+import { appendZendeskIdToLogger } from '../../../common/sharedServices/logger'
+import { IdentifierTypes } from '../../../common/types/dataRequestParams'
 import { ValidatedDataRequestParamsResult } from '../../../common/types/validatedDataRequestParamsResult'
 import {
   getEpochDate,
-  tryParseJSON,
   isEmpty,
   mapSpaceSeparatedStringToList,
-  removeZendeskPiiTypePrefixFromPiiType
+  removeZendeskPiiTypePrefixFromPiiType,
+  tryParseJSON
 } from '../../../common/utils/helpers'
-import { PII_TYPES_DATA_PATHS_MAP } from '../../../common/constants/athenaSqlMapConstants'
-import { IdentifierTypes } from '../../../common/types/dataRequestParams'
-import { appendZendeskIdToLogger } from '../../../common/sharedServices/logger'
+import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 
 const IDENTIFIERS = ['event_id', 'session_id', 'journey_id', 'user_id']
 
