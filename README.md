@@ -214,7 +214,6 @@ npm run lint:fix
 ```
 
 In VS Code, install the [Biome extension](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) (recommended via `.vscode/extensions.json`). It is configured as the default formatter with format-on-save and import organisation on save.
-```
 
 ## Testing Framework Migration
 
