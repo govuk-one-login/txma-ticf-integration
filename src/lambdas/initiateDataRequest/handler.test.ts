@@ -226,12 +226,12 @@ describe('initiate data request handler', () => {
       { errorCode: 'TICF003' }
     )
     expect(sendInitiateDataTransferMessage).not.toHaveBeenCalled()
-    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(parsedEventBody)
+    expect(sendAuditDataRequestMessage).toHaveBeenCalledWith(customBody)
     expect(sendAuditDataRequestMessage).toHaveBeenCalledBefore(
       mockIsSignatureInvalid
     )
     expect(sendIllegalRequestAuditMessage).toHaveBeenCalledWith(
-      undefined,
+      ZENDESK_TICKET_ID,
       'invalid-signature'
     )
   })
