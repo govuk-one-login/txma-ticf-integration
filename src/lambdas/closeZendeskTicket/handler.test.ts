@@ -87,10 +87,7 @@ describe('initiate closeZendeskTicket handler', () => {
     ['commentCopyText', 'Comment copy text']
   ])(
     'throws an error when %p is an empty string',
-    async (
-      emptyStringPropertyName: string,
-      emptyStringPropertyError: string
-    ) => {
+    async (emptyStringPropertyName: string, emptyStringPropertyError: string) => {
       const eventBodyParams = {
         zendeskId: ZENDESK_TICKET_ID,
         commentCopyText: TEST_COMMENT_COPY

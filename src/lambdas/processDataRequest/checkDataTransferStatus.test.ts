@@ -83,7 +83,8 @@ describe('checkDataTransferStatus', () => {
 
   const givenDatabaseEntryResult = (
     statusCountObject:
-      { checkGlacierStatusCount?: number } | undefined = undefined
+      | { checkGlacierStatusCount?: number }
+      | undefined = undefined
   ) => {
     vi.mocked(getDatabaseEntryByZendeskId).mockResolvedValue({
       requestInfo: testDataRequest,

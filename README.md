@@ -23,7 +23,6 @@ Threat Intelligence and Counter Fraud (TICF) analysts will be able to request au
 # Pre-requisites
 
 To run this project you will need the following:
-
 - [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) - Used to build and deploy the application
 - [Node.js](https://nodejs.org/en/) version 24 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
 - [Docker](https://docs.docker.com/get-docker/) - Required to run SAM locally
@@ -38,7 +37,6 @@ To run this project you will need the following:
 # Getting started
 
 This project uses the `@govuk-one-login/dpt-logging` package hosted on [GitHub Packages](https://github.com/orgs/govuk-one-login/packages). To install dependencies locally, you need a GitHub Personal Access Token (PAT) with `read:packages` scope.
-
 1. [Create a Personal Access Token](https://github.com/settings/tokens) with the `read:packages` scope.
 2. Export it as an environment variable before running `npm install`:
 
@@ -80,13 +78,11 @@ And then opening the `coverage/lcov-report/index.html` page in your browser.
 ## Setup
 
 The tests can be run against any of the following environments:
-
 - dev
 - build
 - staging
 
 The variables required to run the test are stored in AWS in the following places:
-
 - SSM
 - Secrets Manager
 - Stack Outputs
@@ -159,6 +155,7 @@ npm run test:e2e:dev
    ```
 
 3. Then run the test themselves
+
    ```bash
    npm run test:integration
    ```
@@ -198,21 +195,25 @@ and the utility will create and approve a Zendesk ticket for you.
 
 # Code standards
 
-This repository is set up to use [Prettier](https://prettier.io/) for formatting and [ESLint](https://eslint.org/) to look for problems in any Typescript and Javascript code.
+This repository uses [Biome](https://biomejs.dev/) for both formatting and linting of JavaScript, TypeScript, and JSON. Biome replaces the previous ESLint + Prettier setup with a single, faster tool and one configuration file (`biome.json`).
 
-Prettier is an opinionated formatting tool for multiple languages/file formats. Exceptions can be added to the `.prettierrc.json` file.
+The configuration was produced by migrating the old Prettier and ESLint config via `biome migrate` (see the [migration guide](https://biomejs.dev/installation/migrate-from-other-tools/)), so formatting is unchanged: 2-space indentation, single quotes, no semicolons, and no trailing commas. The linter runs the rules that were ported from the old ESLint `eslint:recommended` ruleset, plus import organisation. `console` usage is disallowed in application code but allowed under `scripts/`, `tests/`, and `glacier_to_glacierir_migration/`.
 
-ESLint is configured to use just its recommended rules via the `.eslintrc.json` file. These can be viewed at:
+> **Note:** Biome's VCS integration is enabled, so it honours `.gitignore`. YAML files (including `template.yaml` and the GitHub workflows) are formatted with a YAML-specific config (`yaml.formatter`) that matches the existing style: 2-space indentation, single quotes and no bracket spacing. Biome preserves CloudFormation custom tags such as `!Ref` and `!GetAtt`.
 
-- [Javascript](https://eslint.org/docs/latest/rules/)
-- [Typescript](https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/src/configs/eslint-recommended.ts)
-
-Additionally, its code formatting rules are disabled as these are handled by Prettier.
-
-To run the linting:
+To check formatting and lint rules:
 
 ```
 npm run lint
+```
+
+To apply formatting and safe lint fixes:
+
+```
+npm run lint:fix
+```
+
+In VS Code, install the [Biome extension](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) (recommended via `.vscode/extensions.json`). It is configured as the default formatter with format-on-save and import organisation on save.
 ```
 
 ## Testing Framework Migration
@@ -226,10 +227,12 @@ This project has been migrated from Jest to Vitest and from CommonJS to ESM (Feb
 - **Node version:** Upgraded to Node.js 24 (from 22)
 - **Lambda runtime:** Uses `nodejs24.x` runtime
 - **Test imports:** Must explicitly import test functions:
+
   ```typescript
   import { describe, it, expect, vi } from 'vitest'
   ```
 - **Mock functions:** Use `vi.*` instead of `jest.*`:
+
   ```typescript
   vi.fn() // instead of jest.fn()
   vi.mock() // instead of jest.mock()
@@ -239,7 +242,6 @@ This project has been migrated from Jest to Vitest and from CommonJS to ESM (Feb
 # Scripts
 
 All scripts can now be ran using `npm run cli` in the terminal. Here are some example CLI args you can use
-
 - `npm run cli -- --help` to see what scripts are available and how to use them.
 - `npm run cli <command> -- --help` to see the help per command.
 
