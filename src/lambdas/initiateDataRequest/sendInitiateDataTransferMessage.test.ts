@@ -1,8 +1,8 @@
-import { vi, type MockedFunction } from 'vitest'
-import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
-import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { type MockedFunction, vi } from 'vitest'
 import { sendSqsMessage } from '../../../common/sharedServices/queue/sendSqsMessage'
 import { MOCK_INITIATE_DATA_REQUEST_QUEUE_URL } from '../../../common/utils/tests/testConstants'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
 
 vi.mock('../../../common/sharedServices/queue/sendSqsMessage', () => ({
   sendSqsMessage: vi.fn()

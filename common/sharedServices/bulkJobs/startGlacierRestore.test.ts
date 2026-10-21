@@ -1,6 +1,5 @@
-import { startGlacierRestore } from './startGlacierRestore'
-import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
-import { S3ControlClient, CreateJobCommand } from '@aws-sdk/client-s3-control'
+import { CreateJobCommand, S3ControlClient } from '@aws-sdk/client-s3-control'
+import { mockClient } from 'aws-sdk-client-mock'
 import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
 import {
   TEST_ANALYSIS_BUCKET,
@@ -9,7 +8,8 @@ import {
   TEST_BATCH_JOB_ROLE_ARN,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { mockClient } from 'aws-sdk-client-mock'
+import { startGlacierRestore } from './startGlacierRestore'
+import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import 'aws-sdk-client-mock-vitest'
 import { vi } from 'vitest'
 

@@ -1,13 +1,13 @@
-import { vi, type MockedFunction } from 'vitest'
-import {
-  ZENDESK_TICKET_ID,
-  TEST_COMMENT_COPY
-} from '../../../common/utils/tests/testConstants'
-import { handler } from './handler'
+import { type MockedFunction, vi } from 'vitest'
+import { logger } from '../../../common/sharedServices/logger'
 import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
 import { constructSqsEvent } from '../../../common/utils/tests/events/sqsEvent'
-import { logger } from '../../../common/sharedServices/logger'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
+import {
+  TEST_COMMENT_COPY,
+  ZENDESK_TICKET_ID
+} from '../../../common/utils/tests/testConstants'
+import { handler } from './handler'
 
 vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: vi.fn()

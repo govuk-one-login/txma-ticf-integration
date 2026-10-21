@@ -4,11 +4,11 @@ import {
   S3Client
 } from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
+import { readS3DataToString } from '../../../common/sharedServices/s3/readS3DataToString'
 import {
   TEST_VALID_EMAIL_RECIPIENTS_BUCKET,
   TEST_VALID_EMAIL_RECIPIENTS_BUCKET_KEY
 } from '../../../common/utils/tests/testConstants'
-import { readS3DataToString } from '../../../common/sharedServices/s3/readS3DataToString'
 import 'aws-sdk-client-mock-vitest'
 import { StreamingBlobPayloadOutputTypes } from '@smithy/types'
 import { Readable } from 'stream'

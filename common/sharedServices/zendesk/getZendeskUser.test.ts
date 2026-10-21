@@ -1,10 +1,10 @@
 import { vi } from 'vitest'
-import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
-import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
 import {
   ALL_ZENDESK_SECRETS,
   ENCODED_AUTH_VALUE
 } from '../../../common/utils/tests/testConstants'
+import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
+import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
 import { logger } from '../logger'
 import { getZendeskUser } from './getZendeskUser'
 

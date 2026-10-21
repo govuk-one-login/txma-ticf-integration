@@ -1,4 +1,4 @@
-import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts'
+import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts'
 import { AWS_REGION } from '../../../utils/constants'
 
 export const getAwsAccountNumber = async () => {

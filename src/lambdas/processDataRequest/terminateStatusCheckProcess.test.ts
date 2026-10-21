@@ -1,4 +1,4 @@
-import { vi, type MockedFunction } from 'vitest'
+import { type MockedFunction, vi } from 'vitest'
 import { sendSqsMessageWithStringBody } from '../../../common/sharedServices/queue/sendSqsMessage'
 import {
   MOCK_TERMINATED_JOB_QUEUE_URL,

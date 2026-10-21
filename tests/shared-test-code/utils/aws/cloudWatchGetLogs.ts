@@ -1,13 +1,13 @@
-import { cloudWatchLogsClient } from './cloudWatchLogsClient'
 import {
   DescribeLogStreamsCommand,
-  LogStream,
-  FilterLogEventsCommand,
   FilteredLogEvent,
+  FilterLogEventsCommand,
   FilterLogEventsCommandInput,
+  LogStream,
   OrderBy
 } from '@aws-sdk/client-cloudwatch-logs'
 import { pause } from '../helpers'
+import { cloudWatchLogsClient } from './cloudWatchLogsClient'
 
 export const getCloudWatchLogEventsGroupByMessagePattern = async (
   logGroupName: string,

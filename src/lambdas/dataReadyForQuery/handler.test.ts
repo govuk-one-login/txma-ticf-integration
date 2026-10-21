@@ -1,16 +1,16 @@
 import { vi } from 'vitest'
 import { getS3BatchJobTags } from '../../../common/sharedServices/bulkJobs/getS3BatchJobTags'
-import { jobWasSuccessful } from './jobWasSuccessful'
+import { logger } from '../../../common/sharedServices/logger'
 import { sendInitiateAthenaQueryMessage } from '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage'
-import { batchJobStatusChangeEvent } from '../../../common/utils/tests/events/batchJobStatusChangeEvent'
 import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { batchJobStatusChangeEvent } from '../../../common/utils/tests/events/batchJobStatusChangeEvent'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
-import { handler } from './handler'
 import {
   TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { logger } from '../../../common/sharedServices/logger'
+import { handler } from './handler'
+import { jobWasSuccessful } from './jobWasSuccessful'
 
 vi.mock('../../../common/sharedServices/bulkJobs/getS3BatchJobTags', () => ({
   getS3BatchJobTags: vi.fn()

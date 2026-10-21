@@ -1,12 +1,8 @@
-import { vi, type MockedFunction } from 'vitest'
+import { type MockedFunction, vi } from 'vitest'
+import { logger } from '../../../common/sharedServices/logger'
 import { getZendeskTicket } from '../../../common/sharedServices/zendesk/getZendeskTicket'
 import { getZendeskUser } from '../../../common/sharedServices/zendesk/getZendeskUser'
 import { DataRequestParams } from '../../../common/types/dataRequestParams'
-import {
-  testDataRequest,
-  testDataRequestWithAllValuesSet,
-  testDataRequestWithEmptyValuesForIds
-} from '../../../common/utils/tests/testDataRequest'
 import { CustomField } from '../../../common/types/zendeskTicketResult'
 import {
   TEST_DATE_1,
@@ -16,8 +12,8 @@ import {
   TEST_REQUESTER_EMAIL,
   TEST_REQUESTER_NAME,
   TEST_ZENDESK_FIELD_ID_DATA_PATHS,
-  TEST_ZENDESK_FIELD_ID_DATES,
   TEST_ZENDESK_FIELD_ID_DATE_FROM,
+  TEST_ZENDESK_FIELD_ID_DATES,
   TEST_ZENDESK_FIELD_ID_EVENT_IDS,
   TEST_ZENDESK_FIELD_ID_IDENTIFIER_TYPE,
   TEST_ZENDESK_FIELD_ID_JOURNEY_IDS,
@@ -29,8 +25,12 @@ import {
   ZENDESK_PII_TYPE_PREFIX,
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../../common/utils/tests/testConstants'
+import {
+  testDataRequest,
+  testDataRequestWithAllValuesSet,
+  testDataRequestWithEmptyValuesForIds
+} from '../../../common/utils/tests/testDataRequest'
 import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
-import { logger } from '../../../common/sharedServices/logger'
 
 vi.mock('../../../common/sharedServices/zendesk/getZendeskTicket', () => ({
   getZendeskTicket: vi.fn()

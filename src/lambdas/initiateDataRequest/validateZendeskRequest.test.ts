@@ -1,13 +1,13 @@
 import { vi } from 'vitest'
 import { when } from 'vitest-when'
-import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
-import { validateZendeskRequest } from './validateZendeskRequest'
 import { IdentifierTypes } from '../../../common/types/dataRequestParams'
 import {
   TEST_DATE_1,
   TEST_DATE_2,
   ZENDESK_PII_TYPE_PREFIX
 } from '../../../common/utils/tests/testConstants'
+import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
+import { validateZendeskRequest } from './validateZendeskRequest'
 
 vi.mock('./isEmailInValidRecipientList', () => ({
   isEmailInValidRecipientList: vi.fn()

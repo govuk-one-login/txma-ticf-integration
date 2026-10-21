@@ -1,8 +1,8 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { getEnv } from '../../../common/utils/helpers'
+import { s3Client } from '../../utils/awsSdkClients'
 import { logger } from '../logger'
 import { createManifestFileText } from './createManifestFileText'
-import { s3Client } from '../../utils/awsSdkClients'
 
 export const writeJobManifestFileToJobBucket = async (
   sourceBucket: string,

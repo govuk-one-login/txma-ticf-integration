@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import { Context } from 'aws-lambda'
+import { vi } from 'vitest'
 
 export const mockLambdaContext: Context = {
   callbackWaitsForEmptyEventLoop: false,

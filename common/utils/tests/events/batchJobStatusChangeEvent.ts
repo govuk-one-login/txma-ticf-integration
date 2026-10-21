@@ -1,6 +1,6 @@
 import { EventBridgeEvent } from 'aws-lambda'
-import { BatchJobStatusChangeEventDetail } from '../../../types/batchJobStatusChangeEventDetail'
 import { TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID } from '../../../../common/utils/tests/testConstants'
+import { BatchJobStatusChangeEventDetail } from '../../../types/batchJobStatusChangeEventDetail'
 
 export const batchJobStatusChangeEvent = (
   status: string

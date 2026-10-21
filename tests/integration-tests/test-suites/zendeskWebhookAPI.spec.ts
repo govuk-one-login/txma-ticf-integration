@@ -1,7 +1,7 @@
-import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
-import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
-import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
 import { AxiosResponse } from 'axios'
+import { ZendeskWebhookRequest } from '../../shared-test-code/types/zendeskWebhookRequest'
+import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 
 const assertSecurityHeadersSet = (result: AxiosResponse) => {
   expect(result.headers && result.headers['strict-transport-security']).toEqual(

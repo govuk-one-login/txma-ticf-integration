@@ -1,8 +1,9 @@
 import {
-  S3ControlClient,
   CreateJobCommand,
-  JobReportScope
+  JobReportScope,
+  S3ControlClient
 } from '@aws-sdk/client-s3-control'
+import { mockClient } from 'aws-sdk-client-mock'
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_ANALYSIS_BUCKET_ARN,
@@ -12,11 +13,10 @@ import {
   TEST_DECRYPTION_LAMBDA_ARN,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { startTransferToAnalysisBucket } from './startTransferToAnalysisBucket'
-import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 import { getAuditDataSourceBucketName } from '../s3/getAuditDataSourceBucketName'
-import { mockClient } from 'aws-sdk-client-mock'
+import { startTransferToAnalysisBucket } from './startTransferToAnalysisBucket'
+import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 import 'aws-sdk-client-mock-vitest'
 import { vi } from 'vitest'
 

@@ -4,8 +4,8 @@ import {
   QueryCommand
 } from '@aws-sdk/client-dynamodb'
 import { isDataRequestParams } from '../../../common/types/dataRequestParams'
-import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { getEnv } from '../../../common/utils/helpers'
+import { DataRequestDatabaseEntry } from '../../types/dataRequestDatabaseEntry'
 import { ddbClient } from '../../utils/awsSdkClients'
 
 export const getDatabaseEntryByZendeskId = async (

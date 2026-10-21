@@ -1,18 +1,18 @@
 import {
-  S3BatchEvent,
-  S3BatchResult,
-  S3BatchEventTask,
   Context,
+  S3BatchEvent,
+  S3BatchEventTask,
+  S3BatchResult,
   S3BatchResultResultCode
 } from 'aws-lambda'
 import { initialiseLogger, logger } from '../../../common/sharedServices/logger'
 import { getS3ObjectAsStream } from '../../../common/sharedServices/s3/getS3ObjectAsStream'
-import { decryptS3Object } from './decryptS3Object'
 import { putS3Object } from '../../../common/sharedServices/s3/putS3Object'
 import {
-  getEnv,
-  extractS3BucketNameFromArn
+  extractS3BucketNameFromArn,
+  getEnv
 } from '../../../common/utils/helpers'
+import { decryptS3Object } from './decryptS3Object'
 
 export const handler = async (
   event: S3BatchEvent,

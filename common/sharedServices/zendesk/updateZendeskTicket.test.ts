@@ -1,19 +1,20 @@
 // Under test
+
+// Dependencies
+import { vi } from 'vitest'
+import {
+  ALL_ZENDESK_SECRETS,
+  ENCODED_AUTH_VALUE,
+  ZENDESK_TICKET_ID
+} from '../../../common/utils/tests/testConstants'
+import { exampleEventBody } from '../../utils/tests/events/exampleEventBody'
+import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
+import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
+import { logger } from '../logger'
 import {
   updateZendeskTicket,
   updateZendeskTicketById
 } from './updateZendeskTicket'
-// Dependencies
-import { vi } from 'vitest'
-import { exampleEventBody } from '../../utils/tests/events/exampleEventBody'
-import {
-  ALL_ZENDESK_SECRETS,
-  ZENDESK_TICKET_ID,
-  ENCODED_AUTH_VALUE
-} from '../../../common/utils/tests/testConstants'
-import { givenAllSecretsAvailable } from '../../utils/tests/mocks/retrieveSecretKeys'
-import * as mockHttpsRequestUtils from '../../utils/tests/mocks/httpsRequestUtils'
-import { logger } from '../logger'
 
 const zendeskTicketMessage = 'Something was invalid.'
 const NEW_TICKET_STATUS = 'closed'

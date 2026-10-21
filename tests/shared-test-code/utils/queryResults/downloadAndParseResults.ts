@@ -1,6 +1,6 @@
 import axios, { isAxiosError } from 'axios'
-import parse from 'node-html-parser'
 import * as CSV from 'csv-string'
+import parse from 'node-html-parser'
 
 export async function downloadResultsFileAndParseData(
   secureDownloadPageUrl: string

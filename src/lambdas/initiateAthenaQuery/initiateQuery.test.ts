@@ -1,16 +1,16 @@
-import { vi, type MockedFunction } from 'vitest'
-import { initiateQuery } from './initiateQuery'
-import { startQueryExecution } from './startQueryExecution'
-import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { type MockedFunction, vi } from 'vitest'
 import { getDatabaseEntryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
-import { createQuerySql } from './createQuerySql'
 import { updateQueryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBUpdate'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
 import {
   dataPathsTestDataRequest,
   noIdTestDataRequest,
   testDataRequest
 } from '../../../common/utils/tests/testDataRequest'
-import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
+import { createQuerySql } from './createQuerySql'
+import { initiateQuery } from './initiateQuery'
+import { startQueryExecution } from './startQueryExecution'
 
 vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({
   updateZendeskTicketById: vi.fn()

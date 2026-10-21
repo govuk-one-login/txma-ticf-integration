@@ -1,7 +1,7 @@
 import {
-  SecretsManagerClient,
   GetSecretValueCommand,
-  GetSecretValueCommandInput
+  GetSecretValueCommandInput,
+  SecretsManagerClient
 } from '@aws-sdk/client-secrets-manager'
 
 export const retrieveSecretValue = async (secretId: string, region: string) => {

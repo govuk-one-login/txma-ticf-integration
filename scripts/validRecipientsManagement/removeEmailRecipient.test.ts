@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 import { listCurrentEmailRecipients } from './listCurrentEmailRecipients'
-import { writeRecipientListToBucket } from './writeRecipientListToBucket'
 import { removeEmailRecipient } from './removeEmailRecipient'
+import { writeRecipientListToBucket } from './writeRecipientListToBucket'
 
 vi.mock('./listCurrentEmailRecipients', () => ({
   listCurrentEmailRecipients: vi.fn()

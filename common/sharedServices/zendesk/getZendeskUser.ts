@@ -1,11 +1,11 @@
 import https from 'node:https'
-import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
-import { isZendeskUserResult, ZendeskUser } from '../../types/zendeskUserResult'
 import {
   base64Encode,
   makeHttpsRequest
 } from '../../../common/sharedServices/http/httpsRequestUtils'
+import { isZendeskUserResult, ZendeskUser } from '../../types/zendeskUserResult'
 import { logger } from '../logger'
+import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 
 export const getZendeskUser = async (userId: number): Promise<ZendeskUser> => {
   const secrets = await retrieveZendeskApiSecrets()

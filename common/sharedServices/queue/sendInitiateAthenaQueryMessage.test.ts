@@ -1,10 +1,10 @@
-import { vi, type MockedFunction } from 'vitest'
-import { sendInitiateAthenaQueryMessage } from './sendInitiateAthenaQueryMessage'
-import { sendSqsMessageWithStringBody } from './sendSqsMessage'
+import { type MockedFunction, vi } from 'vitest'
 import {
   MOCK_INITIATE_ATHENA_QUERY_QUEUE_URL,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
+import { sendInitiateAthenaQueryMessage } from './sendInitiateAthenaQueryMessage'
+import { sendSqsMessageWithStringBody } from './sendSqsMessage'
 
 vi.mock('./sendSqsMessage', () => ({
   sendSqsMessageWithStringBody: vi.fn()

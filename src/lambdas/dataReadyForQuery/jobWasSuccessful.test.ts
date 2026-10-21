@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
-import { jobWasSuccessful } from './jobWasSuccessful'
 import { describeBatchJob } from '../../../common/sharedServices/bulkJobs/describeBatchJob'
 import { TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID } from '../../../common/utils/tests/testConstants'
+import { jobWasSuccessful } from './jobWasSuccessful'
 
 vi.mock('../../../common/sharedServices/bulkJobs/describeBatchJob', () => ({
   describeBatchJob: vi.fn()

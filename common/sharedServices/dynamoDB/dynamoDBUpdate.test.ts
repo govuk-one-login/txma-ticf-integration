@@ -1,17 +1,17 @@
 import {
-  incrementObjectFieldByOne,
-  updateQueryByZendeskId
-} from './dynamoDBUpdate'
-import {
-  TEST_QUERY_DATABASE_TABLE_NAME,
-  ZENDESK_TICKET_ID
-} from '../../../common/utils/tests/testConstants'
-import {
   DynamoDBClient,
   UpdateItemCommand,
   UpdateItemOutput
 } from '@aws-sdk/client-dynamodb'
 import { mockClient } from 'aws-sdk-client-mock'
+import {
+  TEST_QUERY_DATABASE_TABLE_NAME,
+  ZENDESK_TICKET_ID
+} from '../../../common/utils/tests/testConstants'
+import {
+  incrementObjectFieldByOne,
+  updateQueryByZendeskId
+} from './dynamoDBUpdate'
 import 'aws-sdk-client-mock-vitest'
 
 const dynamoMock = mockClient(DynamoDBClient)

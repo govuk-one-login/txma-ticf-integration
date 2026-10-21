@@ -1,6 +1,8 @@
-import { vi } from 'vitest'
 import { buildDecrypt, MessageHeader } from '@aws-crypto/decrypt-node'
 import { KmsKeyringNode } from '@aws-crypto/kms-keyring-node'
+import { Readable } from 'stream'
+import { vi } from 'vitest'
+import { logger } from '../../../common/sharedServices/logger'
 import {
   TEST_BACKUP_KEY_ID,
   TEST_GENERATOR_KEY_ID,
@@ -9,8 +11,6 @@ import {
 } from '../../../common/utils/tests/testConstants'
 import { createDataStream } from '../../../common/utils/tests/testHelpers'
 import { decryptS3Object } from './decryptS3Object'
-import { logger } from '../../../common/sharedServices/logger'
-import { Readable } from 'stream'
 
 const mockDecrypt = vi.fn()
 

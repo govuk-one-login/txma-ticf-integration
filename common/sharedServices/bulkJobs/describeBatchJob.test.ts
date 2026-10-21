@@ -6,8 +6,8 @@ import {
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-vitest'
 import {
-  TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID,
-  TEST_AWS_ACCOUNT_ID
+  TEST_AWS_ACCOUNT_ID,
+  TEST_TRANSFER_TO_ANALYSIS_BUCKET_JOB_ID
 } from '../../../common/utils/tests/testConstants'
 import { describeBatchJob } from './describeBatchJob'
 

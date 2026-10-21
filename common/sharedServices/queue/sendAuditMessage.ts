@@ -1,12 +1,12 @@
+import { getEnv } from '../../../common/utils/helpers'
 import {
   AuditEventType,
-  ErrorType,
+  ComponentId,
   ErrorObject,
-  ComponentId
+  ErrorType
 } from '../../types/audit/auditEventDetails'
 import { AuditQueryDataRequestDetails } from '../../types/audit/auditQueryDataRequestDetails'
 import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
-import { getEnv } from '../../../common/utils/helpers'
 import { logger } from '../logger'
 import { sendSqsMessage } from './sendSqsMessage'
 

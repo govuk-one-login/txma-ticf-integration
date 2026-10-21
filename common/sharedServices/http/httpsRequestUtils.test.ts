@@ -1,6 +1,6 @@
 import https from 'node:https'
 import { EventEmitter } from 'events'
-import { vi, type MockedFunction } from 'vitest'
+import { type MockedFunction, vi } from 'vitest'
 import {
   base64Encode,
   makeHttpsRequest

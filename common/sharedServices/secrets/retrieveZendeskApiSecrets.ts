@@ -1,6 +1,6 @@
+import { getEnv } from '../../../common/utils/helpers'
 import { ZendeskApiSecrets } from '../../types/zendeskApiSecrets'
 import { checkSecretsSet } from './checkSecrets'
-import { getEnv } from '../../../common/utils/helpers'
 import { retrieveSecrets } from './retrieveSecrets'
 
 export const retrieveZendeskApiSecrets =

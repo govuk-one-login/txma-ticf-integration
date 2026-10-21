@@ -2,10 +2,10 @@
 
 import { buildDecrypt } from '@aws-crypto/decrypt-node'
 import { KmsKeyringNode } from '@aws-crypto/kms-keyring-node'
-import { createGunzip } from 'zlib'
 import { createReadStream, createWriteStream } from 'fs'
-import { pipeline } from 'stream/promises'
 import { Readable } from 'stream'
+import { pipeline } from 'stream/promises'
+import { createGunzip } from 'zlib'
 
 // Set AWS profile
 process.env.AWS_PROFILE = 'audit-build'

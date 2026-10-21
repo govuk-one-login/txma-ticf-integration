@@ -1,14 +1,9 @@
 import {
-  PutItemCommand,
   DynamoDBClient,
+  PutItemCommand,
   PutItemCommandInput
 } from '@aws-sdk/client-dynamodb'
-import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
-import { addNewDataRequestRecord } from './dynamoDBPut'
-import {
-  testDataRequest,
-  testDataRequestWithAllValuesSet
-} from '../../utils/tests/testDataRequest'
+import { mockClient } from 'aws-sdk-client-mock'
 import {
   TEST_CURRENT_EPOCH_SECONDS,
   TEST_DATABASE_TTL_HOURS,
@@ -21,7 +16,12 @@ import {
   TEST_REQUESTER_NAME,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { mockClient } from 'aws-sdk-client-mock'
+import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
+import {
+  testDataRequest,
+  testDataRequestWithAllValuesSet
+} from '../../utils/tests/testDataRequest'
+import { addNewDataRequestRecord } from './dynamoDBPut'
 import 'aws-sdk-client-mock-vitest'
 import { vi } from 'vitest'
 

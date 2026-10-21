@@ -1,11 +1,11 @@
-import { DataRequestParams } from '../../../common/types/dataRequestParams'
-import { S3BucketDataLocationResult } from '../../types/s3BucketDataLocationResult'
-import { listS3Files } from '../../../common/sharedServices/s3/listS3Files'
-import { getEnv } from '../../../common/utils/helpers'
 import { _Object } from '@aws-sdk/client-s3'
+import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
+import { listS3Files } from '../../../common/sharedServices/s3/listS3Files'
+import { DataRequestParams } from '../../../common/types/dataRequestParams'
+import { getEnv } from '../../../common/utils/helpers'
+import { S3BucketDataLocationResult } from '../../types/s3BucketDataLocationResult'
 import { logger } from '../logger'
 import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
-import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
 
 export const checkS3BucketData = async (
   dataRequestParams: DataRequestParams

@@ -3,28 +3,28 @@ import {
   APIGatewayProxyResult,
   Context
 } from 'aws-lambda'
-import {
-  updateZendeskTicket,
-  updateZendeskTicketById
-} from '../../../common/sharedServices/zendesk/updateZendeskTicket'
-import { isSignatureInvalid } from './validateRequestSource'
-import { validateZendeskRequest } from './validateZendeskRequest'
-import { ValidatedDataRequestParamsResult } from '../../../common/types/validatedDataRequestParamsResult'
-import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
-import { DataRequestParams } from '../../../common/types/dataRequestParams'
-import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 import { zendeskCopy } from '../../../common/constants/zendeskCopy'
-import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
-import {
-  sendAuditDataRequestMessage,
-  sendIllegalRequestAuditMessage
-} from '../../../common/sharedServices/queue/sendAuditMessage'
-import { tryParseJSON } from '../../../common/utils/helpers'
 import {
   appendZendeskIdToLogger,
   initialiseLogger,
   logger
 } from '../../../common/sharedServices/logger'
+import {
+  sendAuditDataRequestMessage,
+  sendIllegalRequestAuditMessage
+} from '../../../common/sharedServices/queue/sendAuditMessage'
+import {
+  updateZendeskTicket,
+  updateZendeskTicketById
+} from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { DataRequestParams } from '../../../common/types/dataRequestParams'
+import { ValidatedDataRequestParamsResult } from '../../../common/types/validatedDataRequestParamsResult'
+import { tryParseJSON } from '../../../common/utils/helpers'
+import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
+import { sendInitiateDataTransferMessage } from './sendInitiateDataTransferMessage'
+import { isSignatureInvalid } from './validateRequestSource'
+import { validateZendeskRequest } from './validateZendeskRequest'
+import { zendeskTicketDiffersFromRequest } from './zendeskTicketDiffersFromRequest'
 
 export const handler = async (
   event: APIGatewayProxyEvent,

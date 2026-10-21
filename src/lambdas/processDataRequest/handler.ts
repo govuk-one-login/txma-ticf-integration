@@ -1,14 +1,14 @@
 import { Context, SQSEvent } from 'aws-lambda'
-import { initiateDataTransfer } from './initiateDataTransfer'
-import { tryParseJSON, isEmpty } from '../../../common/utils/helpers'
-import { isDataRequestParams } from '../../../common/types/dataRequestParams'
-import { isContinueDataTransferParams } from '../../../common/types/continueDataTransferParams'
-import { checkDataTransferStatus } from './checkDataTransferStatus'
 import {
   appendZendeskIdToLogger,
   initialiseLogger,
   logger
 } from '../../../common/sharedServices/logger'
+import { isContinueDataTransferParams } from '../../../common/types/continueDataTransferParams'
+import { isDataRequestParams } from '../../../common/types/dataRequestParams'
+import { isEmpty, tryParseJSON } from '../../../common/utils/helpers'
+import { checkDataTransferStatus } from './checkDataTransferStatus'
+import { initiateDataTransfer } from './initiateDataTransfer'
 
 export const handler = async (event: SQSEvent, context: Context) => {
   initialiseLogger(context)

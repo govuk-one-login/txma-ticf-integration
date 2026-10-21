@@ -1,13 +1,14 @@
+import { _Object, StorageClass } from '@aws-sdk/client-s3'
 import { vi } from 'vitest'
-import { listS3Files } from '../../../common/sharedServices/s3/listS3Files'
-import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
-import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
-import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
-import { StorageClass, _Object } from '@aws-sdk/client-s3'
 import { when } from 'vitest-when'
+import { logger } from '../../../common/sharedServices/logger'
+import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
+import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
+import { listS3Files } from '../../../common/sharedServices/s3/listS3Files'
 import { TEST_ANALYSIS_BUCKET } from '../../../common/utils/tests/testConstants'
 import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
-import { logger } from '../../../common/sharedServices/logger'
+import { generateS3ObjectPrefixesForDateList } from './generateS3ObjectPrefixesForDateList'
+
 vi.mock('./listS3Files', () => ({
   listS3Files: vi.fn()
 }))
