@@ -1,10 +1,10 @@
-import { vi } from 'vitest'
-import { startQueryExecution } from './startQueryExecution'
 import {
   AthenaClient,
   StartQueryExecutionCommand
 } from '@aws-sdk/client-athena'
 import { mockClient } from 'aws-sdk-client-mock'
+import { vi } from 'vitest'
+import { startQueryExecution } from './startQueryExecution'
 import 'aws-sdk-client-mock-vitest'
 import * as awsSdkClients from '../../../common/utils/awsSdkClients'
 

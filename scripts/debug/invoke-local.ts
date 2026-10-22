@@ -4,16 +4,17 @@
  * Usage: tsx scripts/debug/invoke-local.ts <lambdaName>
  * e.g. tsx scripts/debug/invoke-local.ts initiateDataRequest
  */
-import { readFileSync } from 'fs'
-import { execSync } from 'child_process'
-import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { Context } from 'aws-lambda'
+
 import {
-  STSClient,
   AssumeRoleCommand,
-  GetCallerIdentityCommand
+  GetCallerIdentityCommand,
+  STSClient
 } from '@aws-sdk/client-sts'
+import { Context } from 'aws-lambda'
+import { execSync } from 'child_process'
+import { readFileSync } from 'fs'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

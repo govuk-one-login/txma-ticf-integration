@@ -1,6 +1,6 @@
 import { DescribeJobCommand, JobDescriptor } from '@aws-sdk/client-s3-control'
-import { s3ControlClient } from '../../utils/awsSdkClients'
 import { getEnv } from '../../../common/utils/helpers'
+import { s3ControlClient } from '../../utils/awsSdkClients'
 
 export const describeBatchJob = async (
   jobId: string

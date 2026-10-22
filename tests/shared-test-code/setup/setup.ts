@@ -2,7 +2,8 @@ import { checkSecretsSet, retrieveSecretValue } from './retrieveSecretValue'
 import { retrieveSsmParameterValue } from './retrieveSsmParameterValues'
 
 const region = process.env.AWS_REGION ?? 'eu-west-2'
-const stack = process.env.STACK_NAME ?? 'txma-ticf-integration'
+const stackNameFromEnv = process.env.STACK_NAME
+const stack = stackNameFromEnv ?? 'txma-ticf-integration'
 // In dev, feature stacks do not have seeded per-stack test secrets. The dev
 // integration tests only need the Zendesk webhook signing key (which must match
 // the deployed app) plus a couple of Zendesk API values; they mock Zendesk and do
@@ -111,7 +112,23 @@ const setEnvVarsFromSecretsManager = async (
   secretMappings: Record<string, string[]>
 ) => {
   for (const [secretSet, secrets] of Object.entries(secretMappings)) {
-    const secretValues = await retrieveSecretValue(secretSet, region)
+    // If every required key for this secret set is already present in the
+    // environment (e.g. supplied via a local .env file for the dev workflow,
+    // where a feature stack may not have a seeded secret), skip the Secrets
+    // Manager lookup entirely. This avoids a ResourceNotFoundException when the
+    // secret does not exist and the values have been provided another way.
+    if (secrets.every((secret) => process.env[secret])) {
+      continue
+    }
+
+    let secretValues: Record<string, string>
+    try {
+      secretValues = await retrieveSecretValue(secretSet, region)
+    } catch (error) {
+      throw new Error(buildSecretNotFoundMessage(secretSet, secrets), {
+        cause: error
+      })
+    }
     checkSecretsSet(secretSet, secretValues, secrets)
 
     secrets.forEach(
@@ -121,6 +138,30 @@ const setEnvVarsFromSecretsManager = async (
           : secretValues[secret])
     )
   }
+}
+
+const buildSecretNotFoundMessage = (
+  secretSet: string,
+  secrets: string[]
+): string => {
+  const lines = [
+    `Could not read the Secrets Manager secret '${secretSet}' in region '${region}'.`
+  ]
+  if (!stackNameFromEnv) {
+    lines.push(
+      `STACK_NAME is not set, so the test stack defaulted to '${stack}'. ` +
+        `Set it to your deployed stack, e.g. STACK_NAME=<your-stack> npm run test:integration`
+    )
+  } else {
+    lines.push(
+      `Using STACK_NAME='${stack}'. Check the stack is deployed and that its ` +
+        `test secret has been seeded (run 'npm run setupDevStackSecrets').`
+    )
+  }
+  lines.push(
+    `Alternatively, provide these values directly in the environment: ${secrets.join(', ')}.`
+  )
+  return lines.join('\n')
 }
 
 const setEnvVarsFromSsm = async (ssmMappings: Record<string, string>) => {

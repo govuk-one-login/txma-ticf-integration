@@ -2,11 +2,11 @@ import {
   CreateJobCommand,
   CreateJobCommandInput
 } from '@aws-sdk/client-s3-control'
-import { getEnv } from '../../../common/utils/helpers'
-import { logger } from '../logger'
 import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
-import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
+import { getEnv } from '../../../common/utils/helpers'
 import { s3ControlClient } from '../../utils/awsSdkClients'
+import { logger } from '../logger'
+import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
 

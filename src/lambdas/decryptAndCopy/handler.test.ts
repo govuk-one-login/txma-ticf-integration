@@ -1,4 +1,12 @@
 import { vi } from 'vitest'
+import { logger } from '../../../common/sharedServices/logger'
+import { getS3ObjectAsStream } from '../../../common/sharedServices/s3/getS3ObjectAsStream'
+import { putS3Object } from '../../../common/sharedServices/s3/putS3Object'
+import {
+  emptyTestS3BatchEvent,
+  testS3BatchEvent
+} from '../../../common/utils/tests/events/s3BatchEvent'
+import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
 import {
   TEST_ANALYSIS_BUCKET,
   TEST_PERMANENT_BUCKET_NAME,
@@ -8,16 +16,8 @@ import {
   TEST_S3_OBJECT_KEY
 } from '../../../common/utils/tests/testConstants'
 import { createDataStream } from '../../../common/utils/tests/testHelpers'
-import { getS3ObjectAsStream } from '../../../common/sharedServices/s3/getS3ObjectAsStream'
 import { decryptS3Object } from './decryptS3Object'
-import { putS3Object } from '../../../common/sharedServices/s3/putS3Object'
-import {
-  testS3BatchEvent,
-  emptyTestS3BatchEvent
-} from '../../../common/utils/tests/events/s3BatchEvent'
 import { handler } from './handler'
-import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
-import { logger } from '../../../common/sharedServices/logger'
 
 vi.mock('../../../common/sharedServices/s3/getS3ObjectAsStream', () => ({
   getS3ObjectAsStream: vi.fn()

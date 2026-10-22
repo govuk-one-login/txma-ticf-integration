@@ -1,11 +1,11 @@
 import { vi } from 'vitest'
 import { when } from 'vitest-when'
-import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
+import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
 import {
   TEST_AUDIT_BUCKET,
   TEST_PERMANENT_BUCKET_NAME
 } from '../../../common/utils/tests/testConstants'
-import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
+import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
 
 vi.mock('../../utils/getFeatureFlagValue', () => ({
   getFeatureFlagValue: vi.fn()

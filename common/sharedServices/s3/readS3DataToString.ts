@@ -1,6 +1,6 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3'
-import consumers from 'stream/consumers'
 import { Readable } from 'stream'
+import consumers from 'stream/consumers'
 import { s3Client } from '../../utils/awsSdkClients'
 
 export const readS3DataToString = async (

@@ -1,14 +1,14 @@
-import { vi, type MockedFunction } from 'vitest'
-import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
-import { initiateDataTransfer } from './initiateDataTransfer'
+import { type MockedFunction, vi } from 'vitest'
 import { startGlacierRestore } from '../../../common/sharedServices/bulkJobs/startGlacierRestore'
-import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
-import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
-import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
-import { addNewDataRequestRecord } from '../../../common/sharedServices/dynamoDB/dynamoDBPut'
 import { startTransferToAnalysisBucket } from '../../../common/sharedServices/bulkJobs/startTransferToAnalysisBucket'
+import { addNewDataRequestRecord } from '../../../common/sharedServices/dynamoDB/dynamoDBPut'
 import { sendContinuePollingDataTransferMessage } from '../../../common/sharedServices/queue/sendContinuePollingDataTransferMessage'
 import { sendInitiateAthenaQueryMessage } from '../../../common/sharedServices/queue/sendInitiateAthenaQueryMessage'
+import { checkS3BucketData } from '../../../common/sharedServices/s3/checkS3BucketData'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { ZENDESK_TICKET_ID } from '../../../common/utils/tests/testConstants'
+import { testDataRequest } from '../../../common/utils/tests/testDataRequest'
+import { initiateDataTransfer } from './initiateDataTransfer'
 
 vi.mock('../../../common/sharedServices/s3/checkS3BucketData', () => ({
   checkS3BucketData: vi.fn()

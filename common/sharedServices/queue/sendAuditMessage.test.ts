@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
+import { logger } from '../../../common/sharedServices/logger'
 import { ErrorType } from '../../../common/types/audit/auditEventDetails'
 import { AuditQueryDataRequestDetails } from '../../../common/types/audit/auditQueryDataRequestDetails'
-import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import {
   MOCK_AUDIT_DATA_REQUEST_EVENTS_QUEUE_URL,
   TEST_DATE_1,
@@ -10,10 +10,10 @@ import {
   TEST_RECIPIENT_NAME,
   TEST_REQUESTER_EMAIL,
   TEST_REQUESTER_NAME,
-  ZENDESK_TICKET_ID,
-  TEST_SQS_MESSAGE_ID
+  TEST_SQS_MESSAGE_ID,
+  ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
-import { logger } from '../../../common/sharedServices/logger'
+import { currentDateEpochSeconds } from '../../utils/currentDateEpochSeconds'
 import {
   sendAuditDataRequestMessage,
   sendIllegalRequestAuditMessage,

@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { authoriseAs } from './authoriseAs'
 import { getEnv } from '../helpers'
+import { authoriseAs } from './authoriseAs'
 
 export const deleteZendeskTicket = async (ticketId: string) => {
   try {

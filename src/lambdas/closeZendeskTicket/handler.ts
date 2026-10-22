@@ -1,13 +1,13 @@
 import { Context, SQSEvent } from 'aws-lambda'
-import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
-import { tryParseJSON } from '../../../common/utils/helpers'
-import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
 import { zendeskCopy } from '../../../common/constants/zendeskCopy'
 import {
   appendZendeskIdToLogger,
   initialiseLogger,
   logger
 } from '../../../common/sharedServices/logger'
+import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
+import { tryParseJSON } from '../../../common/utils/helpers'
+import { interpolateTemplate } from '../../../common/utils/interpolateTemplate'
 
 export const handler = async (event: SQSEvent, context: Context) => {
   initialiseLogger(context)

@@ -1,12 +1,12 @@
-import { vi } from 'vitest'
-// Under test
-import { isSignatureInvalid } from './validateRequestSource'
+import { APIGatewayProxyEventHeaders } from 'aws-lambda'
 // Dependencies
 import * as crypto from 'crypto'
+import { vi } from 'vitest'
 import { exampleEventBody } from '../../../common/utils/tests/events/exampleEventBody'
 import { givenAllSecretsAvailable } from '../../../common/utils/tests/mocks/retrieveSecretKeys'
 import { ALL_ZENDESK_SECRETS } from '../../../common/utils/tests/testConstants'
-import { APIGatewayProxyEventHeaders } from 'aws-lambda'
+// Under test
+import { isSignatureInvalid } from './validateRequestSource'
 
 vi.mock(
   '../../../common/sharedServices/secrets/retrieveZendeskApiSecrets',

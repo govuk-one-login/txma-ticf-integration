@@ -39,15 +39,15 @@ Conditions:
     !Or [
       !Equals [!Ref Environment, production],
       !Equals [!Ref Environment, integration],
-      !Equals [!Ref Environment, staging]
+      !Equals [!Ref Environment, staging],
     ]
   DevEnvironment: !Equals [!Ref Environment, dev]
   TestEnvironment:
     !Not [
       !Or [
         !Equals [!Ref Environment, production],
-        !Equals [!Ref Environment, integration]
-      ]
+        !Equals [!Ref Environment, integration],
+      ],
     ]
   TestRoleResources:
     !And [Condition: TestEnvironment, !Not [!Equals [!Ref TestRoleArn, none]]]
@@ -86,7 +86,7 @@ Globals:
               !FindInMap [
                 EnvironmentConfiguration,
                 !Ref Environment,
-                dynatraceSecretArn
+                dynatraceSecretArn,
               ]
         DT_CONNECTION_BASE_URL: !Sub
           - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'
@@ -94,7 +94,7 @@ Globals:
               !FindInMap [
                 EnvironmentConfiguration,
                 !Ref Environment,
-                dynatraceSecretArn
+                dynatraceSecretArn,
               ]
         DT_CLUSTER_ID: !Sub
           - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CLUSTER_ID}}'
@@ -102,7 +102,7 @@ Globals:
               !FindInMap [
                 EnvironmentConfiguration,
                 !Ref Environment,
-                dynatraceSecretArn
+                dynatraceSecretArn,
               ]
         DT_LOG_COLLECTION_AUTH_TOKEN: !Sub
           - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_LOG_COLLECTION_AUTH_TOKEN}}'
@@ -110,7 +110,7 @@ Globals:
               !FindInMap [
                 EnvironmentConfiguration,
                 !Ref Environment,
-                dynatraceSecretArn
+                dynatraceSecretArn,
               ]
         DT_TENANT: !Sub
           - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_TENANT}}'
@@ -118,7 +118,7 @@ Globals:
               !FindInMap [
                 EnvironmentConfiguration,
                 !Ref Environment,
-                dynatraceSecretArn
+                dynatraceSecretArn,
               ]
         DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: 'true'
     PermissionsBoundary:
@@ -1061,7 +1061,7 @@ Resources:
         !If [
           UsePermissionsBoundary,
           !Ref PermissionsBoundary,
-          !Ref AWS::NoValue
+          !Ref AWS::NoValue,
         ]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -1335,8 +1335,8 @@ Resources:
             '',
             [
               !Join ['', !Split ['-', !Ref AWS::StackName]],
-              !Sub '_${Environment}_analysis_table'
-            ]
+              !Sub '_${Environment}_analysis_table',
+            ],
           ]
         Parameters:
           has_encrypted_data: false
@@ -1389,7 +1389,7 @@ Resources:
                 'ignore.malformed.json': true,
                 'serialiazation.format': 1,
                 'field.delim': '',
-                'case.insensitive': false
+                'case.insensitive': false,
               }
             SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
           StoredAsSubDirectories: false
@@ -1655,7 +1655,7 @@ Resources:
         !If [
           UsePermissionsBoundary,
           !Ref PermissionsBoundary,
-          !Ref AWS::NoValue
+          !Ref AWS::NoValue,
         ]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -2033,7 +2033,7 @@ Resources:
         !If [
           ApiCustomDomain,
           'https://{{resolve:ssm:ZendeskWebhookApiDomainName}}',
-          !Sub 'https://${ZendeskWebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${ZendeskWebhookApi.Stage}'
+          !Sub 'https://${ZendeskWebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${ZendeskWebhookApi.Stage}',
         ]
 
   IntegrationTestsNotifySecretSet:
@@ -2086,5 +2086,5 @@ Outputs:
       !If [
         ApiCustomDomain,
         'https://{{resolve:ssm:ZendeskWebhookApiDomainName}}',
-        !Sub 'https://${ZendeskWebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${ZendeskWebhookApi.Stage}'
+        !Sub 'https://${ZendeskWebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${ZendeskWebhookApi.Stage}',
       ]

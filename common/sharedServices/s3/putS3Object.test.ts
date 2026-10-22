@@ -5,13 +5,13 @@ import {
 } from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-vitest'
-import {
-  TEST_ANALYSIS_BUCKET,
-  TEST_S3_OBJECT_KEY,
-  TEST_S3_OBJECT_DATA_BUFFER
-} from '../../../common/utils/tests/testConstants'
 
 import { putS3Object } from '../../../common/sharedServices/s3/putS3Object'
+import {
+  TEST_ANALYSIS_BUCKET,
+  TEST_S3_OBJECT_DATA_BUFFER,
+  TEST_S3_OBJECT_KEY
+} from '../../../common/utils/tests/testConstants'
 
 const s3Mock = mockClient(S3Client)
 

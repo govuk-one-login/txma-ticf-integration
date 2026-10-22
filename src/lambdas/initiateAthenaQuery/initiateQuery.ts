@@ -1,12 +1,12 @@
 import { getDatabaseEntryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBGet'
-import { createQuerySql } from './createQuerySql'
-import { startQueryExecution } from './startQueryExecution'
 import { updateQueryByZendeskId } from '../../../common/sharedServices/dynamoDB/dynamoDBUpdate'
+import { logger } from '../../../common/sharedServices/logger'
 import { updateZendeskTicketById } from '../../../common/sharedServices/zendesk/updateZendeskTicket'
 import { CreateQuerySqlResult } from '../../../common/types/athena/createQuerySqlResult'
 import { StartQueryExecutionResult } from '../../../common/types/athena/startQueryExecutionResult'
-import { logger } from '../../../common/sharedServices/logger'
 import { DataRequestDatabaseEntry } from '../../../common/types/dataRequestDatabaseEntry'
+import { createQuerySql } from './createQuerySql'
+import { startQueryExecution } from './startQueryExecution'
 
 export const initiateQuery = async (zendeskId: string) => {
   const requestData = await getRequestData(zendeskId)

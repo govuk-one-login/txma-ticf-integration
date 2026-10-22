@@ -1,9 +1,10 @@
 // Under test
-import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
+
+import { type MockedFunction, vi } from 'vitest'
+import { TEST_ZENDESK_SECRET_ARN } from '../../../common/utils/tests/testConstants'
 // Dependencies
 import { retrieveSecrets } from './retrieveSecrets'
-import { TEST_ZENDESK_SECRET_ARN } from '../../../common/utils/tests/testConstants'
-import { vi, type MockedFunction } from 'vitest'
+import { retrieveZendeskApiSecrets } from './retrieveZendeskApiSecrets'
 
 vi.mock('./retrieveSecrets', () => ({
   retrieveSecrets: vi.fn()

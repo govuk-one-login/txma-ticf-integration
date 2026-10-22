@@ -1,5 +1,5 @@
-import { vi, type MockedFunction } from 'vitest'
-import { handler } from './handler'
+import { type MockedFunction, vi } from 'vitest'
+import { logger } from '../../../common/sharedServices/logger'
 import {
   testAthenaQueryEvent,
   testAthenaQueryEventNoRecords,
@@ -7,7 +7,7 @@ import {
   testManualAthenaQueryEvent
 } from '../../../common/utils/tests/events/initiateAthenaQueryEvent'
 import { mockLambdaContext } from '../../../common/utils/tests/mocks/mockLambdaContext'
-import { logger } from '../../../common/sharedServices/logger'
+import { handler } from './handler'
 import { initiateQuery } from './initiateQuery'
 
 vi.mock('../../../common/sharedServices/zendesk/updateZendeskTicket', () => ({

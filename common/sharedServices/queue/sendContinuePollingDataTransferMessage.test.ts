@@ -1,10 +1,10 @@
-import { vi, type MockedFunction } from 'vitest'
-import { sendContinuePollingDataTransferMessage } from './sendContinuePollingDataTransferMessage'
-import { sendSqsMessage } from './sendSqsMessage'
+import { type MockedFunction, vi } from 'vitest'
 import {
   MOCK_INITIATE_DATA_REQUEST_QUEUE_URL,
   ZENDESK_TICKET_ID
 } from '../../../common/utils/tests/testConstants'
+import { sendContinuePollingDataTransferMessage } from './sendContinuePollingDataTransferMessage'
+import { sendSqsMessage } from './sendSqsMessage'
 
 vi.mock('./sendSqsMessage', () => ({
   sendSqsMessage: vi.fn()

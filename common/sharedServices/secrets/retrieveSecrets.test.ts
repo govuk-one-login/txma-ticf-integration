@@ -1,10 +1,10 @@
 import {
-  SecretsManagerClient,
   GetSecretValueCommand,
-  GetSecretValueResponse
+  GetSecretValueResponse,
+  SecretsManagerClient
 } from '@aws-sdk/client-secrets-manager'
-import { retrieveSecrets } from './retrieveSecrets'
 import { mockClient } from 'aws-sdk-client-mock'
+import { retrieveSecrets } from './retrieveSecrets'
 import 'aws-sdk-client-mock-vitest'
 
 const GIVEN_SECRET_ID = 'my-secret-key'

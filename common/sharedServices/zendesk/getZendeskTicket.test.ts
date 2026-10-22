@@ -1,14 +1,14 @@
 import { vi } from 'vitest'
-import { givenAllSecretsAvailable } from '../../../common/utils/tests/mocks/retrieveSecretKeys'
+import { logger } from '../../../common/sharedServices/logger'
 import * as mockHttpsRequestUtils from '../../../common/utils/tests/mocks/httpsRequestUtils'
-import { getZendeskTicket } from './getZendeskTicket'
+import { givenAllSecretsAvailable } from '../../../common/utils/tests/mocks/retrieveSecretKeys'
 import {
   ALL_ZENDESK_SECRETS,
   ENCODED_AUTH_VALUE,
   ZENDESK_TICKET_ID,
   ZENDESK_TICKET_ID_AS_NUMBER
 } from '../../../common/utils/tests/testConstants'
-import { logger } from '../../../common/sharedServices/logger'
+import { getZendeskTicket } from './getZendeskTicket'
 
 vi.mock('../secrets/retrieveZendeskApiSecrets', () => ({
   retrieveZendeskApiSecrets: vi.fn()

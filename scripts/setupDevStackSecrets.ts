@@ -1,7 +1,7 @@
 import {
-  SecretsManagerClient,
   GetSecretValueCommand,
-  PutSecretValueCommand
+  PutSecretValueCommand,
+  SecretsManagerClient
 } from '@aws-sdk/client-secrets-manager'
 import { secretsManagerClient } from '../common/utils/awsSdkClients'
 

@@ -1,5 +1,6 @@
 import { TEST_AUDIT_BUCKET } from '../../../common/utils/tests/testConstants'
 import { createManifestFileText } from './createManifestFileText'
+
 const file1Key = 'myFileKey1'
 const file2Key = 'myFileKey2'
 describe('createManifestFileText', () => {

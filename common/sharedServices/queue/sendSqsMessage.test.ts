@@ -1,7 +1,7 @@
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
-import { sendSqsMessage, sendSqsMessageWithStringBody } from './sendSqsMessage'
-import { testDataRequest } from '../../utils/tests/testDataRequest'
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs'
 import { mockClient } from 'aws-sdk-client-mock'
+import { testDataRequest } from '../../utils/tests/testDataRequest'
+import { sendSqsMessage, sendSqsMessageWithStringBody } from './sendSqsMessage'
 import 'aws-sdk-client-mock-vitest'
 import { vi } from 'vitest'
 

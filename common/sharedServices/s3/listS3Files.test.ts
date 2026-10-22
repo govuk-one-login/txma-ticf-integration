@@ -1,10 +1,10 @@
+import {
+  ListObjectsV2Command,
+  ListObjectsV2CommandInput,
+  S3Client
+} from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
 import { listS3Files } from '../../../common/sharedServices/s3/listS3Files'
-import {
-  S3Client,
-  ListObjectsV2Command,
-  ListObjectsV2CommandInput
-} from '@aws-sdk/client-s3'
 
 const s3Mock = mockClient(S3Client)
 

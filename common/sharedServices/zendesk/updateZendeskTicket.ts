@@ -1,11 +1,11 @@
 import https from 'node:https'
-import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 import {
-  makeHttpsRequest,
-  base64Encode
+  base64Encode,
+  makeHttpsRequest
 } from '../../../common/sharedServices/http/httpsRequestUtils'
 import { tryParseJSON } from '../../../common/utils/helpers'
 import { logger } from '../logger'
+import { retrieveZendeskApiSecrets } from '../secrets/retrieveZendeskApiSecrets'
 
 export const updateZendeskTicket = async (
   eventBody: string | null,

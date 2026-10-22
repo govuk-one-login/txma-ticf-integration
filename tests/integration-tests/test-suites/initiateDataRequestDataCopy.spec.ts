@@ -3,17 +3,17 @@ import {
   getCloudWatchLogEventsGroupByMessagePattern,
   getStructuredLogEntry
 } from '../../shared-test-code/utils/aws/cloudWatchGetLogs'
+import { deleteDynamoDBTestItem } from '../../shared-test-code/utils/aws/dynamoDB'
 import { getAvailableTestDate } from '../../shared-test-code/utils/aws/s3GetAvailableTestDate'
+import { setupAuditSourceTestData } from '../../shared-test-code/utils/aws/setupAuditSourceTestData'
 import {
   getEnv,
   getFeatureFlagValue
 } from '../../shared-test-code/utils/helpers'
-import { testData } from '../constants/testData'
-import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
-import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 import { sendWebhookRequest } from '../../shared-test-code/utils/zendesk/sendWebhookRequest'
-import { setupAuditSourceTestData } from '../../shared-test-code/utils/aws/setupAuditSourceTestData'
-import { deleteDynamoDBTestItem } from '../../shared-test-code/utils/aws/dynamoDB'
+import { cloudwatchLogFilters } from '../constants/cloudWatchLogfilters'
+import { testData } from '../constants/testData'
+import { getWebhookRequestDataForTestCaseNumberAndDate } from '../utils/getWebhookRequestDataForTestCaseNumberAndDate'
 
 describe('Data should be copied to analysis bucket', () => {
   describe('valid requests for standard copy - analysis bucket empty', () => {

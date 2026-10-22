@@ -1,7 +1,7 @@
 import axios, { AxiosPromise } from 'axios'
-import { authoriseAs } from './authoriseAs'
-import { getEnv } from '../helpers'
 import { zendeskConstants } from '../../constants/zendeskParameters'
+import { getEnv } from '../helpers'
+import { authoriseAs } from './authoriseAs'
 
 export const approveZendeskTicket = async (ticketId: string) => {
   try {

@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
-import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 import { readS3DataToString } from '../../../common/sharedServices/s3/readS3DataToString'
 import { TEST_VALID_EMAIL_RECIPIENTS_BUCKET } from '../../../common/utils/tests/testConstants'
+import { isEmailInValidRecipientList } from './isEmailInValidRecipientList'
 
 vi.mock('../../../common/sharedServices/s3/readS3DataToString', () => ({
   readS3DataToString: vi.fn()

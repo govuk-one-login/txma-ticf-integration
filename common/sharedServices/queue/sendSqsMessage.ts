@@ -1,4 +1,4 @@
-import { SendMessageRequest, SendMessageCommand } from '@aws-sdk/client-sqs'
+import { SendMessageCommand, SendMessageRequest } from '@aws-sdk/client-sqs'
 import { sqsClient } from '../../utils/awsSdkClients'
 
 export const sendSqsMessage = async (

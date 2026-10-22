@@ -4,12 +4,12 @@ import {
   JobReportScope
 } from '@aws-sdk/client-s3-control'
 import { batchJobConstants } from '../../../common/constants/batchJobConstants'
-import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
-import { getEnv } from '../../../common/utils/helpers'
-import { logger } from '../logger'
 import { getAuditDataSourceBucketName } from '../../../common/sharedServices/s3/getAuditDataSourceBucketName'
-import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
+import { getEnv } from '../../../common/utils/helpers'
 import { s3ControlClient } from '../../utils/awsSdkClients'
+import { getFeatureFlagValue } from '../../utils/getFeatureFlagValue'
+import { logger } from '../logger'
+import { writeJobManifestFileToJobBucket } from './writeJobManifestFileToJobBucket'
 
 const analysisBucketName = getEnv('ANALYSIS_BUCKET_NAME')
 
