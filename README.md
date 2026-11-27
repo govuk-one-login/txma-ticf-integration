@@ -23,6 +23,7 @@ Threat Intelligence and Counter Fraud (TICF) analysts will be able to request au
 # Pre-requisites
 
 To run this project you will need the following:
+
 - [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) - Used to build and deploy the application
 - [Node.js](https://nodejs.org/en/) version 24 - Recommended way to install is via [NVM](https://github.com/nvm-sh/nvm)
 - [Docker](https://docs.docker.com/get-docker/) - Required to run SAM locally
@@ -37,6 +38,7 @@ To run this project you will need the following:
 # Getting started
 
 This project uses the `@govuk-one-login/dpt-logging` package hosted on [GitHub Packages](https://github.com/orgs/govuk-one-login/packages). To install dependencies locally, you need a GitHub Personal Access Token (PAT) with `read:packages` scope.
+
 1. [Create a Personal Access Token](https://github.com/settings/tokens) with the `read:packages` scope.
 2. Export it as an environment variable before running `npm install`:
 
@@ -78,11 +80,13 @@ And then opening the `coverage/lcov-report/index.html` page in your browser.
 ## Setup
 
 The tests can be run against any of the following environments:
+
 - dev
 - build
 - staging
 
 The variables required to run the test are stored in AWS in the following places:
+
 - SSM
 - Secrets Manager
 - Stack Outputs
@@ -241,6 +245,7 @@ This project has been migrated from Jest to Vitest and from CommonJS to ESM (Feb
 # Scripts
 
 All scripts can now be ran using `npm run cli` in the terminal. Here are some example CLI args you can use
+
 - `npm run cli -- --help` to see what scripts are available and how to use them.
 - `npm run cli <command> -- --help` to see the help per command.
 
