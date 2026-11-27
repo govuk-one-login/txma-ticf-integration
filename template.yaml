@@ -74,8 +74,6 @@ Globals:
   Function:
     Architectures:
       - 'arm64'
-    CodeSigningConfigArn:
-      !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
     Environment:
       Variables:
         NODE_OPTIONS: --enable-source-maps
@@ -244,6 +242,8 @@ Resources:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     Type: AWS::Serverless::Function
     Properties:
+      CodeSigningConfigArn:
+        !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       CodeUri: dist/initiateDataRequest/
       Handler: handler.handler
       Environment:
@@ -362,6 +362,8 @@ Resources:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     Type: AWS::Serverless::Function
     Properties:
+      CodeSigningConfigArn:
+        !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       CodeUri: dist/processDataRequest/
       Handler: handler.handler
       Environment:
@@ -518,6 +520,8 @@ Resources:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     Type: AWS::Serverless::Function
     Properties:
+      CodeSigningConfigArn:
+        !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       MemorySize: 512
       CodeUri: dist/dataReadyForQuery/
       Handler: handler.handler
@@ -632,6 +636,8 @@ Resources:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     Type: AWS::Serverless::Function
     Properties:
+      CodeSigningConfigArn:
+        !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       CodeUri: dist/decryptAndCopy/
       Handler: handler.handler
       MemorySize: 1536
@@ -735,6 +741,8 @@ Resources:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     Type: AWS::Serverless::Function
     Properties:
+      CodeSigningConfigArn:
+        !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       CodeUri: dist/initiateAthenaQuery/
       Handler: handler.handler
       MemorySize: 512
@@ -886,6 +894,8 @@ Resources:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     Type: AWS::Serverless::Function
     Properties:
+      CodeSigningConfigArn:
+        !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       CodeUri: dist/sendQueryResultsNotification/
       Handler: handler.handler
       Environment:
@@ -1022,6 +1032,8 @@ Resources:
     #checkov:skip=CKV_AWS_115:Defined in Globals section
     Type: AWS::Serverless::Function
     Properties:
+      CodeSigningConfigArn:
+        !If [UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue]
       CodeUri: dist/closeZendeskTicket
       Handler: handler.handler
       Role: !GetAtt CloseZendeskTicketFunctionRole.Arn
