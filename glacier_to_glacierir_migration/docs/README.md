@@ -5,6 +5,7 @@ This document explains the migration scripts and utilities for moving data from 
 ## Overview
 
 The migration process consists of three sequential steps:
+
 1. **Step 1**: Create manifest and initiate restore from Glacier
 2. **Step 2**: Create backup copy in migration bucket
 3. **Step 3**: Migrate to Glacier Instant Retrieval storage class
@@ -19,6 +20,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 **Purpose**: Creates a manifest of all Glacier objects and initiates restore operation.
 
 **What it does**:
+
 - Lists all objects in Glacier storage class from `audit-build-permanent-message-batch` bucket
 - Creates a CSV manifest file with bucket,key format
 - Uploads manifest to S3 batch operations bucket
@@ -26,6 +28,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 - Initiates S3 batch restore job with 5-day expiration and BULK tier
 
 **Prerequisites**:
+
 - AWS credentials configured for build account
 - Access to `audit-build-permanent-message-batch` bucket
 - Access to `txma-data-analysis-build-batch-job-manifest-bucket` bucket
@@ -37,6 +40,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 ```
 
 **Output**:
+
 - `glacier-backup-manifest-{bucket_suffix}-{count}.csv` - List of objects to migrate (bucket-specific)
 - Various JSON config files for batch operations (bucket-specific)
 - Restore job ID for monitoring
@@ -48,11 +52,13 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 **Purpose**: Creates backup copies of restored objects in the migration bucket.
 
 **What it does**:
+
 - Uses the manifest created in Step 1
 - Creates S3 batch copy job to backup objects to `txma-ticf-integration-build-glac-mig-bucket`
 - Copies objects with Glacier storage class
 
 **Prerequisites**:
+
 - Step 1 must be completed successfully
 - Restore job from Step 1 must be finished
 - Config files from Step 1 must exist
@@ -64,6 +70,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 ```
 
 **Output**:
+
 - Backup job ID for monitoring
 - `backup-job-ids-{bucket_suffix}.txt` - List of backup job IDs
 
@@ -72,10 +79,12 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 **Purpose**: Migrates objects to Glacier Instant Retrieval storage class.
 
 **What it does**:
+
 - Creates S3 batch copy job to change storage class to `GLACIER_IR`
 - Updates objects in the original bucket with new storage class
 
 **Prerequisites**:
+
 - Steps 1 and 2 must be completed successfully
 - Config files from Step 1 must exist
 
@@ -86,6 +95,7 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 ```
 
 **Output**:
+
 - Migration job ID for monitoring
 - Commands to check job status
 - `migrate-job-ids-{bucket_suffix}.txt` - List of migration job IDs
@@ -95,11 +105,13 @@ Additionally, a utility script is provided for decrypting and decompressing retr
 **Purpose**: Verify if migration has succeeded.
 
 **What it does**:
+
 - Checks count of `GLACIER_IR` objects
 - Checks count of `GLACIER` objects
 - Checks count of `STANDARD` objects
 
 **Prerequisites**:
+
 - Steps 1, 2 and 3 must be completed successfully
 
 **Usage**:
@@ -111,6 +123,7 @@ change SOURCE_BUCKET variable value based on which bucket is being verified
 ```
 
 **Output**:
+
 - No of GLACIER objects count must be 0
 - Total number of objects must be sum of STANDARD file count and GLACIER_IR file count
 
@@ -121,11 +134,13 @@ change SOURCE_BUCKET variable value based on which bucket is being verified
 **Purpose**: Decrypts and decompresses data retrieved from Glacier storage.
 
 **What it does**:
+
 - Uses AWS KMS to decrypt encrypted data
 - Decompresses gzipped content
 - Outputs plain text data to specified file
 
 **Prerequisites**:
+
 - Node.js installed
 - AWS credentials configured (uses `audit-build` profile)
 - Required npm packages: `@aws-crypto/decrypt-node`, `@aws-crypto/kms-keyring-node`
@@ -157,6 +172,7 @@ node decrypt-and-decompress.mjs glacier-ir-test.gz test-output.txt arn:aws:kms:e
 ```
 
 **Parameters**:
+
 - `input-file`: Path to encrypted/compressed file
 - `output-file`: Path where decrypted content will be saved
 - `kms-key-id`: ARN of KMS key used for encryption
@@ -239,11 +255,13 @@ aws s3control list-jobs --account-id $AWS_ACCOUNT_ID
 The scripts include pagination logic to handle millions of objects, but be aware of these limitations:
 
 **S3 Batch Operations Limits:**
+
 - Maximum manifest file size: 1GB
 - Maximum objects per job: 1 billion
 - Recommended batch size: 1-10 million objects per job
 
 **For Very Large Migrations:**
+
 1. **Split by prefix**: Filter objects by date/prefix to create smaller batches
 2. **Monitor manifest size**: Script warns if manifest exceeds 1GB
 3. **Use multiple jobs**: Run separate migrations for different object groups
